@@ -1,0 +1,24 @@
+On Unix systems, JED locks files in a way that is consistent with
+Emacs, which is also consistent with Interleaf.  It made no sense to
+implement a different incompatible locking system because that would
+render it useless when interacting with other programs.
+
+Whenever a buffer that is attached to a file gets modified, JED will
+attempt to lock the file.  When the buffer is no longer modified (via
+getting saved to disk or changes discarded via undo), JED will unlock
+the file.
+
+The lock is made by creating a symbolic link in the file's directory
+with a name that is derived by prefixing the buffer file's name with
+`.#'.  The value of the link is given by USER@HOST.PID.  If there is
+already a lock but owned by another process, then JED will prompt the
+user for one of the following actions: 
+
+     steal the lock
+     ignore the lock and proceed anyway
+     abort the operation
+
+If the user elects to steal the lock, then the symbolic link will be
+recreated with the value appropriate for the current process.  It is
+probably best to abort the operation and contact the person who has
+the file locked.

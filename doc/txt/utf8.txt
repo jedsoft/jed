@@ -1,0 +1,101 @@
+Unicode via the UTF-8 encoding is available for jed versions 0.99-17
+and greater provided that slang2 is used.
+
+There are several complicating factors that one needs to consider when
+running jed in its UTF-8 mode.  In a pure UTF8-8 environment, jed's
+support for UTF-8 should be transparent.  By a pure environment I mean
+one where all files that jed reads and writes use the UTF-8 character
+set, and all terminal I/O assumes the UTF-8 encoding.  Unfortunately,
+such environments are rare because in practice one must deal with
+files using national character sets, e.g., ISO-Latin-1.  Hence, the
+common scenario will be one involving a mixture of character sets.
+
+In the current implementation, jed either runs in UTF-8 mode or it
+doesn't.  There is no provision for enabling or disabling UTF-8
+support during runtime.  When not running in UTF-8 mode, jed knows
+almost nothing about character sets.  This is the only mode supported
+by older versions of jed.
+
+When running in UTF-8 mode, internally everything uses UTF-8, including
+the interpreter.  This means that all strings used by the slang
+interpreter are encoded using the UTF-8 character set.  For example,
+the strlen function returns the number of (UTF-8) characters in the
+string, not the number of bytes.  In this mode, reading a file using a
+national character set without first converting it to UTF-8 may cause
+some characters in the file to not display properly.  In particular,
+all characters with codes greater than 128 will display as <XX> where
+XX represents the hex character code.
+
+Enabling UTF-8 support
+----------------------
+
+The environment dictates whether or not jed will run in UTF-8 mode. If
+the locale indicates that the character set is UTF-8, then UTF-8 mode
+will be enabled.  For the time being, jed can be forced into UTF-8
+mode by defining the JED_UTF8 environment variable.  If the value of
+this variable is 1, then jed will run in UTF-8 mode.  This can be
+useful for cases when the terminal does not support UTF-8 but for some
+reason one has to edit a UTF-8 encoded file.  I want to stress that
+the use of JED_UTF8 is considered to be a temporary hack.
+
+
+Character set conversion
+------------------------
+
+At the moment, jed provides no built-in mechanism for transparent
+character set conversion.  It is expected that once such support is in
+place, it will probably be done via hooks such as
+_jed_find_file_after_hooks.  If pre-existing hooks prove inadequate,
+then it may be necessary to introduce other hooks.  Until such
+support, it is recommended that one use other programs such as "iconv"
+to perform character set conversion outside the editor.
+
+It is always possible to create a function that forces the buffer from
+the national character set to UTF-8 via the direct replacement.
+The following functions may be used to convert the buffer to and from
+ISO-Latin-1:
+
+define iso_to_utf8 ()
+{
+   if (_slang_utf8_ok == 0)
+     verror ("This function requires a UTF-8 enabled version of jed");
+
+   push_spot ();
+   bob ();
+   forever
+     {
+	variable ch = what_char ();
+	if (ch < 0)
+	  {
+	     del ();
+	     insert_char (-ch);
+	     continue;
+	  }
+	!if (right(1)) break;
+     }
+   pop_spot ();
+}
+
+define utf8_to_iso ()
+{
+   if (_slang_utf8_ok == 0)
+     verror ("This function requires a UTF-8 enabled version of jed");
+
+   push_spot ();
+   bob ();
+   forever
+     {
+	variable ch = what_char ();
+	if ((ch >= 128) and (ch < 256))
+	  {
+	     del ();
+	     insert_byte (ch);
+	     continue;
+	  }
+	!if (right (1)) break;
+     }
+   pop_spot ();
+}
+
+Note that the above functions require slang2 to work properly and must
+be run in a UTF-8 enabled version of jed.

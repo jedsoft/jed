@@ -1,0 +1,2546 @@
+-*- mode: text; mode: fold -*-
+
+Changes since B0.99-16
+0. Many internal organizational changes and cleanups to provide UTF-8
+   support and S-Lang 2 compatibility.
+1. lib/f90.sl: keywords for free-format mode were not working.
+   (joukj at hrem.stm.tudelft.nl).
+2. src/dfasyntax.c: For DCL mode, /4096 was not highlighted as a
+   number--- only the "096" portion was highlighted.
+3. src/ledit.c: when killing the scratch buffer, take care of its
+   subprocesses as well.
+4. lib/cal.sl: Eliminated "for" loop in favor of "where".
+5. src/xkeys.c: Pressing Shift-Tab in Xjed will generate "\e[Z".
+6. lib/modehook.sl: Avoid potential security risk by alerting the user
+   about a file's mode statement.  This behavior may be controlled
+   through the use of the Enable_Mode_Hook_Eval variable.
+7. src/misc.c: read_from_minibuffer was not working in non-interactive
+   mode.
+8. src/jprocess.c:get_process_status: indexing problem involving the
+   process id resolved (sdupont@oryx.de)
+9. lib/emacsmsc.sl: added string_rectangle function with keybinding
+   ^XRt.
+10. src/indent.c: The what_syntax_table intrinsic was always returning
+    "DEFAULT".
+11. lib/site.sl,etc: Added some patches from Paul Boekholt <p.boekholt
+    at hetnet.nl>: The help function supports an optional argument
+    (site.sl), compress.sl had a missing (), register.sl was missing a
+    call to "newline".
+12. src/file.c: If a file "foo" was saved to another file "bar", then
+    "bar" was being improperly flagged as changing on the disk.
+13. lib/keydefs.sl: Key_Ctrl_BS value changed (Guido Gonzato).
+14. src/file.c: make jed_expand_link expand all pathname components
+15. lib/misc.sl: arguments to is_substr swapped in the glob_to_regexp
+    function.  Also the directory function was not handling invalid
+    directories.  Klaus Schmid <klaus.schmid at kdt.de>.
+16. src/ledit.c: if Batch or Script mode, do not echo the number of
+    lines read.
+17. src/text.c: Ignore leading whitespace when attempting to wrap a
+    line. Joerg Sommer (joerg at alea, gnuu, de).
+18. src/text.c: improved backward_paragraph function (Paul Boekholt
+    <p.boekholt at hetnet, nl>)
+19. src/*.c: Added support for the display of line numbers based upon
+    a patch submitted by Robert Lillack (rob at lillack, de).  Use the
+    toggle_line_number_mode or the set_line_number_mode functions to
+    utilize this feature.  The color of this may be controlled using
+    the "linenum" object.
+20. src/hooks.c: A possible NULL pointer dereference was fixed and the
+    JED_RUN_HOOKS* constants were exported to the interpreter (Josh
+    Guilfoyle (jasta at gotlinux, org))
+21. lib/php.sl: strcat used instead of binary plus for combining
+    strings in the keyword definition lists.
+22. lib/emacs.sl: Binding to ^K (yp_kill_line) tweaked to improve
+    emulation in presence of a universal argument.
+22. lib/syntax.c: Better support for syntax highlighting of multiline
+    SGML/HTML constructs.
+23. src/intrin.c: get_keymaps intrinsic added
+24. lib/site.sl: call_function added as a generic alternative to
+    runhooks.  This was added because someday runhooks may perform
+    additional tasks.
+25. A few more color schemes have been added with updates.
+26. src/intrin.c: what_mode may take an optional buffer argument.
+27. lib/misc.sl: glob_to_regexp made public
+28. lib/misc.sl: list_directory added.
+29. lib/modeinfo.sl: mode_set_mode_info expanded to allow the creation
+    of new fields.
+30. lib/dabbrev.sl: integrated the version from the jed modes
+    repository because of its many good ideas and capabilities.
+31. src/screen.c: %S in the window status line format will cause the
+    S-Lang stack depth to be displayed. (from Dino via paul at
+    boekholt, com).
+32. lib/isolatin.sl: The reverse (spanish) question mark removed from
+    the word_chars. Günter Milde (milde at ife, et, tu-dresden, de)
+33. lib/cmode.sl: C_Namespace_Offset added (Marc Butler marc_in_usa at
+    yahoo, com)
+32. src/screen.c: Trailing whitespace may now be highlighted using the
+    "trailing_whitespace" color.  To enable it, put
+
+         Highlight_Trailing_Whitespace = 1;
+
+     in your jedrc file.  (This and similar ideas have been suggested
+     by a number of people-- some even submitted code).
+33. lib/paste.sl, lib/gpg.sl: "paste" is a useful function for "pasting"
+    into jed running in an xterm.  gpg.sl implements an experimental
+    interface to gpg.
+34. src/ledit.c: If system supports dynamic linking via dlopen, then
+    enable support for importable modules.
+35. lib/cua.sl+cuamisc.sl: Updated versions from sourceforge.  I split
+    a few of the functions out for general use: next_buffer,
+    toggle_case_search, save_buffer_as
+36. src/: Like TAB, the value of CASE_SEARCH is now local to a buffer.
+    Newly created buffers are initialized with the value of
+    CASE_SEARCH_DEFAULT.
+37. lib/vhdlmode.sl: Updated by Thei Wijnen
+-------- snapshot B0.99.17-37 released -------
+38. lib/modeinfo.sl: The mode_name argument of mode_set_mode_info is
+    now optional.  If not present, the function will use the current
+    mode.
+39. lib/isearch.sl: Kris Arndt (kris at polygosis, com) noticed that
+    CASE_SEARCH was not being preserved by the "perform_search"
+    function.
+40. lib/site.sl: The "." has been removed from the jed search path.
+41. src/buffer.c: New buffer hooks:
+     format_paragraph_hook, mark_paragraph_hook,
+     backward_paragraph_hook, forward_paragraph_hook, color_region_hook
+42. lib/colors: New stock color objects: url, bold, underline, italic.
+    Also Mark Olesen contributed black4.sl.
+43. src/indent.c: New intrinsics: get/set_line_color may be used to
+    get or set the color of the current line.
+44. lib/mailedit.sl: A new mail editing mode.
+45. lib/lua.sl: Contributed by Reuben Thomas
+46. lib/mailutils.sl: contains some reusable code for dealing with
+    mail headers.  mailalias.sl changed to use it.
+47. src/unix.c,file.c: Added patch from gutojm at gmail, com to
+    preserve setuid bit when writing files.
+48. lib/srchmisc.sl: (replace_with_query) After replacing a
+    zero-length pattern, move right to avoid replacing the _same_ 0
+    length pattern again.  The solves the problem reported involving
+    the replacement of the regexp $-assertion.
+49. lib/isearch.sl: Patches from Lloyd Zusman and Paul Boekholt to
+    implement a wrap-around search.
+-------- snapshot B0.99.17-49 released -------
+50. lib/isearch.sl: the get_bound_key function now loops over all
+    key-squences instead of just trying the first.
+51. lib/site.sl: enable_dfa_syntax_for_mode was not calling
+    mode_set_mode_info in a variable-arguments compliant manner.
+52. src/file.c: Trying to read /a/b/../c.dat was failing if when b was
+    a sym-link to /d/b.  In this case, jed was trying to read /a/c.dat
+    instead of /d/c.dat.
+53. src/Makefile.in: Add the appropriate linker options to LDFLAGS to
+    enable global symbols to be exported.  Otherwise, importing a
+    module could fail.
+54. src/search.c: re_bsearch("^\n") was failing.  Several of the
+    routines pertaining to regular expressions in this file were
+    rewritten to correct other problems that were reported.
+55. The completion buffer size specification was moved into
+    jedlimits.h and increased.  Eventually I will rewrite the routine
+    to remove the arbitrary size restriction.
+56. src/screen.c: If run in UTF-8 mode, a "U" will appear next to the
+    version number on the status line.
+-------- snapshot B0.99.17-56 released -------
+57. src/search.c: regexp_nth_match was failing after some backward
+    searches.
+58. configure: Add --with-slang to configure script
+59. lib/site.sl: autoloads of abbrev functions made conditional with
+    support for the abbrev feature. (Paul Boekholt)
+60. src/search.c:  The search_file function was returning at most one
+    match (Paul Boekholt).
+
+61. src/vmshelp.c: Patch to enable this to compile on OpenVMS (Jacob
+    Jansen).
+62. lib/man.sl: Remove any ANSI SGR sequences from the man pages.
+63. src/cmds.c: Used byte-insertion routines instead of wchar ones.
+64. src/vterm.c: If writing n characters, do not memset more than that.
+    (SANGOI DINO (SANGOID at lloydadriatico, it))
+65. lib/site.sl: DOS/Windows:  If JED_HOME and HOME are NULL, trying
+    using USERPROFILE as the location for jed.rc.  If that fails, fall
+    back on C:\, not the CWD as _was_ the case. (SANGOI DINO
+    (SANGOID at lloydadriatico, it))
+66. lib/cua.sl: Use delete_char_cmd instead of delete_cmd (SANGOID
+    DINO).
+67. src/indent.c:parse_to_point: Made comment parsing first before
+    strings, etc.  This change fixes the problem with multiline
+    comments in html mode.
+68. src/main.c: Win32 patch for setting JED_ROOT based upon the
+    location of the executable (SANGOID DINO).
+69. src/vterm.c: New function: vterm_write_nbytes.  Currently this
+    function is commented out but may be useful when UTF-8 support is
+    added to wjed and xjed.  (Marko Mahnic marko,mahnic at email,si)
+70. src/vterm.c:vterm_write_nchars: This function was using a signed
+    char instead of an unsigned char.  This caused the problem reported
+    by Romano Giannetti.
+-------- snapshot B0.99.17-70 released -------
+71. src/*.c: Changed names of references to _SL* to _pSL* for slang2
+    compliance.  (SANGOID DINO)
+72. src/mkfiles/makefile.all:  Add TOOL_PREFIX variable to support 
+    cross-compilation.
+73. src/xterm.c: Alt-something was causing a SEGV.
+74. src/buffer.c: Use inode info as an aid for dealing with symlinks
+    and hardlinks.
+75. src/search.c: Query-replace "^" with anything was not working
+    properly in the slang2 version.
+76. src/win32.c...: patches to support slang2 dll (Sangoid Dino).
+77. src/sysdep.c: If running in Unicode mode, the value of the DEC_8BIT_HACK
+    variable will be ignored.
+78. src/screen.c: If compiled against slang2, the SLsmg functions will
+    be used to compute the displayable width of a byte-sequence.
+79. src/sig.c: Allow Xjed to be suspended from the shell prompt.
+80. src/screen.c: (slang2-only):  If the buffer flag has bit 12 set
+    (via, e.g., _toggle_buffer_flag (0x1000)) then escape sequences of
+    the form ESC [ x ], where x is an integer will cause the text following
+    it to be rendered using the color associated with x.  For example,
+    "\e[31]hello\e[]" will cause "hello" to be rendered using color
+    object 31. This is an experimental feature.  The underlying code
+    supports both 'm' and ']' as the end of escape sequence indicator.
+    However, ']' works better in parenthesis-matching situations.
+-------- snapshot B0.99.17-80 released -------
+81. src/main.c: Batch mode was resulting in a SEGV.
+82. lib/aboutjed.sl,lib/cpright.sl: Updated info
+-------- snapshot B0.99.17-82 released -------
+83. src/xterm.c: if (Batch) should have been if (!Batch)
+    <Jacob (=Jouk) Jansen (joukj at hrem, stm, tudelft, nl)>
+84. src/display.c: SLtt_Blink_Mode set to 0
+85. lib/occur.sl: Zero length regular expressions were causing an
+    infinite loop. (Paul Boekholt, p, boekholt at hetnet, nl)
+86. src/main.c: If the environment variable JED_UTF8 exists and is set
+    to FORCE, then jed will "force" the video driver/terminal into
+    UTF-8 mode.  This can be useful on systems that have no UTF-8
+    support in the locale.
+87. src/screen.c: Fixed a problem associated with the display of line
+    numbers on the status line.
+88. src/main.c: "jed --script FILE" was searching for FILE along jed's
+    load path instead of relative to the current directory.
+89. src/wterm.c:msw_get_terminfo: if (!Batch) changed to if (Batch).
+    (Dino Sangoid).
+90. src/mkfiles/makefile.all: Added support for linking to the slang
+    dll (Dino Sangoid)
+91. src/file.c, buffer.c: Two small memory leaks found and corrected
+    by Dino Sangoid.
+92. lib/gpg.sl: Make sure the autosave file is encrypted.
+    (Paul Boekholt p, boekholt at hetnet, nl)
+93. src/keymap.c: If an error happens when performing a key sequence,
+    make sure that the error message is displayed.
+94. src/misc.c: Make sure read_from_minibuffer preserves the current
+    buffer and not the buffer attached to the current window.  Most of
+    the time they are the same.
+95. lib/gpg.sl: Use cached passprases for autosave files. (Paul
+    Boekholt, Lloyd Zusman)
+-------- snapshot B0.99.17-95 released -------
+96. lib/site.sl: removed define_word statement since it was just a
+    repetition of what is in main.c.
+97. src/main.c: In unicode mode, use the "\w" character class for
+    word characters.
+98. src/indent.c: Make sure first line of the buffer has its syntax
+    bits set to 0.
+99. lib/site.sl: filenames of the form *.hh default to c-mode.
+100. lib/*.sl: changed static declarations to private ones.
+101. doc/txt/hooks.sl: Added documentation on the
+     before/after_key_hooks.
+102. lib/dabbrev.sl, lib/wmark.sl:  Make sure the before_key_hooks can
+     handle Ref_Type objects.
+103. src/misc.c: If an error occurs while in the mini-buffer, make
+     sure the error is seen.
+104. src/keymap.c: Performed some rearranging of the code to isolate
+     the keymap intrinsics to this file.
+105. src/keymap.c: Added support for the use of Ref_Type objects to
+     the keymap commands.  This feature is enabled only if linked to
+     slang 2.0.3 and greater.
+106. src/xterm.c: Modified the way the selection gets inserted.  Now
+     the entire selection gets read before the insertion.  Before it
+     was being inserted while being read.  This avoids a recursive
+     call that was causing a SegV.
+107. src/buffer.c: Tweaked the output message of the count_chars
+     function when the current character is invalid UTF-8.
+108. src/rgrep.c: Upgraded to slang-2.
+109. src/Makefile.in: $JED_ROOT/lib/tm no longer created.
+110. lib/html.sl: Add a call to no_mode before initializing html mode.
+     This ensures that any buffer_hooks are reset.
+111. lib/site.sl:  The JED_CONF_DIR environment variable may be used
+     to specify the directory where jed.conf may be loaded.
+     Otherwise, the installation prefix is used to determine its
+     location.
+
+-------- snapshot B0.99.17-111 released -------
+112. src/abbrev.c:what_abbrev_table: if the global abbrev table has
+     not been defined, then return "" as the table name insted of
+     "Global".  This corrects a bug reported by Joerg Sommer
+     joerg at alea, gnuu, de.
+113. lib/isearch.sl: Moved setting of IGNORE_USER_ABORT closer to the
+     call to getkey to localize its effects.  This is in response to
+     an (unreproducable) infinite loop that was reported in the
+     isearch function involving a non-zero value of IGNORE_USER_ABORT.
+114. src/userinfo.c: If hostname is given as "", use "localhost".
+115. lib/site.sl: Code that processed jed.conf was not always picking
+     it up.
+116. src/buffer.h: jed_looking_at (looking_at intrinsic) was failing
+     to work in the presence of invalid UTF-8 encoded sequences.
+117. lib/pushmode.sl: Added calls to no_mode to reset the state for the
+     new mode.
+118. src/screen.c:update_minibuffer: Make sure screen attributes are
+     updated before calling display_line.
+119. src/ledit.c: Use fputs instead of fprintf for traceback messages
+     when in batch mode.
+120. src/sysdep.c: Rewrote the filename expansion routines to fix the
+     // filename problem reported on the jed-users list.
+121. lib/folding.sl: Disabled mouse double-clicking to enter/leave
+     folds.
+122. src/intrin.c: The getbuf_info function updates the
+     file-changed-on-disk flag before returning.
+123. src/buffer.c: If a buffer has the file-changed-on-disk flag set,
+     then setbuf_info will reset the buffer's ctime field if the flag
+     is reset.
+124. lib/paste.sl: Use insert_byte instead of insert_char.  Otherwise
+     UTF-8 sequences will not get properly inserted.
+125. src/xterm.c: Integrated Dino's UTF-8 patches into Xjed.
+126. src/xterm.c: Rewrote much of the selection code.  Hopefully users
+     will see better cut/paste interactions between Xjed and other X
+     apps.
+127. src/buffer.c: The `delete_buffer` function now calls
+     `buffer_exists` to ensure that the buffer to be deleted actually
+     exists.
+128. autoconf/config.[guess|sub]: Updated to 2005 versions.
+129. Misc debian patches added: doc/manual/jed.1 updated; python_mode
+     TAB value made contingent up Py_Indent_Level.
+130. src/Makefile.in,jed-feat.h: Removed XJED_HAS_XRENDERFONT variable
+     from jed-feat.h and put it in Makefile.in.  Also introduced an
+     XRENDERFONT_CFLAGS variable to the makefile.  Eventually a
+     configure script solution will be used as suggested by Dino
+     Sangoid.
+131. lib/cmode.sl: Added Marko Mahnic's (marko,mahnic at email, si)
+     patch enabling the user to put an upper limit on the indentation
+     of function arg continuation lines.
+132. src/jprocess.c: Do not use ptys on OS X (Marcus Crafter / crafterm
+     at gmail, com)
+133. src/wterm.c: Added UTF-8 support (Dino Sangoid).
+134. src/os.sl: Enable "import" for win32 systems (Dino Sangoid).
+135. src/xterm.c: Added support for UXjed resource names to be used
+     in UTF-8 mode, e.g.,
+     
+        UXjed*font: -Misc-Fixed-Medium-R-Normal--20-200-75-75-C-100-ISO10646-1
+-------- snapshot B0.99.17-135 released -------
+136. src/xterm.c: Disable use of the Xutf8 functions on VMS.
+     (joukj at hrem, stm, tudelft, nl)
+137. src/pty.c: Do not include strops.h on FreeBSD (Renato Botelho
+     garga at freebsd, org)
+138. src/mailedit.sl: Made ">" a comment character so that the
+     comment_region_or_line function in comment.sl can be used for
+     quoting.
+139. src/text.c: Constructs such as skip_chars("\\a") were not
+     working.  A work-around such as skip_chars("a\\a") was required.
+     In slang2, \a matches any alpabetic unicode character.
+140. lib/isearch.sl: An incorrect `#ifeval` statement was causing a
+     parse error with slang-1 versions of jed.
+141. src/indent.c: Moved get/set_line_color intrinsic definitions to colors.c.
+142. lib/info.sl: Tweaked to work with UTF-8 documents (Paul Boekholt
+     p, boekholt at hetnet, nl).
+142. syntax/index.sl: Tweaked to work with UTF-8 encoded keywords
+     (Paul Boekholt p, boekholt at hetnet, nl).
+143. src/ledit.c: Set the BURIED_BUFFER flag for the *traceback* buffer.
+144. src/replace.c: The "replace" intrinsic function was not working
+     with UTF-8 encoded characters.
+145. autoconf/Makefile.in: added .PHONY target (Ethan Blanton eblanton
+     at cs, ohiou, edu).
+146. src/ledit.c: Restore the documented behavior of the 'f' version
+     of the read_with_completion that was broken in the previous
+     snapshot.
+147. src/syntax.c: color_column style syntax highlighting was broken
+     in UTF-8 mode.
+148. src/intrin.c: Add strwidth intrinsic to return the displayed
+     width of a string.
+149. info/jed.info: Added START/END-INFO-DIR-ENTRY lines (Helmut Kreft
+     kreft at belwue, de)
+150. doc/utf8.txt: Bug fix to the example iso_to_utf8 function (Paul
+     Boekholt p. boekholt at hetnet, nl)
+151. lib/edt.sl: Made the Gold-Key configurable.  See doc/txt/edt.txt
+     for more information.
+152. lib/cmode.sl: Removed the explicit binding to c_format_paragraph.
+     It is not called through the paragraph_hook.
+153. lib/slmode.sl: Added a format_paragraph_hook for slang_mode.
+154. src/buffer.c: New hook: "wrapok_hook".  May be used to determine
+     whether or not a line should be wrapped.  Used by slmode.sl to
+     wrap comment lines.
+155. lib/man.sl: Convert UTF-8 versions of - to ASCII -.
+156. lib/ctags.sl:  Rewrote much of this file to make browsing tags
+     more useful.  In particular, the new `ctags_forward` and `ctags_backward`
+     functions move to the previous/next tag position in much the same
+     way that the forward/backward button work in an HTML browser.
+     Note: the function `find_tag` is still supported but deprecated.
+     Use `ctags_popup_tag` instead.
+157. src/indent.h: If the table to be created by create_syntax_table
+     already exists, its entries will be cleared.  It was always
+     documented as having his behavior but the keyword list associated
+     with it was not cleared in previous versions.
+158. lib/cua*: Updated cua mode from jed modes repository.
+159. src/xterm.c: Use Xutf8 functions only if X11.h defines
+     X_HAVE_UTF8_STRING.
+160. lib/help.sl: Added support for the user-defined Gold-key.
+161. src/keymap.c: The scroll-left/right functions may be used with a
+     prefix argument to specify the scroll amount.
+162. src/window.c: New intrinsics: get/set_scroll_column.
+163. doc/hlp/: Online function documentation moved from
+     doc/txt/ to doc/hlp/.  Both src/Makefile.in and lib/site.sl were
+     updated accordingly.
+164. src/sysdep.c: On windows, skip_drive_specifier was broken (Dino
+     Sangoid).
+165. src/win32.c: Apparantly the stat function on windows cannot cope
+     with network shares.  Dino Sangoid provided a work-around.
+
+Made searches for tags case-sensitive.
+
+{{{ Previous Versions 
+
+Changes since B0.99-15 {{{
+1. lib/edt.sl: Hard-coded escape sequences \e= and \e> were swapped.
+   This affected the use of the application keypad on systems that did
+   not have terminfo entries specifying these strings.
+2. src/file.c: if write failed, report errno and num failed bytes.
+3. src/screen.c: Unlock buffer files when exiting as a result of a
+   fatal error.
+4. lib/cmode.sl: c_indent_line would auto-insert // even when
+   configured not to do so by the user.
+5. lib/site.sl: Collapse multiple occurances of / characters in
+   filenames that appear on the command line.
+6. src/ledit.c: If a file to be loaded really a directory, then skip it.
+   (SANGOID@lloydadriatico.it)
+7. src/*.c: use _SLvsnprintf instead of vprintf to
+   avoid buffer overflows.  Also use safe_strcpy instead of strcpy.
+8. src/sysdep.c: tweak to expand_filename to deal with very large
+   filenames (much larger than OS permits).
+9. lib/compress.sl: avoid using a regexp to get extname.
+10. src/pty.c: tweaked for compiling with CYGWIN--- Requires slang
+    1.4.5 if you intend to build a cygwin version.
+11. src/main.c: If jed-script is symlinked to jed, then the result is
+    equivalent to running jed with the -script option.  This is useful
+    for using jed in an executable script, e.g., 
+    
+         #!/usr/bin/env jed-script
+	 vmessage ("Script name: %s", __argv[0]);
+	 quit_jed ();
+	 
+    Also, if the script defines a function called "jedscript_main",
+    then that function will get called after the file is loaded.
+
+12. doc/rtl/keys.tm: get_key_binding documentation corrected by
+    Guenter Milde <G.Milde@physik.tu-dresden.de>.
+13. lib/filter.sl: filter_region function was not working.
+14. src/menu.c: New function: menu_select_menu.  This enables a menu
+    item to be executed from a function call, e.g.,
+    
+       menu_select_menu ("Global.W&indows.&Color Schemes");
+       
+    will popup the color-schemes menu.
+15. src/ledit.c: bug-fix involving loading files such as xxx-1.0.sl
+    when loaded as ()=evalfile("xxx-1.0").
+16. src/colors.c: new intrinsics: get_color, add_color_object.  The
+    idea behind these was conceived by Francesc Rocher.  A
+    "custom_color" function analogous to "custom_variable" was also
+    added.
+17. src/wterm.c: patch from Paul Shirley <paul.shirley@ntlworld.com>
+    to have ALT keys return scancodes instead of win32 virtual keycodes.
+18. doc/tm/rtl/*.tm: Fixed synopsis lines and various other
+    documentation improvments (Guenter Milde <G.Milde@physik.tu-dresden.de>)
+19. src/indent.c: New intrinsic: what_syntax_table returns the name of
+    the current syntax table.
+20. src/unix.c: fixed a problem in the filename expansion routines
+    that affects older systems that do not have glob.h.
+21. lib/site.sl: If Tab_Always_Insert_Tabs is non-zero, the pressing
+    the tab key will cause a tab to be inserted.  The default value is
+    0.
+22. When objects (files or buffers) are loaded, they are given the
+    full path name.  This means that the slang pseudo-variable
+    __FILE__ will expand to the full pathname of the file being loaded.
+23. lib/cmode.sl: treat formfeeds like whitespace
+24. lib/comments.sl: Add support for java comments (Nathan Smith
+    <nsmith@cs.ohiou.edu>)
+25. lib/os.sl: x_*_selection functions aliased to x_*_cutbuffer if
+    undefined.  This permitted #ifdefs to be removed from lib/mouse.sl
+    to avoid problems with mouse.sl byte-compiled with jed but used
+    with xjed.
+26. src/xterm.c: Handle selection events while waiting for keyboard
+    input.  This allows, e.g., x_insert_selection to be bound to a key.
+27. src/indent.c: Added support for a second string character to the
+    syntax tables.  This improves the highlighting of, e.g., python
+    code which uses two string characters.
+28. lib/pymode.sl: minor cleanups.
+29. src/wterm.c, w32cons.c: make NumLock return ESC O P when
+    NUMLOCK_IS_GOLD is set.  Hopefully EDT emulation will now work
+    properly on win32 systems.
+30. src/menu.c: Ctrl-G causes abortion of menu mode.
+31. src/wterm.c: drag/drop functionality for wjed
+    ("John Skilleter" <john@skilleter.org.uk>)
+32. lib/html.sl: updated to support euro, etc.
+    (Kees Serier <Kees.Serier@ordina.nl>)
+33. src/win32.c:w32_pclose: add a work-around to what may be a Borland
+    compiler bug. ("John Skilleter" <john@skilleter.org.uk>)
+34. src/xterm.c: internal border width of the of xjed window is now
+    configurable via -ib xjed option (Jim Clifton <clifton@brandeis.edu>)
+35. lib/krconv.sl: respect the value of C_BRA_NEWLINE
+    (Ulrich Bernert <bernert@planet.de>)
+36. src/buffer.c,ledit.c: If a file is read through a symbolic link,
+    set the name of the buffer to the name of the symlink and not the
+    actual file.  This is allows e.g., foo.c --> /dev/c/0013
+    to be interpreted as a C file.
+37. src/win32.c: differentiate between (shift|alt|ctrl)-backspace
+    (John Skilleter <john@skilleter.org.uk>)
+38. src/cmisc.sl: Make c_end_of_function symmetric with
+    c_top_of_function.  (Reuben Thomas <rrt@dcs.gla.ac.uk>)
+39. src/wterm.c: fix problem with calculation of font-height for wjed.
+    Also added new intrinsic for setting the font: w32_select_font
+    (John Skilleter)
+40. New internal hooks added: _jed_before_key_hooks, _jed_after_key_hooks
+41. lib/wmark.sl: rewritten to use _jed_before/after_key hooks.  The
+    result is that one is now able to use the regions with menu and
+    minibuffer commands.
+42. lib/popups.sl: Edit menu enhanced with more region functions.
+    Register functions moved to region functions popup.
+43. src/menu.c: disabled access to the menus from the minibuffer
+44. lib/cmode.sl: added mode-specific menu entries to list all
+    functions and macros defined by the file.  This affects C mode and
+    SLang mode.
+45. New intrinsics: exit, _exit.  These are useful in jed scripts to
+    return an exit value to the shell.  exit is like exit_jed and
+    _exit is like quit_jed except an argument is required.
+46. lib/tmmode.sl: This file implements the tm_mode for editing
+    text-macro files.  In addition, the text-macro processing code
+    (textmac.sl) was removed from the jed distribution as well as
+    lib/tm/*.  Instead, the text-macro processing code and macros will
+    be made available as a separate package.
+47. src/sig.c: Changed the way SIGHUP and SIGTERM are handled to avoid
+    a possible race condition.
+48. lib/latex.sl,ltx-math.sl: If another tex file was loaded while
+    latex math mode was active, then latex_math_mode would cease to
+    work in the first buffer.  This has been fixed.
+49. lib/perl.sl: Updated to Mark Olesen's latest version.  See
+    lib/perl.sl for details.
+50. lib/sccs.sl: New file supporting SCCS revision control (Philip
+    Brown).
+51. src/intrin.c: New intrinsic function: run_program.  This plays the
+    same role as the "system" function except jed resets the display
+    first, if run in a terminal.  For X, it runs the specified program
+    in another xterm, or the terminal set by the XTerm_Pgm variable.
+
+    *** Note: This function needs to be fixed to work asynchronously
+              on win32.  Any volunteers??
+
+52. src/xterm.c: Added Charl Botha's XRENDER patch to Xjed.
+53. lib/ide.sl: Remove references to ide_function_help (Guido Gonzato).
+54. lib/site.sl: save_buffer was not calling read_file_from_mini
+    without a prompt string <klaus.schmid at kdt.de>
+55. doc/tm/*.tm: removed docs for obsolete functions <klaus.schmid at kdt.de>
+56. lib/mouse.sl: wheel mouse was not ignoring hidden lines 
+     <klaus.schmid at kdt.de>
+57. lib/f90.sl: Merged fix and free formats into the same file.  In
+    addition to f90_mode, there is now f90_fixed_format_mode and
+    f90_free_format_mode.  The default format for f90_mode is "free",
+    which may be set via the F90_Default_Format variable.
+58. lib/registers.sl: rewritten to allow registers to be given
+    meaningful names by the user.  Also, fixed limit of 95 registers
+    removed.  
+59. lib/folding.sl: Fixed endless loop during a call to
+    fold_whole_buffer when a fold-start mark is at the end of the
+    buffer.  Several other tweaks aimed at preserving the current
+    position when closing folds (klaus.schmid at kdt.de)
+60. lib/edt.sl: multiple definition of exit corrected
+      (joukj at hrem.stm.tudelft.nl (Jacob (=Jouk) Jansen))
+61. lib/search.sl,isearch.sl: If the search string contains any upper case
+    characters then a case-sensitive search will be performed.
+62. src/mkfiles/makefile.all: Add CFLAGS macro to MINGW32/CYGWIN32
+    section. Miquel Garriga <miquel at icmab.es>
+63. src/screen.c: Make the [EOB] line read-only. Miquel Garriga <miquel at icmab.es>
+64. src/version.c: Use __MINGW32_VERSION if defined to get the
+    compiler version. Miquel Garriga <miquel at icmab.es>
+65. lib/os.sl: make sure W32shell_Perform_Globbing is declared. Miquel Garriga <miquel at icmab.es>
+66. lib/cal.sl: avoid interpretation of 08 in dates as octal. Miquel Garriga <miquel at icmab.es>
+67. src/screen.c: %F may be used to specify complete pathname on the
+    mode-line. (John Skilleter).
+68. doc/tm/keys.tm: get_key_binding documentation corrected. (Klaus
+    Schmid <klaus.schmid at kdt.de>)
+69. src/mkfiles/makefile.all: Make sure CFLAGS defines JED. Also add
+    support for creating wjed in cygwin environment (Paul
+    Shirley).
+70. New intrinsic: expand_symlink expands symbolic links
+
+}}}
+
+Changes since B0.99-14 {{{
+
+1. lib/site.sl: if $HOME/.jedrc does not exist, then load jed.rc from
+   $JED_LIBRARY.  This did not work in 0.99-14.
+2. lib/cmode.sl: Use double quotes when calling c_set_style_hook.
+   (Marko Mahnic <mmarko.dfg@moj.net>).
+3. src/abbrev.c:what_abbrev_table: A misplaced return statement
+   prevented it from returning information regarding the global table.
+   (John Skilleter <John.Skilleter@pace.co.uk>).
+4. lib/cmode.sl: modify in_class function to allow template classes.
+5. lib/cmode.sl: modify c_set_style to account for C_Class_Offset.
+6. lib/compile.sl: tweak RE for VC++ 6 and add RE for RGBE gameboy
+   assembler (Paul Shirley" <pauls@climax.co.uk>).
+7. lib/cmode.sl: Handle multiple // in // style comments.
+8. src/userinfo.c(get_username_info): avoid NULL ptr deref if getpwuif
+   fails.
+9. lib/ashell.sl: try_builtin was returning -1 upon failure instead of
+   cmd.
+10. src/pty.c: use openpty when available (Diego Roversi
+    <diegor@tiscalinet.it>).
+11. src/indent.c: Ignore the quote character when looking for the end
+    of a comment.
+12. lib/info.sl: Avoiding locking the info file when in a read-only
+    directory.
+13. src/keymap.c: Make sure to call switch_active_buffer_hooks after
+    the startup_hooks have been run.
+14. lib/latex.sl: updated for newer latex info files
+    (harpend@xmission.com).
+15. lib/ide.sl: updated by Guido Gonzato.
+16. src/menus.c:  Scrolling implemented for popup menus that contain
+    more rows than the display.
+17. src/wterm.c: convert X #ABCDEF-style color specification to windows
+    decimal form.
+18. lib/edt.sl: work around new xterm bug affecting the toggling of
+    the keypad state.
+19. lib/php.sl: updated to v1.4 (Mikael Hultgren <micke@yeah.nu>)
+20. src/intrin.c: set_color intrinsic renamed to _set_color.
+    set_color is now a slang function that calls _set_color.  The idea
+    is to allow one to overload set_color with something more
+    sophisticated, e.g., one that exploits a color name database
+    (rgb.txt).
+21. src/wterm.c: included latest patches from John Skilleter
+    <John.Skilleter@pace.co.uk> for wheel-mouse support.
+22. src/intrin.c: New intrinsic variable Menus_Active indicates
+    whether or not the menus are currently active.
+23. src/wterm.c: fix problem with background color used when the
+    screen is cleared not matching the background color used in
+    drawing text.
+
+
+}}}
+
+Changes since B0.99-13 {{{
+
+1. lib/chglog.sl: tweak date format (Peter Wang <tjaden@psynet.net>).
+2. Xjed would crash whenever 'set_abort_char' was called.  This
+   affected ide and wordstar modes.
+3. screen.c: enable syntax highlighting by default.
+4. src/Makefile.in: support for $CPPFLAGS added
+5. src/Makefile.in: DESTDIR support added by Brad <brad@comstyle.com>.
+6. src/text.c: forward/backward_paragraph functions were removing
+   whitespace from the end of lines.
+7. Ctrl-X binding in ide.sl fixed.
+8. QNX-specific patches from Tijs Michels <tijs@vimec.nl>.
+9. Typos corrected in VMSMAKE.COM by Jouk Jansen
+   <joukj@hrem.stm.tudelft.nl>.
+10. updated ide.sl, docbook.sl, and rcs.sl from Guido Gonzato.
+11. New function unset_ctrl_keys that unsets keys ^A-^Z.  This is
+    better than calling unsetkey for ^K, ^X, etc.
+12. Default value for Jed_Highlight_Cache_Path initialized from
+    'get_jed_library_path' instead of JED_ROOT/lib.
+13. lib/comments.sl: get_comment_info changed to return NULL upon failure.
+14. src/wterm.c: Several places where buffer overflows could happen
+    were fixed.
+15. If c_set_style_hook is defined, it will be called to allow the
+    user to define custom styles.
+16. src/wterm.c: support for wheel mouse added by John Skilleter
+    <John.Skilleter@pace.co.uk>.
+17. src/wterm.c: small fix for NumLock GOLD key emulation courtesy of
+    Nick Tatham <nick.tatham@pobox.com>.
+18. lib/shell.sl: shell function now calls shell_mode_hook.
+19. lib/occur.sl: add 'bob' to find all occurances in the current
+    buffer. (Reuben Thomas <rrt@dcs.gla.ac.uk>)
+20. lib/texcom.sl:  Allow lines that start with \ to be in the middle
+    of paragraphs unless the line starts with \begin, \end, or \item.
+    (Reuben Thomas <rrt@dcs.gla.ac.uk>)
+21. New function to signal the foreground process group of a
+    subprocess: signal_fg_process.  lib/ashell.sl modified accordingly.
+22. src/file.c: Set the buffer creation time associated with a file to
+    the file modification time.  This avoids problems with broken
+    software that set the modification time to the future.
+    (John Skilleter <john.Skilleter@pace.co.uk>)
+23. Warn user if an attempt is made to modify a buffer whose file is
+    read-only.
+24. lib/site.sl: new variable: Jed_Home_Directory.
+25. _jed_startup_hooks added.  These hooks are called prior to going
+    into editor's main loop.  This replaces jed_startup_hook.
+26. Menu_Load_Popups_Hook variable replaced by the "load_popup_hooks"
+    chain.  Instead of using:
+        variable Menu_Load_Popups_Hook = &some_function;
+    use, e.g.,
+	append_to_hook ("load_popup_hooks", &some_function);
+27. New intrinsic function: _jed_run_hooks, which will run the hooks
+    in a hook chain.
+28. src/ledit.c: Make sure that JWindow is non-NULL in flush_message.
+29. src/menu.c: Support Simulate_Graphic_Chars on DOS/WINDOWS.
+30. lib/site.sl: Associate slang_mode with .jedrc, add python_mode to
+    completions (Tom Culliton <tculliton@profitlogic.com>).
+31. lib/site.sl: runhooks can be passed optional arguments
+32. lib/bibtex.sl: Add support for bibtex_field_default_hook (see
+    bibtext.sl) Lutz Donnerhacke <lutz@iks-jena.de>.
+33. src/search.c:regexp_nth_match: if passed 0, return the whole match
+    as documented.
+34. src/ledit.c: work around a slang bug triggered by jed that
+    prevents the use of #ifeval expressions.
+35. Support for hook called "keybindings_hook".  See doc/txt/hooks.txt
+    for more information.
+36. Keyboard macros were stopped if a slang function triggered an
+    error that was subsequently cleared via an ERROR_BLOCK.  Now, such
+    macros will continue to execute.
+37. lib/mouse.sl: new variable: Mouse_Wheel_Scroll_Lines.  This
+    variable may be used to customize the number of lines that are
+    scrolled when using the wheel. (Default is 3).
+38. lib/ashell.sl: filename completion added.
+39. lib/comments.sl: Avoid adding whitespace to the end of lines if a
+    comment does not have an end-comment string (Guenter Milde
+    <G.Milde@physik.tu-dresden.de>).
+40. lib/os.sl: wjed.exe can now use jed's text menus instead of the
+    native GUI menus.  At the moment, the text menus are far more
+    functional than the native menus.  Uncomment the appropriate line
+    in lib/os.sl to use the text menus.
+
+
+}}}
+
+Changes since B0.99-12 {{{
+
+0.  Important Notes:
+    
+ a) If you are not using set_color_scheme to set colors, you may find
+    that your color settings will not work.  Now, if the user does not
+    call set_color_scheme, it will automatically be called with
+    _Jed_Default_Color_Scheme.  If you do not want this feature, set
+    _Jed_Default_Color_Scheme to NULL after setting your colors.
+
+ b) All keybindings prefixed with ^C were removed from lib/*.sl and
+    replaced by calls to functions such as definekey_reserved.  The
+    idea is that each emulation (emacs, ide, etc), is to reserve
+    prefix key that may be used by various modes for binding.  As an
+    example, folding.sl used to contain lines such as:
+
+       local_setkey ("fold_whole_buffer", "^C^W");
+
+    This made this mode and others fundamentally at odds with
+    emulations that use ^C for something else, e.g. the ide emulation.
+    Now, lines such as the above have been changed to:
+
+       local_setkey_reserved ("fold_whole_buffer", "^W");
+
+    Of course the emacs emulation preserves the ^C key for extension
+    in this way, which means that the two lines are equivalent.  
+    
+    The interface to this ``reserved'' key prefix includes the
+    following functions:
+    
+       setkey_reserved
+       unsetkey_reserved
+       local_setkey_reserved
+       local_unsetkey_reserved
+       definekey_reserved
+       undefinekey_reserved
+
+     and have the same calling syntax as similar functions without the
+     reserved suffix.  The variable specifying the reserved key prefix
+     is called _Reserved_Key_Prefix, whose value will depend upon the
+     emulation:
+     
+         emacs: ^C
+	 ide:  ^Z
+
+1.  src/VMSMAKE.COM: typo corrected (joukj@hrem.stm.tudelft.nl).
+2.  lib/textmac.sl: del(2) --> deln(2)  (affects processing of {})
+3.  lib/cmode.sl: New variable C_Switch_Offset controls indentation in
+    a switch statement.
+4.  cua.sl added to the distribution.
+5.  provide/require functions added.
+6.  If ^G pressed in mini-buffer, make sure mode-dependent menubar is
+    restored.
+7.  Avoid file-changed-on-disk problems associated with a failed write
+    to disk.
+8.  src/file.c: VMS specific problem writing to a new file on OpenVMS
+    fixed by joukj@hrem.stm.tudelft.nl.
+9.  src/ledit.c: Regard a library file beginning with ../ as relative to the
+    current dir.  That is, `jed -l ../file.sl' will load the obvious
+    one.
+10. Signal an error if the insert intrinsic fails.
+12. lib/pymode.sl: small patch from jimbag@kw.igs.net to close the
+    output window if it is empty.
+13. src/main.c: If unable to get the current working directory upon
+    startup, chdir to / and assume that (Pascal Haakmat
+    <a.haakmat@chello.nl>).
+14. DECCMAKE.COM removed from the distribution--- it is not needed.
+15. Color_Scheme_Path variable added.  This is a comma-separated list
+    of directories to search for color schemes.
+16. lib/info.sl: subtle bug fix involving search for split files
+17. doc/txt/slangfun.txt dropped from the distribution since it is
+    distributed with slang.
+18. lib/help.sl: A patch from Guenter Milde
+    <G.Milde@physik.tu-dresden.de> to provide some help on internal
+    functions.
+19. lib/verilog.sl: updated keywords provided by Kikutani Makoto
+    <kikutani@sprintmail.com>.
+20. lib/comments.sl: new functions to support commenting lines/regions
+    provided by Guenter Milde <milde@physik.tu-dresden.de>.
+21. src/w32cons.c: Support for AltGR added by Juha Ruotsalainen
+    <Juha.Ruotsalainen@nokia.com>.
+22. src/keymap.c: Default keybinding of " and ' keys changed from
+    text_smart_quote to self_insert_cmd.
+23. Additional command line options added: -help, -a, and -e.  Run
+    'jed -help' for more info.
+24. New modes: docbook (Guido Gonzato); php (Mikael Hultgren
+    <mike@yeah.nu>).
+25. Updated lib/rcs.sl, backups.sl (Guido Gonzato)
+26. lib/compile.sl: support for column info added by Lutz Donnerhacke
+    <lutz@iks-jena.de>.
+27. Xjed: Support for wheel mice added by Daniel Serpell
+    <daniel@mat.utfsm.cl>.
+28. lib/keydefs.sl tweaked by GM <g.milde@physik.tu-dresden.de>.
+29. src/wterm.c: Added Nick Tatham's <nick.tatham@peramon.com> NumLock
+    patches for EDT emulation.
+30. If Xjed cannot open the display, it will revert to jed and use the
+    terminal. (Thomas J. Moore <dark@mama.indstate.edu>).
+31. Updated perl.sl from Mark Olesen <molesen@zeunastaerker.de>.
+32. lib/shell.sl: do_shell_cmd now accepts an optional argument (G. Milde
+    <guenter@Ptprs1.phy.tu-dresden.de>)
+33. lib/register.sl: Updated by Francesc Rocher <f.rocher@computer.org>.
+34. lib/iso-latin.sl: word definition tweaked by Thomas Henlich
+    <henlich@mmers1.mw.tu-dresden.de>.
+35. tweaks to src/mkfiles/makefile.all from John Skilleter
+    <John.Skilleter@pace.co.uk>.
+36. src/wterm.c: Recognize Shift-TAB (Paul Shirley
+    <paul.shirley@ntlworld.com>).
+37. lib/minued.sl, lib/history.sl updated by Francesc Rocher.
+38. New function: c_set_style: this may be used to set the C
+    indentation style to one of several popular styles, e.g., "GNU",
+    "k&r", "BSD", "linux", and of course "jed".
+39. src/unix.c: filename completion now supports globbing on Unix
+    systems, e.g., completion on *.c returns files that end in *.c.
+    (Olly Betts <olly@survex.com>)
+40. If a mode cannot be found for a filename extension 'ext', but
+    'ext_mode' exists as a function, then use it.
+41. Support for DFA syntax highlighting enabled by default.  The names
+    of the DFA-specific intrinsic functions have been prefixed by
+    "dfa_".  Now the user can turn on/off dfa syntax highlighting for
+    any mode via any of the new functions:
+    
+           use_dfa_syntax
+	   disable_dfa_syntax_for_mode  
+	   enable_dfa_syntax_for_mode
+    
+    Finally two new variables control the search for DFA cache files:
+    
+      	  Jed_Highlight_Cache_Dir
+          Jed_Highlight_Cache_Path	 
+42. Unix: /etc/jed.conf or /usr/local/etc/jed.conf may be used in
+    place of $JED_ROOT/lib/defaults.sl --- See INSTALL.
+
+}}}
+
+Changes since B0.99-11 {{{
+
+1. If file system does not support symbolic links, or the directory
+   does not allow the creation of symbolic links, then continue
+   without locking.
+2. VMS specific typo in file.c corrected.
+3. If a file is writable, but the directory is not, then do not mark
+   the buffer associated with the file as read-only.
+4. lib/ide.sl: change occurance of "^(XX)" to "XX" to get function key
+   sequences from the terminfo file.
+5. win32 patches from John Skilleter <skilleter@btinternet.com>:
+    a. sysdep.c:pcsystem_getdisk: correct typo and use getdrive with
+       BCC.
+    b. wterm.c: avoid infinite loop when parsing command line
+       containing quotes.
+6. Tweak to avoid locking file during narrow/widen operations
+7. lib/info.sl: If searching a file via grep for -SOMETHING, then
+   escape the `-' with \.
+8. Patch from Nick Tatham <nick.tatham@lexicos.com> to build wjed.exe
+   with VC.
+10. Documentation reorganized and Guido's reference guide has been added.
+11. lib/info.sl: Add support for bzipped files (Guido Gonzato).
+12. _jed_switch_active_buffer_hooks added.  These hooks are called whenever
+    one switches active buffers.
+13. src/xterm.c: If pasted text starts with ESC(B, then assume it is
+    ISO2022 encoded.
+14. Bug-fix made to allow two or more menubars to co-exist.  This was
+    never tested until recently.
+15. text.c: bug fixed when wrapping paragraphs that contain lines
+    indented beyond the wrap column.
+16. Bug involving xform_region fixed.
+17. Internal function `save_buffers' renamed to `save_some_buffers' to
+    avoid name conflict with slang function `save_buffers'.
+18. lib/site.sl: save_buffer function modified to work on buffers with
+    no associated filename.
+19. src/lock.c: If running in batch mode and a file is locked, then
+    treat it as so.
+20. lib/textmac.sl: support for passthru environments added.
+21. lib/shell.sl restructured.  Now, `do_shell_cmd' with a prefix
+    argument will use the current buffer for its output.  Note that the
+    shell_perform_cmd function now requires 2 arguments.
+22. lib/pushmode.sl: push_mode can now take an optional argument.
+23. src/indent.c: Make sure lines containing repeated perl-style
+    comment characters are recognized as comments.
+24. lib/mousex.sl: make sure value of META_CHAR does not affect mouse
+    input.
+25. lib/html.sl: reference to "?help" removed.
+26. abbrev.sl: set_abbrev_mode function was not calling
+    _set_buffer_flag properly.
+27. New color scheme: blue3.sl, also win1250 and dos852 character
+    tables (PPrikryl,Petr <PRIKRYLP@skil.cz>)
+28. CUA-like keybindings added (Reuben Thomas <rrt1001@cl.cam.ac.uk>).
+29. New file: keydefs.sl.  This defines symbolic constants for many
+    function keys.  I modified ide.sl and wmark.sl to use it.
+30. sysdep.c: small patch for compiling on OS/2 (Michael Muller
+    <mmuller@enduden.com>)
+31. Small mis-feature corrected by Olly Betts <olly@survex.com>
+    involving combination of forward and backward yp_* functions.
+32. Xjed specific pastel color scheme added (Frank Klemm
+    <pfk@fuchs.offl.uni-jena.de>)
+33. Xjed-specific color scheme directory added.  Use, e.g.,
+        set_color_scheme ("Xjed/pastel0");
+34. lib/cal.sl internationalized by Tamminen Eero
+    <t150315@students.cc.tut.fi>.
+35. lib/emacs.sl: forward/backward_paragraph bindings added.
+
+}}}
+
+Changes since B0.99-10 {{{ 
+
+   0.  Important backward-incompatible changes:
+
+     a.  Compiler interface simplified.  New functions include:
+           compile_select_compiler
+	   compile_add_compiler
+         The variables `compile_parse_error_function' and
+	 `compile_parse_regexp' are nolonger used.  Use
+	 Compile_Default_Compiler instead.  The default is "gcc".
+	 See doc/compile.txt for more information.
+     b.  slang version 1.3.11, or later is required.  If you have not
+         already done so, then it is a good idea to upgrade to 1.4.1.
+     c.  get_key_function replaced by get_key_binding, which is more
+         versatile.
+
+   1.  TeX/LaTeX modes: Automatic conversion of ... to \dots
+       suppressed in verbatum environments.
+   2.  xjed: --debug-xjed command line argument added.  Currently,
+       this does very little but may prove useful.
+   3.  lib/chglog.sl added.  This gives jed the ability to maintain
+       ChangeLog files.  The default binding for the
+       `changelog_add_entry' function is "^X4a" (for consistency with
+       emacs).
+   3.  lib/rcs.sl modified.
+   4.  Several lib/*.sl files were modified to use high-level
+       functions to set buffer flags instead of setting them directly.
+   5.  New intrinsics:
+
+          set_username (String_Type);
+          set_realname (String_Type);
+          set_hostname (String_Type);
+	  String_Type get_username ();
+	  String_Type get_realname ();
+	  String_Type get_hostname ();
+       and slang functions:
+          set_emailaddress (String_Type);
+          get_emailaddress (String_Type);
+   6.  Emacs-style file locking added (see doc/filelock.txt).
+   7.  Changes made to jed/src/file.c to avoid possible race
+       conditions in a multi-user environment. (Colin Phipps
+       <crp22@cam.ac.uk>).
+   8.  Some cleanup involving expand_filename and expand_link.
+   9.  ctags.sl modified.
+  10.  If `global_mode_hook' exists, it will be called after calling
+       the mode hook.  This function will be passed the name of the
+       mode hook.
+  11.  To implement 10, calls to `runhooks' in mode-setting functions
+       were replaced by run_mode_hooks.
+  12.  jed --version displays compile-time features.
+  13.  `insert' intrinsic can now insert binary strings (those with \0).
+  14.  If an expansion for an abbreviation ends in \010, then the
+       expansion will be performed but the character causing the
+       expansion will not be inserted.  In addition to this feature,
+       arbitrary limits were removed from src/abbrev.c
+  15.  Directory name that shell command will run in is displayed as
+       part of the shell command prompt.
+  16.  pymode.sl updated to v1.3.
+  17.  On command line, files such as a//b/c are replaced by a/b/c.
+  18.  Avoid infinite loop when using query_replace_match to replace ^$ 
+       with nothing.
+  19.  If using slang 1.4.1+ use strreplace in str_replace_all.
+  20.  matlab.sl: matlab_mode function was accessing $1 variable.
+  21.  Two eol-type comment styles now supported.  For example,
+       matlab_mode defines both `#' and `%' as comments.  It should
+       now be possible to have comments such as `REM', which should be
+       familiar to BASIC programmers.
+  22.  src/pty.c: Allow an ioctl to silently fail if `ttcompat' does
+       not exist as a stream module. (Diego Roversi
+       <diegor@tiscalinet.it>)
+  23.  lib/cmode.sl: C_Class_Offset variable added to allow the
+       specification of indentation withing a class definition.
+       (Kumaran Santhanam <kumaran@alumni.stanford.org>)
+  24.  src/unix.c: BeOS support added by Eddie Penninkhof
+       <wizball@xs4all.nl>.
+  25.  macro.sl: bug fix involving use of an unitialized variable in
+       macro_to_function.
+  26.  lib/pymode.sl: make python keywords case sensitive (Simon
+       Tatham <anakin@pobox.com>).
+  27.  xterm.c: If a window is uncovered the xterm.c current color
+       could become out of sync with vterm.c color. (Simon Tatham
+       <anakin@pobox.com>).
+  28.  lib/digraph.sl: DOS specific patch from
+       G.Milde@physik.tu-dresden.de (G. Milde).
+  29.  src/rgrep.c: example for finding repeated words corrected
+  30.  doc/tm/rtl/color.sl: keywordN added to set_color doc
+  31.  erase_buffer function checks read-only status of buffer
+  32.  set_process intrinsic modified to accept function references.
+  33.  Bug in translate_region fixed.
+  34.  New menu_insert_* intrinsic functions from James Telfer
+       <James@Telfer.com>.
+  35.  Bug in re_search_forward fixed involving non-RE search pattern.
+  36.  iso2xxx.sl: replace strncat by strcat.
+  37.  setbuf_info: If this is used to rename a buffer to one that
+       already exists, then a unique name will be generated (e.g., xxx
+       -> xxx<1>).
+  38.  New hooks facility that allows one to attach hooks to the
+       following internal hook lists:
+
+        _jed_append_region_hooks
+	_jed_exit_hooks
+	_jed_find_file_after_hooks
+	_jed_find_file_before_hooks
+	_jed_init_display_hooks
+	_jed_insert_file_hooks
+	_jed_quit_hooks
+	_jed_read_file_hooks
+	_jed_reset_display_hooks
+	_jed_resume_hooks
+	_jed_save_buffer_after_hooks
+	_jed_save_buffer_before_hooks
+	_jed_set_mode_hooks
+	_jed_suspend_hooks
+	_jed_write_region_hooks
+
+       See doc/hooks.txt--- especially if you have created
+       (non-mode related) hooks.
+  39.  lib/compress.sl: This implements a new function called
+       `auto_compression_mode' that uses the new hooks facility to
+       automatically compress/decompress files.
+  40.  Additional slang intrinsics made available to the editor:
+       stdio, posix_io, and ospath.
+  41.  custom_variable function added to site.sl.  This function is
+       due to Francesc Rocher <rocher@golem.udg.es>.
+  42.  Patches from Jim Knoble <jmknoble@pobox.com>:
+          Xjed: set group_leader WM hint and WM_COMMAND property.
+	        Add drag threshold for ButtonPress/Release events
+	  menu.c: Add menu_selection_char color for additional control
+	        of menu items.
+  43.  Patches from John Skilleter <skilleter@btinternet.com>:
+          win32: 
+	     Allow command line arguments with spaces by removing
+	       quote characters.
+	     Attach Drive letter to filenames without one.
+	  Extra control over status line: 
+	    * %O - Overwrite/Insert flag - like %o, but shows INS/OVR
+	    * %l - Line number           - shows current line number
+	    * %L - max line nmber        - shows number of lines in the file
+
+  44. Added history.sl and minued.sl from Francesc Rocher
+      <rocher@golem.udg.es>. history.sl uses _jed_exit_hooks to
+      save/recall minibuffer history.  See lib/history.sl for more
+      information.
+
+  45. Xjed: Cut/paste fixed to work with programs that do not support
+      COMPOUND_TEXT selections (gnome, kde, ...).
+  46. The maximum length of a keyword has been increased to 48
+      characters.  In a later release, the limit will be removed.
+  47. If C_Autoinsert_CPP_Comments is non-zero, and if a line starts
+      with // style comments, newline_and_indent will insert // on the
+      next line.
+  48. unix.c: when saving a file, try to preserve uid of file instead
+      of using uid of process (Thomas Henlich
+      <henlich@mmers1.mw.tu-dresden.de>).
+  49. Updated perl_mode from Juho Snellman <jsnell@iki.fi>.  This
+      version included a routine for indenting perl; however, it is
+      disabled by default.
+  50. New syntax flag bit: 0x80.   This indicates that strings do not
+      span multiple lines.
+  51. getbuf_info/setbuf_info may be given an optional argument to
+      work with any buffer.
+  52. New intrinsic: copy_keymap.  This creates a new keymap by
+      copying another.
+  53. In text-mode, TAB is bound to the new function text_indent_relative.
+  54. wmark.sl tweaked.
+  55. win32 console version: Fixed problem with ENHANCED keys.
+
+}}}
+
+Changes since B0.99-9 {{{ 
+   1.  perl.sl: (=head,=cut) regarded as comment begin/end pairs
+   2.  java.sl: syntax for // comments added.
+   3.  menu_set_menu_bar_prefix intrinsic added to allow one to change
+       the menu prefix string ("F10 key ==> ").
+   4.  edt.sl: better emulation of EDT scroll regions (Ulli Horlacher
+       <framstag@moep.bb.bawue.de>).
+   5.  Calling `recenter' will not force an immediate screen update.
+   6.  shmode.sl: Extra keywords added (Ulli Horlacher
+       <framstag@moep.bb.bawue.de>).
+   7.  isearch.sl: Function/Arrow keys will also terminate search
+   8.  Updated ide.sl mode from Guido Gonzato
+       <guido@ibogeo.df.unibo.it>.
+   9.  Various patches from Charl Botha <cpbotha@ieee.org> affecting
+         bibtex.sl, latex.sl, and site.sl.
+  10.  modeinfo.sl rewritten to use an associative array.
+  11.  xterm.c: ignore ConfigureNotify event if the window size does not
+       change (Charl Botha <cpbotha@ieee.org>).
+  12.  `unsigned short' replaced by `SLsmg_Char_Type'.  More work will
+       have to be done when version 2.0 of slang comes out with
+       unicode support.
+  13.  Change Buffer menu item added.  This required a new intrinsic
+       function: menu_set_select_popup_callback
+  14.  Documentation updates and redundant documentation removed from
+       C files.
+  15.  Whitespace in front of C preprocessor constructs ignored via
+       new `set_syntax_flags' bit.
+  16.  Documentation changed to reflect the fact that vinsert does not
+       require the number of items.  Similarly, the .sl files were
+       modified accordingly.
+  17.  process_query_at_exit intrinsic added.
+  18.  If DOLLAR_CHARACTER is 0, no such character will be used as an
+       indicator that text extends beyond the borders of the window.
+  19.  New inrinsics: _get_point, _set_point.  These should be used in
+       favor of the POINT variable which will be removed from future
+       releases.
+  20.  win32: all intrinsic win32 menu functions have been renamed
+       with a `w32_' prefix, e.g., redraw_menubar --> w32_rename_menubar.
+       Hopefully, this change will not affect anyone.
+  21.  `directory' function is no longer an intrinsic function.  Now
+       it is a slang function simulated using the listdir intrinsic.
+  22.  win32, msdos, OS/2: New variable: Case_Sensitive_Filenames
+       If non-zero, filenames will be treated as case-sensitive on
+       these systems, otherwise filenames will be considered as
+       case-insensitive.  This change was patterned on a patch from
+       Eddie Penninkhof <wizball@xs4all.nl>.
+
+}}}
+
+Changes since B0.99-8 {{{ 
+   0.  Miscellaneous patches from Ricard Sierra <irebulle@nexo.es>
+       added.  (Note: this item was added on Nov 17, 1999)
+   1.  win32: define_color intrinsic was not working properly because
+       of an old-style definition.
+   2.  win32: g32shell.exe performs globbing on command line
+       arguments but w32shell.exe does not.  To use the globbing
+       shell, put `W32shell_Perform_Globbing=1;' in your jed.rc file.
+   3.  win32.c: bug in sys_findnext corrected.
+   4.  problem with enable_menu_keys on win32 fixed.
+   5.  doc/script.txt updated.
+   6.  QNX specific patches from SvOlli <smoll@qnx.de>.
+   7.  Xjed: fgKeyword2 and bgKeyword2 resource settings added.
+   8.  idl.sl: ide_window_down typo corrected (Matthew Gabeler-Lee
+       <msg2@po.cwru.edu>).
+   9.  win32 Borland specific patches from John Skilleter
+       <john@skilleter.freeserve.co.uk>.
+  10.  Updated ide.sl mode from Guido Gonzato
+       <guido@ibogeo.df.unibo.it>.
+  11.  install targets rewritten to work around limitations of the
+       autoconf install script.
+  12.  Improved detection of fold marks.  
+  13.  win32 patch involving read-only files from John Skilleter
+       <john.Skilleter@pace.co.uk>.
+  14.  update_sans_update_hook intrinsic added.
+  15.  win32: bug involve handling of ALTGR fixed.  In addition, several
+       other changes were made to the win32 keyboard code to allow ^G to
+       interrupt a slang procedure, e.g., while(1);
+  16.  If an interactive seach finds a match on a hidden line, e.g.,
+       one in a fold, then the line will be made momentarily visible.
+   (B0.99-9 released)
+  17.  win32: Ctrl-2 was not generating the correct keysequence.
+   (B0.99-9a released)
+
+}}}
+
+Changes since B0.99-7 {{{ 
+   0.  win32 subprocess support changed.  Basically from what I
+       consider to be bug in windows, a helper application is required
+       to launch subprocesses (jed/bin/w32shell.exe).  Microsoft says
+       this need is due to ``differences'' between windows 95, 98, and
+       NT (???!!!).  A function `_win32_get_helper_app_name' has been
+       added to allow some experimentation with the helper app.  In
+       addition, the console version will spawn a subshell when
+       suspending.
+
+   1.  Under Unix, if `info' is a symbolic link to jed, then jed will
+       run as an info reader.
+   2.  If you attempt to write to a file that has changed on the disk,
+       you will be warned.
+   3.  Asynchronous process denied if started via `jed -secure'
+   4.  A warning message is printed if compiled against a version of
+       slang that is more recent that the one it is linked to--- this
+       happens when the user does not properly install the slang library.
+   5.  OS/2 findfirst/findnext patch from Eddie Penninkhof
+       <wizball@xs4all.nl>.
+
+}}}
+
+Changes since B0.99-6 {{{ 
+   1.  set_syntax_flags enhanced to allow additional customization of
+       the highlighting of preprocessor lines.
+   2.  ISO-Latin word character definitions tweaked (Thomas Henlich
+       <henlich@mmers1.mw.tu-dresden.de>).
+   3.  More documentation added to the Help menu.
+   4.  edt.sl setkey inconsistency fixed.
+   5.  Updated ide.sl mode from Guido Gonzato
+       <guido@ibogeo.df.unibo.it> and blue2.sl color scheme.
+   6.  sgml.sl syntax coloring tweaks.
+   7.  More menu tweaks: 
+   
+         a. pgup/pgdn keys may be used to navigate.
+	 b. Popup definitions moved to popups.sl to be autoloaded upon 
+	    use.
+	 c. Mode menu item added to menubar for mode-specific commands.
+
+   8.  Bug fixed involving deletion of the mini-buffer.
+   9.  _jed_version_string added.
+  10.  tweaked indentation of C preprocessor statements.
+  11.  lib/syntax.sl rewritten to take advantage of associative arrays.
+  12. __IBMC__ patches from Eddie Penninkhof <wizball@xs4all.nl>.
+  13. enable_menu_keys added to make the menu-bar hotkeys work after
+      loading an emulation that redefines the keys, e.g., ESC-f in
+      emacs.sl.
+  14. DISPLAY_EIGHT_BIT semantics changed to match those of the SLsmg
+      screen management routines.
+  15. SELECTIVE_DISPLAY variable removed.
+  16. enable_xmouse function added to facilitate loading of mousex.sl when
+      running jed in an Xterm.
+
+}}}
+
+Changes since B0.99-5 {{{ 
+   0.  New drop down menu system added.  These menus work in all
+       versions of jed and may be activated via the F10 key or via the
+       mouse.  For use in an xterm, load mousex.sl.  See doc/menus.txt
+       for more information.
+
+   1.  site.sl:mode_hook modified so that ~ gets removed from the
+       extension.
+   2.  src/Makefile.in was not installing the color definition files.
+   3.  VMS patches from Jouk Jansen <joukj@hrem.stm.tudelft.nl>:
+       Jed_Doc_Files was not getting set.  Typo in vms.c corrected.
+   4.  Gpm mouse patch from George Young <gryoung@nortelnetworks.com>
+       to fix the ``sticky mouse'' problem.
+   5.  Updated pymode.sl to v1.2.
+   6.  f90.sl patch from Jouk Jansen: Include `<' and `>' as binary
+       operators.
+   7.  Work around for a glibc or linux 2.2 kernel bug that gets triggered
+       when reading 0 bytes from a pipe.
+   8.  win32 patches from John Skilleter
+       <john@skilleter.free-online.co.uk>.  These allow jed to be
+       compiled with Borland 5.
+   9.  Reworked the init_slang hook to allow multiple hooks.
+  10.  lib/os.sl:set_selective_display moved to lib/seldisp.sl.  In
+       addition, the function was modified so that the current column
+       is used to set the display column.
+  11.  lib/emacs.sl: goto_line_cmd bound to ESC-g (Ang Chin Han
+       <angch@yoyo.cc.monash.edu.au>).
+  12.  New color schemes: default1.sl, blue1.sl
+  13.  Updated .sl files from Guido Gonzato  <guido@ibogeo.df.unibo.it>:
+       ide.hlp, ide.sl, matlab.sl, rcs.sl, sgml.sl.
+  14.  1+1 is now highlighted correctly.
+  15.  unset_buffer_hook intrinsic added.
+
+}}}
+
+Changes since 0.98-7 {{{ 
+   0.  Major changes to the display system.  Now jed uses the SLang
+       screen management routines.  Syntax highlight of multi-line
+       comments should now work correctly.
+   1.  insert_char did not check read-only status of buffer.
+   2.  Added patches from Joao Luis Fonseca <joaolf@centroin.com.br>
+       to src/mkfiles/makefile.all.
+   3.  Typo in idl.sl corrected.
+   4.  New rmail functions:
+   
+           rmail_hide_deleted
+	   rmail_unhide_deleted
+
+   5.  %p status line specifier now includes the column if LINENUMBERS
+       is greater than 1.
+   6.  Tweaks to src/gpmmouse.c from George R. Young
+       <ag136@freenet.carleton.ca>.
+   7.  Port to MINGW32 from Marko Pistotnik <mpistotnik@hotmail.com>.
+       Note: mswshell.exe is still a BCC compiled 16 bit executable.
+       It appears that mswshell.c still needs ported to WIN32.
+   9.  VMSMAKE.COM changes provided by Martin P.J. Zinser
+       <m.zinser@gsi.de>.  He also provided jed/doc/JED.HLP for VMS.
+  10.  OS/2 ICC patches from Eddie Penninkhof <eddie.penninkhof@tip.nl>.
+  11.  Small regexp bug in backward searches fixed
+       (hbitteur@club-internet.fr).
+  12.  check_buffers intrinsic function added.
+  13.  Bug fix in keymap.c fixed (Tom Culliton <culliton@clark.net>)
+  14.  jed/lib/syntax.sl: bug fixed (Michael Johnson<redbeard@redbeard.com>).
+  15.  compile.sl typo fixed
+  16.  Major changes to win32/win16 code from Luchesar Ionkov
+       <lucho@intransco.techno-link.com>.
+  17.  Patch to x_region_to_cutbuffer from Mark Olesen
+       <Mark.Olesen@blns.siemens.de>.
+  18.  OS/2 and isearch specific patches from k-yosino@inatori.netsweb.ne.jp.
+  19.  Xjed color allocation changes from Radim Halir
+       <halir@linux.ms.mff.cuni.cz>.
+  20.  CHanges to better support C++ from Michael Johnson
+       <redbeard@redbeard.com> as well as changes to html.sl.
+  21.  Fortran-sytle comments are now mode dependent in a much more
+       useful and flexible way via the new intrinsic
+       `set_fortran_comment_chars'.
+  22.  TI asm mode added (tiasm.sl).
+  23.  modeinfo.sl added.  The functions in this file facilitate
+       sharing information between modes:
+
+          mode_get_mode_info
+	  mode_set_mode_info
+	
+       For example, a mode can define folding information that
+       folding.sl can use.  See, e.g., folding.sl and cmode.sl.
+       
+  (B0.99.1 snapshot released)
+  24.  Bug fixes:
+       * Blink match bug fixed involving " at the beginning of a line.
+       * In sh-mode `\'' given a string syntax.
+  25.  hook_add_to_hook replaced by hooks.sl:hook_add_hook.  I believe
+       this interface permits better chaining of hooks.
+  26.  isearch.sl bug fix involving ^G abortion of search.
+  27.  Updates to dabbrev.sl to use array syntax.  Also foreach...using
+       used in some .sl files.  See slang documentation for
+       information about foreach construct.
+  28.  Some functions and variables in several lib/*.sl files have
+       been made `static'.
+
+----- snapshot jed0.99_981116 made available (B0.99.2) -----
+
+  29.  Microsoft Visual C support added to compile.sl
+       (Paul Shirley <Paul@chocolat.foobar.co.uk>).
+  30.  Small patch to mouse.c that fixes a bug in the presence of
+       folded text.
+  31.  Tweak to shmode.sl
+  32.  On black and white terminals, message lines are nolonger
+       displayed with attributes.
+  33.  Tweaks to xjed display to correct a bug on maximization of the
+       window.
+  34.  OS/2 Subprocess support provided by Kazuhisa Yoshino
+       <k-yosino@inatori.netsweb.ne.jp>.
+  35.  showkey for ``eight-bit'' character now displays the character
+       properly.
+  36.  Under SVR4 unix, pty implementation changed to use stream
+       modules instead of BSD pty emulation.  This was necessary
+       because Solaris 2.6 and 2.7 have buggy BSD pty emulation and
+       jed was able to crash those operating systems.
+  37.  New modes from Guido Gonzato <guido@ibogeo.df.unibo.it>:
+
+         ide.sl : 99% compatible Borland IDE mode (see doc/ide-mode.txt)
+	 sgml.sl
+	 rcs.sl
+	 matlab.sl
+	 backups.sl : Make numbered backups
+	 
+------B0.99.3 snapshot released (0.99_981127) --------------
+
+  38.  __BORLANDC__ specific patches from John Skilleter
+       <skilleter@zetnet.co.uk>.
+  39.  MAIN_ARGC replaced by __argc and command_line_arg replaced by
+       __argv.
+  40.  Tweaks to c_format_paragraph
+
+  41.  New MSWINDOWS vaiable from John Skilleter: FN_CHAR
+       Normally, function keys generate a two character sequence: ^@
+       (ascii 0) followed by some other character (see
+       doc/pc-keys.txt). This variable makes ^@ configurable.  The
+       default is 0 (^@).
+       
+  42.  Documentation of library functions available online and via
+       doc/libfuns.txt.
+       
+  43.  Use of strchop and strchopr modified according to new semantics.
+
+  44.  mkdir and rmdir intrinsic functions were replaced by slang
+       library intrinsics.
+       
+  45.  unix_kill function changed to `kill' (S-Lang library change).
+  
+  46.  textmac.sl modified to use associative arrays.
+
+------B0.99.4 snapshot released ------------
+
+  47.  Improved Xjed selection support and internationalization
+       support from Kazuhisa Yoshino <k-yosino@inatori.netsweb.ne.jp>.
+       
+  48.  iso-lat3.sl added (Byrial Jensen <byrial@post3.tele.dk>).
+  
+  49.  It is now possible to set dabbrev's word characters on a mode
+       via:
+       
+         mode_set_mode_info ("C", "dabbrev_word_chars", "a-z_0-9A-Z");
+
+  50.  Improved python mode submitted by Tom Culliton
+       <culliton@clark.net>.
+
+  51.  nick.tatham@pobox.com provided a work-around for a windows 95
+       bug in the rename function affecting long filenames.
+
+  52.  Wrap bug involving a long line of non-whitespace characters
+       fixed.
+       
+  53.  Makefile install target fixed.
+  54.  Additional highlighting of ANSI/ISO C++ keywords courtesy of
+       Ragnar Hojland Espinosa <ragnar@redestb.es>.
+  55.  Windows specific patch from cpbotha@bigfoot.com that fixes a
+       NULL pointer dereference in cover_exposed_area.
+  56.  Bug fixed involving the free_narrow function.  Also, dabbrev.sl
+       uses widen_region instead of widen.
+  56.  If buffer does not exist on disk, and is not modified, then
+       file_changed_on_disk will return 1.
+  57.  Misc bug-fixes: ()=insert() in sendmail.sl, blink bug in
+       indent.c.
+  58.  If a file contains hard links, a backup is made via copying.
+  59.  Misc patches from Marcin 'Qrczak' Kowalczyk"
+       <qrczak@knm.org.pl>: html typo and changes made to xkeys.c for
+       better EDT emulation by Xjed.
+  60.  set_prefix_argument intrinsic function added and changed made
+       to the emacs_escape_x function to preserve a prefix argument.
+  61.  compile function modified to accept an optional string
+       argument to specify the command to run.  If the argument is not
+       present, then the user will be prompted for the command.
+  62.  Buffer-local variables modified to allow any slang data type.
+       The function `create_blocal_var' nolonger accepts a `type'
+       argument.  Also a new intrinsic `blocal_var_exists' was added.
+       This change was suggested by Lucho Ionkov.
+  63.  jed --version prints version number.
+  64.  A workaround for a Sun cmdtool bug.  That terminal is a real
+       loser.
+  65.  Configure indicates that linux has `grantpt', which indicates
+       that it has SysV ptys but it does not.  BSD pty support forced
+       for linux.  This was the reason that subprocess support failed
+       to work with 2.2 kernels.
+
+  66.  New function: `set_color_scheme (name)'.  This will allow a user
+       to select a predefined color scheme.  See jed/lib/colors/README.
+
+===========================================================================
+}}}
+
+Changes since 0.98-6 {{{ 
+   0.  Due to a change in the prototype of SLtt_init_video, SLang
+       version 1.0.3 is required. 
+   1.  VMS specific bugs fixed, e.g., typo in file.h corrected.
+   2.  f90.sl mode updated with .f90 extension associated with it.
+   3.  Bug fixes in latex.sl corrected (Peter Chang
+       <peter@eexpc.eee.nott.ac.uk>)
+   4.  `Xjed -ic' (iconic) now works thanks to Jim Clifton
+       <clifton@auriga.rose.brandeis.edu>.
+   5.  Better support for long file names for WIN95 systems.
+
+}}}
+
+Changes since 0.98-5 {{{ 
+   1.  Small iso-latin.sl patch from Thomas Roessler <roessler@guug.de>.
+   2.  rmail.sl tweak for parsing email addresses
+   3.  small hack to input_pending and ungetkey when called from a
+       keyboard macro.
+   4.  wmark.sl: mods to use display_hook (Marius Groeger <mag@sysgo.de>).
+   6.  OS/2 and Windows patches
+
+}}}
+
+Changes since 0.98-4 {{{ 
+   0.  MAJOR changes to the slang language.  It is now MUCH more
+       powerful and flexible.  However, there is a price to pay since
+       some functions changed.  See slang documentation for full
+       details.  Also look at slang/UPGRADE.txt for more information
+       about upgrading your slang functions.
+
+       Important changes include that may affect user functions include:
+       
+         vmessage and verror now work like:
+            vmessage ("%s-%s", "hello", "world");
+         instead of
+            vmessage ("%s-%s", "hello", "world", 2);
+
+         extract_element returns NULL if element does not exist
+	 
+         getenv returns NULL if environment variable does not exist
+	 
+	 Creation of arrays is now much easier, e.g,
+	   i = Integer_Array [10, 20];
+	 creates an integer array with 10 rows and 20 columns.  In
+	 fact, create_array is nolonger supported by the language;
+	 however, it is available as a function in jed/lib/compat.sl.
+	 
+	 Switch statement syntax modified slightly.  An object is nolonger
+	 pushed onto the stack.  Before some code looked like:
+	 
+	    switch (x)
+	      { case '1' or (case (x, '2') : do_this (); }
+	      { pop (); do_that (); } % default
+
+         Now it is cleaner:
+
+	    switch (x)
+	      { case '1' or case '2' : do_this (); }
+	      { do_that (); } % default
+	 
+
+   1.  Rmail changes that take Content-Length into account on Solaris
+       systems.  Patches for this were submitted by Jan Hlavacek
+       <lahvak@math.ohio-state.edu>.
+   2.  Another symbolic link bug fixed.
+   3.  Stack overflow while doing undo fixed.
+   4.  Fixed a small problem when multiple subprocesses exist.
+   5.  New wordstar mode by guido@ibogfs.df.unibo.it.  See also ide.sl
+       for a borland ide mode.
+   6.  Tweaks to make jed work better with gpm 1.13.
+   7.  New hook: save_buffer_hook.  See doc/hooks.txt.
+
+}}}
+
+Changes since 0.98-3 {{{ 
+   0.  Oops.  The pushmode stuff introduced in 0.98-3 also introduced
+       a bug.  0.98-3 was pulled for this reason.
+
+}}}
+
+Changes since 0.98-2 {{{ 
+   1.  Bug in expand_filename found and corrected.  Tiny bug dealing
+       with links also fixed.
+   2.  Mark's changes to wmark.sl integrated.  Chaining of
+       suspend/resume hooks is still an issue.  I also included his
+       bufed routines.
+   3.  f90 mode updated by joukj@crys.chem.uva.nl.
+   4.  Man pages for rgrep and jed provided by borik@isracom.co.il.
+   5.  some routine code cleanup
+   6.  Tweaks to various modes, edt, c-mode, etc...
+   7.  New pushmode.sl file implements push_mode and pop_mode
+       functions that facilitate temporary changing of modes in a buffer.
+       This requires buffer-local-variable support.
+   8.  New global variable Default_Jedrc_Startup_File that may be set
+       in defaults.sl to define default jed.rc file.
+
+}}}
+
+Changes since 0.98beta {{{ 
+  -2. JED386.EXE now requires a DPMI server.  Read INSTALL.pc for more
+      information.
+  -1. Ctrl-H now deletes backward.  Experienced users may want to add
+        setkey ("help_prefix", "^H");
+      in their .jedrc file to restore the old behavior.  The
+      help_prefix function is now bound to `ESC ?'.
+   0. Patches for VMS and OS/2 applied.  Also features.h changed to
+      jed-feat.h to avoid confusion with system header file.
+   1. New fold function: c_fold_buffer
+   2. Ctrl-X 8 now runs the digraph command for inputting accented
+      characters.
+   3. Some modifications to sendmail.sl and rmail.sl to make them work
+      smoothly together.
+   4. If the buffer local variables feature is available, the goto
+      bookmark functions will work properly across folds.  A new
+      intrinsic function `is_user_mark_in_narrow' was necessary to
+      make this possible.
+   5. The current buffer position is remembered immediately before a
+      call to the goto bookmark function.  To return to this position,
+      press the spacebar at the goto bookmark prompt.
+   6. Jed has better command line support for info topics, e.g., 
+   
+           jed -info gcc
+	   
+      will run jed as an info reader and visit the gcc info page.  In
+      addition, an additional parameter may be supplied to specific
+      which node to visit, e.g.,
+      
+           jed -info gcc bugs
+	   
+   7. rmail_edit function added to rmail mode.  The default binding is
+      to the "e" key.  Also simple MIME decoding has been added to the
+      rmail mode.
+
+   8. If a command line argument begins with `--', jed will attempt to
+      match the remaining part of the argument to a function and
+      execute the function.  It will also replace all `-' characters
+      by `_' before doing so.  For example, I have a function called
+      `no_fold' that sets Fold_Mode_Ok to 0.  I can call this function
+      from the command line as `jed --no-fold'  That is, 
+      `jed -f BLA_BLA_BLA' is now equivalent to `jed --BLA-BLA-BLA'.
+
+   9. On pc versions, shift arrow keys now generate a distinct
+      key sequence from unshifted keys.  See doc/pc-keys.txt for more
+      information.
+      
+  10. New wmark.sl file that implements DOS/Windows style cut/paste
+      via shift arrow keys.  Add 
+      
+           () = evalfile ("umark");
+	   
+      to your jed.rc file to get this.  Note: it only works on
+      terminals that generate distinct escape sequences for the shift
+      arrow keys.  This includes the pc versions of jed, Xjed, and jed
+      running in rxvt compiled with support for this feature.
+      [Luchesar Ionkov is responsible for this feature].
+      
+  11. joukj@alpha.chem.uva.nl created fortran 90 modes.  See
+      jed/lib/f90.sl and jed/lib/ff90.sl.  Also a python mode is
+      available courtesy of Harri Pasanen <pa@tekla.fi>.
+      
+  12. New variable USE_TABS controls whether or not TAB characters
+      should be used for whitespace.
+
+  13. New Xjed specific intrinisic function: x_server_vendor
+      This function returns the name of X server vendor.  This might
+      be useful for setting keysyms on a server by server basis.
+      
+  14. If GPM Mouse support is compiled in, the new intrinsic function
+      `gpm_disable_mouse' may be used to disable the mouse.
+
+}}}
+
+Changes since 0.97-14 {{{ 
+   0. Many small architectural changes.
+   
+   1. Thanks to Andy Harper (A.HARPER@kcl.ac.uk) for work on DCL make files
+      for VMS.
+
+   2. Under Unix, ~ is stripped off filename extension before determining
+      the mode.
+      
+   3. rgrep change: -B option may be used to skip binary files.  These files
+      are defined to be any file with a null character in the first 32 bytes
+      of the file.
+      
+   4. Folding mode and selective display if jed is compiled with line
+      attribute support.  This adds about 4 bytes of overhead per buffer
+      line.  As a result, I do not recommend it for systems with no virtual
+      memory (DOS).  The 32 bit DOS executable (jed386.exe) does come
+      with folding support.  wjed.exe and jed.exe do not provide
+      folding support because they are 16 bit executables.
+      
+      To enable folding mode, you must set the variable Fold_Mode_Ok
+      to  non-zero value in your jedrc file.  See doc/fold.txt for
+      more information.
+      
+      `set_color ("...", "blue", "white");' may be used to set the
+      color of the "..." hidden line indicator.
+
+   5. Line marks added.  See online documentation `create_line_mark'.
+      This is a user mark that has a color associated with it.  A line
+      that has a line mark will be displayed using this color.
+
+   6. A buffer-local facility has been added.  See documentation on
+      the new intrinsic functions:
+      
+          create_blocal_var
+	  get_blocal_var
+	  set_blocal_var
+	  define_blocal_var
+      
+      for more information.
+      
+   7. If asynchronous subprocess support is enabled, jed will compile
+      in the background.
+      
+   8. Mouse interface completely re-written to be more functional.
+      New intrinsics include:
+      
+          mouse_set_default_hook
+	  mouse_set_current_window
+	  mouse_map_buttons
+	  
+      Double and Triple clicking is now supported in XJed.
+      
+   9. Several new intrinsics including:
+   
+          usleep
+	  is_visible_mark
+
+  10. More sophisticated syntax highlighting added by Simon Tatham
+      <anakin@pobox.com>.  His approach based on regular
+      expressions is available if jed is compiled with
+      JED_HAS_DFA_SYNTAX defined (see src/features.h).  See
+      jed/doc/dfa.txt for more information.
+      
+  11. slang_mode mode line changed from "SL" to "SLang".  This makes
+      it more consistent with other modes.
+
+  12. Mark Olesen's sendmail and mail-alias slang packages have been
+      integrated into jed.  The sendmail interface replaces the old
+      interface on Unix systems.  See sendmail.sl for more information.
+
+  13. I have tried to unify the various makefiles for pc systems.
+      There are simply too many compilers and too many incompatable
+      make programs for DOS/WINDOWS/OS2 systems and about every other week I
+      would receive a new makefile from someone that works with X
+      version of make using compiler version Y.  The problem with this is that
+      I simply cannot maintain that many makefiles.  See
+      jed/src/mkfiles/README for my proposed solution.
+
+}}}
+
+Changes since 0.97-13 {{{ 
+   0. Some intrinsic functions have been renamed:
+        whatmode --> what_mode
+        setmode --> set_mode
+
+   1. New functions:
+       
+        verror, vmessage  : These take a variable number of arguments in
+	  vinsert              Sprintf style
+	_stk_roll         : rolls the stack
+	strchop, strchopr : Chops up a string into substrings
+	del_eol           : delete to end of line
+	del_through_eol   : delete through end of line
+	pop_mark_0        : equiv to pop_mark(0)
+	pop_mark_1        : equiv to pop_mark(1)
+	go_left_1         : equiv to go_left(1)
+	go_right_1        : equiv to go_right (1)
+	ffind_char        : like ffind but search for char
+	bfind_char        :  
+	fsearch_char      :
+	bsearch_char      :
+	bol_bsearch_char  :
+	bol_fsearch_char  :
+	
+      For details, see the online documentation.
+
+   2. narrow_to_region, widen_region:  These are similar to the functions
+      `narrow' and `widen' except that these actually delimit editing to a
+      region.
+      
+   3. undo now has redo.  See doc/undo.txt.  This is due to Dan Nelsen
+      <dhn@qedinc.com>.
+   
+   4. In C and SLang modes, the TAB key also adjusts the indentation of
+      preprocessor directives.  The variable C_Preprocess_Indent controls
+      the amount of indentation.  By default, it is 1.
+
+   5. XJed specific: the resource names have been changed to conform more
+      closely with other programs.  In particular, XJed must be changed to
+      xjed in your .Xdefaults file because XJed now uses the XTerm class.
+
+   6. Emacs-like insert/copy-to register operations added.  The actual
+      functions are called `reg_insert_register' (Ctrl-X G) and
+      `reg_copy_to_register' (Ctrl-X X).  These functions are not available
+      on 16 bit systems.
+
+   7. Experimental java mode. (Marko Teittinen <marko@tekamah.com>)
+
+}}}
+
+Changes since 0.97-12 {{{ 
+   0. Misc bug fixes.  Nothing major.
+
+   1. New intrinsic variable:  REPLACE_PRESERVE_CASE.  If non-zero, replace
+      functions will attempt to match the case of the new string with the
+      replaced one.  This only happens if the two strings have the same
+      length.
+
+   2. Maximum keyword length for syntax highlighting has been raised from 16
+      characters to 20 characters.
+    
+   3. C-mode improvements
+   4. Big news for wjed users: Luchesar Ionkov seems to have fixed the
+      subprocess support under Windows.  There have also been a few other
+      wjed bug fixes.
+   5. jed's mailer now works properly with mailx.  Someday I need to
+      integrate Eric's sendmail patches.
+
+}}}
+
+Changes since 0.97-11 {{{ 
+   1. Xjed was rejecting command line arguments-- now fixed.
+   2. Repeat factor now works for `@' type keybindings (macros).
+   3. New mousex.sl (jed running in an Xterm--- NOT Xjed).
+   4. Misc bug fixes.
+   5. More improvements to Windows jed (wjed), specifically pull down menus
+      and shell commands are available.  Again, this is due to Luchesar
+      Ionkov.
+
+         Note: Under MSWINDOWS, os.sl loads a different file (mswmouse.sl)
+	 to define mouse actions more suitable to a 2 button mouse.  I
+	 suspect that this file should be modified to make the mouse behave
+	 more like other Windows programs. e.g., drag mouse to define a
+	 region then click a menu item to act on the region.  Any
+	 volunteers?
+
+}}}
+
+Changes since 0.97-10 {{{ 
+
+   0. MS-Windows version of jed now available.  This is called `wjed.exe'.
+      Right now, it is rather primative with no support for menus or shell
+      interaction.  Of course the mouse works with the middle button
+      simulated by the alt key (see jed/doc/mouse.txt).  Thanks to
+      lionkov@sf.cit.bg (Luchesar Ionkov)) for the patches.  (He also sent
+      me patches for shell interaction but they would not compile under BCC
+      3.1).
+
+   1. There were many complaints about change number 4 in 0.97-6:
+
+           4. XJed: Now when the meta (alt) key is used in
+	   conjunction with a non-alphanumeric key such as `{',
+	   the character is simply returned. If this creates a
+	   backward compatibility problem or appears too
+	   restrictive, please let me know.
+
+      Apparantly, this is too restrictive so I have removed the restriction.
+      Email me for for a simple way around this lifting of the restriction.
+   2. Directories with names ending in ~ were not getting expanded properly.
+   3. Slang Version 0.99-19 is now required.  This implements the new
+      intrinsic function `strcompress'.
+   4. QNX support added.
+   5. Support for an alternate set of keywords added.  The C-mode defines some
+      of these keywords such as `exit', `malloc', `strlen', etc...  Use
+      something like:
+      
+          set_color ("keyword1", "green", "white");
+	  
+      to set the colors for this set.
+   6. A couple of MSDOS jed bugs found.  One affects the keyboard and the
+      other fix corrects a bad regular expression when compiling using bcc.
+    
+   7. idl mode enhanced with indentation.
+
+}}}
+
+Changes since 0.97-9 {{{ 
+   1. Small bug in cmode.sl dealing with C++ style comments at first line of
+      buffer corrected.
+   2. Syntax highlighting problem fixed.
+   3. Is shell.sl finally fixed under MSDOS?  I think so.
+   4. Tiny change to mutekeys.sl.
+   5. jed -secure args....   will run jed in secure mode.  This means that
+      access to the shell will be denied.
+   6. Tiny bug affecting slang_mode corrected.  (Very rare case).
+   7. First attempt at a brief mode.  If you want to try it out, add:
+       () = evalfile ("brief");
+      to your jed.rc file.  Currently this file is only for MSDOS and OS2.
+   8. Better EDT support for jed386.exe.  You will need GOLD.COM which is a
+      TSR that maps the Numlock key to GOLD.  
+   9. Low level keyboard interface for OS/2 and MSDOS re-written.  Let me
+      know if there are any inconsistencies.  I have been unable to test it 
+      under OS/2.
+  10. Is dired fixed for OS/2??
+  11. bibtex mode added (Author: Carsten Tinggaard Nielsen,
+      tinggard@iesd.auc.dk)
+
+}}}
+
+Changes since 0.97-8 {{{ 
+   1. html syntax highlighting mode added.
+   2. New functions: _autoload and _add_completion.  See function
+      documentation.  Briefly, these permit slightly faster loading.
+   3. Typos corrected in shell.sl, emacs.sl, and dired.sl.
+   4. Small correction for file name expansion under VMS.
+   5. Ran purify on source code and fixed about two bad memory references.
+   6. new nroff mode
+   
+}}}
+
+Changes since 0.97-7 {{{ 
+   1. The F1-F12 keys may now be used with jed386.exe and edt.sl.  See
+      jed/doc/jed_faq.txt for more on EDT mode and jed386.exe.
+   2. The `untab' function has been fixed.  I broke it in 0.97-7 (see below).
+   3. Somewhat nasty bug fixed that affected jed386.exe.
+   4. Unix and VMS: If the environment variable `COLORTERM' is defined, jed
+      will automatically set the variable USE_ANSI_COLORS to a non-zero value.
+      This feature is only available when compiled against slang version
+      0.99-14.  Patches have also been sent in to the maintainer of the
+      color xterm `rxvt' to automatically set this variable.  Incidently, if
+      you are using `color_xterm', I suggest that you try out `rxvt'.
+   5. New dired.sl and shell.sl courtesy of olesen@weber.me.queensu.ca (Mark Olesen) 
+   
+}}}
+
+Changes since 0.97-6 {{{ 
+  -1. Mouse support added to OS/2 version.  (Thanks to John Burnell.   
+      <johnb@whio.grace.cri.nz>)
+
+   0. ``Expansion hook'' added.  This hook is called upon TAB completion to
+      preprocess the file before completion.  The default definition of this
+      function expands environment variables when the variable is preceeded
+      by a dollar sign, e.g., $HOME.  This function has not been defined for
+      VMS since VMS already has this feature built in.
+
+      Under Unix, this function also expands ~name to the login directory of
+      the user `name'.  The expansion only takes place when the TAB key is
+      pressed.
+      
+      The new intrinsic: set_expansion_hook may be used to change the hook.
+      
+   1. Under Unix, the function `get_passwd_info' may be used to return
+      information about a specified user such as login dir, shell, etc...
+      
+   2. TeX mode highlighting fixes:
+        a. words containing accents now handled properly
+	b. The TeX special characters `&_^#' are now colored as `operators'.
+	c. Braces `{}' are colored as delimiters.
+
+   3. A prefix argument to the `untab' function will cause spaces to be
+      converted into tabs.
+      
+   4. Page up/down commands modified slightly to give appear more intuitive.
+   
+   5. Misc bug fixes including:
+       a. Parenthesis matching now works when `(` is also a comment delimiter.
+       
+   6. Pasting using the mouse has changed slightly.  Previously, text would
+      be pasted at the position of the mouse.  Now, it is pasted at the
+      position of the cursor.  This seems more intuitive.
+      
+      In addition, the editing position is restored to what it was before
+      dragging text into the cutbuffer.  Again, this is more intuitive and
+      more closely follows the Xterm usage.
+      
+   7. In C-mode, a if a line is preceeded by a line that ends with \, it is
+      indented to the first column.  This is useful for continuation lines.
+   8. Better native support for SunOS keyboards (pageup/down/home/end).
+   9. The function `shell_cmd' has been changed to return the exit code of the
+      subprocess.  Previously, it returned nothing.
+  10. idl mode added.  Actually, only syntax highlighting is defined.  This 
+      mode takes effect on .pro files.
+
+}}}
+
+Changes since 0.97-5 {{{ 
+   0. New routines for adding keywords.  These include:
+   
+        add_keyword, define_keywords
+	
+      See shmode.sl for an example.  Basically, this file implements syntax
+      highlighting for Unix sh and csh files.
+      
+   1. Bug fixed in filename completion.
+   2. Kevin Humphreys auctex-for-jed package has been integrated into the
+      source.  Thanks Kevin.
+   3. Popular combinations of slang functions have been combined to create
+      new functions.  These include:
+   
+         bol (); skip_white ();    ------------------> bol_skip_white ();
+	 down (1);                 ------------------> down_1 ();
+	 go_down (1);              ------------------> go_down_1 ();
+	 up (1);                   ------------------> up_1 ();
+	 go_up (1);                ------------------> go_up_1 ();
+	 
+      These load twice as fast and use half as much memory.  If I make them
+      into intrinsics, they will execute twice as fast.  Jed slang
+      programmers are encouraged to use these.
+      
+   4. XJed: Now when the meta (alt) key is used in conjunction with a
+      non-alphanumeric key such as `{', the character is simply returned.
+      If this creates a backward compatibility problem or appears too
+      restrictive, please let me know.
+      
+   5. XJed: XJed now will never read a file from stdin.  This means that the
+      *stdin* buffer will nolonger appear when it is started from a menu by
+      the window manager.
+      
+}}}
+
+Changes since 0.97-4a {{{ 
+
+   0. A COMPLETE rewrite of all the indentation routines.  The new routines 
+      are much more customizable through the use of syntax tables.  Now, the
+      C mode is completely written in S-Lang.  
+      
+         New features: 
+	 
+	    * Now much easier to add support for new languages.
+	    * ESC-q will format a comment if it is in the canonical form:
+	       /*
+	        *  This is a C comment in
+		*  the canonical form
+		*  Notice how each line
+		*  begins with a `*'.
+		*/
+	    * `goto_match' now works in both directions.
+	    * New C-mode functions: 
+	        c_end_of_function : ESC Ctrl-E
+	        c_top_of_function : ESC Ctrl-A
+	        c_mark_function :   ESC Ctrl-H
+      
+
+   1. The function `whatline' has been renamed to `what_line' for consistency 
+      with other names.
+      
+   2. New function: translate_region.  This function is capable of modifying 
+      all characters in a region according to a lookup table.  This is useful
+      for converting buffers between various character sets.  See the new
+      version of jed/lib/rot13.sl for an example of its usage.
+      
+   3. New functionality: yank-pop.  This is implemented in jed/lib/yankpop.sl.
+      Unfortunately this is not available on 16bit systems.  This means if you
+      use jed.exe you cannot use it.  However, jed386.exe is a 32bit
+      executable so it is available.
+      
+      If you do not know what yank-pop is already, do not worry too much.
+      You should not notice its presence.  However, if you do, hopefully you
+      will welcome jed's emulation of it.  This was added to improve the
+      emacs emulation.  See jed/doc/yankpop.txt for a simple discussion.
+
+   4. New intrinsic variable _jed_version added.  This variable is an integer
+      that represents the version number.  For 0.97-5, it has the value 9705.
+      For 0.97-11, it will have the value 9711 and so on.
+      
+   5. A bug in jed386.exe was corrected.  This bug was responsible for
+      some keyboard lockups.
+      
+}}}
+
+Changes since 0.97-4 {{{ 
+   1. Intrinsic function documentation improved.
+   2. Source code should now compiled without specifying VAX compatability
+      on ALPHA/AXP systems running OpenVMS.  Use the deccmake.com files to
+      create jed & slang.
+
+
+}}}
+
+Changes since 0.97-3 {{{ 
+   1.  New intrinsic functions:
+         set_color_object: Associate a foreground/background color pair with
+	    an integer, e.g., set_color_object (31, "green", "red");
+	 set_column_colors: Allows one to display the columns of a buffer in
+	    different colors.  For example:
+	    
+	       set_color_object (31, "green", "white");
+	       set_color_object (32, "red", "white");
+	       set_column_colors (31, 1, 40);
+	       set_column_colors (32, 41, 80);
+	    
+	    Display columns 1 to 40 in green/white and columns 41 to 80 in
+	    red on white.  This operates on a buffer by buffer basis does
+	    not work when there is syntax highlighting already associated
+	    with the buffer.
+	    
+	    This function is only useful when the buffer consists of data
+	    organized in columns, e.g., columns of numbers, dired mode,
+	    rmail mode, etc...
+	    
+	 str_replace: replace substrings in strings
+
+   2.  In XJed, set_color("normal", "foreground-color", "background-color"),
+       now works.  This means it is nolonger necessary to mess with
+       .Xdefaults to set the background color. 
+
+   3.  Small problem with expansion of symbolic links fixed.
+   4.  It is now possible to set the color used for messages and errors.
+       This is accomplished by using, e.g.,
+       
+            set_color ("message", "blue", "white");
+            set_color ("error", "red", "white");
+
+   5.  A problem with info failing under VMS has been fixed.
+   
+}}}
+
+Changes since 0.97-2 {{{ 
+
+   1.  GPM mouse support under Linux.  This provides jed with complete mouse
+       support (dragging, etc...) under the Linux console (See mouse.txt).
+       
+   2.  Mouse support under MSDOS.  Read doc/mouse.txt for information.
+   
+   3.  Fixed a keymap problem in Xjed (specifically for Ctrl-_ and Function
+       keys).
+
+}}}
+
+Changes since 0.97-1 {{{ 
+
+   1.  `:' key now overwrites instead of inserts in overwrite mode
+   2.  Fixed tiny problem with indentation of preprocessor lines when 
+       the colon is pressed.
+   3.  Corrected the omission of the closing `"' in abbrmisc.sl.
+   4.  Problem with replace_across_buffer_files corrected.
+   5.  If a file is edited for which one does not have write permission,
+       the buffer is made read-only.
+   6.  Termcap nolonger used.  JED is now exclusively terminfo.
+   
+}}}
+
+Changes since 0.97-0 {{{ 
+
+   1.  Fixed Xjed problem of cutting and pasting with other X applications.
+   
+This file documents changes and new features found in JED
+}}}
+
+Changes since 0.96-2: {{{ 
+
+  -20. A bug introduced by `-18' beow that prevented searches from working
+       properly when using a macro has been fixed.
+       
+  -19. `dired' modified such that ^K nolonger runs the function
+       `dired_kill_line'.  Instead, one must do:
+       
+           define dired_hook ()
+	   {
+	     local_unsetkey ("^K");
+	     local_setkey ("dired_kill_line", "^K");
+	   }
+	 
+	See jed.rc where this is performed.
+
+  -18. RETURN key may be used to continue searches.  Also, matches are
+       highlighted.  
+
+  -17. Variable `No_Backups' added to control whether or not JED is to
+       create backup files.
+       
+  -16. Command line argument parsing modified (in site.sl) to make it easier 
+       to write non-interactive scripts, e.g.,
+       
+          jed -script my-script.sl file1 file2 ...
+	  
+       Basically, `-script' simply loads the next argument (my_script.sl).
+       It is up to the script file to interpret the remaining arguments.
+       See doc/script.txt for more info.
+
+  -15. Trivial modification that allow JED to become a GNU-info reader 
+       by using: 
+  
+         `alias info jed -f info_reader'    (Unix csh)
+	 $ info :== jed -f info_reader      (VMS)
+
+  -14. A VMS bug fixed.  Specifically, the getkey AST is now disabled while
+       the main thread is accessing the keyboard buffer.
+
+  -13. NEW abbrev mode.  This is a major rewrite of the old abbrev mode.  See
+       jed/doc/abbrev.txt for details.
+
+  -12. `read_string_with_completion' added to read a string in the mini buffer
+       using a list of strings for completion.
+
+  -11. Major change in S-Lang library removes the need for functions such as
+       `free_array'.  As a result, this function has been removed.
+       
+  -10. abbrev mode.  This differs from `dabbrev' in the sense that you can
+       define global and local abbreviations and use them.  The function
+       `toggle_abbrev' may be used to turn the mode on/off.  See abbrev.sl
+       for details.
+       
+   -9. mousex.sl package adds mouse routines to any terminal using the XTerm
+       client mouse protocol.  Such terminals include the Linux console
+       running selection as well as XTerm itself.  Note: this could be made
+       available across a dialup line from a PC using MS-Kermit, Procomm,
+       etc... if someone would write the appropriate mouse TSR.
+
+   -8. Added `tex_ldots' binding that converts three `.' to \ldots.  
+   
+   -7. `replace_across_buffer_files' added.  This function allows the user
+        to replace a string across all buffers attached to a file.  It is 
+	interactive.
+       
+   -6. Book marks added: `bkmrk_goto_mark' and `bkmrk_set_mark'
+       These functions allow the user to set up to 10 bookmarks (0-9)
+       and return to a previously set book mark from any buffer.
+       These marks are implemented using new jed intrinsics:
+       
+          `user_mark_buffer'  : returns buffer name associtated with mark 
+	  `goto_user_mark'    : goto position specified by mark
+	  `create_user_mark'  : returns a mark at the current position
+	  
+   -5. Automatic detection of ``non-native'' line endings.  On Unix, if a 
+       file is read in with ^Ms at the end of lines, it is flagged such that
+       writing out the file will preserve the line ending attributes.  A `C' 
+       will appear on the status line to indicate this fact.  On DOS, etc...
+       if a file is read in without the ^M, it is flagged and an `L' will
+       appear on the status line.  Use the function `toggle_crmode'
+       to change the attribute.
+       
+   -4A. New ways added to facilitate associating modes with files:
+   
+         a.  add_mode_for_extension ("c", "c++");
+	     This asscoiates c_mode with a file named something.c++.
+	 b.  If top line of file contains something like: -*- mode -*-
+	
+       Note that in both cases the mode argument must omit the `_mode' part
+       of the name.  In fact, all modes now have names that end in `_mode'.
+       
+   -4B. `fortran' and `dcl' have been renamed `fortran_mode' and `dcl_mode'.
+
+   -3. C mode indenting improved.
+   -2. Writing to terminal under VMS SIGNIFICANTLY improved.  Basically I
+	just bypassed the VAXC buffered stdio routines in favor of my own.
+	This might improve performance for Unix systems as well.
+   -1. Emacs style completion added-- press tab to show completions, press
+        space to cycle through them.  Note that pressing PageUp/Down keys
+	will scroll the completion buffer from the minibuffer.
+    0. Bug fixes
+    1. Massive restructuring.  Keymaps, Searching, and Terminal I/O moved to
+	S-Lang. 
+    2. color syntax highlighting in FORTRAN, TeX, and C modes.
+    3. TeX mode enhanced--- more to come.
+    4. ``menu'' bar can now be hidden-- see jed.rc.
+    5. More hooks: c_mode_hook, tex_mode_hook, text_mode_hook, wrap_hook
+    6. Better documentation on hooks (see doc/hooks.txt).
+    7. showkey binding changed to `Ctrl-H k'.  Also rectangle commands are
+       now bound in emacs.sl to emacs bindings.
+    8. Mute (Dead or accent) key support added.  See jed.rc
+    9. gzipped info file support added for MSDOS
+   10. Alt key processing for X-Windows fixed.
+   11. Significant additions to dired, e.g, `~' flags all backup files.
+   12. Visible bell add to systems that support it (Xjed, pc and OS/2,
+       Linux, etc...).
+
+}}}
+
+Changes since 0.96-1: {{{ 
+
+    1. bug fix regarding regular expressions
+    2. Indentation of data statment in fortran mode fixed.
+    3  Documentation is improving....
+    4. dabbrev mode added (ESC / expands current word based on other
+         words in the buffer.)
+    5. Now possible to control Xjed syntax highlighting from .Xdefaults file.
+    6. Improvements to S-Lang ==> improvements to JED
+    7. rmail.sl: added `Rmail_Dont_Reply_To' variable to suppress unwanted
+         CCs.  For example, I have:
+	 
+       variable Rmail_Dont_Reply_To = 
+      "davis@amy,davis@pacific.mps.ohio-state.edu,davis@amy.tch.harvard.edu";
+	 
+       in my .jedrc file.
+
+}}}
+
+Changes since 0.96-0: {{{ 
+
+    1. set_color_escape_sequence function added to exploit JED's ability
+       to do color syntax highighting on more exotic color terminals.
+    2. Preprocessor lines can now be highlighted.  See jed.rc as well as
+       doc/syntax.txt for details.
+    3. Tiny bug fixes:
+        * bug in info.sl found caused by info file that do not end with a 
+	   newline character
+	* isearch.sl is again able to repeat isearch backwards by pressing ^R.
+	   This bug was introduced in 0.96-0.
+	* EDT special insert now works.
+	* Archive bit now set when JED creates a new file on MSDOS (only 
+	   jed.exe had this problem--- not jed386.exe)
+    4. Support for CRAY added.
+    5. If JED is started without a filename specified, the brief message will
+       be displayed warning the user that the scratch buffer will not be
+       saved.
+    6. On MSDOS, rgrep.exe (recursive grep) is now distributed.  ON Unix,
+       simply do `make rgrep' to get a recursive highlighting grep.
+       
+   Highlights of Major changes for 0.96:
+   
+    1. OS/2 versions available!!
+    2. Color syntax highlighting in C mode.
+    3. Much improved indentation for C code.
+    4. Improved Fortran mode
+    5. Up to 20% faster loading 
+    6. jed386.exe distributed with DOS version and runs
+        in a Windows DOS box (provides up to 256 Megs of Virtual memory)
+
+}}}
+
+Changes since 0.95-8b: {{{ 
+   
+    0. JED now compiles and runs under OS/2!
+    
+       OS/2 executables are zipped in the pc distribution.  See install.pc
+       for more information.
+
+       [ I would like to acknowledge John Burnell (johnb@huia.grace.cri.nz)
+	 for his work on the OS/2 port.  In addition, I am very grateful to
+	 Darrel Hankerson (hankedr@mail.auburn.edu), who is responsible for
+	 the Microsoft C and emx/gcc versions, as well Dominik Wujastyk
+	 (ucgadkw@ucl.ac.uk) for his contribution to the OS/2 version. ]
+
+
+    1. re_fsearch and re_bsearch functions have been changed to return
+       1 + the length of the match, if a match was found, or return 0 if no
+       match was found.  For example, `re_fsearch("$")' matches the end of a
+       line which, strictly speaking, is a match with 0 length.
+       
+    2. Use `jed -l preparse' to pre-parse the .sl files for faster loading.
+       `jed -l preprocess' is now obsolete.  Again, read install.*.
+
+}}}
+
+Changes since 0.95-7b: {{{ 
+
+    1. Color syntax highlighting added to C mode.  It is possible to
+       separately color keywords, strings, numbers, delimeters, comments,
+       and operators.  This even works on VMS and Unix systems when using
+       character based color terminals such as NCSA telnet, MS-Kermit, 
+       etc...  See doc/color.txt and doc/syntax.txt for more information.
+       
+    2. byte compiling changed to allow preprocessing only.  Simply
+       preprocessing is recommended on systems where more than one type of
+       JED executable will share the same set of *.slc library files (e.g.,
+       Unix where both JED and XJed might be running).  Simply do:
+       
+          jed -batch -l preprocess.sl
+	  
+       On MSDOS systems with only one version of jed.exe running, use:
+       
+          jed -batch -l bytecomp.sl
+	  
+
+}}}
+
+Changes since 0.95-6b: {{{ 
+
+    1. It is now possible to display 24 hour time on the status line.
+       Earlier versions were capable of displaying on AM/PM format.
+
+    2. -tmp command line switch added.  This means that the current buffer
+       is to not be autosaved or backed up.  This is suitable when JED is
+       used as an editor for elm, etc...
+
+    3. DJGPP version fixed so that JED can read embedded ^M characters and
+       ^Z characters while in text mode.  Of course the ^M is striped if it
+       preceeds a line feed character.
+       
+    4. Improved fortran mode.  The fortran mode is the first mode that I ever
+       wrote for JED using S-Lang.  Since then, I have had alot of experience
+       with S-Lang and recently I found myself programming FORTRAN again, so
+       I rewrote it.  Do `Ctrl-H f fortran' for details.
+       
+}}}
+
+Changes since 0.95-5b: {{{ 
+
+    0. XJED now compiles as a DECWindows executable under VMS.
+    
+    1. The interactive replace function has been renamed to `replace_cmd' and
+       is now implemented in S-lang. It can now search/replace across lines.
+       For most users, this change should be transparent.
+       
+    2. New functions: 
+    
+          set_buffer_no_backup ()
+          set_buffer_no_autosave ()
+    
+    3. XJed mouse changes:
+
+          Clicking on a window status line causes a different behavior.
+	  Specifically:
+
+                left:  switch to next buffer   
+		middle:  split the window
+		right:  delete the window
+
+          For example, one can quickly move from one buffer to the next by
+	  simply clicking on the status line with the left mouse button.
+
+    4. XJed can nor distinguish shifted and control function keys.  This
+       enables one to bind Shift arrow keys and Control arrow keys to
+       different functions.
+     
+    5. Improved indenting in C-mode.
+    6. New variables added:
+    
+          Default_Mode: default mode for a file of unknown extension.
+	  Startup_With_File: if non-zero, JED will prompt for a filename
+	     if none was specified on the command line.
+    
+    
+}}}
+
+Changes since 0.95b for 0.95-5b. {{{ 
+
+    1. Bug fixes:
+         rectangular cut and paste (when cutting single char region from
+	    empty line)
+	 minor color problem fixed when scrolling on color terminals
+	 edt_line function fixed  (kp0 key)
+	 minor rmail mode changes
+	 backward RE-search fix.
+	 info mode bug fixed that deals with multiple word node names
+	 typo in menu.sl corrrected. The type was causing a STACK_UNDERFLOW
+	    error to be generated.
+	 parenthesis blinking bug fixed that manifested itself when
+	    inserting a parenthesis on a line that was automatically
+	    horizontally panned.
+
+    2. RETURN now selects menu item in info mode.
+    3. Now possible to search/replace strings that span multiple lines.
+
+    4. In XJed, it is now possible to distinguish between Shift and Control
+         function and arrow keys.  Also, every function key now returns
+	 something (use the function x_set_keysym to change what a function
+	 returns) 
+
+    5. In XJed, clicking on the status line of a window now switches to a
+	 new buffer for that window.  This makes it possible to conveniently
+	 cycle through all buffers.
+	 
+    6. rgrep flag now added so that directory links may be followed.  Rgrep
+         is a recursive, highlightin grep that is distributed with JED.  See
+	 doc/rgrep.doc for more information.
+
+    7. The search forward/backwad commands are now S-Lang functions which
+	 means that they may be changed easily.
+	 
+    8. New function for PC versions (DJGPP too!): find_binary_file.
+         This function will prompt for a filename and find it in binary
+	 mode.  A binary mode file is indicated by a `Z' status line flag.
+	 This means that when the file is saved, it will be saved in binary
+	 mode as well.  This function provides a transparent way to edit
+	 binary files under DOS.
+	 
+    9. JED now understands 8 bit control sequences generated by terminals in
+         8 bit mode such as DEC VTXXX.  This is particularly relevant when
+	 using JED on VMS.
+
+Changes for version 0.95 (since 0.94-2)
+
+    0. JED distribution is different.  If you have built JED in the past,
+       please read the install files because things have changed.
+    1. Support for column numbers on status line (set LINENUMBERS = 2)
+    2. X-Terminal (and DECWindows) version (make xjed).  See doc/xjed.doc
+    3. Elm like read/write mail (see rmail.txt-- this is considered ALPHA,
+        by default it is not enabled.)
+    4. Additional support for Color terminals (allow different colors for
+        modelines, regions, etc...)
+    5. MUCH Improved support for colors on PC versions (looks MUCH nicer,
+         see how it is used in jed.rc)
+    6. By popular demand, a new function `describe_bindings'  is available
+         that dumps the keybindings for the current keymap.
+    7. New variable Stratup_With_File can be set to prompt user for
+         a filename if none is specified on the command line.
+    8. VMS: A convenient new interface to VMSHELP is now available.  This
+         overcomes most of the shortcomings of the VMS HELP command.  
+	 It is bound to Ctrl-H M.
+    9. search_forward + search_backward can now search for strings spanning
+         multiple lines.  Also, looking_at can see across multiple lines.
+
+Also see changes listed in the next section.
+
+*********  Important **************
+
+The S-Lang preprocessing conditional compilation declarations have changed.
+Now, constructs such as:
+
+#ifdef UNIX
+  ..
+#else
+  ..
+#endif
+
+are used.  This means  that you may have to edit you personal jed.rc file.
+Instead, I encourage you to simply copy the jed.rc file shipped with this
+version and add your own extensions to it.
+
+************************************
+}}}
+
+New changes SINCE 0.94-0: {{{ 
+
+    1. New buffer flags:  no backup and no autosave
+    2. #ifdef #else #endif preprocessing
+    3. skip_chars, bskip_chars changed.  Now, say, `skip_chars("^a-z")' will
+         skip ALL characters EXCEPT in range `a-z'.
+    4. Default EDT binding of TAB changed to `indent_line'.  See jed.rc
+         to change it back.
+    5. `occur' function now uses regular expression searches.
+    6. Special `linux.sl' file for Linux systems.  See `install.unx'.
+    7. New intrinsics: buffer_visible, pop2buf_whatbuf, bury_buffer,
+                       regexp_nth_match,
+    8. `window_info' intrinsic modified to take a parameter.
+    9. `search_file' intrinsic modified for regular expression search.
+   10. New support for saving and reusing keyboard macros.  This feature
+       has not been exploited yet!
+   11. By popluar request:  Highlighting only occurs in the CURRENT window.
+   12. Miscellaneous bug fixes.
+   
+There are also some new S-Lang builtin intrinsic functions:
+
+    1. string_match: preforms RE match on a string
+    2. string_match_nth: returns information about previous match
+    3. Unix specific intrinsics:
+    
+          unix_kill  :  sends a signal to a process
+	  unix_ctime :  converts a time value to a string representation
+	  stat_file  :  performs `stat' on a given file.
+	  lstat_file :  like stat but returns information about a link
+	  stat_struct:  returns information from previous stat call.
+	  chown      :  change owner/group of a file
+	  chmod      :  change protections of file.
+	  
+    4. It is now possible to perform assignments in variable declaration
+       statements:
+       
+          variable i = 10, y = 20.87;
+	  
+    5. && and || are now flagged as errors.
+    
+******************************    
+New since 0.94-0 : ------------------------------------------------------------
+
+PageUP/Down functions scroll other window if called from the minibuffer.
+
+Some defaults changed in jed.rc:  Display line numbers on the status line
+  is now the default.
+
+Regular expression matching (search/replace):
+     re_search_forward, re_search_backward, query_replace_match
+    
+New S-Lang intrinsics include:
+
+     prefix_argument()  : returns value of prefix argument.
+     set_status_line(format, flag) : enables user to customize status line
+     re_fsearch, re_bsearch, replace_match  : regular expression intrinsics
+     getpid  : returns process pid
+
+New user variables:
+
+DISPLAY_TIME  if non-zero, allows %t processing in status line format.
+ALT_CHAR   (ibmpc only) enables Alt-key processing.  Specifically, setting
+           this to 27 (Ascii 27) causes ALT-X to generate ESCAPE-X, etc...
+	   
+C_BRA_NEWLINE if non-zero, insert a newline before inserting '{' in C-mode.
+           This was the default in previous versions but it now user
+	   selectable.
+
+------------------------------------------------------------------------------
+New features in 0.94-0
+
+0.94-0 does not really add any new functionality to 0.93.  However, there is a
+major change:  S-Lang is now very C-Like.  (It can still be programmed as
+RPN though, see e.g., info.sl)  By C-like, I mean that you can write S-Lang
+functions that look like:
+
+    define sum(a, b)    % sum integers from a to b
+    {
+      variable s, i;
+      
+      s = 0;
+      for (i = a; i <= b; i++) s += i;
+      return (s);
+    }
+    
+S-Lang has not lost any functionality, rather, its new syntax makes it more
+accessable to others.
+
+The new philosophy is that JED is an editor which just happens to embed
+S-Lang as its extension language.  Actually, this has always been the
+philosophy but not it is even more clear cut.  To compile the new JED (0.94)
+you will need to pick up /pub/slang/slang.tar.Z as well.  This is the S-Lang
+interpreter code to be compiled as a library and linked in with JED.
+
+The only other ``major'' changes are:
+
+  1. do_while construct added:
+  
+     do { stuff... } while (expression);
+     
+  2. `defined?' replaced by `is_defined'.
+  3. Temporary global variables $0, $1, ... $9 added for convenience and
+     clarity.
+  4. Comment delimeter changed from `;' to `%'.
+  5. Arrays are indexed from 0 not 1.
+  6. \??? is now Octal ??? NOT decimal ???.  \d??? is decimal.
+  7. Sprintf added to intrinsics (formats strings)
+     
+In addition, you should ``bytecompile'' the .sl files after installing the
+new version of jed.  It is this simple:
+
+    jed -batch -l bytecomp.sl
+
+
+}}}
+
+}}}

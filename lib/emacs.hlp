@@ -1,0 +1,3 @@
+JED Emacs keybindings:  `^' means to use Ctrl key (e.g., ^X = Ctrl-X).
+^X^C exit    ^V     PageDn    ^Xu Undo    ^X^W write to file   ^A beg of line
+^L redraw    ESC V  PageUp    ^D delete   ^X^F open a file     ^E end of line

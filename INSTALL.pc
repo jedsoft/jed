@@ -1,0 +1,202 @@
+-*- mode: text -*-
+IBMPC (DOS, Win9X, NT, and OS/2) installation specific functions.
+
+!!! Important News:
+
+    The `real-mode' version of jed is no longer distributed.  This
+    version of jed will work only with 386+ class pcs.  It will not
+    work on earlier systems.
+    
+    This distribution includes following jed executables in the bin
+    subdirectory.
+
+          jed386.exe     MSDOS (DJGPP V2)
+          jed.exe        Win32 console mode (MING32 egcs-2.91.66)
+          wjed.exe       Win32 GUI (MING32 egcs-2.91.66)
+
+    Do NOT run these executables without first properly installing the
+    editor.
+    
+Brief installation overview.
+============================
+
+    1.  Unzip the distribution.
+    2.  Set the appropriate environment variables in your autoexec.bat
+        file.  This is also important for long file name support.
+    3.  Copy the executables to somewhere on your path.
+    4.  If installing on MSDOS (not win9x,NT), make sure a DPMI server
+        is available.
+    5.  Reboot.
+    6.  Test it.
+
+  OS/2 specific information follows the last step.
+
+===========================================================================
+Step 1: Unzipping the distribution
+===========================================================================
+
+  Files with the extension '.zip' can be unzipped with Info-Zip's
+  unzip or with pkunzip. However, if using pkunzip, then you MUST use
+  the -d option; e.g.,
+
+    pkunzip -d jedB0998.zip
+
+  The -d option is necessary to preserve the directory structure.
+
+===========================================================================
+Step 2: Environment variables
+===========================================================================
+
+  Suppose that you have unzipped jed.zip from the subdirectory
+  c:\editors. You will then find:
+
+    c:\editors\jed
+    c:\editors\jed\lib
+    c:\editors\jed\bin
+    c:\editors\jed\src
+    c:\editors\jed\info
+    c:\editors\jed\doc
+
+  The directory C:\editors\jed will be your JED_ROOT directory.  You
+  will need to set the environment variable JED_ROOT, as in:
+
+    set JED_ROOT=c:\editors\jed
+
+  Under DOS and Windows, this command should be placed in the
+  autoexec.bat file.
+
+  **Note: If you intend to use shell commands on a win32 system
+          (win9x,NT), then do NOT install in a directory containing
+          space characters.  If you choose to do so, then specifiy
+          JED_ROOT using the short file name form.
+
+  Under OS/2, users often place such lines in config.sys so that the
+  variable is set in every command window. Other users have a standard
+  file which they run at the start of every command window, and the
+  "set" command could be placed in such a file. Don't edit config.sys
+  unless you are confident in your ability to make changes to this
+  essential file.
+
+  Long File Names:
+  ---------------
+  
+  The win32 versions of jed (jed.exe, wjed.exe) support long file
+  names.  The DJGPP version (jed386.exe) supports long file names on a
+  win32 system provided that
+
+    set LFN=y
+
+  is put in your autoexec.bat file.
+
+  Unfortunately, it looks like NT does not support the long filename
+  API used by jed386.exe.  This is not important since one would
+  probably use the win32 versions of jed on such systems.
+  
+===========================================================================
+  Step 3: Install jed*.exe
+===========================================================================
+
+  Copy the executable files `bin\jed*.exe' to where you keep your other
+  *.exe and *.com files (somewhere in your path!).
+
+===========================================================================
+Step 4: The DPMI Server
+===========================================================================
+
+  (You can skip this step if your system is a win9x,NT system)
+
+  The executable jed386.exe is a flat 32 bit djgpp compiled executable
+  requiring a 386 class machine.  It also requires the presence of DPMI
+  server. 
+
+  Windows, QDPMI, 386Max, NWDOS, OS/2, Win/NT and Linux DOSEmu all
+  provide DPMI services that jed386 can use.  If you do not have a
+  DPMI server, use Charles Sandmann's freely available DPMI server. I
+  have made the binary available via ftp from space.mit.edu in
+  /pub/davis/jed/csdpmi.  That directory contains two .zip files. The
+  only file that is required is `csdpmi3b.zip' which contains the DPMI
+  server and documentation. The other file, `csdpmi3s.zip', contains
+  the sources to the server and is not required.  Please read the
+  documentation that comes with the server for installation.  Briefly
+  this involves putting the executable `cwsdpmi.exe' somewhere in your
+  path, e.g., where you put jed386.exe.  That's really all there is to
+  it.  By default, it will create a swap file called C:\cwsdpmi.swp.
+  Read the instructions as part of csdpmi3b.zip for information about
+  changing the name or location of the swap file.
+
+===========================================================================
+Step 5: Reboot
+===========================================================================
+
+  Reboot your machine so that the changes you have made in your
+  autoexec.bat or config.sys file will take effect.
+
+===========================================================================
+Step 6: Test
+===========================================================================
+
+  JED should now be installed on your system.  To test to see if it
+  properly installed, run the editor in batch mode:
+  
+        jed -batch -f quit_jed
+  
+  This should produce something like (the actual output may vary):
+
+        loading C:\editors\jed\lib\site.slc
+        loading C:\editors\jed\lib\os.sl
+        loading C:\editors\jed\lib\jed.rc
+
+  At some point, you may also want to preparse the S-Lang library
+  files by running jed as:
+
+        jed -batch -n -l preparse
+
+  This creates pre-parsed jed\lib\*.slc files that load quicker than
+  lib\*.sl files.
+
+  Once jed is installed on your system, it can be customized by
+  editing the file `jed.rc'.  Read the bit about defaults.sl in
+  install.all for customizing your distribution in a way that is
+  compatable with future versions.
+
+  !!!Note: If you see an error message of the form:
+
+     Load Error: no DPMI
+   
+  then your need to re-read the above comments about a DPMI server.
+
+===========================================================================
+OS/2-specific information
+===========================================================================
+
+JED can be compiled for OS/2 2.x using Mattes' emx/gcc or Borland C, and
+for OS/2 1.x--2.x with Microsoft C.
+
+The file jed/mkfiles/makefile.os2 will build JED using emx/gcc or MSC,
+depending on the settings given in the makefile.os2; the default is to
+use emx/gcc.  To compile JED for OS/2 using emx/gcc, just change to the
+directory jed/src, and give the command "DMAKE -f mkfiles/makefile.os2".
+
+The default JED_ROOT location can be specified in the makefile, but if
+you prefer, you can leave the makefile value as it is, and instead
+specify the location by using a "SET JED_ROOT=..." statement in the OS/2
+config.sys file to set the environment variable.  The environment
+variable overrides the value built into JED by the makefile.
+
+OS/2 versions first appeared in 0.95. Extended attributes are handled,
+and the case of filenames on HPFS will be preserved. Buffer-name
+completion will cycle through all matches, regardless of case.
+
+The OS/2 versions can handle compressed info files, ispell, and man.
+Necessary support programs for these capabilities may be obtained from
+ftp.cdrom.com (currently in pub/os2/all/unix/ or pub/os2/2_x/unix/)
+or ftp.informatik.tu-muenchen.de.
+
+I would like to acknowledge John Burnell (johnb@huia.grace.cri.nz) for his
+work on the OS/2 port.  In addition, I am very grateful to Darrel Hankerson
+(hankedr@mail.auburn.edu), who is responsible for the Microsoft C and
+emx/gcc versions, as well Dominik Wujastyk (ucgadkw@ucl.ac.uk) for his
+contribution to the OS/2 version.
+
+Any questions should be emailed to me at davis@space.mit.edu.
+

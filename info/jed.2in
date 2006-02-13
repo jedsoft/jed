@@ -1,0 +1,589 @@
+
+File: jed.info,  Node: Tab Issues.,  Next: Searching,  Prev: Marking Text (Point and Mark),  Up: Basic Editing
+
+Tab Issues.
+-----------
+
+   Strictly speaking, JED uses only fixed column tabs whose size is
+determined by the value of the `TAB' variable. Setting the `TAB'
+variable to 0 causes JED to not use tabs as whitespace and to display
+tabs as 	.  Please note that changing the tab settings on the terminal
+will have no effect as far as JED is concerned.  The `TAB' variable is
+local to each buffer allowing every buffer to have its own tab setting.
+The variable `TAB_DEFAULT' is the tab setting that is given to all
+newly created buffers.  The default value for this variable is 8 which
+corresponds to eight column tabs.
+
+   JED is also able to "simulate" arbitrary tabs as well through the
+use of user defined tab stops.  Calling the function `edit_tab_stops'
+allows the user to interactively set the tab stops.  That is, one
+simply presses `ESC X' to get the `M-x' prompt and enters
+`edit_tab_stops'. A window will pop open displaying the current tab
+settings.  To add a tab stop, simply place a `T' in the appropriate
+column.  Use the space bar to remove a tab stop.
+
+   Here an argument is presented in favor of simulated tabs over real
+tab stops. First, consider what a "tab" really is.  A "tab" in a file is
+nothing more than a character whose ASCII value is 9.  For this reason,
+one also denotes a tab as ^I (Control-I).  Unlike most other ASCII
+characters, the effect of the tab character is device dependent and is
+controlled through the device tab settings.  Hence, a file which
+displays one way on one device may look totally different on another
+device if the tab settings do not correspond. For this reason, many
+people avoid tabs altogether and others the adopt "standard" of eight
+column tabs.  Even though people always argue about what the correct
+tab settings should be, it must be kept in mind that this is primarily
+a human issue and not a machine issue.
+
+   On a device employing tab stops, a tab will cause the cursor to jump
+to the position of the next tab stop.  Now consider the effect of
+changing the tab settings.  Assume that in one part of a document, text
+was entered using the first setting and in another part, the second
+setting was used. When moving from the part of the document where the
+current tab setting is appropriate to the part where the other tab
+setting was used will cause the document to look unformatted unless the
+appropriate tab settings are restored.  Wordprocessors store the tab
+settings in the file with the text so that the tabs may be dynamically
+changed to eliminate such unwanted behavior.  However, text editors
+such as JED, vi, Emacs, EDT, EVE (TPU), etc, do not store this
+information in the file. JED avoids this problem by using simulated
+tabs.  When using simulated tabs, tabs are not really used at all.
+Rather JED inserts the appropriate number of spaces to achieve the
+desired effect.  This also has the advantage of one being able to cut
+and paste from the part of a document using one tab setting to another
+part with a different tab setting.  This simple operation may lead to
+unwanted results on some wordprocessors as well as those text editors
+using real tab stops.
+
+
+File: jed.info,  Node: Searching,  Next: Rectangles,  Prev: Tab Issues.,  Up: Basic Editing
+
+Searching
+---------
+
+   JED currently has two kinds of searches: ordinary searches and
+incremental searches.  Both types of searches have forward and backward
+versions.  The actual functions for binding purposes are:
+
+                                    search_forward
+                                    search_backward
+                                    isearch_forward
+                                    isearch_backward
+
+   There is also the `occur' function which finds all occurrences of a
+single word (string).  This function has no backwards version. By
+default it is not bound to any keys, so to use it, `occur' must be
+entered at the `M-x' prompt (`ESC X') or one is always free to bind it
+to a key.
+
+   In the following only the incremental search is discussed.
+
+   The default type of search in Emacs in the incremental search.
+However, since this type of search is confusing to the uninitiated, the
+ordinary type of search has been made the default in JED's Emacs
+emulation.  For the traditional emacs keybinding, it is up to the user
+to provide the keybinding.
+
+   As the name suggests, an incremental search performs a search
+incrementally.  That is, as you enter the search string, the editor
+begins searching right away.  For example, suppose you wish to search
+for the string `apple'.  As soon as the letter `a' is entered into the
+incremental search prompt, JED will search for the first occurrence of
+`a'. Then as soon as the `p' is entered, JED will search from the
+current point for the string `ap', etc... This way, one is able to
+quickly locate the desired string with only a minimal amount of
+information.
+
+   Unlike the "ordinary" search, the incremental search is not
+terminated with the RET (^M) key.  Hitting the RET key causes JED to
+search for the next occurrence of the string based on the data
+currently entered at the prompt.  The search is terminated with the ESC
+key.
+
+   Finally, the DEL key (?) is used to erase the last character entered
+at the search prompt.  In addition to erasing the last character of the
+search string, JED will return back to the location of the previous
+match. Erasing all characters will cause the editor to return to the
+place where the search began.  Like many things, this is one of those
+that is easier to do than explain.  Feel free to play around with it.
+
+
+File: jed.info,  Node: Rectangles,  Next: Sorting,  Prev: Searching,  Up: Basic Editing
+
+Rectangles
+----------
+
+   JED has built-in support for the editing of rectangular regions of
+text.  One corner of rectangle is defined by setting the mark somewhere
+in the text.  The Point (cursor location) defines the opposite corner
+of the rectangle.
+
+   Once a rectangle is defined, one may use the following functions:
+
+`kill_rect'
+     Delete text inside the rectangle saving the rectangle          in
+     the internal rectangle buffer.
+
+`open_rect'
+     Push all text in the rectangle to the right outside the
+     rectangle.
+
+`copy_rect'
+     Copy text inside the rectangle to the internal rectangle
+     buffer.
+
+`blank_rect'
+     Replace all text inside the rectangle by spaces.
+
+   The function `insert_rect' inserts a previously killed or copied
+rectangle into the text at the Point.
+
+   These functions have no default binding and must be entered into the
+MiniBuffer by pressing `ESC X' to produce the `M-x' prompt.
+
+
+File: jed.info,  Node: Sorting,  Prev: Rectangles,  Up: Basic Editing
+
+Sorting
+-------
+
+   JED is capable of sorting a region of lines using the heapsort
+algorithm.  The region is sorted alphabetically based upon the ASCII
+values of the characters located within a user defined rectangle in the
+region.  That is, the rectangle simply defines the characters upon what
+the sort is based.  Simply move to the top line of the region and set
+the mark on the the top left corner of the rectangle.  Move to the
+bottom line and place the point at the position which defines the lower
+right corner of the rectangle. Press `ESC X' to get the `M-x' prompt
+and enter `sort' As as example, consider the following data:
+
+           Fruit:             Quantity:
+           lemons                3
+           pears                37
+           peaches             175
+           apples              200
+           oranges              56
+
+   To sort the data based upon the name, move the Point to the top left
+corner of the sorting rectangle.  In this case, the Point should be
+moved to the `l' in the word `lemons'.  Set the mark.  Now move to the
+lower right corner of the rectangle which is immediately after the `s'
+in `oranges'.  Pressing `ESC X' and entering `sort' yields:
+
+           Fruit:             Quantity:
+           apples              200
+           lemons                3
+           oranges              56
+           peaches             175
+           pears                37
+
+   Suppose that it is desired to sort by quantity instead.  Looking at
+the original (unsorted) data, move the Point to two spaces before the
+`3' on the line containing `lemons'.  The cursor should be right under
+the `u' in `Quantity'.  Set the mark.  Now move the Point to
+immediately after `56' on the `oranges' line and again press `ESC X'
+and enter `sort'.  This yields the desired sort:
+
+           Fruit:             Quantity:
+           lemons                3
+           pears                37
+           oranges              56
+           peaches             175
+           apples              200
+
+
+File: jed.info,  Node: Modes,  Next: Keyboard Macros,  Prev: Basic Editing,  Up: Top
+
+Modes
+=====
+
+   Jed supports two internal modes as well as user defined modes.  The
+two internal modes consist of a "C" mode for C Language programming and
+a "Wrap" mode for ordinary text editing.  Examples of user defined
+modes are Fortran mode and DCL mode.
+
+   Online documentation is provided for nearly every mode JED defines.
+For help on the current mode, press `ESC X' and enter `describe_mode'.
+A window will appear with a short description of the special features
+of the mode as well as a description of the variables affecting the
+mode.
+
+* Menu:
+
+* Wrap Mode::
+* Smart Quotes::
+* C Mode::
+* Fortran Mode::
+
+
+File: jed.info,  Node: Wrap Mode,  Next: Smart Quotes,  Up: Modes
+
+Wrap Mode
+---------
+
+   In this mode, text is wrapped at the column given by the `WRAP'
+variable. The default is 78.  The text does not wrap until the cursor
+goes beyond the wrap column and a space is inserted.
+
+* Menu:
+
+* Formatting paragraphs::
+
+
+File: jed.info,  Node: Formatting paragraphs,  Up: Wrap Mode
+
+Formatting paragraphs
+.....................
+
+   Paragraph delimiters are: blank lines, lines that begin with either a
+percent character, `%', or a backslash character `\'.  This definition
+is ideally suited for editing (La)TeX documents. However, it is
+possible for the user to change this definition.  See the the discussion
+of the hook, `is_paragraph_separator', in the section on hooks for
+explicit details on how to do this.
+
+   The paragraph is formatted according to the indentation of the
+current line.  If the current line is indented, the paragraph will be
+given the same indentation.  The default binding for this function is
+`ESC q'.
+
+   In addition, a paragraph may be "narrowed" by the `narrow_paragraph'
+function which is bound to ESC N by default.  This differs from the
+ordinary `format_paragraph' function described above in that the right
+margin is reduced by an amount equal to the indentation of the current
+line. For example:
+                   This paragraph is the result of using the
+                   function ``narrow_paragraph''.  Note how the
+                   right margin is less here than in the above
+                   paragraph.
+
+   Finally, if either of these functions is called from the keyboard
+with a prefix argument, the paragraph will be justified as well.  For
+example, pressing `ESC 1 ESC N' on the previous paragraph yields:
+                   This paragraph  is  the  result   of   using  the
+                   function   ``narrow_paragraph''.    Note  how the
+                   right margin   is less here  than  in   the above
+                   paragraph.
+
+   See the discussion of `format_paragraph_hook' in the section on hooks
+for details on how this is implemented.
+
+
+File: jed.info,  Node: Smart Quotes,  Next: C Mode,  Prev: Wrap Mode,  Up: Modes
+
+Smart Quotes
+------------
+
+   You have probably noticed that many key words in this document are
+quoted in double quotes like "this is double quoted" and `this is
+single quoted'.  By default, the double quote key (") and single quote
+key (') are bound to the function `text_smart_quote'.  With this
+binding and in wrap mode, the single quote key inserts a single quote
+with the "proper" orientation and the double quote key inserts two
+single quotes of the "proper" direction.  To turn this off, rebind the
+keys to `self_insert_cmd'.  Some modes already do this (e.g., EDT).
+
+   This brings up the question: if the double quote key is bound to
+`text_smart_quote' then how does one insert the character (")?  The most
+common way is to use the `quoted_insert' function which, by default, is
+bound to the single backquote (``') key.  This is the same mechanism
+that is used to insert control characters.  The other method is to use
+the fact that if the preceding character is a backslash, `\', the
+character simply self inserts.  Again, this is ideal for writing TeX
+documents.
+
+
+File: jed.info,  Node: C Mode,  Next: Fortran Mode,  Prev: Smart Quotes,  Up: Modes
+
+C Mode
+------
+
+   C Mode facilitates the editing of C files.  Much of the latter part
+of the development of the JED editor was done using this mode.  This
+mode may be customized by a judicious choice of the variables C_INDENT
+and C_BRACE as well as the bindings of the curly brace keys { and }.
+Experiment to find what you like or write your own using the S-Lang
+interface.
+
+   By default, the RET key is bound to the function
+`newline_and_indent'. This does what its name suggests: inserts a
+newline and indents.  Again, some modes may rebind this key.  In
+addition, the keys {, }, and TAB are also special in this mode.  The
+TAB key indents the current line and the { and } keys insert themselves
+and reindent.  If you do not like any of these bindings, simply rebind
+the offending one to `self_insert_cmd'.
+
+   Finally, the key sequence ESC ; is bound to a function called
+`c_make_comment'.  This function makes and and indents a C comment to
+the column specified by the value of the variable `C_Comment_Column'.
+If a comment is already present on the line, it is indented.
+
+
+File: jed.info,  Node: Fortran Mode,  Prev: C Mode,  Up: Modes
+
+Fortran Mode
+------------
+
+   Fortran Mode is written entirely in S-Lang and is designed to
+facilitate the writing of Fortran programs.  It features automatic
+indentation of Fortran code as well as automatic placement of Fortran
+statement Labels.
+
+   In this mode, the keys 0-9 are bound to a function `for_elebel'
+which does the following:
+
+  1. Inserts the calling character (0-9) into the buffer.
+
+  2. If the character is preceded by only other digit characters, it
+     assumes the character is for a label and moves it to the
+     appropriate position.
+
+  3. Reindents the line.
+
+This function is very similar to the one Emacs uses for labels.
+
+
+File: jed.info,  Node: Keyboard Macros,  Next: Shells and Shell Commands,  Prev: Modes,  Up: Top
+
+Keyboard Macros
+===============
+
+   JED is able to record a series of keystrokes from the terminal and
+replay them.  The saved series of keystrokes is known as a keyboard
+macro.  To begin a keyboard macro, simply enter the begin keyboard
+macro key sequence which is bound to ^X( if `emacs.sl' is loaded.  To
+stop recording the keystrokes, enter ^X).  Then to "execute" the macro,
+press ^Xe.  Please note that it is illegal to execute a macro while
+defining one and doing so generates an error.  A macro can be aborted at
+anytime by pressing the  key.
+
+   One nice feature JED includes is the "macro_query" function.  That
+is, while defining a macro, the key sequence ` q' will cause JED to
+issue the prompt `Enter String:' in the minibuffer.  Any string that is
+entered will be inserted into the buffer and the process of defining the
+macro continues. Every time the macro is executed, JED will prompt for
+a NEW string to be inserted.
+
+   Any time an error is generated, the process of defining the macro is
+aborted as well as execution of the macro.  This is very useful and may
+be exploited often.  For example, suppose you want to trim excess
+whitespace from the end of ALL lines in a buffer.  Let us also suppose
+that the number of lines in the buffer is less than 32000.  Then
+consider the following keystrokes:
+
+` ('
+     ; begin macro
+
+`'
+     ; goto end of line
+
+`ESC \'
+     ; trim whitespace
+
+`DOWN'
+     ; go down one line
+
+` )'
+     ; end macro
+
+Now the macro has been defined.  So move to the top of the buffer and
+execute it 32000 times:
+
+              `ESC <'            ; top of buffer
+              `ESC 3 2 0 0 0'    ; repeat next command 32000 times
+              ` e'             ; execute macro
+
+   If the buffer has less than 32000 lines, the end of the buffer will
+be reached and an error will be generated aborting the execution of the
+macro.
+
+
+File: jed.info,  Node: Shells and Shell Commands,  Next: Getting Help,  Prev: Keyboard Macros,  Up: Top
+
+Shells and Shell Commands
+=========================
+
+   The default binding to execute a shell command and pump the output
+to a buffer is `ESC !'.  JED will prompt for a command line and spawn a
+subprocess for its execution.
+
+   Strictly speaking, JED does not support interactive subprocesses.
+However, JED includes S-Lang code that "emulates" such a subprocess.
+It may invoked by typing `shell' at the `M-x' minibuffer prompt.  A
+window will be created with a buffer named `*shell*' attached to it.
+Any text entered at the system dependent shell prompt will be executed
+in a subprocess and the result stuffed back in the shell buffer. Don't
+try to execute any commands which try to take over the keyboard or the
+screen or something undesirable may happen.  Examples of types of
+stupid commands are spawning other editors, logging in to remote
+systems, et cetera.  Even `chdir' is stupid since its effect is not
+permanent.  That is,
+
+                > cd ..
+                > dir
+
+will not do what might naively be expected.  That is, the two commands
+above are not equivalent to the single command `dir ..'.
+
+
+File: jed.info,  Node: Getting Help,  Next: Editing Binary Files,  Prev: Shells and Shell Commands,  Up: Top
+
+Getting Help
+============
+
+   JED's help functions are bound to  by default.  For example, ` C'
+will show what function a key carries out, ` i' will run JED's info
+reader, ` f' will give help on a particular S-Lang function, etc...
+However, some modes may use the  key for something else.  For example,
+if EDT mode is in effect, then  may be bound to `bol' which causes the
+cursor to move to the beginning of the line. See the section on EDT for
+more information.
+
+   If JED is properly installed, this entire document is accessable
+from within the editor using JED's info reader.  ` i' will load
+`info_mode' allowing the user to browse the document as well as other
+"info" documents.
+
+
+File: jed.info,  Node: Editing Binary Files,  Next: Dired,  Prev: Getting Help,  Up: Top
+
+Editing Binary Files
+====================
+
+   JED may edit binary files as long as the proper precautions are
+taken. On IBMPC systems, this involves calling the S-Lang function
+`set_file_translation' with an integer argument.  If the argument is 0,
+files are opened as text files; otherwise, they are opened in binary
+mode.  There is no need to call this function for other systems.
+However, beware of the user variable `ADD_NEWLINE' which if non zero, a
+newline character will be appended to the file if the last character is
+not a newline character.  If you are going to edit binary files, it is
+probably a good idea to set this variable to zero.
+
+
+File: jed.info,  Node: Dired,  Next: Mail,  Prev: Editing Binary Files,  Up: Top
+
+Dired-- the Directory editor
+============================
+
+   In addition to editing files, JED is also able to rename and delete
+them as well.  JED's Dired mode allows one to do just this is a simple
+and safe manner.
+
+   To run dired, simply press `ESC X' and enter `dired' at the prompt.
+JED will load `dired.sl' and prompt for a directory name.  Once the
+directory is given, JED will display a list files in the directory in a
+buffer named `*dired*'.  One may use normal buffer movemment commands to
+move around this.   To delete one or more files, use the `d' key
+to "tag" the files.  This in itself does not delete them; rather, it
+simply marks them for deleting.  A capital `D' will appear in the left
+margin to indicate that a file has been tagged.  Simply hit the u key to
+untag a file.  The delete key will also untag the previously tagged
+file.
+
+   To actually delete the tagged files, press the `x' key.  This action
+causes JED to display a list of the tagged files in a separate window
+and prompt the user for confirmation.  Only when the proper
+confirmation is given, will the file be deleted.
+
+   Renaming a file is just as simple.  Simply move to the line containg
+the name of the file that you wish to rename and hit the `r' key.  JED
+will prompt for a filename or a directory name.  If a directory is
+given, the file will be moved to the new directory but will keep the
+name.  However, for the operation to succeed, the file must be one the
+same file system.  To rename tagged files to a different directory
+residing on the same file system, use the `m' key.  This has the effect
+of moving the tagged file out of the current directory to the new one.
+
+   One may also use the f key to read the file indicated by the cursor
+position into a buffer for editing.  If the file is a directory, the
+directory will be used for dired operations. In addition, one may also
+use the v to simply "view" a file.
+
+   Finally, the `g' key will re-read the current directory and the `h'
+and `?' keys provide some help.
+
+
+File: jed.info,  Node: Mail,  Next: Customization,  Prev: Dired,  Up: Top
+
+Mail
+====
+
+   This section applies to Unix and VMS systems only.  On these
+systems, it is possible to compose and send mail directly using JED.
+This assumes that the Unix system has `/usr/ucb/mail'.  It is trivial
+to modify `mail.sl' to support another Unix mailer.  For VMS, JED uses
+the callable mail interface present on VMS versions 5.0 and later.
+
+   The default binding for the mail is  m.  Alternatively, one may
+press `ESC X' and enter `mail' at the `M-x' prompt.  The mail function
+will cause a window to open with a buffer called `*mail*' which
+contains the three lines:
+
+           To:
+           Subject:
+           ---text follows this line---
+
+Simply enter the email address of the person that you want to send the
+mail to on the line containing `To:' and put the subject of the message
+on the next line labeled `Subject:'.  The text that you wish to mail
+follows the line labeled `---text follows this line---' which is used
+by JED as a marker. After you have composed the mail message, press
+`ESC X' and enter `send' at the `M-x' prompt.  For example, the
+following is an email requesting to be put on the JED mailing list:
+
+           To: davis@space.mit.edu
+           Subject: jed mailing list
+           ---text follows this line---
+           Hi,
+     
+              Please add me to the JED mailing list so that I may be notified
+           of upcoming releases of JED.
+     
+           --Maria
+
+   For VMS systems, the above example will probably fail because an
+internet address has been used for the example.  For systems using a
+TCP/IP package, it may be necessary to change
+`davis@space.mit.edu' to something like
+`smtp%"davis@space.mit.edu"'.
+
+   The mail function looks for a user defined hook called `mail_hook'
+and execute it if it exists.  This hook may be used to bind certain
+keys in the keymap associated with the `*mail*' buffer.  For example,
+
+             ( "^C"  local_unsetkey "send" "^C^C" local_setkey ) mail_hook
+
+defines the key `' in the mail keymap to perform the `send' function.
+Other possibilities include binding a key sequence, say ^C^W, to a
+function that inserts the contents of a signature file.
+
+
+File: jed.info,  Node: Customization,  Next: Eight Bit Clean Issues,  Prev: Mail,  Up: Top
+
+Customization
+=============
+
+   To extend JED, it is necessary to become familiar with the S-Lang
+programming language.  S-Lang not a standalone programming language
+like C, Pascal, etc... Rather it is meant to be embedded into a C
+program. The S-Lang programming language itself provides only
+arithmetic, looping, and branching constructs.  In addition, it defines
+a few other other primitive operations on its data structures.  It is
+up to the application to define other built-in operations tailored to
+the application.  That is what has been done for the JED editor.  See
+the document `slang.txt' for S-Lang basics as well as the JED
+Programmer's Manual for functions JED has added to the language.  In
+any case, look at the `*.sl' files for explicit examples.
+
+   For the most part, the average user will simply want to rebind some
+keys and change some variables (e.g., tab width).  Here I discuss
+setting keys and the predefined global variables.
+
+* Menu:
+
+* Setting Keys::
+* Predefined Variables::
+* Hooks::
+* S-Lang Programming Hints (Debugging)::
+

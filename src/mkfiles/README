@@ -1,0 +1,31 @@
+The *only* makefile here that I will continue to support is
+makefile.all.  It is used in conjunction with the DOS executable
+`mkmake.exe' to produce other makefiles.
+
+To produce makefiles for, e.g., an MSDOS executable compiled with BCC, use 
+the command
+
+      mkmake MSDOS BCC < makefile.all > makefile
+
+Similarly, other makefiles may be produced as
+
+      mkmake MSDOS DJGPP  < makefile.all > makefile
+      mkmake WIN32 MINGW32 < makefile.all > makefile
+      mkmake OS2 EMX   < makefile.all > makefile
+      mkmake WIN16 BCC NO_FOLD < makefile.all > makefile
+
+  (Note: NO_FOLD is to compile without folding support.)
+
+If you want to submit a makefile to me, please make additions to
+makefile.all.
+
+Notes:
+  
+  1. I have only tested makefiles for BCC, DJGPP, and MINGW32
+     development environments.  It is conceivable that makefile.all
+     may need modifed for other systems.
+
+  2. I think that the MINGW32 and CYGWIN32 spawnvp function is broken.
+     For that reason, I recommend that you use the BCC compiled
+     mswshell.exe executable in jed/bin.  Better yet, find out how to
+     achieve the same effect without using spawnvp.

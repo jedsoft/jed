@@ -1,0 +1,45 @@
+This is a short note explaining how to use JED with a color terminal.  This
+only applies to Unix and VMS spplies to Unix and VMS systems.  This is
+particularly relevant if you want to exploit JED's ability to do color
+syntax highlighting on a character based terminal.
+
+  *Note: If you use MS-Kermit as a terminal emulator, you will need
+	 to tell it what foreground/background colors you want via
+	 the `set term color' function.  For example, if you choose
+	 back on white as the `normal' color, put `set term color
+	 30 47' in your MSKermit.ini file.  This same comment
+	 applies to other color terminals which emulate this flawed
+	 color model.
+
+To use JED with a color terminal, it is necessary that the terminal
+understand ANSI color escape sequences.  If so, then it is possble to set
+up JED to use different foreground and background colors for the modeline,
+region highlighting, syntax highlighting, etc...
+
+To turn on ANSI color support, set the variable `USE_ANSI_COLORS' to a
+non-zero value.  If set to zero, the support is turned off. The colors may
+be specified using the set_color function as illustrated in jed.rc.  They
+only become active if USE_ANSI_COLORS is non-zero.
+
+Unfortunately, few termcaps provide information regarding whether the
+terminal is a color one or not. To interactively set USE_ANSI_COLORS, simply
+press `Ctrl-X ESC' and enter
+
+     USE_ANSI_COLORS = 1
+     
+at the `S-Lang>' prompt.  
+
+This variable is automatically set to a non-zero value by jed if
+environment variable COLORTERM exists.
+
+Finally, you could simply put:
+
+  define term_use_colors () { USE_ANSI_COLORS = 1; }
+  
+in your jed.rc (.jedrc) and define (alias) jed to be:
+
+  alias colorjed 'jed -f term_use_colors'
+
+
+  
+

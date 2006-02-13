@@ -1,0 +1,516 @@
+
+This file documents the various hooks for extending JED.
+
+A `hook' is simply a user defined S-Lang function that may be used to extend
+the editor or to modify how it behaves under certain circumstances.  There
+are two kinds of hooks that vary according to whether the hook is called
+``internally'' from the editor by the underlying C code or whether the hook
+is called from another S-Lang function.  The hooks may be subdivided further
+according to their scope.  They may apply to all buffers (globally), only
+buffers sharing the same mode (modal), or to a single buffer (local).
+
+===========================================================================
+Buffer-local Hooks
+===========================================================================
+
+Buffer-local hooks are hooks that are defined on a buffer-by-buffer
+basis.  These hooks are associated with the current buffer via the
+function `set_buffer_hook'.  The syntax for this function is
+
+    set_buffer_hook (name_of_hook, &hook_function);
+    
+Here name_of_hook is a string that indicates the name of the hook that
+is being set.  The second argument, `hook_function' specifies the
+S-Lang function to be associated with the hook.  The calling syntax of
+the hook function varies with the hook.
+
+The following buffer-local hooks are supported:
+
+ "par_sep"
+    This hook is used to determine whether or no the current line
+    constitutes the beginning or the end of a paragraph. The function
+    attached to this hook must be defined to take no arguments and
+    return 1 if the current line is the beginning or end of a
+    paragraph, or 0 otherwise.  If this hook has not been defined, the
+    global hook is_paragraph_separator will be called.
+    
+ "mark_paragraph_hook"
+    If this hook exists, it will be used to mark the paragraph that is
+    about to be formatted.  It should place a mark at the beginning of
+    the paragraph and leave the editing point at the end of the
+    paragraph.
+
+ "forward_paragraph_hook"
+ "backward_paragraph_hook"
+ "format_paragraph_hook"
+
+ "indent_hook"
+    If this hook exists, it will be used by the indent_line function
+    to indent the line.  It takes no arguments and returns no values.
+
+ "wrap_hook"
+    This hook is called whenever a character insertion has caused a
+    line to be wrapped.  It takes no arguments and returns nothing.
+
+    Here is a simple example of the use of this hook: Often when
+    writing text, I use numbered paragraphs or lists, e.g., in jed's
+    changes.txt file.  After wrapping, I want paragraphs to be
+    indented beyond the number.  This is accomplished via a wrap_hook
+    such as:
+
+       static define text_mode_wrap_hook ()
+       {
+	  variable p;
+	  push_spot ();
+	  go_up(1); bol (); skip_white ();
+	  p = what_column ();
+	  skip_chars ("0-9"); 
+	  if ((p != what_column ()) and looking_at (". "))
+	    {
+	       go_down(1); bol (); skip_white ();
+	       p = what_column ();
+	       bol (); trim ();
+	       whitespace (p + 3);
+	    }
+	  pop_spot ();
+       }
+
+    and then declared as the wrap-hook in text mode:
+    
+       define text_mode_hook ()
+       {
+          set_buffer_hook ("wrap_hook", &text_mode_wrap_hook);
+       }
+
+ "wrapok_hook"
+     This hook may be used to enable automatic wrapping on a
+     line-by-line basis.  Jed will call this hook prior to wrapping a
+     line, and if it returns a non-zero value, the line wll be
+     wrapped.  See lib/slmode.sl for an example of its use.
+
+ "newline_indent_hook"
+     If this hook exists, it will be called by the newline_and_indent
+     function.  It takes no arguments and returns nothing.
+
+ "bob_eob_error_hook"
+     This hook is called whenever one of the internal cursor
+     movement functions would have generated an end-of-buffer or
+     beginning-of-buffer error.  It is passed an integer that
+     indicates which function would have generated the error.
+     Specifically:
+
+                       -1  previous_line_cmd
+                       -2  previous_char_cmd
+                       -3  page_up
+                        1  next_line_cmd
+                        2  next_char_cmd
+                        3  page_down
+     
+     The hook returns nothing.
+
+ "mouse_down", "mouse_up", "mouse_drag", "mouse_2click", "mouse_3click"
+     These hooks are used to override default hooks defined by the
+     mouse_set_default_hook function.
+
+ "update_hook"
+     This hook is called prior to updating the display.  It takes no
+     arguments and returns nothing.
+
+===========================================================================
+S-Lang Hooks
+===========================================================================
+
+This type of hook is called from another S-Lang function. 
+The most common hook of this class is a mode-hook, e.g., c_mode_hook.
+
+*_mode_hook
+-----------
+
+Nearly all mode-setting functions call a hook via the `run_mode_hooks'
+function that the user may use for customization.  Examples, include
+text_mode_hook, c_mode_hook, etc.
+
+These are hooks that get called when the editor enters a particular
+mode.  Usually, one just wants to setup some key bindings for the mode.
+For this purpose, the `local_setkey' function should be used.  For
+instance, c_mode sets the RETURN key to the function
+`newline_and_indent'.  Some users may not like this binding and prefer
+the simpler `newline' function.  Defining a c_mode_hook easily permits
+this customization:
+
+     define c_mode_hook ()
+     {  
+         local_setkey ("newline", "\r");
+     }
+
+global_mode_hook
+----------------
+
+This hook is called by the run_mode_hooks function prior to calling
+the actual mode-hook.  It takes a single argument whose value is the
+name of the mode-hook.  For instance, many users prefer to have the
+TAB key always insert a TAB instead of running the indent_line
+function.  The easiest way to enforce this for every mode is through a
+global_mode_hook such as:
+
+    define global_mode_hook (hook_name)
+    {
+        if (hook_name != "c_mode_hook")
+	  local_setkey ("self_insert_cmd", "\t");
+    }
+
+This example illustrates how to cause the TAB key to insert a TAB in
+all modes _except_ C-mode.
+
+keybindings_hook
+----------------
+
+This hook is called after a set of keybindings have been loaded.  The
+function takes a single argument that indicates the name of the
+keybindings, e.g., "emacs", "ide", etc:
+
+    define keybindings_hook (name)
+    {
+       if (name == "emacs")
+         {
+	    unsetkey ("^A");
+	    setkey ("dabbrev", "^A");
+	 }
+    }
+
+
+===========================================================================
+			    Internal Hooks
+===========================================================================
+Internal hooks are hooks that are called by the C functions of the
+editor.
+
+mode_hook
+---------
+
+One of the most important hooks that the user may want to define or
+customize if `mode_hook'.  This hook may be used to associate a mode
+with a file or buffer.
+
+Immediately after JED loads a file into a buffer, it calls `mode_hook'
+to set the mode of the buffer.  The default value is defined in
+`site.sl'.  This hook is called with with the file name extension of
+the file as its only parameter.  This function sets the mode of the
+buffer based on the value of the file name extension.
+
+There are several ways to customize this hook.  The easiest is to
+simply call the function `add_mode_for_extension' with the mode that
+is to be associated with a particular extension.  For example, suppose
+that you edit files with names like `main.c++'. To have `c_mode'
+associated with files of this type, simply call:
+
+          add_mode_for_extension ("c", "c++");
+
+The important point to realize is that the first parameter is the name
+of the mode but it should not include the `_mode' part of the mode
+name.
+
+The other way to customize mode_hook is through the function reference
+`Mode_Hook_Pointer' which the user can define to set the mode.  If the
+function pointed to by `Mode_Hook_Pointer' returns non-zero,
+`mode_hook' will return to the calling routine. Specifically, the
+default value of `mode_hook' looks like:
+
+           define mode_hook (ext)
+	   {
+	      if (@Mode_Hook_Pointer (ext)) return;
+	      .
+	      .
+	   }
+       
+One could simply point `Mode_Hook_Pointer' to something like:
+       
+           define set_no_mode (ext)
+	   {
+	      return 1;
+	   }
+	   Mode_Hook_Pointer = &set_no_mode;
+	   
+Typically, one would do something useful like:
+       
+          define my_mode_hook (ext)
+	  {
+	     if (strcmp ("pas", ext)) return 0;
+	     my_pascal_mode ();
+	     return 1;
+	  }
+	  Mode_Hook_Pointer = &my_mode_hook;
+	  
+Here `my_pascal_mode' is a hypothetical pascal mode.
+
+As another example of the `mode_hook', consider the case where one
+would like to set the mode based on the filename and NOT the
+extension.  For example, the Elm mailer user files of the form
+`snd.XXX' and one would like to use text mode on such files. Again,
+the solution is to use the `Mode_Hook_Pointer':
+
+          define my_mode_hook (ext)
+	  {
+	     variable file;
+	     (file,,,) = getbuf_info ();
+	     if (0 != strncmp (file, "snd.", 4)) return 0;
+	     text_mode ();
+	     return 1;
+	  }
+	  Mode_Hook_Pointer = &my_mode_hook;
+
+Finally, the global variable `Default_Mode' may be pointed to a
+function to set the mode if a suitable mode was not obtained from the
+extension.  By default, it has the value:
+
+           Default_Mode = &text_mode;
+
+format_paragraph_hook
+---------------------
+
+This hook is called after a paragraph is formatted but only if a
+prefix argument was given prior to the execution of the internal
+function `format_paragraph'.  More explicitly, the default binding of
+`format_paragraph' is `ESC q'.  Pressing `ESC 1' immediately before
+pressing `ESC q' will format the paragraph and then call
+`format_paragraph_hook'.  The default definition for this hook is in
+tmisc.sl, and causes the paragraph to be left and right justified.
+
+is_paragraph_separator
+----------------------
+
+This hook is called by the editor to locate paragraph delimiters.  If
+defined, it applies globally to all buffers except those which have a
+local definition (see the description of the buffer-local `par_sep'
+hook). The default value is coded internally in C and basically
+reduces to:
+
+       define is_paragraph_separator ()
+       {
+         bol();
+	 if (looking_at("\\") or looking_at("%")) return (1);
+         skip_white();
+	 return (eolp());
+       }
+
+which is useful for TeX mode.  The hook must return a non-zero value
+if the current line is a paragraph delimiter or zero if it is not.
+
+
+command_line_hook
+-----------------
+
+This hook is called from within the editor to parse the command line
+arguments, and it also loads the user's personal initialization file.
+It is defined in the file `site.sl' and should not be customized by
+the user.
+
+===========================================================================
+Internal Hook Lists
+===========================================================================
+
+Some internal hooks may be chained together.  All hooks in a chain may
+be executed, or executed until some value is returned.  A hook may be
+inserted at the beginning of a specified chain via the add_to_hook
+function, or appended to the chain via append_to_hook.
+
+_jed_startup_hooks
+------------------
+
+  This set of hooks are called just prior to entering the main editor
+  loop of the editor.  All the hooks in the chain are called.  Each
+  hook takes no arguments and should return no values.
+  An example of the hook is provided in site.sl.  
+
+_jed_exit_hooks
+---------------
+
+  The hooks in this chain are called from the internal function
+  `exit_jed'.  Each hook in the chain is called until one of them
+  returns a value less than or equal to zero.  If one of these hooks
+  returns such a value, then the attempted exit will be aborted.  If
+  one of the hooks recursively calls `exit_jed', then exit will take
+  place without calling other exit-hooks.
+
+  For instance, suppose that one wants to be prompted before exiting.
+  The following accomplishes this:
+
+        static define my_exit_hook ()
+	{
+	   variable ch;
+	   
+	   if (BATCH) return 1;
+	   
+	   ch = get_mini_response ("Really Exit?");
+	   if ((ch == 'y') or (ch == 'Y'))
+	     return 1;
+	   return 0;
+	}
+       add_to_hook ("_jed_exit_hooks", &my_exit_hook);
+
+_jed_quit_hooks
+----------------
+
+   The hooks in this list are called by the `quit_jed' function.
+   Each hook in this list takes no arguments and returns no value.
+   All hooks in the list are executed.
+   
+   For systems such as MSDOS or VMS that do not have a separate
+   working directory for each process, it might be desirable to ensure
+   that the editor exit in the same directory in which it started.
+   The following quit-hook may be used to implement this:
+       
+          define my_quit_hook ()
+	  {
+	     variable dir;
+	     if (bufferp("*scratch*"))
+	       {
+		  (,dir,,) = getbuf_info ("*scratch*");
+		  () = chdir (dir);
+	       }
+	  }
+
+_jed_suspend_hooks
+------------------
+
+   The hooks in this list are called by the `sys_spawn_cmd' function
+   which causes the editor to be suspended on Unix, or spawn a
+   subprocess on other systems.  They are called prior to the
+   suspension action and if any hook returns less than or equal to
+   zero, suspension will not take place.   
+
+_jed_resume_hooks
+-----------------
+
+   All the hooks in the _jed_resume_hooks list are called after
+   returning from a suspension state.  Hooks in this list take no
+   arguments and return no values.  A silly example of this hook is:
+   
+       static define my_resume_hook ()
+       {
+          message ("Welcome back to JED");
+       }
+       add_to_hook ("_jed_resume_hooks", &my_resume_hook);
+
+  
+_jed_init_display_hooks, _jed_reset_display_hooks
+--------------------------------------------------
+
+  The corresponding hooks in these lists are called after
+  initializing, or prior to resetting the display.  The hook functions
+  take no parameters and return no values.  See lib/mousex.sl for an
+  example of these hooks.
+
+_jed_save_buffer_before_hooks, _jed_save_buffer_after_hooks
+------------------------------------------------------------
+
+  The hooks in these lists are called before and after the current
+  buffer has been saved, respectively.  Each hook is passed a single
+  argument: the name of the file to which the buffer is to be written.
+  The hooks return no values.
+
+_jed_find_file_before_hooks
+----------------------------
+
+  Each of the hooks in this list will be passed the name of the file
+  to be found.  The hooks in this list are called until one returns a
+  value of 1, which indicates that the file has been found and read
+  into a buffer. Otherwise, the hook must return 0 to allow the rest
+  of the hooks in the chain to run.  If a hook indicates that the file
+  has been found, then the related hooks _jed_find_file_after_hooks
+  will _not_ be run.
+
+_jed_find_file_after_hooks
+---------------------------
+
+  After a file has been read into a buffer and had its mode set, all
+  the hooks in this list are called.  These hooks take no arguments
+  and return no values.
+
+_jed_insert_file_hooks
+-----------------------
+
+  The hooks in this list are called upon to insert the specified file,
+  passed as an argument to the hook into the current buffer.  If the
+  specified file has been inserted, the hook should return 1;
+  otherwise it must return 0 to indicate that the file was not
+  inserted.
+
+_jed_read_file_hooks
+---------------------
+
+  The hooks in this list are called upon to read the specified file
+  passed as an argument to the hook, into an empty buffer.  If the
+  specified file has been read into the buffer, the hook should return 1;
+  otherwise it must return 0 to indicate that the file was not read.
+
+  Note that the difference between these hooks and
+  _jed_insert_file_hooks is somewhat subtle.  The main difference
+  between the two sets of hooks is that the scope of
+  _jed_insert_file_hooks is more limited.  See lib/compress.sl for an
+  example of these hooks.
+
+_jed_write_region_hooks, _jed_append_region_hooks
+-------------------------------------------------
+
+  These hooks are called upon whenever a region is written out, or
+  appended to a file.  Each of the hooks in these lists will be passed
+  the name of the file.  The hooks execute until one returns 1 to
+  indicate that the region was written (or appended) to the specified
+  file; otherwise the hooks should return 0.
+
+_jed_set_mode_hooks
+--------------------
+   
+  These hooks are called before `mode_hook' is called to set the
+  buffer's mode.  Like `mode_hook', the filename extension is passed
+  to the hooks in this list.  If one of the hooks returns 1, the the
+  mode is considered to be set.  If none of the hooks return 1, then
+  mode_hook will be called to set the mode.
+
+
+_jed_switch_active_buffer_hooks
+-------------------------------
+
+  These hooks are called from the main editing loop if the active
+  buffer has changed to a different one.  The active buffer is defined
+  to be the buffer that one is interactively editing. One should note
+  that this does not mean that these hooks will be called whenever one
+  switches to a different buffer because such a switch may not be
+  visible from within the main editing loop.  Also note that these
+  hooks may not be called during the execution of keyboard macros
+  since they are executed outside of the main editing loop.  Nor will
+  these hooks be called when the mini-buffer is the current buffer
+  since the mini-buffer is not considered to be an active buffer.
+
+  Functions in this list take a single argument: the name of the
+  previously active buffer.  No value should be returned.
+  
+  The following example shows how this hook may be used to set the
+  name of the Xjed window to that of the currently active buffer.
+
+     static define my_switch_buffer_hook (old_buffer)
+     {
+         x_set_window_name (whatbuf ());
+     }
+     add_to_hook ("_jed_switch_active_buffer_hooks", &my_switch_buffer_hook);
+
+
+_jed_before_key_hooks
+---------------------
+
+  These hooks are called just prior to the execution of the function
+  bound to a key.  Hooks of this type are passed a single value
+  representing the function to be executed, and return no value.  The
+  value representing the key function may be either a string giving
+  the name of the function or as a reference via a Ref_Type object.
+  
+      define before_key_hook (fun) {...}
+
+
+_jed_after_key_hooks
+---------------------
+
+  Hooks of this type are called after the function associated with a
+  key has been executed.  They are passed no value and should return
+  no value.

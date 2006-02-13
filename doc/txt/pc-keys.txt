@@ -1,0 +1,121 @@
+%% Key codes returned for most Alt keys and Control-keypad keys
+%% The ALT key definitions assume that the global variable ALT_CHAR is 0.
+%% The default value of ALT_CHAR is 27 which means that if you want to
+%% use the values presented below, you will have to set ALT_CHAR to 0 in
+%% your jed.rc file.
+
+%% example:  define Alt-1 to goto top of buffer (bob):
+%%
+%%     setkey ("bob",  "^@x");
+%%
+%% For other keys, use this function to find out what they represent:
+%%
+define ibmpc_showkey()
+{
+   variable c, ch, key = Null_String;
+   variable timeout = 50;  % 5 seconds
+   
+   flush ("Press key:");
+   
+   while (input_pending(timeout))
+     {
+	timeout = 0;
+	c = getkey();
+	if (c == 0) ch = "^@"; 
+	else 
+	  {
+	     if (c == 224) ch = "\\xE0";
+	     else if (c > 127) ch = strcat ("\\d", string (c));
+	     else ch = char (c);
+	  }
+	key = strcat(key, ch);
+     }
+   % insert (key);
+   message (key);
+}
+
+
+% Alt-1	^@x
+% Alt-2	^@y 
+% Alt-3	^@z
+% Alt-4	^@{
+% Alt-5	^@|
+% Alt-6	^@}
+% Alt-7	^@~
+% Alt-8	^@
+% Alt-A	^@^^
+% Alt-B	^@0
+% Alt-C	^@.
+% Alt-D	^@ SPACE
+% Alt-E	^@^R
+% Alt-F	^@!
+% Alt-G	^@\"
+% Alt-H	^@#
+% Alt-I	^@^W
+% Alt-J	^@$
+% Alt-K	^@%
+% Alt-L	^@&
+% Alt-M	^@2
+% Alt-N	^@1
+% Alt-O	^@^X
+% Alt-P	^@^Y
+% Alt-Q	^@^P
+% Alt-R	^@^S
+% Alt-S	^@^_ 
+% Alt-T	^@^T
+% Alt-U	^@^V
+% Alt-V	^@/
+% Alt-W	^@^Q
+% Alt-X	^@-
+% Alt-Y	^@^U
+% Alt-Z	^@,
+%
+% These are the 6 keys on the small keypad + 4 Arrow keys below
+%   Key         No-modifier     Ctrl        Shift        Alt
+% -------------------------------------------------------------
+%  Home           \xE0G        \xE0w        \xE00     ^@\d151
+%  Up             \xE0H        \xE0\d141    \xE01     ^@\d152
+%  PgUp           \xE0I        \xE0\d132    \xE02     ^@\d153
+%  Left           \xE0K        \xE0s        \xE03     ^@\d155
+%  Right          \xE0M        \xE0t        \xE04     ^@\d157
+%  End            \xE0O        \xE0u        \xE05     ^@\d159
+%  Down           \xE0P        \xE0\d145    \xE06     ^@\d160
+%  PgDn           \xE0Q        \xE0v        \xE07     ^@\d161
+%  Insert         \xE0R        \xE0\d146    \xE08     ^@\d162
+%  Delete         \xE0S        \xE0\d147    \xE09     ^@\d163
+
+% These keys are located on the numeric keypad
+%   Key         No-modifier     Ctrl        Shift        Alt
+% -------------------------------------------------------------
+%  End           Oq          ^@u
+%  Insert        Op          ^@\d146
+%  Home          Ow          ^@w
+%  Delete        On          ^@\d147
+%  PgUP          Oy          ^@\d132
+%  PgDn          Os          ^@v
+%  Left          Ot          ^@s
+%  Right         Ov          ^@t
+%  Up            Ox          ^@\d141
+%  Down          Or          ^@\d145
+%  Five          Ou          ^@\d143
+%  Slash         OQ          ^@\d149       OQ      ^@\d164
+%  Star          OR          ^@\d150       OR      ^@7
+%  Minus         OS          ^@\d142       OS      ^@J
+%  Plus          Om          ^@\d144       Om      ^@N
+%  Enter         OM                        OM      ^@\d166
+% 
+% 
+%   Key         No-modifier     Ctrl        Shift        Alt
+% -------------------------------------------------------------
+%   F1:           ^@;           ^@^          ^@T         ^@h
+%   F2:           ^@<           ^@_          ^@U         ^@i
+%   F3:           ^@=           ^@`          ^@V         ^@j
+%   F4:           ^@>           ^@a          ^@W         ^@k
+%   F5:           ^@?           ^@b          ^@X         ^@l
+%   F6:           ^@@           ^@c          ^@Y         ^@m
+%   F7:           ^@A           ^@d          ^@Z         ^@n
+%   F8:           ^@B           ^@e          ^@[         ^@o
+%   F9:           ^@C           ^@f          ^@\         ^@p
+%   F10:          ^@D           ^@g          ^@]         ^@q
+%   F11:          ^@\d133       ^@\d137      ^@\d135     ^@\d139
+%   F12:          ^@\d134       ^@\d136      ^@\d136     ^@\d140

@@ -1,0 +1,13 @@
+JED Wordstar keybindings:  `^' means to use Ctrl key (e.g., ^X = Ctrl-X).
+Press ^KI to close this window. Use ^6 to quit the command line.
+
+CURSOR            GO TO            BLOCK     DELETE    MISC         EXIT
+^S left  ^D right ^R  prev.screen  ^KB begin ^G  char  ^B reformat  ^KX save
+^E up    ^X down  ^C  next screen  ^KK end   ^Y  line  ^K0..9 set   ^KZ shell
+^A <word ^F >word ^QS beg.of line  ^KV move  ^T  >word  bookmark    FILE
+SEARCH            ^QD end of line  ^KC copy  ^[o <word ^KI one      ^KE new  
+^QT toggle case   ^QR top of file  ^KW file  ^QY >line  window      ^KR insert
+^QF find text     ^QC end of file  ^KY del   ^U undo   ALT-X cmd    ^KQ kill
+^QA replace       ^Q0..9 bookmark  ^KT word             line        ^KD save
+^L  find next     ^QI to line No.  ^K/ filter                       ^KS s.new
+                  ^QP previous     ^KU upcase                       ^KP switch

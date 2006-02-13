@@ -1,0 +1,1600 @@
+\documentstyle{article}
+\setlength{\oddsidemargin}{0mm}
+\setlength{\evensidemargin}{0mm}
+\setlength{\textwidth}{160mm}
+\setlength{\topmargin}{-10mm}
+\setlength{\textheight}{210mm}
+\parindent=0mm
+\parskip=5mm
+
+\def\mytitle{The JED Editor}
+
+\newlength{\pagewidth}
+\setlength{\pagewidth}{\textwidth}
+%\addtolength\pagewidth\marginparwidth
+% \addtolength\pagewidth\marginparsep
+
+\makeatletter
+\def\ps@headings{\def\@oddfoot{}%
+\def\@oddhead{\makebox[\textwidth][l]{\underline{\hbox to \pagewidth{\bf
+\mytitle\hfill\thepage}}}}%
+\def\@evenfoot{}%
+\def\@evenhead{\makebox[\textwidth][l]{\underline{\hbox to \pagewidth{\bf
+\mytitle\hfill\thepage}}}}}%
+\pagestyle{headings}
+
+\newcommand{\slang}{{\bf S-Lang}}
+\newcommand{\jed}{{\bf jed}}
+\newcommand{\exmp}[1]{{\tt #1}}
+\newcommand{\var}[1]{{\tt #1}}
+\newcommand{\key}[1]{{\sc #1}}
+
+\begin{document}
+\tableofcontents
+\pagebreak
+
+\section{Introduction}
+
+ This document presents some basic information that users should know in
+ order to use \jed{} effectively.  Any questions, comments, or bug reports,
+ should be email-ed to the author. Please be sure to include the version
+ number.  To be notified of future releases of \jed{}, email to the address
+ below and your email address will be placed on the announcement list. The
+ email address is:
+\begin{verbatim}
+      davis@space.mit.edu  (Internet)
+      davis@ohstpy (BITNET)
+\end{verbatim}
+
+\section{Installing JED}
+
+ Building \jed{} from its sources requires the use of a C compiler that
+ understands function prototypes.  \jed{} has been successfully built with
+ \verb|cc| on the ULTRIX, VMS, and IRIX operating systems.  In addition, it
+ has been created using \verb|gcc| under SunOS and Borland's BCC 3.0 for the
+ PC.
+
+ Detailed installation instructions are in separate, operating system
+ dependent files.  They are:
+\begin{verbatim}
+       UNIX:   install.unx
+        VMS:   install.vms
+      IBM-PC:   install.pc
+\end{verbatim}
+
+  When \jed{} starts up, it will first try to load a site initialization file
+  called \verb|site.sl|.  Site specific commands are placed here.  Most
+  likely, \verb|site.sl| will define some functions, default hooks,
+  etc\ldots  What goes in it is left to the discretion of the user or system
+  manager. See the file \verb|site.sl| for examples.
+
+  When loading \verb|site.sl| as well as other \verb|S-Lang| files (the
+  user's personal initialization file, \verb|.jedrc| or \verb|jed.rc|, is a
+  special case, see below), \jed{} searches all directories specified by the
+  environment variable \verb|JED_LIBRARY|, and if the file is not found, \jed{}
+  will look for it in the default directory. The environment variable
+  \verb|JED_LIBRARY| is a comma separated list of directories.  Here are
+  some examples of setting this variable for different systems:
+
+\begin{verbatim}
+      VMS:    define/job JED_LIBRARY  dev$lib:[jedfiles]
+      UNIX:   setenv JED_LIBRARY '/usr/local/lib/jed,~/jed'
+      IBMPC:  set JED_LIBRARY = c:\editors\jed\lib
+\end{verbatim} %$
+
+
+  You will probably want to put define \verb|JED_LIBRARY| in your login
+  startup file, e.g., \verb|autoexec.bat|, \verb|login.com|, or
+  \verb|.cshrc|.
+
+  \jed{} versions 0.92 and later allow the value of \verb|JED_LIBRARY| to be
+  specified at compile time an it may only be necessary to define
+  \verb|JED_LIBRARY| as an environment variable to override its
+  pre--compiled value.
+
+\section{Startup Files}
+
+  Once \jed{} has loaded the startup file \verb|site.sl|, it will try to load
+  the user's personal initialization file.  It first looks in the directory
+  pointed to by the environment variable \verb|JED_HOME|. If that fails, it
+  then searches the \verb|HOME| directory and upon failure simply loads the
+  one supplied in \verb|JED_LIBRARY|.
+
+  The name of the user initialization file varies according to the operating
+  system.  On Unix systems this file must be called \verb|.jedrc| while on
+  VMS and MSDOS, it goes by the name \verb|jed.rc|.  For VMS systems, the
+  \verb|HOME| directory corresponds to the \verb|SYS$LOGIN| %$
+  logical name while for the other two systems, it corresponds to the
+  \verb|HOME| environment variable.
+
+  The purpose of this file is to allow an individual user to tailor \jed{} to
+  his or her personal taste.  Most likely, this will involve choosing an
+  initial set of key-bindings, setting some variables, and so on.
+
+\section{Starting JED}
+
+  Normally, \jed{} is started as
+
+\begin{verbatim}
+     jed <file name>
+\end{verbatim}
+  or 
+\begin{verbatim}
+     jed <file list>
+\end{verbatim}
+
+  However, \jed{} also takes the switches defined in the following table:
+\begin{verbatim}
+     Switch          Meaning
+     ------          -------
+      -batch         run JED in batch mode.  This is a non-interactive mode.
+      -n             do not load jed.rc (.jedrc) file.
+      -g <n>         goto line `n' in buffer
+      -l <file>      load `file' as S-Lang code.
+      -f <function>  execute S-Lang function named `function'
+      -s <string>    search forward for `string'
+      -2             split window
+      -i <file>      insert <file> into current buffer.
+\end{verbatim} 
+
+  For example, the command line:
+\begin{verbatim}
+                jed slang.c -g 1012 -s error -2 file.c -f eob
+\end{verbatim}
+
+
+  will start up \jed{}, read in the file \var{slang.c}, goto line 1012 of
+  \var{slang.c} and start searching for the string \var{error}, split the
+  window, read in \var{file.c} and goto the end of the file.
+
+  If the \var{-batch} parameter is used, it must be the first parameter.
+  Similarly, if \var{-n} is used, it must also be the first parameter unless
+  used with the \var{-batch} parameter in which case it must the second.
+  \jed{} should only be run in batch mode when non--interactive operation is
+  desired. For example, \jed{} is distributed with a file, \verb|mkdoc.sl|,
+  that contains S--Lang code to produce a help file for functions and
+  variables.  In fact, the help file \verb|jed_funs.hlp| was created by
+  entering
+
+\begin{verbatim}
+                jed -batch -n -l mkdoc.sl
+\end{verbatim}
+
+  at the command line.
+
+  Now suppose that you want to read in a file with the name of one of the
+  switches, say \verb|-2|.  How can this be done?  The answer depends upon
+  the operating system.  For Unix, instead of \var{jed -2}, use 
+  \var{jed ./-2}; for VMS, use \var{jed []-2}.
+  The case for MS-DOS is similar to Unix except that one must use the
+  backslash.
+
+  It is possible to completely change \jed{}'s command line syntax through the
+  use of the user defined function \verb|command_line_hook|. In fact, the
+  behavior described above is dictated by the value of
+  \verb|command_line_hook| as distributed in \verb|site.sl|.  See the
+  section on hooks for details.
+
+\section{Emulating Other Editors}
+
+  \jed{}'s ability to create new functions using the S--Lang programming
+  language as well as allowing the user to choose key bindings, makes the
+  emulation of other editors possible.  Currently, \jed{} provides reasonable
+  emulation of the Emacs, EDT, and Wordstar editors.
+
+\subsection{Emacs Emulation}
+
+  Emacs Emulation is provided by the \slang{} code in \verb|emacs.sl|. The
+  basic functionality of Emacs is emulated; most Emacs users should have no
+  problem with \jed{}.  To enable Emacs emulation in \jed{}, make sure that the
+  line
+\begin{verbatim}
+      evalfile ("emacs"); pop ():
+\end{verbatim}
+  is in your \verb|jed.rc| (\verb|.jedrc|) startup file.  \jed{} is distributed
+  with this line already present in the default \verb|jed.rc| file.
+
+\subsection{EDT Emulation}
+
+  For EDT emulation, \verb|edt.sl| must be loaded.  This is accomplished by
+  ensuring that the line
+
+\begin{verbatim}
+      evalfile ("edt"); pop ();
+\end{verbatim}
+
+
+  is in present in the \verb|jed.rc| (\verb|.jedrc|) Startup File.  \jed{} is
+  distributed with EDT emulation enabled on VMS and Unix systems but the
+  above line is commented out in the \verb|jed.rc| file on MS-DOS systems.
+
+  This emulation provides a near identical emulation of the EDT keypad key
+  commands.  In addition, the smaller keypad on the newer DEC terminals is
+  also setup.  It is possible to have both EDT and Emacs emulation at the
+  same time.  The only restriction is that \verb|emacs.sl| must be loaded
+  before \verb|edt.sl| is loaded.
+
+  One minor difference between \jed{}'s EDT emulation and the real EDT concerns
+  the \key{Ctrl-H} key.  EDT normally binds this to move the cursor to the
+  beginning of the line.  However, \jed{} uses it as a help key. Nevertheless,
+  it is possible to re-bind it.  See the section on re-binding keys as well as
+  the file \verb|edt.sl| for hints.  Alternatively, simply put
+\begin{verbatim}
+      unsetkey ("^H"); setkey ("bol", "^H");
+\end{verbatim}
+  in the \verb|jed.rc| startup file after \verb|edt.sl| is loaded.  Keep in
+  mind that the \key{Ctrl-H} key will no longer function as a help key if
+  this is done.
+
+  EDT emulation for PCs only work with the enhanced keyboard.  When
+  \verb|edt.sl| is loaded, a variable \verb|NUMLOCK_IS_GOLD| is set which
+  instructs \jed{} to interpret the Num-Lock key on the square numeric keypad to
+  function as the EDT GOLD key.  In fact, this keypad should behave exactly
+  like the keypad on VTxxx terminals.  The only other problem that remains
+  concerns the \key{+} key on the PC keypad.  This key occupies two VTxxx
+  key positions, the minus and the comma (delete word and character) keys.
+  Thus a decision had to be made about which key to emulate.  I chose the
+  \key{+} key to return the characters \key{Esc O l} which \jed{} maps
+  to the delete character function.  This may be changed to the delete word
+  function if you prefer.  See the file \verb|edt.sl| for details.
+
+  The \key{GOLD}--\key{GOLD} key combination toggles the keypad between
+  application and numeric states.  On the PC, this is not possible. Instead,
+  the PC \key{F1} key has been instructed to perform this task.
+
+\subsection{Wordstar Emulation}
+
+  \verb|wordstar.sl| contains the \slang{} code for \jed{}'s Wordstar
+  emulation. Adding the line
+\begin{verbatim}
+      evalfile ("wordstar"); pop ();
+\end{verbatim}
+  to your \verb|jed.rc| (\verb|.jedrc|) startup file will enable \jed{}'s
+  Wordstar emulation.
+
+
+\section{File Types and Sizes}
+
+  \jed{} is primarily a text editor; however, it can also edit binary files
+  (see the section on editing binary files).  As a result, \jed{} may edit
+  lines of arbitrary length (actually this depends upon the size of an
+  integer).  It is capable of editing arbitrarily large buffers as long as
+  there is enough memory for the buffer as well as the overhead involved.
+  This editor employs a linked list representation; hence, the overhead can
+  be quite high.
+
+\section{Backup and Auto-save Files}
+
+  On UNIX and MS-DOS systems, \jed{} creates backup files by appending
+  a \verb|~| character to the filename.  The VMS operating system
+  handles backup files itself.  \jed{} periodically auto-saves its
+  buffers.  On UNIX and MS-DOS, auto-save files are prefixed with the
+  pound sign \var{\#}.  On VMS, they are prefixed with \verb|_$|.  %$
+  The auto-save interval may be changed by setting the variable
+  \verb|MAX_HITS| to the desired value. The default is 300 ``hits'' on
+  the buffer. A ``hit'' is defined as a key which MAY change the state
+  of the buffer. Cursor movement keys do not cause hits on the buffer.
+
+  Like many of \jed{}'s features, the names of auto-save and backup files can be
+  controlled by the user.  The file \verb|site.sl| defines two functions,
+  \verb|make_backup_filename|, and \verb|make_autosave_filename| that
+  generate the file names described in the previous paragraph.  Like all
+  S--Lang functions, these functions may be overloaded and replaced with
+  different ones.  See also information about \verb|find_file_hook| in the
+  section on hooks.
+
+  On UNIX systems, \jed{} catches most signals and tries to auto-save its
+  buffers in the event of a crash or if the user accidently disconnects from
+  the system (\var{SIGHUP}).
+
+  If an auto-save file exists and you is desire to recover data from the
+  auto-save file, use the function \verb|recover_file|.  Whenever \jed{} finds a
+  file, it checks to see if an auto-save file exists as well as the file's
+  date.  If the dates are such that the auto-save file is more recent \jed{}
+  will display a message in the mini-buffer alerting the user of this fact
+  and that the function \verb|recover_file| should be considered.
+
+\section{Status line and Windows}
+
+  \jed{} supports multiple windows.  Each window may contain the same buffer or
+  different buffers.  A status line is displayed immediately below each
+  window.  The status line contains information such as the \jed{} version
+  number, the buffer name, ``mode'', etc.  Please beware of the following
+  indicators:
+
+   \var{**}\\
+        buffer has been modified since last save.
+        
+   \var{\%\%}\\
+        buffer is read only.
+        
+   \var{m}\\
+        Mark set indicator.  This means a region is being defined.
+        
+   \var{d}\\
+        File changed on disk indicator.  This indicates that the
+        file associated with the buffer is newer than the buffer itself.
+        
+   \var{s}\\
+        spot pushed indicator.
+        
+   \var{+}\\
+        Undo is enabled for the buffer.
+        
+   \var{[Macro]}\\
+        A macro is being defined.
+        
+   \var{[Narrow]}
+        Buffer is narrowed to a region of LINES.
+
+\section{Mini-Buffer}
+
+  The Mini-Buffer consists of a single line located at the bottom of the
+  screen. Much of the dialog between the user and \jed{} takes place in this
+  buffer.  For example, when you search for a string, \jed{} will prompt you
+  for the string in the Mini-Buffer.
+
+  The Mini-Buffer also provides a direct link to the \slang{} interpreter. To
+  access the interpreter, press \key{Ctrl-X} \key{Esc} and the \var{S-Lang>}
+  prompt will appear in the Mini-Buffer.  Enter any valid \slang{} expression
+  for evaluation by the interpreter.
+
+  It is possible to recall data previously entered into the Mini-Buffer by
+  using the up and down arrow keys.  This makes it possible to use and edit
+  previous expressions in a convenient and efficient manner.
+
+\subsection{Command Line Completion}
+
+  The \jed{} editor has several hundred built--in functions as well as many
+  more written in the \slang{} extension language.  Many of these functions
+  are bound to keys and many are not.  It is simply unreasonable to require
+  the user to remember if a function is bound to a key or not and, if it is,
+  to remember the key to which it is bound. This is especially true of those
+  functions that are bound but rarely used.  More often than not, one simply
+  forgets the exact name or spelling of a function and requires a little
+  help.  For this reason, \jed{} supports command line completion in the
+  mini-buffer.  This function, called \verb|emacs_escape_x|, is bound to the
+  key \key{Esc X}. This is one binding that must be remembered!
+
+  As an example, suppose that you are editing several buffers and you wish
+  to insert the contents of one buffer into the current buffer.  The
+  function that does this is called \verb|insert_buffer| and has no default
+  key-binding. Pressing \key{Esc X} produces the prompt \var{M-x}. This
+  prompt, borrowed from the Emacs editor, simply means that \key{Esc X}
+  was pressed.  Now type \var{in} and hit the space bar or the \key{Tab}
+  key. In this context (completion context) the space bar and the \key{Tab}
+  will expand the string in the Mini-Buffer up until it is no longer unique.
+  In this case, \verb|insert_file| and \verb|insert_buffer| are only the two
+  functions that start with \var{in}.  Hence, \var{in} will expand to
+  \verb|insert_| at which point it becomes necessary to enter more
+  information to uniquely specify the desired function.  However, in a
+  completion context, the space bar also has a special property that enables
+  the user to cycle among the possible completions.  For this example,
+  hitting the space bar twice consecutively will produce the string
+  \verb|insert_file| and hitting it again produces the desired string
+  \verb|insert_buffer|.
+
+  The role of the space bar in completion is a point where Emacs and \jed{}
+  differ. Emacs will pop up a buffer of possible completions but \jed{} expects
+  the user to press the space bar to cycle among them.  Both have there pros
+  and cons.  Frequently, one sees messages on the Usenet newsgroup
+  \verb|gnu.emacs.help| from Emacs users asking for the kind of completion
+  \jed{} employs.
+
+\subsection{File Names}
+
+  \jed{} takes every file name and ``expands it'' according to a set of rules
+  which vary according to the Operating System.  For concreteness, consider
+  \jed{} running under MS-DOS.  Suppose the user reads a new file into the
+  editor via the \verb|find_file| command which emacs binds to \key{Ctrl-X}
+  \key{Ctrl-F}. Then the following might be displayed in the mini-buffer:
+
+\begin{verbatim}
+      Find File: C:\JED\SLANG\
+\end{verbatim}
+
+
+  Here \jed{} is prompting for a file name in the directory \verb|\JED\SLANG|
+  on disk \var{C:}. However, suppose the user wants to get the file
+  \verb|C:\JED\SRC\VIDEO.C|. Then the following responses produce equivalent
+  filenames when \jed{} expands them internally:
+\begin{verbatim}
+      Find File: C:\JED\src\video.c
+      Find File: C:\JED\SLANG\..\src\video.c
+      Find File: C:\JED\SLANG\../src/video.c
+\end{verbatim}
+
+  Note that the on MS-DOS systems, \jed{} replaces the \var{/} with a \verb|\|
+  and that case is not important.  Now suppose you wish to get the file
+  \var{VIDEO.C} from disk \var{A:}.  The following are also valid:
+
+\begin{verbatim}
+      Find File: A:\video.c
+      Find File: A:video.c
+      Find File: C:\JED\SLANG\a:\video.c
+\end{verbatim}
+
+  In the last case, \jed{} is smart enough to figure out what is really meant.
+  Although the above examples are for MS-DOS systems, the rules also apply to
+  Unix and VMS systems as well.  The only change is the file name syntax.
+  For example, on VMS
+\begin{verbatim}
+      sys$manager:[misc]dev$user:[davis.jed]vms.c
+      dev$user:[davis.jed]vms.c
+\end{verbatim} %$
+  become equivalent filenames upon expansion.  For unix, the following are
+  equivalent:
+
+\begin{verbatim}
+      /user1/users/davis/jed/unix.c
+      /usr/local/src//user1/users/davis/jed/unix.c
+      /usr/local/src/~/jed/unix.c
+\end{verbatim}
+
+  Note the last example: the tilde character \verb|~| always expands into
+  the users \verb|HOME| directory, in this case to \verb|/user1/users/davis|.
+
+  When \jed{} writes a buffer out to a file, it usually prompts for a file name
+  in the minibuffer displaying the directory associated with the current
+  buffer.  At this point a name can be appended to the directory string to
+  form a valid file name or the user may simply hit the \key{RET} key.  If
+  the latter alternative is chosen, \jed{} simply writes the buffer to the file
+  already associated with the buffer.  Once the buffer is written to a file,
+  the buffer becomes attached to that file.
+
+\subsection{Buffer Name and File Name Completion}
+
+  When \jed{} prompts for a file name or a buffer name, the space bar and
+  the \key{Tab} keys are special.  Hitting the \key{Tab} key will complete
+  the name that is currently in the minibuffer up until it is no longer
+  unique. At that point, you can either enter more characters to complete
+  the name or hit the space bar to cycle among the possible completions.
+  The spacebar must be pressed at least twice to cycle among the
+  completions.
+
+  On MSDOS and VMS, it is possible to use wildcard characters in the file
+  name for completion purposes.  For example, entering \key{*.c} and hitting
+  the space bar will cycle among file names matching \key{*.c}.
+  Unfortunately, this feature is not available on unix systems.
+
+\section{Basic Editing}
+
+  Editing with \jed{} is pretty easy--- most keys simply insert themselves.
+  Movement around the buffer is usually done using the arrow keys or page up
+  and page down keys.  If \verb|edt.sl| is loaded, the keypads on VTxxx
+  terminals function as well.  Here, only the highlights are touched upon
+  (cut/paste operations are not considered ``highlights''). In the
+  following, any character prefixed by the \verb|^| character denotes a
+  Control character. On keyboards without an explicit Escape key,
+  \key{Ctrl-[} will most likely generate and Escape character.
+
+  A ``prefix argument'' to a command may be generated by first hitting the
+  \key{Esc} key, then entering the number followed by pressing the desired
+  key.  Normally, the prefix argument is used simply for repetition.  For
+  example, to move to the right 40 characters, one would press
+  \key{Esc 4 0} followed immediately by the right arrow key. This
+  illustrates the use of the repeat argument for repetition.  However, the
+  prefix argument may be used in other ways as well.  For example, to begin
+  defining a region, one would press the \key{Ctrl-@} key.  This sets the
+  mark and begins highlighting.  Pressing the \key{Ctrl-@} key with a prefix
+  argument will abort the act of defining the region and to pop the mark.
+
+  The following list of useful keybindings assumes that \verb|emacs.sl| has
+  been loaded.
+
+   \key{Ctrl-L}\\
+     Redraw screen.
+
+   \key{Ctrl-\_}\\
+     Undo  (Control-underscore, also \key{Ctrl-X u}).
+
+   \key{Esc q}\\
+     Reformat paragraph (wrap mode).  Used with a prefix
+     argument. will justify the paragraph as well.
+
+    \key{Esc n}\\
+                narrow paragraph (wrap mode).  Used with a prefix
+                argument will justify the paragraph as well.
+
+    \key{Esc ;}\\
+                Make Language comment (Fortran and C)
+                
+    \key{Esc} \verb|\|\\
+                Trim whitespace around point
+                
+    \key{Esc !}\\
+                Execute shell command
+                
+    \key{Esc \$}\\
+                Ispell word (unix)
+                
+    \key{Ctrl-X ?}\\
+                Show line/column information.
+                
+      \key{`}\\
+                \verb|quoted_insert| --- insert next char as is (backquote key)
+                
+    \key{Esc s}\\
+                Center line.
+                
+    \key{Esc u}\\
+                Upcase word.
+                
+    \key{Esc d}\\
+                Downcase word.
+                
+    \key{Esc c}\\
+                Capitalize word.
+                
+    \key{Esc x}\\
+                Get M-x minibuffer prompt with command completion
+                
+    \key{Ctrl-X Ctrl-B}\\
+                pop up a list of buffers
+                
+    \key{Ctrl-X Ctrl-C}\\
+                exit \jed{}
+                
+    \key{Ctrl-X 0}\\
+                Delete Current Window
+                
+    \key{Ctrl-X 1}\\
+                One Window.
+                
+    \key{Ctrl-X 2}\\
+                Split Window.
+                
+    \key{Ctrl-X o}\\
+                Other window.
+                
+    \key{Ctrl-X b}\\
+                switch to buffer
+                
+    \key{Ctrl-X k}\\
+                kill buffer
+                
+    \key{Ctrl-X s}\\
+                save some buffers
+                
+    \key{Ctrl-X Esc}\\
+                Get \var{S-Lang>} prompt for interface to the \slang{}
+                interpreter. 
+                
+    \key{Esc .}\\
+                Find tag (unix ctags compatible)
+
+    \key{Ctrl-@}\\
+                Set Mark (Begin defining a region).  Used with a
+                prefix argument aborts the act of defining the region and
+                pops the Mark.
+
+
+\subsection{Undo}
+
+   One of \jed{}'s nicest features is the ability to undo nearly any change
+   that occurs within a buffer at the touch of a key.  If you delete a word,
+   you can undo it.  If you delete 10 words in the middle of the buffer,
+   move to the top of the buffer and randomly make changes, you can undo all
+   of that too.
+
+   By default, the \verb|undo| function is bound to the key \key{Ctrl-\_}
+   (Ascii 31). Since some terminals are not capable of generating this
+   character, it is also bound to the key sequence \key{Ctrl-X} u.
+
+   Due to the lack of virtual memory support on IBMPC systems, the
+   \verb|undo| function is not enabled on every buffer.  In particular, it
+   is not enabled for the \verb|*scratch*| buffer.  However, it is enabled
+   for any buffer which is associated with a file.  A ``plus'' character on
+   the left hand side of the status line indicates that undo is enabled for
+   the buffer. It is possible to enable undo for any buffer by using the
+   \verb|toggle_undo| function.
+
+\subsection{Marking Text (Point and Mark)}
+
+   Many commands work on certain regions of text.  A region is defined by
+   the \verb|Point| and the \verb|Mark| The \verb|Point| is the location of
+   the current editing point or cursor position.  The \verb|Mark| is the
+   location of a mark. The mark is set using the \verb|set_mark_cmd| which
+   is bound to \key{Ctrl-@} (Control-2 or Control-Space on some keyboards).
+   When the mark is set, the \var{m} mark indicator will appear on the
+   status line.  This indicates that a region is being defined.  Moving the
+   cursor (\verb|Point|) defines the other end of a region.  If the variable
+   \var{HIGHLIGHT} is non-zero, \jed{} will highlight the region as it is
+   defined.
+
+Even without highlighting, it is easy to see where the location of the mark
+is by using the \verb|exchange| command which is bound to \key{Ctrl-X} \key{Ctrl-X}.
+This simply exchanges the \verb|Point| and the \verb|Mark|.  The region is
+still intact since it is defined only by the \verb|Point| and \verb|Mark|.
+Pressing \key{Ctrl-X} \key{Ctrl-X} again restores the mark and Point back to their
+original locations.  Try it.
+
+\subsection{Tab Issues.}
+
+  Strictly speaking, \jed{} uses only fixed column tabs whose size is
+  determined by the value of the \verb|TAB| variable. Setting the \verb|TAB|
+  variable to 0 causes \jed{} to not use tabs as whitespace and to display
+  tabs as \key{Ctrl-I}. Please note that changing the tab settings on the
+  terminal will have no effect as far as \jed{} is concerned.  The
+  \verb|TAB| variable is local to each buffer allowing every buffer to have
+  its own tab setting.  The variable \verb|TAB_DEFAULT| is the tab setting
+  that is given to all newly created buffers.  The default value for this
+  variable is 8 which corresponds to eight column tabs.
+
+  \jed{} is also able to ``simulate'' arbitrary tabs as well through the use
+  of user defined tab stops.  Calling the function \verb|edit_tab_stops|
+  allows the user to interactively set the tab stops.  That is, one simply
+  presses \key{Esc X} to get the \verb|M-x| prompt and enters
+  \verb|edit_tab_stops|. A window will pop open displaying the current tab
+  settings.  To add a tab stop, simply place a \key{T} in the appropriate
+  column.  Use the space bar to remove a tab stop.
+
+  Here an argument is presented in favor of simulated tabs over real tab
+  stops. First, consider what a ``tab'' really is.  A ``tab'' in a file is
+  nothing more than a character whose ASCII value is 9.  For this reason,
+  one also denotes a tab as \verb|^I| (\key{Ctrl-I}).  Unlike most other
+  ASCII characters, the effect of the tab character is device dependent and
+  is controlled through the device tab settings.  Hence, a file which
+  displays one way on one device may look totally different on another
+  device if the tab settings do not correspond. For this reason, many people
+  avoid tabs altogether and others the adopt ``standard'' of eight column
+  tabs.  Even though people always argue about what the correct tab settings
+  should be, it must be kept in mind that this is primarily a human issue
+  and not a machine issue.
+
+  On a device employing tab stops, a tab will cause the cursor to jump to
+  the position of the next tab stop.  Now consider the effect of changing
+  the tab settings.  Assume that in one part of a document, text was entered
+  using the first setting and in another part, the second setting was used.
+  When moving from the part of the document where the current tab setting is
+  appropriate to the part where the other tab setting was used will cause
+  the document to look unformatted unless the appropriate tab settings are
+  restored. Wordprocessors store the tab settings in the file with the text
+  so that the tabs may be dynamically changed to eliminate such unwanted
+  behavior. However, text editors such as \jed{}, vi, Emacs, EDT, EVE (TPU),
+  etc, do not store this information in the file. \jed{} avoids this problem
+  by using simulated tabs.  When using simulated tabs, tabs are not really
+  used at all. Rather \jed{} inserts the appropriate number of spaces to
+  achieve the desired effect.  This also has the advantage of one being able
+  to cut and paste from the part of a document using one tab setting to
+  another part with a different tab setting.  This simple operation may lead
+  to unwanted results on some wordprocessors as well as those text editors
+  using real tab stops.
+
+\subsection{Searching}
+
+  \jed{} currently has two kinds of searches: ordinary searches and
+  incremental searches.  Both types of searches have forward and backward
+  versions.  The actual functions for binding purposes are:
+
+\begin{verbatim}
+      search_forward
+      search_backward
+      isearch_forward
+      isearch_backward
+\end{verbatim}
+
+  There is also the \verb|occur| function which finds all occurrences of a
+  single word (string).  This function has no backwards version. By default
+  it is not bound to any keys, so to use it, \verb|occur| must be entered at
+  the \verb|M-x| prompt (\key{Esc X}) or one is always free to bind it
+  to a key.
+
+  In the following only the incremental search is discussed.
+
+  The default type of search in Emacs in the incremental search. However,
+  since this type of search is confusing to the uninitiated, the ordinary
+  type of search has been made the default in \jed{}'s Emacs emulation. For the
+  traditional emacs keybinding, it is up to the user to provide the
+  keybinding.
+
+  As the name suggests, an incremental search performs a search
+  incrementally. That is, as you enter the search string, the editor begins
+  searching right away.  For example, suppose you wish to search for the
+  string \var{apple}. As soon as the letter \key{a} is entered into the
+  incremental search prompt, \jed{} will search for the first occurrence of
+  \var{a}. Then as soon as the \key{p} is entered, \jed{} will search from the
+  current point for the string \var{ap}, etc. This way, one is able to
+  quickly locate the desired string with only a minimal amount of
+  information.
+
+  Unlike the ``ordinary'' search, the incremental search is not terminated
+  with the \key{Enter} key.  Hitting the \key{Enter} key causes \jed{} to
+  search for the next occurrence of the string based on the data currently
+  entered at the prompt.  The search is terminated with the \key{Esc} key.
+
+  Finally, the \key{DEL} key (\key{Ctrl-?}) is used to erase the last
+  character entered at the search prompt.  In addition to erasing the last
+  character of the search string, \jed{} will return back to the location of
+  the previous match. Erasing all characters will cause the editor to return
+  to the place where the search began.  Like many things, this is one of
+  those that is easier to do than explain.  Feel free to play around with
+  it.
+
+\subsection{Rectangles}
+
+  \jed{} has built-in support for the editing of rectangular regions of
+  text. One corner of rectangle is defined by setting the mark somewhere in
+  the text.  The Point (cursor location) defines the opposite corner of the
+  rectangle.
+
+  Once a rectangle is defined, one may use the following functions:
+
+      \verb|kill_rect|\\
+         Delete text inside the rectangle saving the rectangle
+         in the internal rectangle buffer.
+         
+      \verb|n_rect|\\
+         Push all text in the rectangle to the right outside the
+         rectangle.
+         
+      \verb|copy_rect|\\
+         Copy text inside the rectangle to the internal rectangle
+         buffer.
+         
+      \verb|blank_rect|\\
+         Replace all text inside the rectangle by spaces.
+
+
+  The function \verb|insert_rect| inserts a previously killed or copied
+  rectangle into the text at the Point.
+
+  These functions have no default binding and must be entered into the
+  MiniBuffer by pressing \key{Esc X} to produce the \verb|M-x| prompt.
+
+\subsection{Sorting}
+
+  \jed{} is capable of sorting a region of lines using the heapsort
+  algorithm. The region is sorted alphabetically based upon the ASCII values
+  of the characters located within a user defined rectangle in the region.
+  That is, the rectangle simply defines the characters upon what the sort is
+  based. Simply move to the top line of the region and set the mark on the
+  top left corner of the rectangle.  Move to the bottom line and place the
+  point at the position which defines the lower right corner of the
+  rectangle. Press \key{Esc X} to get the \verb|M-x| prompt and enter
+  \verb|sort| As as example, consider the following data:
+
+\begin{verbatim}
+      Fruit:             Quantity:
+      lemons                3
+      pears                37
+      peaches             175
+      apples              200
+      oranges              56
+\end{verbatim}
+
+  To sort the data based upon the name, move the Point to the top left
+  corner of the sorting rectangle.  In this case, the Point should be moved
+  to the \var{l} in the word \var{lemons}.  Set the mark.  Now move to the
+  lower right corner of the rectangle which is immediately after the \var{s}
+  in \var{oranges}.  Pressing \key{Esc X} and entering \verb|sort| yields:
+
+\begin{verbatim}
+      Fruit:             Quantity:
+      apples              200
+      lemons                3
+      oranges              56
+      peaches             175
+      pears                37
+\end{verbatim}
+
+  Suppose that it is desired to sort by quantity instead.  Looking at the
+  original (unsorted) data, move the Point to two spaces before the \var{3}
+  on the line containing \var{lemons}.  The cursor should be right under the
+  \var{u} in \var{Quantity}.  Set the mark.  Now move the Point to immediately after \var{56} on
+  the \var{oranges} line and again press \key{Esc X} and enter \verb|sort|.
+  This yields the desired sort:
+
+\begin{verbatim}
+      Fruit:             Quantity:
+      lemons                3
+      pears                37
+      oranges              56
+      peaches             175
+      apples              200
+\end{verbatim}
+
+\section{Modes}
+
+  \jed{} supports two internal modes as well as user defined modes.  The two
+  internal modes consist of a ``C'' mode for C Language programming and a
+  ``Wrap'' mode for ordinary text editing.  Examples of user defined modes
+  are Fortran mode and DCL mode.
+
+  Online documentation is provided for nearly every mode \jed{} defines.
+  For help on the current mode, press \key{Esc X} and enter
+  \verb|describe_mode|.  A window will appear with a short description of the
+  special features of the mode as well as a description of the variables
+  affecting the mode.
+
+\subsection{Wrap Mode}
+
+  In this mode, text is wrapped at the column given by the \verb|WRAP|
+  variable. The default is 78.  The text does not wrap until the cursor goes
+  beyond the wrap column and a space is inserted.
+
+\subsubsection{Formatting paragraphs}
+
+  Paragraph delimiters are: blank lines, lines that begin with either a
+  percent character, \var{\%}, or a backslash character \verb|\|.  This
+  definition is ideally suited for editing \LaTeX{} documents. However, it
+  is possible for the user to change this definition.  See the discussion of
+  the hook, \verb|is_paragraph_separator|, in the section on hooks for
+  explicit details on how to do this.
+
+  The paragraph is formatted according to the indentation of the current
+  line. If the current line is indented, the paragraph will be given the
+  same indentation.  The default binding for this function is \key{Esc q}.
+
+  In addition, a paragraph may be ``narrowed'' by the
+  \verb|narrow_paragraph| function which is bound to \key{Esc N} by default.
+  This differs from the ordinary \verb|format_paragraph| function described
+  above in that the right margin is reduced by an amount equal to the
+  indentation of the current line. For example:
+\begin{verbatim}
+      This paragraph is the result of using the
+      function ``narrow_paragraph''.  Note how the
+      right margin is less here than in the above
+      paragraph.
+\end{verbatim}
+
+  Finally, if either of these functions is called from the keyboard with a
+  prefix argument, the paragraph will be justified as well.  For example,
+  pressing \key{Esc 1 Esc N} on the previous paragraph yields:
+\begin{verbatim}
+      This paragraph  is  the  result   of   using  the
+      function   ``narrow_paragraph''.    Note  how the
+      right margin   is less here  than  in   the above
+      paragraph.
+\end{verbatim}
+
+  See the discussion of \verb|format_paragraph_hook| in the section on hooks
+  for details on how this is implemented.
+
+\subsection{Smart Quotes}
+
+  You have probably noticed that many key words in this document are quoted
+  in double quotes like ``this is double quoted'' and `this is single
+  quoted'. By default, the double quote key (") and single quote key (') are
+  bound to the function \verb|text_smart_quote|.  With this binding and in
+  wrap mode, the single quote key inserts a single quote with the ``proper''
+  orientation and the double quote key inserts two single quotes of the
+  ``proper'' direction. To turn this off, rebind the keys to
+  \verb|self_insert_cmd|.  Some modes already do this (e.g., EDT).
+
+  This brings up the question: if the double quote key is bound to
+  \verb|text_smart_quote| then how does one insert the character (")?  The
+  most common way is to use the \verb|quoted_insert| function which, by
+  default, is bound to the single backquote (\key{`}) key.  This is the same
+  mechanism that is used to insert control characters.  The other method is
+  to use the fact that if the preceding character is a backslash, \verb|\|,
+  the character simply self inserts.  Again, this is ideal for writing
+  \TeX{} documents.
+
+\subsection{C Mode}
+
+  C Mode facilitates the editing of C files.  Much of the latter part of the
+  development of the \jed{} editor was done using this mode.  This mode may be
+  customized by a judicious choice of the variables \verb|C_INDENT| and
+  \verb|C_BRACE| as well as the bindings of the curly brace keys \var{\{} 
+  and \key{\}}.  Experiment to find what you like or write your own using the
+  \slang{} interface.
+
+  By default, the \key{Enter} key is bound to the function
+  \verb|newline_and_indent|. This does what its name suggests: inserts a
+  newline and indents.  Again, some modes may rebind this key.  In addition,
+  the keys \var{\{}, \var{\}}, and \key{Tab} are also special in this mode.
+  The \key{Tab} key indents the current line and the \var{\{} and \var{\}}
+  keys insert themselves and reindent.  If you do not like any of these
+  bindings, simply rebind the offending one to \verb|self_insert_cmd|.
+
+  Finally, the key sequence \key{Esc ;} is bound to a function called
+  \verb|c_make_comment|.  This function makes and indents a C comment to the
+  column specified by the value of the variable \verb|C_Comment_Column|.  If
+  a comment is already present on the line, it is indented.
+
+\subsection{Fortran Mode}
+
+  Fortran Mode is written entirely in \slang{} and is designed to facilitate
+  the writing of Fortran programs.  It features automatic indentation of
+  Fortran code as well as automatic placement of Fortran statement Labels.
+
+  In this mode, the keys \key{0}-\key{9} are bound to a function
+  \verb|for_elebel| which does the following:
+\begin{enumerate}
+%\begin{itemize} 
+\item Inserts the calling character (0-9) into the buffer.
+
+\item If the character is preceded by only other digit characters, it
+      assumes the character is for a label and moves it to the appropriate
+      position.
+
+\item Reindents the line.
+\end{enumerate}
+%\end{itemize} 
+
+  This function is very similar to the one Emacs uses for labels.
+
+\section{Keyboard Macros}
+
+  \jed{} is able to record a series of keystrokes from the terminal and replay
+  them.  The saved series of keystrokes is known as a keyboard macro.  To
+  begin a keyboard macro, simply enter the begin keyboard macro key sequence
+  which is bound to \key{Ctrl-X (} if \verb|emacs.sl| is loaded.  To stop
+  recording the keystrokes, enter \key{Ctrl-X )}.  Then to ``execute'' the
+  macro, press \key{Ctrl-X e}. Please note that it is illegal to execute a
+  macro while defining one and doing so generates an error.  A macro can be
+  aborted at anytime by pressing the \key{Ctrl-G} key.
+
+  One nice feature \jed{} includes is the \verb|macro_query| function.  That
+  is, while defining a macro, the key sequence \key{Ctrl-X q} will cause
+  \jed{} to issue the prompt \var{Enter String:} in the minibuffer.  Any
+  string that is entered will be inserted into the buffer and the process of
+  defining the macro continues. Every time the macro is executed, \jed{}
+  will prompt for a NEW string to be inserted.
+
+  Any time an error is generated, the process of defining the macro is
+  aborted as well as execution of the macro.  This is very useful and may be
+  exploited often.  For example, suppose you want to trim excess whitespace
+  from the end of ALL lines in a buffer.  Let us also suppose that the
+  number of lines in the buffer is less than 32000.  Then consider the
+  following keystrokes:
+\begin{verbatim}
+      Ctrl-X (                      (begin macro)
+      Ctrl-E                        (goto end of line)
+      ESC                           (trim whitespace)
+      Down Arrow                    (go down one line)
+      Ctrl-X )                      (end macro)
+\end{verbatim} 
+
+Now the macro has been defined.  So move to the top of the buffer and
+execute it 32000 times:
+\begin{verbatim}
+      ESC <                         (top of buffer)
+      ESC 3 2 0 0 0                 (repeat next command 32000 times
+      Ctrl-X e                      (execute macro)
+\end{verbatim}
+If the buffer has less than 32000 lines, the end of the buffer will be
+reached and an error will be generated aborting the execution of the macro.
+
+\section{Shells and Shell Commands}
+
+  The default binding to execute a shell command and pump the output to a
+  buffer is \key{Esc !}.  \jed{} will prompt for a command line and spawn a
+  subprocess for its execution.
+
+  Strictly speaking, \jed{} does not support interactive subprocesses.
+  However, \jed{} includes \slang{} code that ``emulates'' such a
+  subprocess.  It may invoked by typing \verb|shell| at the \verb|M-x|
+  minibuffer prompt.  A window will be created with a buffer named
+  \var{*shell*} attached to it. Any text entered at the system dependent
+  shell prompt will be executed in a subprocess and the result stuffed back
+  in the shell buffer. Don't try to execute any commands which try to take
+  over the keyboard or the screen or something undesirable may happen.
+  Examples of types of stupid commands are spawning other editors, logging
+  in to remote systems, et cetera.  Even \var{chdir} is stupid since its
+  effect is not permanent.  That is,
+
+\begin{verbatim}
+      > cd ..
+      > dir
+\end{verbatim}
+
+
+  will not do what might naively be expected.  That is, the two commands
+  above are not equivalent to the single command \var{dir ..}.
+
+\section{Getting Help}
+
+  \jed{}'s help functions are bound to \key{Ctrl-H} by default.  For example,
+  \key{\key{Ctrl-H} C} will show what function a key carries out,
+  \key{\key{Ctrl-H} i} will run \jed{}'s info reader, \key{Ctrl-H f} will give
+  help on a particular \slang{} function, etc.  However, some modes may use
+  the \key{Ctrl-H} key for something else.  For example, if EDT mode is in
+  effect, then \key{Ctrl-H} may be bound to \verb|bol| which causes the
+  cursor to move to the beginning of the line. See the section on EDT for
+  more information.
+
+  If \jed{} is properly installed, this entire document is accessable from
+  within the editor using \jed{}'s info reader.  \key{Ctrl-H i} will load
+  \verb|info_mode| allowing the user to browse the document as well as other
+  ``info'' documents.
+
+\section{Editing Binary Files}
+
+  \jed{} may edit binary files as long as the proper precautions are taken. On
+  IBMPC systems, this involves calling the \slang{} function
+  \verb|set_file_translation| with an integer argument.  If the argument is
+  0, files are opened as text files; otherwise, they are opened in binary
+  mode. There is no need to call this function for other systems.  However,
+  beware of the user variable \verb|ADD_NEWLINE| which if non zero, a
+  newline character will be appended to the file if the last character is
+  not a newline character.  If you are going to edit binary files, it is
+  probably a good idea to set this variable to zero.
+
+\section{Dired--- the Directory editor}
+
+  In addition to editing files, \jed{} is also able to rename and delete
+  them as well.  \jed{}'s Dired mode allows one to do just this is a simple
+  and safe manner.
+
+  To run dired, simply press \key{Esc X} and enter \verb|dired| at the
+  prompt.  \jed{} will load \verb|dired.sl| and prompt for a directory name.
+  Once the directory is given, \jed{} will display a list files in the
+  directory in a buffer named \var{*dired*}.  One may use normal buffer
+  movement keys to move around this buffer.  To delete one or more files,
+  use the \key{d} key to ``tag'' the files.  This in itself does not delete
+  them; rather, it simply marks them for deleting.  A capital `D' will
+  appear in the left margin to indicate that a file has been tagged.  Simply
+  hit the \key{u} key to untag a file.  The delete key will also untag the
+  previously tagged file.
+
+  To actually delete the tagged files, press the `x' key.  This action
+  causes \jed{} to display a list of the tagged files in a separate window
+  and prompt the user for confirmation.  Only when the proper confirmation
+  is given, will the file be deleted.
+
+  Renaming a file is just as simple.  Simply move to the line containg the
+  name of the file that you wish to rename and hit the `r' key.  \jed{} will
+  prompt for a filename or a directory name.  If a directory is given, the
+  file will be moved to the new directory but will keep the name.  However,
+  for the operation to succeed, the file must be one the same file system.
+  To rename tagged files to a different directory residing on the same file
+  system, use the \key{m} key.  This has the effect of moving the tagged
+  file out of the current directory to the new one.
+
+  One may also use the \key{f} key to read the file indicated by the cursor
+  position into a buffer for editing.  If the file is a directory, the
+  directory will be used for dired operations. In addition, one may also use
+  the \key{v} to simply ``view'' a file.
+
+  Finally, the \key{g} key will re-read the current directory and the
+  \key{h} and \key{?} keys provide some help.
+
+\section{Mail}
+
+  This section applies to Unix and VMS systems only.  On these systems, it
+  is possible to compose and send mail directly using \jed{}.  This assumes
+  that the Unix system has \verb|/usr/ucb/mail|.  It is trivial to modify
+  \verb|mail.sl| to support another Unix mailer.  For VMS, \jed{} uses the
+  callable mail interface present on VMS versions 5.0 and later.
+
+  The default binding for the mail is \key{Ctrl-X m}.  Alternatively, one
+  may press \key{Esc X} and enter \verb|mail| at the \var{M-x} prompt.
+  The mail function will cause a window to open with a buffer called
+  \verb|*mail*| which contains the three lines:
+\begin{verbatim}
+      To: 
+      Subject: 
+      ---text follows this line---
+\end{verbatim}
+  Simply enter the email address of the person that you want to send the
+  mail to on the line containing \var{To:} and put the subject of the
+  message on the next line labeled \var{Subject:}.  The text that you wish
+  to mail follows the line labeled \var{---text follows this line---} which
+  is used by \jed{} as a marker. After you have composed the mail message,
+  press \key{Esc X} and enter \verb|send| at the \verb|M-x| prompt.  For
+  example, the following is an email requesting to be put on the \jed{} mailing
+  list:
+
+\begin{verbatim}
+      To: davis@space.mit.edu
+      Subject: jed mailing list
+      ---text follows this line---
+      Hi,
+      
+         Please add me to the JED mailing list so that I may be notified
+      of upcoming releases of JED.
+
+      --Maria
+\end{verbatim}
+
+  For VMS systems, the above example will probably fail because an internet
+  address has been used for the example.  For systems using a TCP/IP
+  package, it may be necessary to change \var{davis@space.mit.edu} to
+  something
+  like \var{smtp\%"davis@space.mit.edu"}.
+
+  The mail function looks for a user defined hook called \verb|mail_hook| and
+  execute it if it exists.  This hook may be used to bind certain keys in
+  the keymap associated with the \verb|*mail*| buffer.  For example,
+
+\begin{verbatim}
+      define mail_hook ()
+      {
+        local_unsetkey ("^C");
+        local_setkey ("send", "^C^C");
+      }
+\end{verbatim}
+
+  defines the key \key{Ctrl-C Ctrl-C} in the mail keymap to perform the
+  \verb|send| function.  Other possibilities include binding a key sequence,
+  say \key{Ctrl-C Ctrl-W}, to a function that inserts the contents of a
+  signature file.
+
+\section{Customization}
+
+  To extend \jed{}, it is necessary to become familiar with the \slang{}
+  programming language.  \slang{} not a standalone programming language like
+  C, Pascal, etc. Rather it is meant to be embedded into a C program. The
+  \slang{} programming language itself provides only arithmetic, looping, and
+  branching constructs.  In addition, it defines a few other primitive
+  operations on its data structures.  It is up to the application to define
+  other built-in operations tailored to the application.  That is what has
+  been done for the \jed{} editor.  See the document \verb|slang.txt| for
+  \slang{} basics as well as the \jed{} Programmer's Manual for functions \jed{} has
+  added to the language.  In any case, look at the \verb|*.sl| files for
+  explicit examples.
+
+  For the most part, the average user will simply want to rebind some keys
+  and change some variables (e.g., tab width).  Here I discuss setting keys
+  and the predefined global variables.
+
+\subsection{Setting Keys}
+
+  Defining a key to invoke a certain function is accomplished using the
+  \verb|setkey| function. This function takes two arguments: the function to
+  be executed and the key binding.  For example, suppose that you want to
+  bind the key \key{Ctrl-A} to cause the cursor to go to the beginning of
+  the current line.  The \jed{} function that causes this is \verb|bol| (See
+  the \jed{} Programmer's Manual for a complete list of functions).  Putting
+  the line:
+\begin{verbatim}
+      setkey ("bol", "^A");
+\end{verbatim}
+  in the startup file \verb|jed.rc| (\verb|.jedrc|) file will perform the
+  binding.  Here \verb|^A| consists of the two characters \verb|^| and
+  \var{A} which \jed{} will interpret as the single character \verb|Ctrl-A|.
+  For more examples, see either of the \slang{} files \verb|emacs.sl| or
+  \verb|edt.sl|.
+  
+  The first argument to the \verb|setkey| function may be {\em any} \slang
+  expression.  Well, almost any.  The only restriction is that the newline
+  character cannot appear in the expression.  For example, the line
+\begin{verbatim} 
+      setkey ("bol();skip_white ();",  "^A");
+\end{verbatim}     
+  defines the \verb|Ctrl-A| key such that when it is pressed, the editing
+  point will move the beginning of the line and then skip whitespace up to
+  the first non-whitespace character on the line.
+  
+  In addition to being able to define keys to execute functions, it is also
+  possible to define a key to directly insert a string of characters.  For
+  example, suppose that you want to define a key to insert the string
+  \var{int main(int argc, char **argv)} whenever you press the key 
+  \key{Esc m}.  This may be accomplished as follows:
+\begin{verbatim}
+      setkey (" int main(int argc, char **argv)", "\em");
+\end{verbatim}
+
+  Notice two things.  First of all, the key sequence \key{Esc m} has
+  been written as \verb|"\em"| where \verb|\e| will be interpreted by \jed{} as
+  \key{Esc}. The other salient feature is that the first argument to
+  \verb|setkey|, the ``function'' argument, begins with a space.  This tells
+  \jed{} that it is not be interpreted as the name of a function; rather, the
+  characters following the space are to be inserted into the buffer.
+  Omitting the space character would cause \jed{} to execute a function called
+  \var{int main(int argc, char **argv)} which would fail and generate an
+  error.
+
+  Finally, it is possible to define a key to execute a series of keystrokes
+  similar to a keyboard macro.  This is done by prefixing the ``function''
+  name with the \var{@} character.  This instructs \jed{} to interpret the
+  characters following the \var{@} character as characters entered from the
+  keyboard and execute any function that they are bound to.  For example,
+  consider the following key definition which will generate a C language
+  comment to comment out the current line of text.  In C, this may be
+  achieved by inserting symbol \var{"/*"} at the beginning of the line and
+  inserting \var{"*/"} at the end of the line.  Hence, the sequence is clear
+  (Emacs keybindings):
+
+%\begin{itemize} 
+\begin{enumerate}
+\item Goto the beginning of the line: \key{Ctrl-A} or decimal \verb|"\001"|.
+
+\item Insert \var{/*}.
+
+\item Goto end of the line: \key{Ctrl-E} or decimal \verb|\005|.
+
+\item Insert \var{*/}
+\end{enumerate}
+%\end{itemize} 
+
+  To bind this sequence of steps to the key sequence \key{Esc ;}, simply use
+\begin{verbatim}
+     setkey("@\001/*\005*/", "\e;");
+\end{verbatim}
+
+  Again, the prefix \var{@} lets \jed{} know that the remaining characters will
+  carry out the functions they are currently bound to. Also pay particular
+  attention to the way \key{Ctrl-A} and \key{Ctrl-E} have been written. Do
+  not attempt to use the \verb|^| to represent ``\key{Ctrl}''.  It does not
+  have the same meaning in the first argument to the \verb|setkey| function
+  as it does in the second argument.  To have control characters in the
+  first argument, you must enter them as \verb|\|{\em xyz} where {\em xyz} is
+  a three digit decimal number coinciding with the ASCII value of the
+  character. In this notation, the \key{Esc} character could have been
+  written as \verb|\027|.  See the \slang{} Programmer's Reference Manual for
+  further discussion of this notation.
+
+  The \verb|setkey| function sets a key in the \verb|global| keymap from
+  which all others are derived.  It is also possible to use the function
+  \verb|local_setkey| which operates only upon the current keymap which may
+  or may not be the \verb|global| map.
+
+\subsection{Predefined Variables}
+
+  \jed{} includes some predefined variables which the user may change.  By
+  convention, predefined variables are in uppercase.  The variables which
+  effect all modes include:
+
+      \verb|BLINK|\\
+       (1) if non-zero, blink matching parenthesis.
+       
+      \verb|TAB_DEFAULT|\\
+       (8) sets default tab setting for newly created buffers
+       to specified number of columns.
+       
+      \verb|TAB|\\
+       Value of tab setting for current buffer.
+
+      \verb|ADD_NEWLINE|\\
+       (1) adds newline to end of file if needed when writing it out to the
+            disk.
+            
+      \verb|META_CHAR|\\
+       (-1) prefix for chars with high bit set (see section on eight bit
+            clean issues for details)
+            
+      \verb|DISPLAY_EIGHT_BIT|\\
+            see section on eight bit clean issues.
+
+      \verb|COLOR|\\
+       (23) IBMPC background color (see \verb|jed.rc| for meaning)
+
+      \verb|LINENUMBERS|\\
+       (0) if 1, show current line number on status line
+
+      \verb|WANT_EOB|\\
+       (0) if 1, [EOB] denotes end of buffer.
+
+      \verb|TERM_CANNOT_INSERT|\\
+       (0) if 1, do not put the terminal in insert mode when writing to the
+       screen.
+              
+      \verb|IGNORE_BEEP|\\
+       (0) do not beep the terminal when signalling errors
+
+
+  In addition to the above, there are variables which affect only certain
+  modes.  See the section on modes for details.
+
+\subsection{Hooks}
+
+  A hook is a user defined function that \jed{} calls under certain conditions
+  which allow the user to modify default actions.  For example, when \jed{}
+  starts up it looks for the existence of a user defined function
+  \verb|command_line_hook|.  If this function exists, \jed{} calls the
+  function. What the function does is completely arbitrary and is left to
+  the discretion of the user.  The startup file, \verb|site.sl|, defines
+  such a function which reads in the files listed on the command line. It is
+  also this function which loads the \verb|jed.rc| startup file.  Unlike the
+  other hooks, this one must be present in the file \verb|site.sl| since it
+  is the only file loaded before calling the hook.
+
+  After the startup files are loaded, \jed{} calls the hook
+  \verb|jed_startup_hook| immediately before entering the main editor loop.
+  This hook is useful to modify certain data structures which may not have
+  existed when the startup files were loaded.
+
+  In addition to the above hooks, \jed{} currently also looks for:
+
+      \verb|suspend_hook|\\
+        function to be executed before suspending
+
+      \verb|resume_hook|\\
+        function that gets carried out after suspension
+
+      \verb|exit_hook|\\
+        gets executed before exiting \jed{}
+
+      \verb|mode_hook|\\
+        sets buffer mode based on filename extension
+
+      \verb|find_file_hook|\\
+         called before file is read into a buffer.  It currently
+         checks for presence of autosave file and warns user if
+         it is more recent than file.
+         
+  See \verb|site.sl| for explicit examples of the above hooks.
+
+  Another useful hook is \verb|is_paragraph_separator|.  This hook is called
+  when \jed{} searches for the beginning or end of a paragraph.  This search
+  is performed by all paragraph formatting functions as well as the forward
+  and backward paragraph movement commands. As \jed{} performs the search,
+  it moves from one line to another testing the line to see if it separates
+  a paragraph.  The function of the hook is to make this decision and return
+  zero if the line does not separate paragraphs or return one if it does.
+  The default value of this hook may be written in \slang{} as
+
+\begin{verbatim}
+     define is_paragraph_separator ()
+     {
+       bol ();
+       if (looking_at ("\\")) return 1;
+       if (looking_at ("%")) return 1;
+       skip_white(); eolp ();
+     }
+\end{verbatim}
+
+  A related hook called after a paragraph is formatted is
+  \verb|format_paragraph_hook|. This hook is only called if either
+  \verb|format_paragraph| or \verb|narrow_paragraph| is called with a prefix
+  digit argument.  For example, \verb|format_paragraph| is bound to 
+  \key{Esc q}.  Simply pressing this key sequence will call 
+  \verb|format_paragraph| but \verb|format_paragraph_hook| will not be called. 
+  However, pressing \key{Esc 1} followed by \key{Esc q} will
+  result in a call to \verb|format_paragraph_hook|.  Currently, this hook
+  simply justifies the paragraph.  That is, it fills each line in the
+  paragraph such that the line ends at the right margin, which is defined by
+  the \verb|WRAP| variable.
+
+\subsection{S-Lang Programming Hints (Debugging)}
+
+  This section assumes some knowledge about \slang{} and is designed to
+  explain how to debug \slang{} routines quickly.  For information about
+  \slang{}, read \verb|slang.txt|.
+
+  There are two ways of loading a file of \slang{} code into \jed{}.  The
+  most common way is through the function \verb|evalfile|.  If an error
+  occurs while loading a file, \jed{} will give some indication of where the
+  problem lies by displaying the line number and the offending bit of
+  \slang{} code in the minibuffer.  In practice though, this can be quite
+  inefficient. The \verb|evalfile| function is primarily designed to load
+  debugged and tested \slang{} code.
+
+  The best way to develop and test \slang{} code with \jed{} is to use the
+  function \verb|evalbuffer|.  Simply load the piece of code into \jed{} as an
+  ordinary file, press \key{Esc X} and enter the function
+  \verb|evalbuffer| If the piece of code in the buffer has any syntax
+  errors, \jed{} will put the cursor on the error.  This is the best way to
+  spot compile time errors such as syntax errors.  However, this will not
+  catch runtime errors.
+
+  When a runtime error occurs, \jed{} will put the cursor on the top level
+  function where the original call was made and NOT the actual location of
+  the function.  To aid in determining where an error occurs, \jed{} can be
+  made to give a symbolic traceback.  As the \slang{} runtime stack unwinds,
+  \slang{} will simply print the name of function at that particular level.
+  If the function includes local variables, their values will be dumped as
+  well.  Hence, it is easy to quickly narrow the location of an error down
+  to function where the error occurs.  By default, the traceback is
+  disabled.  The traceback is enabled by setting the \slang{} variable
+  \verb|_traceback| to a non-zero value.  It is simpliest to just press
+  \key{Ctrl-X Esc} and enter \verb|_traceback = 1| at the \var{S-Lang}
+  prompt.  This is one of those times where one needs access to the
+  \var{S-Lang>} prompt and not the \var{M-x} prompt. For example, consider
+  the following piece of code:
+\begin{verbatim}
+      define fun_two () {forever {}}   % loops forever
+      define fun_one () {fun_two ()}   % calls fun_two-- never returns
+\end{verbatim}
+  Simply enter the above into an empty \jed{} \verb|*scratch*| buffer, then
+  press \key{Ctrl-X Esc} and enter:
+\begin{verbatim} 
+      _traceback = 1; () = evalbuffer (); fun_one ();
+\end{verbatim} 
+  This will turn on tracebacks, evaluate the buffer and call the
+  function \verb|fun_one|.  \jed{} will then be put into an infinite loop which
+  can only be stopped by pressing the abort character which by default is
+  \key{Ctrl-G}. Doing so, will produce the traceback messages
+\begin{verbatim}
+       S-Lang Traceback: fun_two
+       S-Lang Traceback: fun_one
+\end{verbatim}
+  in addition to the error message \var{User Break!}.  Of course, this
+  technique only narrows down the source of an error to a particular
+  function. To proceed further, it may necessary to put ``print'' statements
+  at suitable places in the function.  There are several ways to do this:
+%\begin{itemize}
+\begin{enumerate}
+\item Use the \verb|insert| function to insert the contents of a variable
+      into the current buffer.
+
+\item Use the \verb|error| function to abort the function and display the
+      value of a variable in the minibuffer.
+
+\item Use the \verb|message| function to display the value of a variable in
+      the minibuffer.  Unlike \verb|error|, the \verb|message| function does
+      not abort the execution of the function.
+\end{enumerate}
+%\end{itemize} 
+
+  Since each of these functions require a string argument, it is usually
+  best to call the \verb|string| function first for the conversion followed
+  by the output function.  This has to be done anyway if it is desired to
+  get the contents of an integer variable.  Although the second approach is
+  prehaps the most useful in practice, it is somtimes appropriate to use a
+  combination of these techniques.
+
+  Finally, to print the entire stack, one can use the \verb|print_stack|
+  function.  This function dumps the \slang{} runtime stack into the
+  \var{*traceback*} buffer.
+
+  Since \slang{} is an interpreted language, judicious application of the
+  above techniques should lead very quickly to the source of any errors.
+
+
+\section{Eight Bit Clean Issues}
+
+
+\subsection{Displaying Characters with the High Bit Set}
+
+  There are several issues to consider here. The most important issue is how
+  to get \jed{} to display 8 bit characters in a ``clean'' way.  By
+  ``clean'' I mean any character with the high bit set is sent to the
+  display device as is.  This is achieved by putting the line:
+
+\begin{verbatim}
+      DISPLAY_EIGHT_BIT = 1;
+\end{verbatim}
+
+
+  in the \verb|jed.rc| (\verb|.jedrc|) startup file.  European systems might
+  want to put this in the file \verb|site.sl| for all users.  The default is
+  1 so unless its value has been changed, this step may not be necessary.
+
+  There is another issue. Suppose you want to display 8 bit characters with
+  extended Ascii codes greater than or equal to some value, say 160.  This
+  is done by putting \verb|DISPLAY_EIGHT_BIT = 160;|.  I believe that ISO
+  Latin character sets assume this.  This is the default value for Unix and
+  VMS systems.
+
+\subsection{Inputting Characters with the hight bit Set}
+  Inputting characters with the high bit set into \jed{} is another issue.
+  How \jed{} interprets this bit is controlled by the variable
+  \verb|META_CHAR|. What happens is this: When \jed{} reads a character from
+  the input device with the high bit set, it:
+%\begin{itemize}
+\begin{enumerate}
+\item Checks the value of \verb|META_CHAR|.  If this value is -1, \jed{} simply
+      inserts the character into the buffer.
+
+\item For any other value of \verb|META_CHAR| in the range 0 to 255, \jed{}
+      returns two 7-bit characters.  The first character returned is
+      \verb|META_CHAR| itself.  The next character returned is the original
+      character but with the high bit stripped.
+\end{enumerate}
+%\end{itemize} 
+
+  The default value of \verb|META_CHAR| is -1 which means that when \jed{} sees
+  a character with the high bit set, \jed{} leaves it as is.  Please note that
+  a character with the high bit set it {\em cannot} be the prefix character
+  of a keymap. It can be a part of the keymap but not the prefix.
+
+  Some systems only handle 7-bit character sequences and as a result, \jed{}
+  will only see 7-bit characters.  \jed{} is still able to insert {\em any}
+  character in the range 0-255 on a 7-bit system.  This is done through the
+  use of the \verb|quoted_insert| function which, by default, is bound to
+  the backquote key \var{`}.  If the \verb|quoted_insert| function is called
+  with a digit argument (repeat argument), the character with the value of
+  the argument is inserted into the buffer.  Operationally, one hits
+  \key{Esc}, enters the extended Ascii code and hits the backquote key.  For
+  example, to insert character 255 into the buffer, simply press the
+  following five keys: \key{Esc 2 5 5 `}.
+
+\subsection{Upper Case - Lower Case Conversions}
+
+  The above discussion centers around input and output of characters with
+  the high bit set.  How \jed{} treats them internally is another issue and new
+  questions arise.  For example, what is the uppercase equivalent of a
+  character with ASCII code 231?  This may vary from language to language.
+  Some languages even have characters whose uppercase equivalent correspond
+  to multiple characters.  For \jed{}, the following assumptions have been
+  made:
+\begin{itemize}
+\item Each character is only 8 bits.
+\item Each character has a unique uppercase equivalent.
+\item Each character has a unique lowercase equivalent.
+\end{itemize} 
+  It would be nice if a fourth assumption could be made:
+\begin{itemize} 
+\item The value of the lowercase of a character is greater than or equal to
+      its uppercase counterpart.
+\end{itemize} 
+  However, apparently this is not possible since most IBMPC character sets
+  violate this assumption.  Hence, \jed{} does not assume it.  Suppose \var{X}
+  is the upper case value of some character and suppose \var{Y} is its lower
+  case value.  Then to make \jed{} aware of this fact and use it case
+  conversions, it may be necessary to put a statement of the form:
+\begin{verbatim}
+     define_case (X, Y);
+\end{verbatim}
+  in the startup file.  For example, suppose 211 is the uppercase of 244.
+  Then, the line
+\begin{verbatim}
+      define_case (211, 244);
+\end{verbatim}
+  will make \jed{} use this fact in operations involving the case of a character.
+
+  This has already been done for the ISO Latin 1 character set. See the file
+  \verb|iso-latin.sl| for details. For MSDOS, this will not work. Instead
+  use the files \verb|dos437.sl| and \verb|dos850.sl|.  By default, \jed{}'s
+  internal lookup tables are initialized to the ISO Latin set for Unix and
+  VMS systems and to the DOS 437 code page for the IBMPC.  To change the
+  defaults, it is only necessary to load the appropriate file. For example,
+  to load \verb|dos850.sl| definitions, put
+\begin{verbatim}
+      evalfile ("dos850"); pop ();
+\end{verbatim}
+  in the startup file (e.g., \verb|site.sl|).  In addition to
+  uppercase/lowercase information, these files also contain word
+  definitions, i.e., which characters constitute a ``word''.
+
+\section{Miscellaneous}
+
+\subsection{Abort Character}
+  The abort character (\key{Ctrl-G} by default) is special and should not be
+  rebound.  On the IBMPC, the keyboard interrupt 0x09 is hooked and a quit
+  condition is signaled when it is pressed.  For this reason, it should not
+  be used in any keybindings. A similar statement holds for the other
+  systems.
+
+  This character may be changed using the function \verb|set_abort_char|
+  Using this function affects all keymaps.  For example, putting the line
+\begin{verbatim}
+      set_abort_char (30);
+\end{verbatim}
+  in your \verb|jed.rc| file will change the abort character from its
+  current value to 30 which is \key{Ctrl-}\verb|^|.
+
+\subsection{Input Translation}
+
+  By using the function \verb|map_input| the user is able to remap
+  characters input from the terminal before \jed{}'s keymap routines have a
+  chance to act upon them.  This is useful when it is difficult to get \jed{}
+  to see certain characters.  For example, consider the \key{Ctrl-S}
+  character.  This character is especially notorious because many systems
+  use it and \key{Ctrl-Q} for flow control. Nevertheless Emacs uses
+  \key{Ctrl-S} for searching.  Short of rebinding all keys which involve a
+  \key{Ctrl-S} how does one work with functions that are bound to key
+  sequences using \key{Ctrl-S}?  This is where \verb|map_input| comes into
+  play.  The \verb|map_input| function requires two integer arguments which
+  define how a given ascii character is to be mapped.  Suppose that you wish
+  to substitute \key{Ctrl-}\verb|\| for \key{Ctrl-S} everywhere. The line
+\begin{verbatim}
+      map_input (28, 19);
+\end{verbatim}
+  will do the trick.  Here 28 is the ascii character of \key{Ctrl-}\verb|\|
+  and 19 is the ascii character for the \key{Ctrl-S}.
+
+  As another example, consider the case where the backspace key sends out a
+  \key{Ctrl-H} instead of the \key{DEL} character (\key{Ctrl-?}).
+\begin{verbatim}
+      map_input (8, 127);
+\end{verbatim}
+  will map the \key{Ctrl-H} (ascii 8) to the delete character (ascii 127).
+
+\subsection{Display Sizes}
+
+  On VMS and unix systems, the screen size may be changed to either 80 or
+  132 columns by using the functions \verb|w80| and \verb|w132|
+  respectively. Simply enter the appropriate function name at the \verb|M-x|
+  prompt in the minibuffer.  The default binding for access to the
+  minibuffer is \key{Esc X}.  Most window systems, e.g., DECWindows, allow
+  the window size to be changed.  When this is done, \jed{} should
+  automatically adapt to the new size.
+
+  On the PC, at this time the screen size cannot be changed while \jed{} is
+  running.  Instead it is necessary to exit \jed{} first then set the display
+  size and rerun \jed{}.
+
+\end{document}
+}
+----------------------------------------------------------------------
+query_replace_match:
+
+"\( [a-z]+\)\1 "    "\1 "       finds and replaces repeated words.
+"/\*\(.*\)\*/.*$"   "//\1"      convert /* c comment */ at eol to // ...
+"//.*$"             "/*\1 */"   convert c++ to C
+

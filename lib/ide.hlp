@@ -1,0 +1,20 @@
+JED IDE mode 1.3.0.  ^ = Ctrl (e.g., ^X = Ctrl-X); M = Alt (M-X = Alt-X)
+Press `q' to quit this help screen; F6 or ^KP to switch to the next buffer
+
+CURSOR              GO TO               BLOCK          DELETE       EXIT
+^S left  ^D right   ^R  prev. screen    ^KB begin      M-G char     ^KX save
+^E up    ^X down    ^C   next screen    ^KY cut        ^Y  line     ^KZ shell
+^A <word ^F >word   ^QS beg. of line    ^KH copy       ^T  >word    
+                    ^QD end of line     ^KC paste      M-BS <word   BUFFER
+SEARCH              ^QE screen top      ^KW to file    ^QY >line    ^KE new
+^QF find text       ^QX screen end      ^KT word       ^U undo      ^KR insert
+^QA replace         ^QR top of file     ^K/ filter                  ^KQ kill
+^L  find next       ^QC end of file     ^KG to reg.    MACRO        ^KD save
+^QT toggle case     ^Q0-9 bookmark      ^KJ from reg.  ESC-( beg.   ^KS save as
+                    ^QI line No.        ^KU up. case   ESC-) end    ^KN next
+MISC                ^QP prev.position   ^KL lo. case   M-R run      ^KP prev.
+^B reformat
+^K0-9 set bookmark  ^KI one window      ^V completion  ^P compose char
+
+Press M-X or ESC-X to issue commands; press ^G to quit the command line
+Press F10 to activate the menus. Please read the documentation!

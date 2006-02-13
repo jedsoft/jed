@@ -1,0 +1,13 @@
+The .tm files in this directory form the source for documentation of
+jed specific intrinsic functions and variables. The Makefile produces
+documentation in a variety formats via SGML-Tools.
+
+The documentation for the library functions (jed/lib/*.sl) are
+actually in the .sl files themselves.  The documentation is stripped
+via sl2tm and then processed via tm2txt.  Both these programs may be
+found in the slang distribution (slang/doc/tm/tools/).
+
+To produce .sgml files from the .tm source, you will need to install
+the text-macro distribution.  See http://www.jedsoft.org/ for
+availablity.
+

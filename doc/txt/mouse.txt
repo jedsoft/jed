@@ -1,0 +1,196 @@
+Using a mouse with Jed and XJed
+===============================
+
+Jed provides native support for a mouse on the following systems:
+
+    1.  A Linux console running the GPM server.  This server is a
+	replacement for the `selection' program.  It is available from
+	sunsite.unc.edu:/pub/Linux/system/Daemons/gpm-0.97.tar.gz
+	
+    2.  MSDOS
+    
+    3.  XJed
+    
+Later, OS/2 support will be added.    
+
+In addition to ``native'' mouse support, JED is able to interact with a
+mouse using the `XTerm Event Protocol'.  Support for this protocol is
+available when running JED in an XTerm as well as interacting with JED from
+an MSDOS terminal emulator, e.g., MS-Kermit, using the PCMOUSE TSR.
+
+This document is divided into two sections.  The first section describes
+native mouse support (Linux, MSDOS, XJed) and the second section describes
+the support for the XTerm Event Protocol.
+
+==============================================================================
+			    Native Mouse Support
+==============================================================================
+
+   The S-Lang file jed/lib/mouse.sl provides a user interface to the mouse.
+   It can only be loaded for systems which provide native support for the
+   mouse.  Currently this includes MSDOS, Linux console, and XJed. This file
+   is automatically loaded from os.sl when JED is started up. (See os.sl for
+   how this is accomplished).  Once this file has been loaded, the mouse
+   buttons behave as described below.
+   
+   This interface assumes the presence of a three button mouse.
+   Unfortunately, in the MSDOS world, two button mice are are quite common.
+   Nevertheless, JED is able to emulate a three button mouse by using the
+   ALT key.  Any button pressed in combination with the ALT key is
+   considered to be the MIDDLE mouse button.  For example, to get the effect
+   of pressing Ctrl-Middle, hold down on the ALT and Ctrl key while pressing
+   any mouse button.
+    
+   Clicking in a window
+   --------------------
+   
+     Left
+
+       If a region is already marked, simply un-mark it.  If one is
+       not marked, move cursor to the mouse point crossing windows if
+       necessary.  If the button is held down and the mouse is
+       dragged, a region will be highlighted and then copied to the
+       cutbuffer when the button is released.
+
+       
+     Middle 
+
+       If a region is already marked, copy it to the mouse
+       paste-buffer. Otherwise, paste text from the system cut buffer
+       to current editing point. This MAY NOT BE the position of the
+       mouse.
+
+     Right 
+     
+       If a region is already marked, delete it and place a copy into
+       the mouse paste-buffer.  Otherwise, simply position the editing
+       point at the position of the mouse.  If the button is held down and
+       the mouse is dragged, a new region will be marked.
+       
+    Shift Middle
+
+       Insert contents of the last JED mouse copy or kill.  This function
+       may be identical to simply clicking on the middle button without
+       using the shift key on non-X systems.  Simply clicking the
+       middle mouse button will insert the contents of the current
+       selection which may not be owned by JED.
+       
+  Other buttons combinations are undefined.  Some modes may utilize
+  the mouse in a slightly different manner.
+
+  Clicking on a window status line
+  --------------------------------
+
+    Left 
+       Switch to next buffer.  
+       
+    Ctrl-Left
+       Kill buffer described by status line.
+       
+    Shift-Left
+       Scroll window back one page.
+       
+    Shift-Right
+       Scroll window forward one page
+       
+    Middle
+       Split the window.
+       
+    Right:  
+       Delete the window
+
+  For example, one can quickly move from one buffer to the next by simply
+  clicking on the status line with the left mouse button.
+
+  Tips for using the mouse
+  -------------------------
+  
+     1.  To quicky move the cursor to another location, simply point the
+	 mouse at that spot and click the LEFT mouse button.
+	 
+     2.  To copy a region for subsequent pasting, move the mouse to the
+         beginning of the region and press the LEFT mouse button.
+	 While holding it down, ``drag'' the mouse to the end of the
+	 region and release it.
+     
+     3.  To cut a region and put it in the paste buffer, define a
+	 region by dragging with the RIGHT mouse button.  Now release
+	 the RIGHT button and then press and immediately release it.
+
+==============================================================================
+			     XTerm Event Support
+==============================================================================
+
+Xterm event support is provided by not only Xterm but also the Linux console
+running the `selection' program.  Only versions 1.6 and greater of selection
+provide this support.  In addition, one must be using a recent Linux kernel
+(1.1.35 or newer.)  Please note that the selection program is considered
+obsolete and should be replaced by the GPM mouse server.
+
+Installation
+=============
+
+To enable JED to use this mouse support, the following steps must be
+performed:
+
+   1.  Make sure you have the appropriate version of selection and the Linux
+       kernel installed.
+       
+   2.  Put the following on your .jedrc file:
+   
+          () = evalfile ("mousex");
+	  
+       The file `mousex.sl' creates three hooks: `exit_hook', `suspend_hook',
+       and `resume_hook'.  If you have already defined these hooks for
+       yourself, look at `mousex.sl' and modify your hooks appropriately.
+       These hooks are necessary so that the `selection' state can be
+       properly initialized and restored.
+       
+Mouse Usage
+===========
+
+ Left Button:
+ ------------
+
+   If the left button is clicked on the status line of a window, the window 
+   will switch to a different buffer.
+
+   If the button is pressed anywhere else in the window, the cursor will be
+   positioned at the location of the click.
+ 
+ Middle Button:
+ -------------
+   
+   On status line: split the window
+   Anywhere else:
+    If the region is highlighted, the region will be copied to the 
+    pastebuffer.  This does not delete the region.
+    Otherwise, the contents in the pastebuffer will be pasted to the current
+    editing point.
+
+ Right Button:
+ -------------
+ 
+   On status line: delete the window.
+   Anywhere else:
+    If a region is highlighted, the region will be extended to the position
+    of the mouse.
+    Otherwise, the mark is set and a region will be defined.
+
+ Cut/Paste Tips:
+  
+  To mark and manipulate a region do:
+
+   1. Click the LEFT mouse button at the beginning of the region.
+   2. Move the mouse to the end of the region and click the RIGHT
+      mouse button.  The region should now be marked.
+   3. Click the MIDDLE button to copy the region to the pastebuffer.
+
+   4. To paste from the pastebuffer, move the cursor to where you want to 
+      paste and press the MIDDLE button.
+
+       
+          
+   
+
+  

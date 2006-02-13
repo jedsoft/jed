@@ -1,0 +1,96 @@
+Information about the JED rmail reader. (Unix only!)
+
+Note:  JED's rmail mode is intended for experienced JED users.  It
+should not be used by novice users.
+
+JED is able to read mail with proper file locking via the standalone
+executable `getmail'.  It attempts to lock the spool file through the
+`flock' system call, or via a lock file if `flock' is not available.
+The latter approach requires that the spool directory be writable.
+
+To install rmail, you must first create the executable `getmail'.  After
+building JED, simply type `make getmail'.  Move the resulting executable to
+JED_ROOT/bin.  Add the following to your .jedrc file:
+
+   autoload ("rmail", "rmail");
+   add_completion("rmail");
+
+Mail is moved (with locking) from the user's mail box file to a
+directory $HOME/Mail.  This directory is created if it does not exist.
+JED will then parse the new mail and moved individual messages to the
+directory $HOME/Mail/NewMail.  Future versions will compress the new
+mail.
+
+The variable Rmail_Spool_Mailbox_File determines the name of the input
+mailbox file.  If this variable is not defined, JED will attempt to
+determine the location of the mail box file by looking in
+/var/spool/mail.
+
+After moving the messages from the user's mail box to the Mail
+directory, JED will parse the headers of the new mail and create a
+file called $HOME/Mail/NewMail.index.  JED uses this index to manage
+files in the NewMail folder. Similar statements apply to new folders.
+
+JED will then show a window containing the index.  It may look like:
+
+   4 12-Dec  R    Darrel R Hankerson <hanke  OS/2 changes in 0.95?
+   5 13-Dec  R    Dominik Wujastyk <D.Wujas  Re: drive letters in JED
+   6 13-Dec  R    Darrel R Hankerson <hanke  compiler warnings
+   7 13-Dec       "John E. Davis" <davis@pa  [chrism@cs.anu.edu.au: Re: Finding ~user/]
+   8 13-Dec FR    HARRIS@soma.tch.harvard.e  Ingrid's FTP
+
+The first field is a simple integer which indicates the name of the file
+containing the message described by the line.  For example, the first line
+above refers to the message in the file $HOME/NewMail/4.
+The 3rd field contains flags.  R means that the message was replied to, F
+means that it was Forwarded.
+
+The arrow keys may be used to move the cursor from one line to another.
+Pressing the spacebar will cause the message associated with the line the
+cursor is on to be displayed in a second (larger) window.  Use the spacebar
+and the DELETE key to scroll through the message.  
+
+The following keys are defined:
+
+   SPACE     scroll forward or select message
+   DELETE    scroll message backward
+   DOWN      move to next message (use space to select it)
+   UP        move to previous message
+   N         move to next Non-deleted message
+   P         move to previously Non-deleted message
+   D         Tag message for deletion
+   X         Really delete tagged messages and resequence folder.
+   G         Get newmail
+   ESC 1 G   Prompt for a mail box and get new mail from that.
+   Q         Quit this folder returning to top level (folder index).
+   T         Toggle headers.  By default, JED will hide most of the headers.
+               Use this key to unhide them.
+   O         Output message to a different folder.  One will be created if
+               necessary.
+	   
+Replying and Forwarding use JED's mail facility.  The relevant keys are:
+
+   F       Forward message
+   R       Reply
+   M       mail
+   
+To actually send the message after composing it. press `ESC-X mail_send' to
+actually send it.  See the description of the Mail facility in the JED
+documentation for more discussion.  I personally have bound this to a key
+via the `mail_hook', i.e., in my .jedrc I have:
+
+      define mail_hook()
+      {
+        local_unsetkey("^C");
+        local_setkey("mail_send", "^C^C");
+      }
+
+
+
+	        
+Not implemented but will be:
+
+   Read compressed email.
+   
+
+  

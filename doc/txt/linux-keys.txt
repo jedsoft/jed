@@ -1,0 +1,56 @@
+Matti-Oskari Leppänen <mongrel@mindless.com> suggested the following:
+
+I think that you should mention somewhere in documents howto make
+shift-arrow etc. work under linux-console ... because it's quite simple
+
+just make file that has following lines save it as some.map and 
+loadkeys some.map then you have same keysyms as used in wmark.sl
+________________________________________________
+# S+Up
+shift keycode 103 = F100
+string F100 = "\033[a"
+
+#S+Left
+shift keycode 106 = F101
+string F101 = "\033[c"
+
+#S+Right
+shift keycode 105 = F102
+string F102 = "\033[d"
+
+# S+Down
+shift keycode 108 = F103
+string F103 = "\033[b"
+
+#C+Ins
+control keycode 110 = F104
+string F104="\033[2^"
+
+#S+Ins
+shift keycode 110 = F105
+string F105="\033[2$"
+
+#S+PgUp
+shift keycode 104 = F106
+string F106 = "\033[5$"
+
+#S+PgDn
+shift keycode 109 = F107
+string F107 = "\033[6$"
+
+#S+Home
+shift keycode 102 = F108
+string F108 = "\033[1$"
+
+#S+End
+shift keycode 107 = F109
+string F109 = "\033[4$"
+
+#S+Del
+shift keycode 111 = F110
+string F110 = "\033[3$"
+
+#C+Del
+control keycode 111 = F111
+string F111 = "\033[3^"
+

@@ -1,0 +1,264 @@
+# -*- sh -*-
+
+# C compiler and C flags
+CC = @CC@
+CFLAGS = @CFLAGS@ @CPPFLAGS@ @X_CFLAGS@
+LDFLAGS = @LDFLAGS@ @DYNAMIC_LINK_FLAGS@
+
+#---------------------------------------------------------------------------
+# Installation information.  All jed library files will be placed under
+# $JED_ROOT.  /usr/local/jed is a good choice.  For a private installation,
+# use, e.g., $(HOME)/src/jed
+#---------------------------------------------------------------------------
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+#JED_ROOT = $(HOME)/src/jed# <--- make sure # is at end of file!!
+#JED_ROOT = $(prefix)/jed# <--- make sure # is at end of file!!
+JED_ROOT = @JED_ROOT@# <--- make sure # is at end of file!!
+BIN_DIR = @bindir@
+MAN_DIR = @mandir@/man1
+INSTALL		= @INSTALL@
+INSTALL_DATA	= @INSTALL_DATA@
+MKINSDIR = ../autoconf/mkinsdir.sh
+JED_LIB_FILES = ../lib/*.sl ../lib/*.dat ../lib/*.hlp ../lib/jed.rc
+JED_DOC_FILES = ../doc/README
+JED_DOC_TXT_FILES = ../doc/txt/*.txt
+JED_DOC_HLP_FILES = ../doc/hlp/*.hlp
+JED_DOC_MAN_FILES = ../doc/manual/jed.tex
+JED_MAN_FILES = ../doc/manual/rgrep.1 ../doc/manual/jed.1 
+JED_COLOR_FILES = ../lib/colors/*.sl ../lib/colors/README
+XJED_COLOR_FILES = ../lib/colors/Xjed/*.sl
+JED_INFO_FILES = ../info/*
+
+#---------------------------------------------------------------------------
+# DESTDIR is designed to facilitate making packages.  Normally it is empty
+#---------------------------------------------------------------------------
+DESTDIR =
+DEST_BIN_DIR = $(DESTDIR)$(BIN_DIR)
+DEST_MAN_DIR = $(DESTDIR)$(MAN_DIR)
+DEST_JED_ROOT = $(DESTDIR)$(JED_ROOT)
+
+#---------------------------------------------------------------------------
+# Location of jed source code 
+#---------------------------------------------------------------------------
+# Location of jed source code (absolute path)
+SRCDIR = @SRCDIR@
+
+# Location of compiled object code (absolute path)
+OBJDIR = @OBJDIR@
+
+#---------------------------------------------------------------------------
+# Special features (See also features.h)
+#---------------------------------------------------------------------------
+# 1. Linux GPM Mouse support
+#    Uncomment next FOUR lines for GPM mouse support
+#MOUSEFLAGS = -DUSE_GPM_MOUSE
+#MOUSELIB = -lgpm
+#GPMMOUSEO = gpmmouse.o
+#OBJGPMMOUSEO = $(OBJDIR)/$(GPMMOUSEO)
+
+ 
+# 2. XFree86 XRENDERFONT (Anti-aliased font) support for XJED
+#    Also modify "XJED_HAS_XRENDERFONT" in jed-feat.h
+#XRENDERFONTLIBS = -lXft -lXrender -lfreetype -lXext
+
+#---------------------------------------------------------------------------
+# S-Lang library location
+#---------------------------------------------------------------------------
+# -L + Location of libslang.a 
+SLANG_LIB = @SLANG_LIB@
+RPATH	  = @RPATH@
+# -I + Location of slang.h
+SLANG_INC = @SLANG_INC@
+
+#---------------------------------------------------------------------------
+# X and Miscellaneous libraries
+#---------------------------------------------------------------------------
+# Some systems need -ltermcap (NeXT)
+TERMCAP_LIB = @TERMCAP@
+
+# X library location
+XLIBDIR = @X_LIBS@
+
+# X Include directory
+XINCLUDE = @X_CFLAGS@
+
+# Extra libraries needed by X and Network support on some systems
+X_XTRA_LIBS = @X_EXTRA_LIBS@
+
+# Libraries to support dynamic linking
+DL_LIB		= @DYNAMIC_LINK_LIB@
+
+# Anything else???
+OTHERLIBS = @LIBS@ -lm
+
+#---------------------------------------------------------------------------
+# There should be no need to modify anything below here.
+#---------------------------------------------------------------------------
+
+MIN_SLANG_VERSION = 10311
+MAX_SLANG_VERSION =
+XLIB = $(X_XTRA_LIBS) $(XLIBDIR) -lX11 $(TERMCAP_LIB) $(OTHERLIBS) $(DL_LIB)
+MISCLIBS = $(MOUSELIB) $(TERMCAP_LIB) $(X_XTRA_LIBS) $(OTHERLIBS) $(DL_LIB)
+
+ALL_CFLAGS = $(CFLAGS) -Dunix -DJED $(MOUSEFLAGS) $(SLANG_INC)
+COMPILE_CMD = \
+ $(CC) -c $(ALL_CFLAGS) $(XINCLUDE) -DJED_ROOT='"$(JED_ROOT)"'
+
+CONFIG_H = config.h
+
+OBJS = @PROGRAM_OBJECTS@
+OFILES = @PROGRAM_OFILES@
+CFILES = @PROGRAM_CFILES@
+HFILES = @PROGRAM_HFILES@
+
+EXEC_LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) -lslang $(MISCLIBS)
+
+jprocess_O_DEP = $(SRCDIR)/pty.c
+version_O_DEP = $(SRCDIR)/version.h
+
+TAG_FILES = $(CFILES) $(HFILES)
+TAGS_FILE_NAME = tags
+CTAGS_PGM = ctags
+
+#---------------------------------------------------------------------------
+all: jed
+
+jed: $(OBJDIR) $(CONFIG_H) slangversion $(OBJDIR)/jed
+	@echo jed created in $(OBJDIR)
+$(OBJDIR)/jed: $(OBJS) $(OBJDIR)/display.o $(OBJGPMMOUSEO)
+	cd $(OBJDIR); $(CC) $(OFILES) display.o $(GPMMOUSEO) \
+           -o jed $(EXEC_LIBS)
+
+slangversion: $(OBJDIR)/chkslang
+	if $(OBJDIR)/chkslang jed $(MIN_SLANG_VERSION) $(MAX_SLANG_VERSION);\
+	then exit 0; else $(RM) $(OBJDIR)/chkslang; exit 1; fi
+
+$(OBJDIR)/chkslang: config.h Makefile chkslang.c $(DOT_O_DEPS) $(chkslang_O_DEP)
+	$(CC) $(ALL_CFLAGS) $(LDFLAGS) $(SRCDIR)/chkslang.c -o $(OBJDIR)/chkslang $(EXEC_LIBS)
+
+
+$(OBJDIR):
+	-mkdir $(OBJDIR)
+
+$(CONFIG_H) : $(SRCDIR)/sysconf.h
+	/bin/cp $(SRCDIR)/sysconf.h $(CONFIG_H)
+
+$(SRCDIR)/sysdep.c: $(SRCDIR)/unix.c
+	touch $(SRCDIR)/sysdep.c
+$(SRCDIR)/xterm.c: $(SRCDIR)/xkeys.c
+	touch $(SRCDIR)/xterm.c
+$(SRCDIR)/syntax.c: $(SRCDIR)/dfasyntx.c
+	touch $(SRCDIR)/syntax.c
+#
+xjed : $(OBJDIR) $(CONFIG_H) slangversion $(OBJDIR)/xjed
+	@echo xjed created in $(OBJDIR)
+$(OBJDIR)/xjed : $(OBJS) $(OBJDIR)/xterm.o $(OBJDIR)/vterm.o
+	cd $(OBJDIR); \
+	$(CC) $(OFILES) xterm.o vterm.o -o xjed $(LDFLAGS) $(RPATH) \
+	   $(SLANG_LIB) -lslang  $(XLIB) $(XRENDERFONTLIBS)
+#
+rgrep: $(OBJDIR)/rgrep
+	@echo rgrep created in $(OBJDIR)
+$(OBJDIR)/rgrep: $(OBJDIR)/vfile.o $(OBJDIR)/rgrep.o
+	cd $(OBJDIR); $(CC) vfile.o rgrep.o -o rgrep $(LDFLAGS) $(RPATH) $(SLANG_LIB) -lslang
+#
+getmail: $(OBJDIR)/getmail
+	@echo getmail created in $(OBJDIR)
+$(OBJDIR)/getmail: $(OBJDIR)/getmail.o
+	cd $(OBJDIR); $(CC) getmail.o -o getmail $(LDFLAGS)
+#---------------------------------------------------------------------------
+$(TAGS_FILE_NAME): $(TAG_FILES)
+	$(CTAGS_PGM) $(TAG_FILES)
+#---------------------------------------------------------------------------
+
+clean:
+	/bin/rm -f $(OBJDIR)/* *~ \#*
+distclean: clean
+	/bin/rm -rf $(OBJDIR) Makefile sysconf.h
+
+install_directories:
+	$(MKINSDIR) $(DEST_BIN_DIR)
+	$(MKINSDIR) $(DEST_MAN_DIR)
+	$(MKINSDIR) $(DEST_JED_ROOT)
+	$(MKINSDIR) $(DEST_JED_ROOT)/bin
+	$(MKINSDIR) $(DEST_JED_ROOT)/info
+	$(MKINSDIR) $(DEST_JED_ROOT)/doc
+	$(MKINSDIR) $(DEST_JED_ROOT)/doc/txt
+	$(MKINSDIR) $(DEST_JED_ROOT)/doc/hlp
+	$(MKINSDIR) $(DEST_JED_ROOT)/doc/manual
+	$(MKINSDIR) $(DEST_JED_ROOT)/lib
+	$(MKINSDIR) $(DEST_JED_ROOT)/lib/colors
+	$(MKINSDIR) $(DEST_JED_ROOT)/lib/colors/Xjed
+
+install: all install_directories
+	$(INSTALL) $(OBJDIR)/jed $(DEST_BIN_DIR)/
+	-cd $(DEST_BIN_DIR); ln -s jed jed-script
+	-$(INSTALL) $(OBJDIR)/xjed $(DEST_BIN_DIR)/
+	-$(INSTALL) $(OBJDIR)/getmail $(DEST_JED_ROOT)/bin/
+	@for i in $(JED_LIB_FILES); \
+	do \
+		echo $(INSTALL_DATA) $$i $(DEST_JED_ROOT)/lib/; \
+		$(INSTALL_DATA) $$i $(DEST_JED_ROOT)/lib/; \
+		if [ "$$?" != "0" ]; then \
+		  exit 1; \
+		fi; \
+	done
+	@for i in $(JED_COLOR_FILES); \
+	do \
+		echo $(INSTALL_DATA) $$i $(DEST_JED_ROOT)/lib/colors/; \
+		$(INSTALL_DATA) $$i $(DEST_JED_ROOT)/lib/colors/; \
+		if [ "$$?" != "0" ]; then \
+		  exit 1; \
+		fi; \
+	done
+	@for i in $(XJED_COLOR_FILES); \
+	do \
+		echo $(INSTALL_DATA) $$i $(DEST_JED_ROOT)/lib/colors/Xjed/; \
+		$(INSTALL_DATA) $$i $(DEST_JED_ROOT)/lib/colors/Xjed/; \
+		if [ "$$?" != "0" ]; then \
+		  exit 1; \
+		fi; \
+	done
+	@for i in $(JED_MAN_FILES); \
+	do \
+		$(INSTALL_DATA) $$i $(DEST_MAN_DIR)/; \
+		echo $(INSTALL_DATA) $$i $(DEST_MAN_DIR)/; \
+	done
+	@for i in $(JED_DOC_FILES); \
+	do \
+		$(INSTALL_DATA) $$i $(DEST_JED_ROOT)/doc/; \
+		echo $(INSTALL_DATA) $$i $(DEST_JED_ROOT)/doc/; \
+	done
+	@for i in $(JED_DOC_TXT_FILES); \
+	do \
+		$(INSTALL_DATA) $$i $(DEST_JED_ROOT)/doc/txt; \
+		echo $(INSTALL_DATA) $$i $(DEST_JED_ROOT)/doc/txt; \
+	done
+	@for i in $(JED_DOC_HLP_FILES); \
+	do \
+		$(INSTALL_DATA) $$i $(DEST_JED_ROOT)/doc/hlp; \
+		echo $(INSTALL_DATA) $$i $(DEST_JED_ROOT)/doc/hlp; \
+	done
+	@for i in $(JED_DOC_MAN_FILES); \
+	do \
+		$(INSTALL_DATA) $$i $(DEST_JED_ROOT)/doc/manual; \
+		echo $(INSTALL_DATA) $$i $(DEST_JED_ROOT)/doc/manual; \
+	done
+	@for i in $(JED_INFO_FILES); \
+	do \
+		$(INSTALL_DATA) $$i $(DEST_JED_ROOT)/info/; \
+		echo $(INSTALL_DATA) $$i $(DEST_JED_ROOT)/info/; \
+	done
+#
+runtests: $(OBJDIR)/jed
+	./test/runtests.sh $(OBJDIR)/jed
+# The symlinks target is for my own private use.  It simply creates the object
+# directory as a symbolic link to a local disk instead of an NFS mounted one.
+symlinks:
+	-/bin/rm -f $(ARCH)objs
+	mkdir -p $(HOME)/sys/$(ARCH)/objs/jed/src
+	ln -s $(HOME)/sys/$(ARCH)/objs/jed/src $(ARCH)objs
+#---------------------------------------------------------------------------
+# Rules (automatically generated)
+#---------------------------------------------------------------------------

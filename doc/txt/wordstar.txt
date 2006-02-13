@@ -1,0 +1,38 @@
+JED Wordstar mode notes
+
+0.  To enable wordstar emulation, comment out the line in jed.rc loading
+    emacs and edt bindings.  Then uncomment the line regarding wordstar
+    bindings.
+    
+1.  The abort character is changed from ^G to ^^ (^6 on most keyboards).  
+    This is necessary because ^G is bound to delete character in wordstar.
+    
+2.  I have implemented ^K, and ^Q keymaps.  I do not know bindings for other
+    keymaps which is why they are not defined.  If there are any missing
+    bindings and keymaps, please feel free to let me know and I will try to
+    add them.
+    
+3.  Wordstar idea of block is preserved.  I have not changed its meaning as 
+    emacs does.  However, note that wordstar's concept of a region is
+    different from the concept that JED uses.  For this reason,  blocks in
+    JED's wordstar mode are not highlighted.   Bug me if you want this
+    changed.
+  
+4.  Since one of the keymaps is ^Q, it is up to the user to make sure that JED
+    can receive the ^Q character.  This means that the user must make sure that
+    ^Q is not used for flow control.  The alternative would be to use the 
+    map_input function to map a different control character to ^Q.  See jed.txt
+    for details.
+
+5.  Finally, you might consider the native JED keybindings which are based
+    on my experience using the Turbo Pascal editor.  To get an idea of these
+    bindings, startup jed with no default init file as by using `jed -n'.
+    Once in jed, press ESC-X and enter `describe_bindings' at the prompt.
+    If you get lost, press ^H? for menus.
+    
+    Using the default JED bindings results in a faster startup of JED since
+    there is no need to load any keybindings other than possible extensions
+    to the default ones.
+
+Mail comments and suggestions for the wordstar mode to
+davis@space.mit.edu.

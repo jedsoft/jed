@@ -1,0 +1,5 @@
+Basic JED Commands:    `^' means to use Ctrl key (e.g., ^D = Ctrl-D)
+^KE exit              ^D pagedown        ^FF search         ^K^B set mark
+^V delete	      ^U pageup          ^FB search back    ^KK  copy region
+^E end of line	      ^K^W write buffer	 ^K^R replace       ^K^P paste
+^B beginning of line  ^KG find file	 ^R redraw          ^K^V cut region

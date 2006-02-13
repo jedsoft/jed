@@ -1,0 +1,209 @@
+DFA-based Syntax Highlighting
+=============================
+
+DFA highlighting is an alternative syntax highlighting mechanism to
+Jed's original simple one. It's a lot more powerful, but it takes up
+more memory and makes the executable larger if it's compiled in.
+It's also more difficult to design new highlighting modes for.
+
+DFA highlighting works *alongside* Jed's old highlighting system: it
+doesn't prevent any language modes from using the old scheme. Any
+language modes that want to, however, can use the new scheme.
+
+Some examples of what DFA highlighting can do that the old scheme
+can't are:
+
+- Correct separation of numeric tokens in C. The text `2+3' would
+  get highlighted as a single number by the old scheme, since `+' is
+  a valid numeric character (when preceded by an E). DFA
+  highlighting can spot that the `+' is not a valid numeric
+  character in _this_ instance, though, and correctly interpret it
+  as an operator.
+
+- Highlighting of comments on preprocessor lines.
+
+- Enhanced HTML mode, in which tags containing mismatched quotes
+  (such as `<a href="filename>') can be highlighted in a different
+  colour from correctly formed tags.
+
+- Much improved Perl mode, in general.
+
+- PostScript mode, in which up to two levels of nested parentheses
+  can be detected inside a string constant.
+
+Using DFA Highlighting
+----------------------
+
+If Jed is compiled with DFA highlighting enabled, it will define the
+S-Lang preprocessor name `HAS_DFA_SYNTAX', and also define three
+extra functions: `dfa_enable_highlight_cache', `dfa_define_highlight_rule'
+and `dfa_build_highlight_table'. These are documented in Jed's ordinary
+function help.
+
+To implement a DFA highlighting scheme, you define a number of
+highlighting rules using `dfa_define_highlight_rule', and then enable
+the scheme using `dfa_build_highlight_table', which will build the
+internal data structure (DFA table) that is actually used to do the
+highlighting.
+
+Generating the DFA table can take a long time, especially for complex
+modes such as C (or even more so, PostScript). For this reason, the
+DFA tables can be cached by the use of `dfa_enable_highlight_cache'.
+You call this routine before defining any highlighting rules. If the
+cache file exists, the DFA table will be loaded directly from it, and
+the subsequent calls to `dfa_define_highlight_rule' and
+`dfa_build_highlight_table' will do nothing. If the cache file does
+not exist, then after Jed has built the DFA table it will attempt to
+create the cache.
+
+Cache files are searched along the set of paths specified by the
+`Jed_Highlight_Cache_Path' variable.  The default value for
+`Jed_Highlight_Cache_Path' is $JED_ROOT/lib, which assumes that cache
+files were created when the editor was installed via the optional
+installation step
+
+         jed -batch -l preparse
+
+On systems such as Unix, the average user has no permission to create
+cache files in $JED_ROOT/lib.  Hence, if the necessary cache files
+were not ceated during the installation step, it may be advantageous
+for the user to set the `Jed_Highlight_Cache_Dir' variable to a
+directory where cache files may be created.
+
+Highlighting Rules
+------------------
+
+Highlighting rules are basically regular expressions. You define
+regular-expression patterns for the objects that you want to
+highlight, and specify the colour that each object should be
+highlighted. Colours are specified as `keyword', `normal',
+`operator', `delimiter' and so on.
+
+A sample highlighting rule, from C mode, might look like this:
+
+dfa_define_highlight_rule("0[xX][0-9A-Fa-f]*[LlUu]*", "number", "C");
+
+This specified that in the syntax table called `C', any object
+matching the regular expression `0[xX][0-9A-Fa-f]*[LU]*' should be
+highlighted in the colour assigned to numbers. This regular
+expression matches C hexadecimal integer constants: a zero, an X (of
+either case), a sequence of hex digits, and optionally an L or a U
+on the end (for `long' or `unsigned').
+
+Regular expression syntax is as follows:
+
+- A normal character matches itself. Normal characters include
+  everything except special characters, which are ^ $ | * + ? [ ] -
+  . ( ) and the backslash \.
+
+- A character class [abcde] matches any one of the characters inside
+  it. Ranges can be specified with a dash, e.g. [a-e]. A character
+  class starting with a caret matches any single character _not_
+  inside it, e.g. [^a-e] matches anything except a, b, c, d or e.
+
+- A period (.) matches any character.
+
+- A character, or a character class, or a regular expression in
+  parentheses, can be followed by *, + or ?. If followed by * then
+  it will match any number of occurrences of the original
+  expression, including none at all; followed by + it will match any
+  number *not* including zero; followed by ? it will match zero or
+  one.
+
+- Two regular expressions separated by | will match either one.
+
+- A caret at the beginning of an expression causes it to match only
+  when at the beginning of a line. A dollar at the end causes it to
+  match only when at the end.
+
+- If you want to match one of the special characters, you can remove
+  its special properties by placing a backslash before it. This
+  includes the backslash itself.
+
+So, for example:
+
+	apple|banana		matches `apple' or `banana'
+	(apple|banana)?		matches `apple', `banana' or nothing
+	b[ae]d			matches `bad' or `bed'
+	[a-e]			matches `a', `b', `c', `d' or `e'
+	[a\-e]			matches `a', `-' or `e'
+	^#include		matches `#include', but only at the start
+				of a line
+	'[^']*'			matches any sequence of non-single-quotes
+				with a single-quote at each end, such as
+				a Pascal string literal
+	'[^']$			matches any sequence of non-single-quotes
+				with a single-quote at the beginning and
+				occurring at the end of a line, such as
+				a Pascal string literal that the user has
+				not finished typing
+
+To define a highlight rule, you think up the regular expression,
+express it as an S-Lang string literal, and include it in a call to
+`dfa_define_highlight_rule'.
+
+CAUTION: S-Lang strings obey the same syntax as C strings. This
+means that if you need a double quote or a backslash as part of your
+regular expression, you have to put *another* backslash before it
+when you write it as an S-Lang string. So the fifth example above
+might read
+
+	dfa_define_highlight_rule ("[a\\-e]", ...);
+
+with the backslash doubled. Also, the rules in C mode and S-Lang
+mode that match string constants have _way_ too many backslashes to
+be easily readable, and mostly look like line noise. I know that's a
+pain, but I couldn't help it.
+
+Extra Magical Bits
+------------------
+
+The second argument to `dfa_define_highlight_rule' is a colour name.
+This colour name can be prefixed by a few special letters for extra
+magical effects:
+
+`Q' causes the match to be _quick_. Most of the time, the regular
+expression matcher finds the _longest_ string starting at the
+current position that matches something. A `Q' rule will match with
+far higher priority, and will match the _shortest_ string possible.
+For example, consider the expression `/\*.*\*/' which matches `/*',
+then any sequence of characters, then `*/' - a one-line C comment.
+The difficulty is that C comments do not nest, and a sequence like
+
+/* comment */ not comment */
+
+should only be highlighted as a comment up to the _first_ `*/'. The
+normal longest-match heuristic will highlight the _whole_ thing as a
+comment, which is wrong. You can get round this by defining the rule
+as quick, like this:
+
+	dfa_define_highlight_rule("/\\*.*\\*/", "Qcomment", "C");
+
+`P' denotes a _preprocessor-type_ rule. Preprocessor-type rules
+state that not only should the matched text be given the specified
+colour, but so should everything on the rest of the line, _except_
+things in the comment colour. This allows comments on preprocessor
+lines, with quite a high level of sophistication: defining, in C mode,
+
+	dfa_define_highlight_rule("^[ \t]*#", "PQpreprocess", "C");
+
+will cause the following effects:
+
+	#define FLAG			comes up in preprocessor colour
+	#define FLAG /* comment */	the comment is highlighted right
+	#include "/*sdfs*/"		the comment does _not_ get seen!
+
+Finally, `K' defines a _keyword_ rule. In a keyword rule, the
+matched text is compared to the active keyword tables for the syntax
+scheme, and given the correct keyword colour if a match is found.
+If no keyword matches the text, the text will be highlighted in the
+colour that was _actually_ specified in the rule.
+
+Further Reading
+---------------
+
+If you want to design _really_ complicated highlighting schemes, it
+may be that a full understanding of the principles and theory behind
+the DFA scheme may be helpful. Most books on compiler theory will
+give a good discussion of this.
+

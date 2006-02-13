@@ -1,0 +1,184 @@
+! Note:  jed.exe is a console mode version.  This file documents the
+! windows GUI version.  Right now the GUI version's menus are not as
+! capable as the console version's menus.  Someday both may be integrated.
+! --JED
+
+This file has been donated by lionkov@sf.cit.bg (Luchesar Ionkov).
+
+	Colors
+	
+   Colors may be specified either in the [wjed] section of the win.ini
+   or with set_color intrinsic function using the RGB format
+   ("RValue,GValue,BValue", such as "128,128,128" for gray color) or a
+   color name.  wjed defines 16 colors and user can define his or her
+   own in the [wjed] section of the win.ini file.  For example, the
+   following produce equivalent results:
+   
+     (a) set_color ("12,34,56");
+
+     (b) set_color ("mycolor");
+         where win.ini contains:
+
+          [wjed]
+	  mycolor=12,34,56
+	
+   
+   Entries in wjed section in win.ini
+	
+
+   Entry	Type		Description
+   -------------------------------------------------------------------------------------
+   Font		String		Name of font which will be used in wjed.
+                                Only fixed fonts can be used (such as
+				Fixedsys or Courier)
+   FontHeight	Integer 	Height of font
+   FontBold	Integer 	If nonzero bold typeface will be used. 
+   Background	Color 		Background color
+   Foreground	Color		Foreground color
+   StatusBG	Color		Background color of status lune
+   StatusFG	Color		Foreground color of status line
+   RegionBG	Color		Background color of a region as defined by point and mark
+   RegionFG	Color		Foreground color of a region as defined by point and mark
+   OperatorBG	Color		Background color of operators
+   OperatorFG	Color		Foreground color of operators
+   NumberBG	Color		Background color of numbers
+   NumberFG	Color		Foreground color of numbers
+   StringBG	Color		Background color of strings
+   StringFG	Color		Foreground color of strings
+   CommentBG	Color		Background color of comments
+   CommentFG	Color		Foreground color of commens
+   KeywordBG	Color		Background color of keywords
+   KeywordFG	Color		Foreground color of keywords
+   Keyword1BG	Color		Background color of other keywords
+   Keyword1FG	Color		Foreground color of other keywords
+   DelimiterBG	Color		Background color of delimiters
+   DelimiterFG	Color		Foreground color of delimites
+   PreprocessBG	Color		Background color of preprocess lines
+   PreprocessFG	Color		Foreground color of preprocess lines
+   MessageBG	Color		Background color for messages
+   MessageFG	Color		Foreground color for messages
+   ErrorBG	Color		Background color for error messages
+   ErrorFG	Color		Foreground color for error messages
+   MenuBG	Color		
+   MenuFG	Color		
+   CursorBG	Color		Background color of text cursor
+   CursorFG	Color		Foreground color of text cursor
+   DollarBG	Color		
+   DollarFG	Color	        
+   Title	String		Name to be displayed on the title bar
+   X		Integer		-\
+   Y		Integer		  - Dimensions of window
+   Width	Integer		 /
+   Height	Integer		/
+
+
+
+
+
+	Specific wjed intrinsics
+	
+	
+   Void w32_define_color(String Name, Integer RValue, Integer GValue, Integer BValue)
+   	Defines new color "Name" with RGB values from RValue, GValue and BValue
+	
+   Integer w32_get_menubar(Void)
+   	Returns handle of menubar. If there is no menubar, the function create it.
+	
+   Void w32_destroy_menubar(Void)
+   	Destroys menubar
+	
+   Integer w32_create_popup_menu(Void)
+       Creates empty popup menu and returns integer value which is 
+       it's handle. If popup is not appended to another menu, it must 
+       destroyed after use.
+	
+   Void w32_destroy_menu(Integer hmenu)
+       Destroys menu and all it's popup menus.
+       Note: Do not destroy menubar with this function 
+             (use `destroy_menubar')
+            
+   Void w32_append_menu_item(Integer hmenu, String name, Integer id, String callback)
+       Appends menu item with name 'name' and identifier 'id' at the end 
+       of 'hmenu'. When item is selected, the 'callback' will be executed.
+       Callback can be intrinsic or internal function.
+      
+   Void w32_append_popop_menu(Integer hmenu, String name, Integer popup) 
+       Appends popup menu with name 'name' and handle 'popup' at the end 
+       of 'hmenu'
+       
+   Void w32_append_separator(Integer hmenu) 
+       Appends menu separator at the end of 'hmenu'
+       
+   Void w32_insert_menu_item(Integer hmenu, Integer id, String name, Integer idNew, String callback)
+       Inserts menu item with name 'name' and identifier 'idNew' before
+       menu item with identifier 'id'.
+       When item is selected, the 'callback' will be executed.
+       Callback can be intrinsic or internal function.
+       
+   Void w32_insert_menu_item_pos(Integer hmenu, Integer pos, String name, Integer idNew, String callback)
+       Inserts menu item with name 'name' and identifier 'idNew' before
+       menu item with zero-based position 'pos' in 'hmenu'.
+       When item is selected, the 'callback' will be executed.
+       Callback can be intrinsic or internal function.
+       
+   Void w32_insert_popup_menu(Integer hmenu, Integer id, String name, Integer popup) 
+       Inserts popup menu with name 'name' and handle 'popup' before
+       menu item with identifier 'id'
+       
+   Void w32_insert_popup_menu_pos(Integer hmenu, Integer pos, String name, Integer popup) 
+       Inserts popup menu with name 'name' and handle 'popup' before
+       menu item with zero-based position 'pos' in 'hmenu'
+       
+   Void w32_insert_separator(Integer hmenu, Integer id)
+       Inserts menu separator before menu item with identifier 'id'
+       
+   Void w32_insert_separator_pos(Integer hmenu, Integer pos) 
+       Inserts menu separator before menu item with zero-based position 'pos'
+       
+   Void w32_delete_menu_item(Integer hmenu, Integer id) 
+       Deletes menu item with identifier id from menu with handle 'hmenu'
+       
+   Void w32_delete_menu_item_pos(Integer hmenu, Integer pos) 
+       Deletes menu item at zero-based position 'pos' from menu 'hmenu'
+       
+   Integer w32_get_menu_state(Integer hmenu, Integer id) 
+       Gets state of menu item with identifier 'id'
+       <return value> & 1 == 1 if menu item is enabled
+       <return value> & 2 == 1 if menu item is checked
+       
+   Integer w32_get_menu_state(Integer hmenu, Integer pos) 
+       Gets state of menu item at zero-based position 'pos' 
+       <return value> & 1 == 1 if menu item is enabled
+       <return value> & 2 == 1 if menu item is checked
+       
+   Void w32_get_popup_menu(Integer hmenu, Integer pos) 
+       Returns handle of popup menu at zero-based position 'pos'
+       If return value is 0, there is no popup at the position.
+       
+   Void w32_check_menu_item(Integer hmenu, Integer id, Integer flag) 
+       This functions changes check state of menu item. If flag is nonzero, 
+       it checks menu item, otherwise it unchecks it
+       
+   Void w32_check_menu_item(Integer hmenu, Integer pos, Integer flag) 
+       This functions changes check state of menu item. If flag is nonzero, 
+       it checks menu item, otherwise it unchecks it
+       
+   Void w32_check_menu_item(Integer hmenu, Integer id, Integer flag) 
+       This functions enable or disable menu item. If flag is nonzero, the
+       menu item will be enabled, otherwise it'll be disabled.
+       
+   Void w32_check_menu_item(Integer hmenu, Integer pos, Integer flag) 
+       This functions enable or disable menu item. If flag is nonzero, the
+       menu item will be enabled, otherwise it'll be disabled.
+       
+   Void w32_redraw_menubar(Void) 
+       Redraws menubar. This functions should be called if menubar is changed
+      
+   Void w32_set_init_popup_callback(String callback)
+       Executes callback before popup menu is popped up.
+      
+   Void msw_help(String filename, String keword, Integer Partial_Keys) 
+       Starts Windows Help with 'filename' help file. If 'keyword' is not null
+       string shows topic with specified keyword. If 'Partial_Keys' != 0
+       shows Search dialog if there is more than one help topic beginnig with
+       'keyword'

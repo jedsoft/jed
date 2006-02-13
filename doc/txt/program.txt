@@ -1,0 +1,154 @@
+This document provides some tips for writing better and more efficient
+S-Lang code.  It is not meant to be a tutorial on S-Lang.
+
+Writing Fast Routines
+=====================
+
+  The first thing that one must realize is that S-Lang is an interpreted
+  language and runs much slower than a compiled language.  This fact can be
+  used to justify a rule of thumb that may be used to gauge the speed of a
+  S-Lang expression:
+
+    Rule of Thumb: All single token intrinsic statements and expressions run
+		   at the same speed.
+
+  The phrase ``intrinsic statements and expressions'' includes not only
+  intrinsic functions but also assignment operations as well as pushing an
+  object on the stack.  For example, consider the expression:
+  
+     n = down (20);
+     
+   This expression consists of the operation of pushing `20' onto the stack
+   followed by calling the intrinsic function `down' and assigning it to
+   `n'.  It is easiest to see this using the RPN form:
+   
+   .  20 down =n
+   
+   (Remember, all RPN expressions must lie on lines that begin with a
+   period.).   From the above rule of thumb, this expression executes at a
+   speed of 3 units.
+   
+   Now consider something more tricky.  Consider the expression:
+   
+       n = n + 1;
+       
+   It also executes in 3 units of time.  This is equivalent to:
+   
+       n++;
+       
+   However, `n++' is a single token and executes in 1 unit of time!  So, the
+   rule is that one should try to use the `++' and `--' forms whenever
+   possible.  The same statement is true for the `+=' and `-=' operators.
+   The statement:
+   
+      n += 1;
+      
+   parses to two tokens:
+   
+   .  1 +=n;
+   
+   and executes in 2 units.  Note that 
+   
+      n++; n++;
+      
+   also achieves the effect `n = n + 2' but executes in 2 units as well.
+   
+   At this point, it should be clear that the code that executes the fastest
+   is the code that contains the least number of tokens.   However, this is
+   only partially true and only holds for expressions that do not call other
+   S-Lang functions.
+   
+   As an example, consider the recursive function below:
+   
+       define fib ();   % definition required for recursion
+       
+       define fib(n)
+       {
+          if (n == 0) return(0);
+          if (n == 1) return(1);
+  
+          return fib(n - 1) + fib(n - 2);
+       }
+       
+   The first thing to do is to change
+   
+         if (n == 0) return 0;
+	 
+   to 
+         !if (n) return 0;
+	 
+   since the expression `n == 0' executes in 3 units and `n' executes in
+   only 1.  Similarly, the statement:
+   
+         if (n == 1) return 1;
+	 
+   may be written:
+   
+         n--; !if (n) return 1;
+  
+   with the side effect that n is reduced by 1 in the process.  But that is
+   a good thing because we can then modify:
+   
+       return fib (n - 1) + fib (n - 2);
+       
+   to:
+   
+       return fib(n) + fib (n - 1);
+       
+   Actually, we can do better than that.  We can write `n - 1' which
+   executes in 3 units to the equivalent expression `n--, n' that executes
+   in 2 units to produce:
+   
+      return fib (n) + fib (n--, n);
+      
+   Here the fact that `n--' does not affect the stack makes this possible.
+   Finally, we are left with:
+   
+      define fib (n)
+      {
+        !if (n) return 0;
+	n--; !if (n) return 1;
+	return fib(n) + fib (n--, n);
+      }
+
+   Simply counting tokens (if, !if, fib, n, ==, 1, -, etc...) shows that the
+   unoptimized version has 19 whereas the optimized version has 12. Applying
+   the rule of thumb to this suggests that the optimized version should run
+   19/12 times faster!  The reader is encouraged to compare the speed of the
+   first version of `fib' with the optimized version to verify that this is
+   indeed the case (use something like fib(25)).
+   
+   Here is a brief summary of what to do to squeeze extra speed out of
+   S-Lang: 
+   
+      1.  Use the `++', `--', `+=', and `-=' forms wherever possible.
+      2.  Eliminate `if (something == 0)' in favor of `!if (something)'
+      3.  Avoid `while(1)' and use `forever' instead.
+      4.  For simple looping a fixed number of times use `loop'.
+      5.  If you have something like:
+      
+            for (i = imin; i <= imax; i += di) 
+	      {
+	         ...
+	      }
+	    
+	  replace it by the MUCH faster and smaller version
+	  
+	    _for (imin, imax, di)
+	       {
+	         i = ();
+		   .
+		   .
+	       }
+	       
+      6.  For multiplication by 2 use the `mul2' function.  
+      7.  To square a number, do not use `x * x'.  Use `sqr(x)'.
+      
+
+Writing Memory Efficient Routines
+=================================
+
+   In the previous section, it was emphasized that routines that use the
+   least number of tokens are the fastest.  Since they use the smallest
+   number of tokens, they take up less space and and are more memory
+   efficient.  

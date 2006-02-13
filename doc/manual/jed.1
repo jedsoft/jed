@@ -1,0 +1,427 @@
+.\" ==================================================================
+.\" Jed programmers editor, this manpage was writen by 
+.\" "Boris D. Beletsky" <borik@isracom.co.il> copyright(c) 1996
+.\" This manpage may be freely distrebuted as part of GNU Debian Linux
+.\" ==================================================================
+.TH JED 1 "OCT 1996" Debian "User Manuals"
+.SH NAME
+Jed \- programmers editor
+.SH SYNOPSIS
+.B jed [options] 
+.I file
+.B ...
+.SH DESCRIPTION
+.B Jed - programmers editor
+.LP
+Features:
+.LP
+Color syntax 
+.I highlighting. 
+Emulation of 
+.B Emacs,
+.B EDT,
+.B Wordstar, 
+and Brief editors. 
+Extensible in a language resembling C. Completely customizable.
+Editing TeX files with AUC-TeX style editing (BiBTeX support too).
+Folding support, and much more...
+.LP
+For complete documentation, see GNU info files, this manual only
+provides brief tutorial.
+.SH OPTIONS
+.LP
+.I -batch
+.RS
+run Jed in batch mode.
+This is a non-interactive mode.
+.RE
+.I -n             
+.RS
+do not load 
+.I .jedrc 
+file.
+.RE
+.I -a 'file'
+.RS
+load
+.I file
+as user configuration file instead of .jedrc.
+.RE
+.I -g 'n'
+.RS
+goto line 
+.I n 
+in buffer (notice that in order to this option to take effect, if must
+appear after the file name in the command line, like 'jed file -g 3')
+.RE
+.I -l 'file'      
+.RS
+load 
+.I file 
+as S-Lang code.
+.RE
+.I -f 'function' 
+.RS
+execute S-Lang function named
+.I function
+.RE
+.I -s 'string'
+.RS
+search forward for 
+.I string
+.RE
+.I -2             
+.RS
+split window
+.RE
+.I -i 'file'
+.RS
+insert 
+.I file 
+into current buffer.
+.RE
+.LP
+.SH CONFIGURATION
+.RS
+.I Emulating Other Editors
+.RE
+.LP
+JED's ability to create new functions using the 
+.I S--Lang 
+programming language as well as allowing the user to choose key bindings,
+makes the emulation of other editors possible. Currently, JED provides
+reasonable emulation of the
+.I Emacs, EDT, and Wordstar
+editors.
+.LP
+.RS
+.I Emacs Emulation
+.RE
+.LP
+.I Emacs Emulation
+is provided by the S-Lang code in
+.I emacs.sl.
+The
+basic functionality of Emacs is emulated; most Emacs users
+should have no problem with JED.  To enable Emacs emulation in JED, make sure
+that the line:
+.LP
+.RS
+.I () = evalfile ("emacs"); 
+.RE
+.LP
+is in your
+.I jed.rc
+(.jedrc) startup file.  JED is distributed
+with this line already present in the default jed.rc file.
+.LP
+.RS
+.I EDT Emulation
+.RE
+.LP
+For
+.I EDT
+emulation,
+.I edt.sl
+must be loaded.  This is accomplished by
+ensuring that the line:
+.LP
+.RS
+.I () = evalfile ("edt");
+.RE
+.LP
+is in present in the jed.rc (.jedrc) Startup File.
+.LP
+.RS
+.I Wordstar Emulation
+.RE
+.LP
+wordstar.sl contains the S-Lang code for JED's Wordstar
+emulation. Adding the line
+.LP
+.RS
+.I () = evalfile ("wordstar");
+.RE
+.LP
+to your jed.rc (.jedrc) startup file will enable JED's
+Wordstar emulation.
+.SH RUN TIME
+.LP
+.RS
+.I Status line and Windows
+.RE
+.LP
+.I JED 
+supports multiple windows.  Each window may contain the same
+buffer or
+different buffers.  A status line is displayed immediately below
+each
+window.  The status line contains information such as the JED
+version
+number, the buffer name,
+.I mode,
+etc.  Please beware of the
+following indicators:
+.LP
+.I **
+.RS
+buffer has been modified since last save.
+.RE
+.I %%
+.RS
+buffer is read only.
+.RE
+.I m
+.RS
+Mark set indicator.  This means a region is being defined.
+.RE
+.I d
+.RS
+File changed on disk indicator.  This indicates that the
+file associated with the buffer is newer than the
+buffer itself.
+.RE
+.I s
+.RS
+spot pushed indicator.
+.RE
+.I +
+.RS
+Undo is enabled for the buffer.
+.RE
+.I [Narrow]
+.RS
+Buffer is narrowed to a region of LINES.
+.RE
+.I [Macro]
+.RS
+A macro is being defined.
+.RE
+.LP
+.RS
+.I Mini-Buffer.
+.RE
+.LP
+The
+.I Mini-Buffer
+consists of a single line located at the bottom of the
+screen. Much of the dialog between the user and JED takes place in this
+buffer.  For example, when you search for a string, JED will prompt you
+for the string in the Mini-Buffer.
+.LP
+The
+.I Mini-Buffer 
+also provides a direct link to the S-Langinterpreter.
+To access the interpreter, press
+.I Ctrl-X Esc
+and the
+.I S-Lang>
+prompt will appear in the Mini-Buffer.  Enter any valid S-Lang expression for
+evaluation by the interpreter.
+.LP
+It is possible to recall data previously entered into the
+.I Mini-Buffer
+by using the up and down arrow keys.  This makes it possible to use and edit
+previous expressions in a convenient and efficient manner.
+.LP
+.RS
+.I Basic Editing
+.RE
+.LP
+.I Editing with JED
+is pretty easy - most keys simply insert themselves.
+Movement around the buffer is usually done using the
+.I arrow keys or page up and page down keys.
+If
+.I edt.sl
+is loaded, the keypads on
+VTxxx
+terminals function as well.  Here, only the
+highlights are
+touched upon
+(cut/paste operations are not considered `highlights').
+In the following, any character prefixed by the
+.I ^
+character denotes a
+Control character. On keyboards without an explicit Escape key,
+.I "Ctrl-["
+will most likely generate and Escape character.
+.LP
+A
+.I prefix argument
+to a command may be generated by first hitting the
+.I Esc
+key, then entering the number followed by pressing the desired
+key.  Normally, the prefix argument is used simply for
+repetition.  For
+example,
+to move to the right 40 characters, one would press
+.I "Esc 4 0"
+followed immediately by the right arrow key.
+This illustrates the use of the repeat argument for repetition.
+However, the
+prefix argument may be used in other ways as well.  For example,
+to begin
+defining a region, one would press the
+.I "Ctrl-@"
+key.  This sets the mark and begins highlighting.
+Pressing the
+.I "Ctrl-@"
+key with a prefix
+argument will abort the act of defining the region and to pop the
+mark.
+
+The following list of useful keybindings assumes that
+.I emacs.sl
+has been loaded.
+.LP
+.I Ctrl-L
+.RS
+Redraw screen.
+.RE
+.I Ctrl-_
+.RS
+Undo  (Control-underscore, also Ctrl-X u').
+.RE
+.I Esc q
+.RS
+Reformat paragraph (wrap mode).  Used with a prefix
+argument. will justify the paragraph as well.
+.RE
+.I Esc n
+.RS
+narrow paragraph
+(wrap mode).  Used with a prefix
+argument will justify the paragraph as well.
+.RE
+.I Esc ;
+.RS
+Make Language comment (Fortran
+and C)
+.RE
+.I Esc \\\\
+.RS
+Trim whitespace around point
+.RE
+.I Esc !
+.RS
+Execute shell command
+.RE
+.I Esc $
+.RS
+Ispell word 
+.RE
+.I Ctrl-X ?
+.RS
+Show line/column information.
+.RE
+.I `
+.RS
+quoted_insert --- insert
+next char as is (backquote key)
+.RE
+.I Esc s
+.RS
+Center line.
+.RE
+.I Esc u
+.RS
+Upcase word.
+.RE
+.I Esc d
+.RS
+Downcase word.
+.RE
+.I Esc c
+.RS
+Capitalize word.
+.RE
+.I Esc x
+.RS
+Get M-x minibuffer prompt with command
+completion
+.RE
+.I Ctrl-X Ctrl-B
+.RS
+pop up a list of buffers
+.RE
+.I Ctrl-X Ctrl-C
+.RS
+exit JED
+.RE
+.I Ctrl-X 0
+.RS
+Delete
+Current Window
+.RE
+.I Ctrl-X 1
+.RS
+One Window.
+.RE
+.I Ctrl-X 2
+.RS
+Split Window.
+.RE
+.RS
+.I Ctrl-X o
+.RE
+.RS
+Other window.
+.RE
+.I Ctrl-X b
+.RS
+switch to buffer
+.RE
+.I Ctrl-X k
+.RS
+kill buffer
+.RE
+.I Ctrl-X s
+.RS
+save some buffers
+.RE
+.I Ctrl-X Esc
+.RS
+Get "S-Lang>" prompt for interface to the S-Lang
+interpreter.
+.RE
+.I Esc .
+.RS
+Find tag
+.RE
+.I Ctrl-@
+.RS
+Set Mark (Begin defining a region).  Used with a
+prefix argument aborts the act
+of defining the region and
+pops the Mark.
+.RE
+.RE
+.\"---------------------------------------------------------
+.SH FILES
+.I JED_ROOT/lib/*.sl
+.RS
+these are the default runtime jed slang files
+.RE
+.I JED_ROOT/lib/site.sl
+.RS
+This is the default startup file.
+.RE
+.I /etc/jed.rc
+.RS
+The system wide configuration file.
+.RE
+.I ~/.jedrc
+.RS
+Per user configuration file.
+.SH AUTHOR
+.I "John E. Davis" <davis@space.mit.edu>
+.RS
+Jed's Author
+.RE
+
+
+--- This document was
+.I translated
+to nroff
+by "Boris D. Beletsky" <borik@isracom.co.il>

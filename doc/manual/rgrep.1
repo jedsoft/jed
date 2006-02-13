@@ -1,0 +1,212 @@
+.\"===========================================================================
+.\" rgrep ­ a recursive highlighting grep program, this manpage was writen by
+.\" "Boris D. Beletsky" <borik@isracom.co.il> copyright(c) 1996
+.\" This manpage may be freely distrebuted as part of GNU Debian Linux
+.\"===========================================================================
+.TH RGREP 1 "OCT 1996" Debian "User Manuals"
+.SH NAME
+rgrep \- a recursive, highlighting grep program
+.SH SYNOPSIS
+.B rgrep 
+.I [ options ]
+.I pattern
+.I [ file ]
+.B ...
+.SH DESCRIPTION
+.I rgrep,
+unlike 
+.I grep(1) 
+and 
+.I egrep(1) 
+rgrep has the ability to recursively descend
+directories. The traditional way of performing this kind of search
+on Unix
+systems utilizes the 
+.I find(1) 
+command in conjunction with 
+.I grep(1). 
+However,
+this results in very poor performance.
+.SH COMMAND LINE OPTIONS
+.LP
+.I -?
+.RS
+additional help (use '-?' to avoid shell expansion on some systems)
+.RE
+.I -c
+.RS
+count matches
+.RE
+.I -h
+.RS
+highlight match (ANSI compatable terminal assumed)
+.RE
+.I -H
+.RS
+Output match instead of entire line containing match
+.RE
+.I -i
+.RS
+ignore case
+.RE
+.I -l
+.RS 
+list filename only
+.RE
+.I -n
+.RS
+print line number of match
+.RE
+.I -F
+.RS
+follow links
+.RE
+.I -r
+.RS
+recursively scan through directory tree
+.RE
+.I -N
+.RS
+Do NOT perform a recursive search
+.RE
+.I -R 'pat'
+.RS
+like '-r' except that only those files matching 'pat' are checked
+.RE
+.I -v
+.RS
+print only lines that do NOT match the specified pattern
+.RE
+.I -x 'ext'
+.RS
+checks only files with extension given by 'ext'.
+.RE
+.I -D
+.RS
+Print all directories that would be searched.  This option is for
+debugging purposes only.  No file is grepped with this
+option.
+.RE
+.I -W 'len'
+.RS
+lines are 'len' characters long (not newline terminated).
+.RE
+.LP
+.SH SUPPORTED REGULAR EXPRESSIONS:
+.LP
+.I .
+.RS
+match any character except newline
+.RE
+.I \\\d
+.RS
+match any digit
+.RE
+.I \\\\e
+.RS
+match ESC char
+.RE
+.I *
+.RS
+matches zero or more occurences of previous RE
+.RE
+.I +
+.RS
+matches one or more occurences of previous RE
+.RE
+.I ?
+.RS
+matches zero or one occurence of previous RE
+.RE
+.I ^
+.RS
+matches beginning of line
+.RE
+.I $
+.RS
+matches end of line
+.RE
+.I [ ... ]            
+.RS
+matches any single character between brackets.
+For example, 
+.I [-02468] 
+matches 
+.I '-' 
+or any even digit.
+and 
+.I [-0-9a-z] 
+matches 
+.I '-' 
+and any digit between 
+.I 0 
+and 
+.I 9
+as well as letters 
+.I a 
+through 
+.I z.
+.RE
+.LP
+.I \\\\{ ... \\\\}
+.LP
+.I \\\\( ... \\\\)
+.LP
+.I \\\\1, \\\\2, ..., \\\\9    
+.RS
+matches match
+specified by nth 
+.I '\\\\( ... \\\\)' 
+expression.
+For example,
+.I '\\\\([\ \\\\t][a-zA-Z]+\\\\)\\\\1[\ \\\\t]'
+matches any
+word repeated consecutively.
+.RE
+.LP
+.SH EXAMPLES
+Look in all files with a 'c' extension in current directory and all
+its
+subdirectories looking for matches of 'int ' at the beginning of a
+line,
+printing the line containing the match with its line number: (two
+methods)
+.LP
+.I rgrep -n -R '*.c' '^int ' .
+.LP
+.I rgrep -n -x c '^int ' .
+.LP	
+Highlight all matches of repeated words in file 'paper.tex':
+.LP
+.I rgrep -h 
+.I '[\ \\\\t]\\\\([a-zA-Z]+\\\\)[\ \\\\t]+\\\\1[\ \\\\t\\\\n]' paper.tex
+.LP
+.I rgrep -h '^\\\\([a-zA-Z]+\\\\)[\ \\\\t]+\\\\1[\ \\\\t\\\\n]' paper.tex
+.LP
+(Note that this version of rgrep requires two
+passes for this example)
+.LP
+Search through all files EXCEPT .o and .a file below /usr/src/linux
+looking
+for the string 'mouse' without regard to case:
+.LP
+.I rgrep -i -R '*.[^ao]' mouse /usr/src/linux
+.LP     
+Search a fixed record length FITS file for the keyword EXTNAME:
+.LP
+.I rgrep -W80 ^EXTNAME file.fits
+.LP
+(Note that the regular expression 
+.I '^[A-Z]+' 
+will dump all fits headers.)
+.SH AUTHOR
+.LP
+.RS
+.I \
+"""John E. Davis""" <davis@space.mit.edu>
+.RE
+.LP
+-- This manpage was translated to troff by
+.LP
+"Boris D. Beletsky"
+<borik@isracom.co.il>

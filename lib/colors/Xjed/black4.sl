@@ -1,0 +1,45 @@
+% Contributed by Mark Olesen
+$1 = "black";
+set_color("normal",	"white",	$1);
+set_color("status",	"yellow",	"blue");
+set_color("region",	"yellow",	"blue");
+set_color("menu_char",	"yellow",	"blue");
+set_color("keyword0",	"yellow",	$1);
+set_color("keyword1",	"green",	$1);
+set_color("mouse",	"green",	$1);
+set_color("menu",	"lightgray",	"blue");
+set_color("menu_char",	"yellow",	"blue");
+set_color("menu_popup",	"lightgray",		"blue");
+set_color("menu_shadow","blue",		$1);
+set_color("menu_selection_char",	"yellow",	"magenta");
+set_color("menu_selection", "black",	"cyan");
+set_color("cursor",	$1,		"yellow");
+set_color("cursorovr",  $1,		"red");
+set_color("operator",	"cyan",		$1);
+set_color("delimiter",	"cyan",		$1);
+set_color("message",	"cyan",		$1);
+set_color("comment",	"cyan",		"gray25");
+set_color("string",	"gray",		$1);
+set_color("...",	"magenta",	$1);
+set_color("dollar",	"magenta",	$1);
+set_color("preprocess",	"magenta",	$1);
+set_color("error",	"red",		$1);
+set_color("number",	"red",		$1);
+
+%% The following have been automatically generated:
+set_color("linenum", "yellow", "blue");
+set_color("trailing_whitespace", "cyan", "gray25");
+set_color("tab", "cyan", "gray25");
+set_color("url", "gray", $1);
+set_color("italic", "white", $1);
+set_color("underline", "green", $1);
+set_color("bold", "white", $1);
+set_color("keyword", "white", $1);
+set_color("keyword2", "white", $1);
+set_color("keyword3", "white", $1);
+set_color("keyword4", "white", $1);
+set_color("keyword5", "white", $1);
+set_color("keyword6", "white", $1);
+set_color("keyword7", "white", $1);
+set_color("keyword8", "white", $1);
+set_color("keyword9", "white", $1);

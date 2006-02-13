@@ -1,0 +1,94 @@
+UNIX installation specific functions.  Please read this file.
+
+0. Building and installing JED requires that you also have the S-Lang library
+   to installed.  See http://www.s-lang.org/download.html for
+   information about obtaining the library.
+
+1. Choose an installation location for JED. JED is distributed in a
+   TREE structure:
+
+     $JED_ROOT/
+     $JED_ROOT/src
+     $JED_ROOT/info
+     $JED_ROOT/doc
+     $JED_ROOT/lib
+     $JED_ROOT/bin
+
+   Here JED_ROOT can be anything (e.g., /usr/local/jed).  It must be
+   specified in the Makefile of the src subdirectory.  It is important
+   that the subdirectories under $JED_ROOT remain intact.  An
+   environment variable called `JED_ROOT' can also be created to over
+   ride the value compiled with the executable.
+
+3. Build JED.
+
+      ./configure --prefix=/usr/local
+
+   This assumes that you want it installed with JED_ROOT equal to
+   /usr/local/jed/, with the main jed executable installed in /usr/local/bin/.
+   This step creates the necessary Makefiles.
+		  
+	 * note:  On Linux systems, JED may be compiled to take advantage of
+	          the GPM mouse server.  See the mouse section in
+		  src/Makefile for enabling this.
+
+         * note:  If you are building jed on a system that uses more than
+	          one architecture, then before running make, define an
+		  environment variable called ARCH whose value
+		  specifies the system, e.g., sun4, solaris, etc.
+
+   Now type `make' at the shell prompt.  If you have X windows and you
+   would like to create 'xjed', additionally run 'make xjed'.  If all
+   goes well install it with `make install'.
+
+   JED comes with a highlighting recursive grep program called rgrep. This
+   is created as part of the build process.
+   
+4. By default, when JED starts up, it will load some files out of
+   $JED_ROOT/lib then it will look for the file .jedrc in the user's
+   home directory.  If it does not find it, it will load the default
+   file jed.rc from $JED_ROOT/lib.
+   
+   In fact, the user is encouraged to copy jed.rc to $HOME/.jedrc and
+   make personal changes there.  The $JED_ROOT/lib/jed.rc file should
+   be regarded as a template for .jedrc and should not be changed.
+   The default editor emulation is specified by the
+   _Jed_Default_Emulation variable, which defaults to "emacs".
+
+   Site specific customization should be placed in /etc/jed.conf or in
+   /usr/local/etc/jed.conf.  An example jed.conf file may be found in
+   the lib subdirectory.  Among other things, it may be used change
+   many of the defaults on a system-wide basis.  For instance, many
+   Unix users may not want emacs bindings and may prefer something
+   like Borland's IDE keybindings.  It is in this file where such
+   defaults may be made.  See the sample file for more details.
+   
+   For more information about customizing jed on a site-wide basis,
+   read the INSTALL file.
+
+5. Optional but highly recommended: preparse the S-Lang files.  This
+   is done by running JED as:
+     
+         # jed -batch -n -l preparse.sl
+
+   This creates pre-parsed *.slc files that load quicker than *.sl
+   files. If this step fails to work for some reason, JED is probably
+   not properly installed.  Note that the bytecodes that are stored in
+   the preparsed files (*.slc) may depend upon the version of the
+   slang library that was used.  This is particularly relevant if jed
+   is dynamically linked to the slang library and for some reason you
+   upgrade the library.  If you do this, then immediately after
+   installing a new version of the slang library, run the command
+   `touch *.sl' on all the .sl files in the $JED_ROOT/lib directory.
+   See the release notes (changes.txt) that are distributed with the
+   slang library to see if any of the byte-codes have changed.
+
+6. New releases will be announced to the jed mailing lists as well
+   as the newsgroups comp.editors and alt.lang.s-lang.  See
+   <http://www.jedsoft.org/jed/> for more information about
+   the mailing lists.  Additional information may be found at
+   <http://www.s-lang.org>.
+
+7. That's it.  Enjoy.
+
+--John

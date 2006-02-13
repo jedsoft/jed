@@ -1,0 +1,58 @@
+This file documents the drop-down menu support in non-Windows versions
+of jed.
+
+Menu Activation and Navigation
+------------------------------
+
+The menus may be activated via the mouse, or by pressing the F10 key
+or the ESC-m key.  Also, ESC + accelerator character may be used to
+activate a particular menu-bar item, e.g. `ESC-f' to select the `File'
+menu, provided that the particular editor emulation does not bind the
+key to something else.  For example, Emacs uses ESC-f to move by
+words.  See the discussion about `enable_menu_keys' below to work
+around this problem.
+
+The arrow keys or the mouse may be used to navigate the menus.  Use the
+ENTER key to select a menu item.  To go back to a previous menu, press
+either the ESC key or the backspace key.
+
+Menu Colors
+-----------
+
+The colors of the menus may be controlled by the `set_color' strings:
+
+   "menu"            Color of the menu bar
+   "menu_popup"      Color of the popped-up menu window
+   "menu_char"       Color of the keyboard-accelerator character
+   "menu_selection"  Color of the current selection
+   "menu_shadow"     Color of the popup-box shadow
+
+Special Hints
+-------------
+
+To enable the mouse when running jed in an xterm, put the line
+
+   enable_xmouse ();
+
+in your .jedrc file.
+
+To hide the menu bar, put
+
+  enable_top_status_line (0);
+
+in your .jedrc file.  This will hide the menu bar until it is
+activated via a key such as F10.
+
+Some terminals map the ALT key modifier to ESC + key.  For such
+terminals, an item on the menu bar may be activated via the ALT key +
+the accelerator key, e.g., `ALT-f' to select the file menu.
+
+The main problem with hot-keys such as ESC-f is that certain modes
+rebind these keys to other function.  To rebind these keys to the
+menubar functions, put the line:
+
+   enable_menu_keys ();
+
+in your .jedrc file AFTER loading the appropriate editor emulation,
+e.g., emacs.
+

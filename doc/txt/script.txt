@@ -1,0 +1,130 @@
+This document describes how to use JED in its non-interactive mode.  It
+assumes that the reader is reasonably familiar with S-Lang programming for
+JED. 
+
+---------------------------------------------------------------------------
+In a very real sense, JED is a text processing utility that operates in two
+modes: interactive mode and non-interactive or BATCH mode.  One example of
+using JED in batch mode is:
+
+   jed -batch -l preparse.sl
+   
+JED will run non-interactively only if the command line parameter is
+`-batch'.   For example, 
+
+    % jed -batch -f quit_jed
+    loading /usr/local/jed/lib/site.slc
+    loading /usr/local/jed/lib/os.sl
+    loading /usr1/users/davis/.jedrc
+
+Notice that this is very noisy since it displays all the files that it is
+loading. There is a quieter non-interactive form that is specified by using
+`-script' instead of `-batch'.  The syntax for this parameter is:
+
+   jed -script script-file [arg] ....
+
+The `-script' parameter functions exactly like the `-l' (load file)
+parameter except that 
+
+   1.  It runs in non-interactive mode.
+
+   2.  The rest of the command line arguments (arg) are not parsed.  It is
+       up to the code in the script file to parse the remaining arguments if
+       they are present.
+       
+   3.  The user's .jedrc (jed.rc) file is NOT loaded.  To load it, add the
+       appropriate `evalfile' to the script.
+
+It is best to provide an example, although silly.  This example script
+writes simply counts the number of lines in the files specified on the
+command line and writes the value on stdout.
+
+---------------------------------------------------------------------
+static variable i = 3;
+static variable count = 0;
+if (__argc <= 3)
+  {
+     message ("Usage: jed -script count-lines.sl file ...");
+     quit_jed ();
+  }
+  
+while (i < __argc)
+{
+   () = read_file (__argv[i]);
+   eob ();
+   count += what_line ();
+   if (bolp ()) count--;
+   delbuf (whatbuf());
+   i++;
+}
+
+vmessage ("%d lines", count);
+quit_jed ();
+----------------------------------------------------------------------
+
+Note the following points:
+
+   1. When the script file is loaded, the NEXT command line argument to 
+      be evaluated is 3.
+
+   2. The global variable __argc contains the number of command line
+      arguments.  The command line arguments are contained in the
+      array __argv.  Since the arguments are numbered from 0, the last
+      one is number __argc - 1. The ith command line argument is given
+      by __argv[i].   For this particular example, the __argv array
+      will consist of:
+      
+            __argv[0] = "jed"
+            __argv[1] = "-script"
+	    __argv[2] = "count-lines.sl";
+	    __argv[3] = the name of the file to be processed
+
+   3. `quit_jed' is called to exit the editor.  `exit_jed' could also be
+      used when it is necessary to run the exit hooks.
+      
+To exectute this script, type:
+
+   % jed -script count-lines.sl 
+   
+It should display the usage message.
+
+Unix also provides a mechanism for making any script file an executable
+file.  The trick is to add the appropriate line to the top of the script and
+change the permissions on the script to make it executable.  In this case,
+do the following:
+
+    1. Add:
+    
+         #!/usr/bin/env jed-script
+      
+       to the top of the file.  The /usr/bin/env program is used
+       because some operating systems put a limit on the number of
+       characters allowed in this line.
+       
+       Note also "jed-script" is used.  Here jed-script is a assumed
+       to be a symbolic link to jed.
+       
+    2. At the unix prompt, enter:  chmod +x count-lines.sl
+
+As a final example, consider a script file that may be used in DOS batch
+files to replace strings in files, e.g., to replace all occurances of `x'
+with `y' in `C:\windows\win.ini'.  If such a script file is called
+`change.sl', it could be used as:
+
+    jed -script change.sl C:\windows\win.ini x y
+    
+A script file that performs this task is:
+
+   % change.sl
+   
+   if (__argc != 6)
+     {
+        message ("Usage: jed -script change.sl file old-string new-string");
+        quit_jed ();
+     }
+  
+   () = read_file (__argv[3]);
+   replace (__argv[4], __argv[5]);
+   save_buffer ();
+   quit_jed ();
+

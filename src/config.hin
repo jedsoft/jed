@@ -1,0 +1,138 @@
+/* -*- C -*- */
+
+/* Note: this is for unix only. */
+
+#ifndef JED_CONFIG_H
+#define JED_CONFIG_H
+
+/* define if you have stdlib.h */
+#undef HAVE_STDLIB_H
+
+/* define if you have unistd.h */
+#undef HAVE_UNISTD_H
+
+/* define if you have termios.h */
+#undef HAVE_TERMIOS_H
+
+/* define if you have memory.h */
+#undef HAVE_MEMORY_H
+
+/* define if you have malloc.h */
+#undef HAVE_MALLOC_H
+
+/* define if you have limits.h */
+#undef HAVE_LIMITS_H
+
+/* define if you have fcntl.h */
+#undef HAVE_FCNTL_H
+
+/* define if you have sys/fcntl.h */
+#undef HAVE_SYS_FCNTL_H
+
+#undef HAVE_PTY_H
+
+/* define if you have memset */
+#undef HAVE_MEMSET
+
+/* define if you have memcpy */
+#undef HAVE_MEMCPY
+
+/* define if you have this. */
+#undef HAVE_SETENV
+#undef HAVE_UNSETENV
+#undef HAVE_SETSID
+#undef HAVE_PUTENV
+#undef HAVE_GETCWD
+#undef HAVE_TCGETATTR
+#undef HAVE_TCSETATTR
+#undef HAVE_CFGETOSPEED
+#undef HAVE_TCGETPGRP
+
+#undef HAVE_OPENPTY
+
+#undef HAVE_GLOB_H
+
+#undef HAVE_SYS_WAIT_H
+#undef HAVE_DIRENT_H
+#undef HAVE_SYS_NDIR_H
+#undef HAVE_SYS_DIR_H
+#undef HAVE_NDIR_H
+
+#undef HAVE_DLOPEN
+
+#undef HAVE_GRANTPT
+
+#undef HAVE_UTIME
+
+#undef HAVE_SETLOCALE
+
+#undef HAVE_SYMLINK
+#undef HAVE_GETHOSTNAME
+
+/* Define if you have the vsnprintf, snprintf functions and they return
+ * EOF upon failure.
+ */
+#undef HAVE_VSNPRINTF
+#undef HAVE_SNPRINTF
+
+#undef mode_t
+#undef pid_t
+#undef uid_t
+#undef gid_t
+
+/* Undefine this to disable floating point support. */
+#define FLOAT_TYPE
+
+#if defined(ultrix) && !defined(__GNUC__)
+# ifndef NO_PROTOTYPES
+#  define NO_PROTOTYPES
+# endif
+#endif
+
+#ifndef REAL_UNIX_SYSTEM
+# define REAL_UNIX_SYSTEM
+#endif
+
+#ifndef __unix__
+# define __unix__ 1
+#endif
+
+#ifdef _AIX
+# ifndef _POSIX_SOURCE
+#  define _POSIX_SOURCE
+# endif
+# ifndef _ALL_SOURCE
+#  define _ALL_SOURCE
+# endif
+/* This may generate warnings but the fact is that without it, xlc will 
+ * INCORRECTLY inline many str* functions. */
+# undef __STR__
+#endif
+
+/* #ifdef NeXT */
+/* # ifndef _POSIX_SOURCE */
+/* #  define _POSIX_SOURCE */
+/* # endif */
+/* #endif */
+
+#ifdef NeXT
+# undef HAVE_UTIME
+#endif
+
+#ifdef HAVE_TERMIOS_H
+# if defined(HAVE_TCGETATTR) && defined(HAVE_TCSETATTR)
+#  define REALLY_HAVE_TERMIOS_H
+# endif
+#endif
+
+
+#define HAS_MOUSE 1
+
+/* Set this to 1 if the filesystem is case-sensitive */
+#define JED_FILE_PRESERVE_CASE 1
+
+#ifndef JED
+# define JED
+#endif
+
+#endif /* JED_CONFIG_H */

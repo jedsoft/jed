@@ -1,0 +1,26 @@
+Most of the files in this directory are written in the S-Lang
+language, which is the extension language of the editor.  See
+<http://www.s-lang.org> for more information about the
+language.
+
+Please note that much of the code in these files may not be
+understandable to those with little exposure to S-Lang.  Some of the
+code has been written in such a way that it byte-compiles to as few
+bytes as possible.  For example, consider the go_down function which
+is used as:
+
+    go_down (10);    % Move down 10 lines
+
+site.sl defines this function as:
+
+   define go_down() { () = down(); }
+
+which makes it appear not to take any arguments as all.  However, this
+is equivalent to:
+
+   define go_down (n) { () = down (n); }
+
+but the body of the latter version requires twice as many byte-codes.
+The implemented version allows the argument passed to `go_down' to
+stay on the stack to be picked up by the `down' function.
+

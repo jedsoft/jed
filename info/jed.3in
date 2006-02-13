@@ -1,0 +1,489 @@
+This is Info file jed.info, produced by Makeinfo-1.55 from the input
+file jed.ti.
+
+
+File: jed.info,  Node: Setting Keys,  Next: Predefined Variables,  Up: Customization
+
+Setting Keys
+------------
+
+   Defining a key to invoke a certain function is accomplished using the
+`setkey' function. This function takes two arguments: the function to be
+executed and the key binding.  For example, suppose that you want to
+bind the key  to cause the cursor to go to the beginning of the current
+line.  The JED function that causes this is `bol'  (See the JED
+Programmer's Manual for a complete list of functions).  Putting the
+line:
+
+                                 "bol"   "^A"   setkey
+
+in the startup file `jed.rc' (`.jedrc') file will perform the binding.
+Here `^A' consists of the two characters `^' and `A' which JED will
+interpret as the single character `Ctrl-A'.  For more examples, see
+either of the S-Lang files `emacs.sl' or `edt.sl'.
+
+   In addition to being able to define keys to execute functions, it is
+also possible to define a key to directly insert a string of
+characters.  For example, suppose that you want to define a key to
+insert the string `int main(int argc, char **argv)' whenever you press
+the key `ESC m'.  This may be accomplished as follows:
+
+                  " int main(int argc, char **argv)"   "\em"  setkey
+
+   Notice two things.  First of all, the key sequence `ESC m' has been
+written as `"\em"' where `\e' will be interpreted by JED as ESC. The
+other salient feature is that the first argument to `setkey', the
+"function" argument, begins with a space.  This tells JED that it is
+not be be interpreted as the name of a function; rather, the characters
+following the space are to be inserted into the buffer.  Omitting the
+space character would cause JED to to execute a function called `int
+main(int argc, char **argv)' which would fail and generate an error.
+
+   Finally, it is possible to define a key to execute a series of
+keystrokes similar to a keyboard macro.  This is done by prefixing the
+"function" name with the `@' character.  This instructs JED to
+interpret the characters following the `@' character as characters
+entered from the keyboard and execute any function that they are bound
+to.  For example, consider the following key definition which will
+generate a C language comment to comment out the the current line of
+text.  In C, this may be achieved by inserting symbol `"/*"' at the
+beginning of the line and inserting `"*/"' at the end of the line.
+Hence, the sequence is clear (Emacs keybindings):
+
+  1.    Goto the beginning of the line:  or decimal `"\001"'.
+
+  2.    Insert `"/*"'.
+
+  3.    Goto end of the line:  or decimal `"\005"'
+
+  4.    Insert `"*/"'.
+
+   To bind this sequence of steps to the key sequence `ESC ;', simply
+use
+
+
+                           "@\001/*\005*/"   "\e;"   setkey
+
+   Again, the prefix `@' lets JED know that the remaining characters
+will carry out the functions they are currently bound to. Also pay
+particular attention to the way  and  have been written.  Do not
+attempt to use the ^ to represet "control".  It does not have the same
+meaning in the first argument to the `setkey' function as it does in
+the second argument.  To have control characters in the first argument,
+you must enter them as `\xyz' where xyz is a three digit decimal number
+coinciding with the ASCII value of the character.  In this notation,
+the ESC character could have been written as `\027'.  See the S-Lang
+Programmer's Reference Manual for further discussion of this notation.
+
+   The `setkey' function sets a key in the `global' keymap from which
+all others are derived.  It is also possible to use the function
+`local_setkey' which operates only upon the current keymap which may or
+may not be the `global' map.
+
+
+File: jed.info,  Node: Predefined Variables,  Next: Hooks,  Prev: Setting Keys,  Up: Customization
+
+Predefined Variables
+--------------------
+
+   JED includes some predefined variables which the user may change.  By
+convention, predefined variables are in uppercase.  The variables which
+effect all modes include:
+
+`BLINK'
+     (1) if non-zero, blink matching parenthesis.
+
+`TAB_DEFAULT'
+     (8) sets default tab setting for newly created buffers        to
+     specified number of columns.
+
+`TAB'
+     Value of tab setting for current buffer.
+
+`ADD_NEWLINE'
+     (1) adds newline to end of file if needed when writing it out to
+     the             disk.
+
+`META_CHAR'
+     (-1) prefix for chars with high bit set (see section on eight bit
+               clean issues for details)
+
+`DISPLAY_EIGHT_BIT'
+     see section on eight bit clean issues.
+
+`COLOR'
+     (23) IBMPC background color (see `jed.rc' for meaning)
+
+`LINENUMBERS'
+     (0) if 1, show current line number on status line
+
+`WANT_EOB'
+     (0) if 1, [EOB] denotes end of buffer.
+
+`TERM_CANNOT_INSERT'
+     (0) if 1, do not put the terminal in insert mode when writing to
+     the        screen.
+
+`IGNORE_BEEP'
+     (0) do not beep the terminal when signalling errors
+
+In addition to the above, there are variables which affect only certain
+modes.  See the section on modes for details.
+
+
+File: jed.info,  Node: Hooks,  Next: S-Lang Programming Hints (Debugging),  Prev: Predefined Variables,  Up: Customization
+
+Hooks
+-----
+
+   A hook is a user defined function that JED calls under certain
+conditions which allow the user to modify default actions.  For
+example, when JED starts up it looks for the existence of a user
+defined function `command_line_hook'.  If this function exists, JED
+calls the function.  What the function does is completely arbitrary and
+is left to the discretion of the user.  The startup file, `site.sl',
+defines such a function which reads in the files listed on the command
+line.  It is also this function which loads the `jed.rc' startup file.
+Unlike the other hooks, this one must be present in the file `site.sl'
+since it is the only file loaded before calling the hook.
+
+   After the startup files are loaded, JED calls the hook
+`jed_startup_hook' immediately before entering the main editor loop.
+This hook is useful to modify certain data structures which may not
+have existed when the startup files were loaded.
+
+   In addition to the above hooks, JED currently also looks for:
+
+`suspend_hook'
+     function to be executed before suspending
+
+`resume_hook'
+     function that gets carried out after suspension
+
+`exit_hook'
+     gets executed before exiting JED
+
+`mode_hook'
+     sets buffer mode based on filename extension
+
+`find_file_hook'
+     called before file is read into a buffer.  It currently
+     checks for presence of autosave file and warns user if 	 it
+     is more recent than file.
+
+See `site.sl' for explicit examples of the above hooks.
+
+   Another useful hook is `is_paragraph_separator'.  This hook is called
+when JED searches for the beginning or end of a paragraph.  This search
+is performed by all paragraph formatting functions as well as the
+forward and backward paragraph movement commands. As JED performs the
+search, it moves from one line to another testing the line to see if it
+separates a paragraph.  The function of the hook is to make this
+decision and return zero if the line does not separate paragraphs or
+return one if it does. The default value of this hook may be written in
+S-Lang as
+
+          ( bol
+            "\\" looking_at {1 return} if
+            "%"  looking_at {1 return} if
+            skip_white eolp
+          ) is_paragraph_separator
+
+   A related hook called after a paragraph is formatted is
+`format_paragraph_hook'.  This hook is only called if either
+`format_paragraph' or `narrow_paragraph' is called with a prefix digit
+argument.  For example, `format_paragraph' is bound to `ESC q'.  Simply
+pressing this key sequence will call `format_paragraph' but
+`format_paragraph_hook' will not be called.  However, pressing `ESC 1'
+followed by `ESC q' will result in a call to `format_paragraph_hook'.
+Currently, this hook simply justifies the paragraph.  That is, it fills
+each line in the paragraph such that the the line ends at the right
+margin, which is defined by the `WRAP' variable.
+
+
+File: jed.info,  Node: S-Lang Programming Hints (Debugging),  Prev: Hooks,  Up: Customization
+
+S-Lang Programming Hints (Debugging)
+------------------------------------
+
+   This section assumes some knowledge about S-Lang and is designed to
+explain how to debug S-Lang routines quickly.  For information about
+S-Lang, read `slang.txt'.
+
+   There are two ways of loading a file of S-Lang code into JED.  The
+most common way is through the function `evalfile'.  If an error occurs
+while loading a file, JED will give some indication of where the problem
+lies by displaying the line number and the offending bit of S-Lang code
+in the minibuffer.  In practice though, this can be quite inefficient.
+The `evalfile' function is primarily designed to load debugged and
+tested S-Lang code.
+
+   The best way to develop and test S-Lang code with JED is to use the
+function `evalbuffer'.  Simply load the piece of code into JED as an
+ordinary file, press `ESC X' and enter the function `evalbuffer'  If
+the piece of code in the buffer has any syntax errors, JED will put the
+cursor on the error.  This is the best way to spot compile time errors
+such as syntax errors.  However, this will not catch runtime errors.
+
+   When a runtime error occurs, JED will put the cursor on the top level
+function where the original call was made and NOT the actual location
+of the function.  To aid in determining where an error occurs, JED can
+be made to give a symbolic traceback.  As the S-Lang runtime stack
+unwinds, S-Lang will simply print the name of function at that
+particular level.  If the function includes local variables, their
+values will be dumped as well.  Hence, it is easy to quickly narrow the
+location of an error down to function where the error occurs.  By
+default, the traceback is disabled.  The traceback is enabled by
+setting the S-Lang variable `_traceback' to a non-zero value.  It is
+simpliest to just press ` ESC' and enter `1 =_traceback' at the JED
+prompt.  This is one of those times where one needs access to the
+`S-Lang>' prompt and not the `M-x' prompt.  For example, consider the
+following piece of code:
+
+             ( {}  forever ) fun_two  ;; loops forever
+             ( fun_two ) fun_one      ;; calls fun_two-- never returns
+
+   Simply enter the above into an empty JED `*scratch*' buffer, then
+press ` ESC' and enter `1 =_traceback evalbuffer fun_one'.  This will
+turn on tracebacks, evaluate the buffer and call the function
+`fun_one'.  JED will then be put into an infinite loop which can only
+be stopped by pressing the abort character which by default is .
+Doing so, will produce the traceback messages
+
+            S-Lang Traceback: fun_two
+            S-Lang Traceback: fun_one
+
+in addition to the error message `User Break!'.  Of course, this
+technique only narrows down the source of an error to a particular
+function. To proceed further, it may necessary to put "print"
+statements at suitable places in the function.  There are several ways
+to do this:
+
+  1. Use the `insert' function to insert the contents of a variable
+     into the current buffer.
+
+  2. Use the `error' function to abort the function and display the
+     value of a variable in the minibuffer.
+
+  3. Use the `message' function to display the value of a variable in
+     the minibuffer.  Unlike `error', the `message' function does not
+     abort the execution of the function.
+
+   Since each of these functions require a string argument, it is
+usually best to call the `string' function first for the conversion
+followed by the output function.  This has to be done anyway if it is
+desired to get the contents of an integer variable.  Although the
+second approach is prehaps the most useful in practice, it is somtimes
+appropriate to use a combination of these techniques.
+
+   Finally, to print the entire stack, one can use the `print_stack'
+function.  This function dumps the S-Lang runtime stack into the
+`*traceback*' buffer.
+
+   Since S-Lang is an interpreted language, judicious application of
+the above techniques should lead very quickly to the source of any
+errors.
+
+
+File: jed.info,  Node: Eight Bit Clean Issues,  Next: Miscellaneous,  Prev: Customization,  Up: Top
+
+Eight Bit Clean Issues
+======================
+
+* Menu:
+
+* Displaying Characters with the High Bit Set::
+* Inputting Characters with the High Bit Set::
+* Upper Case - Lower Case Conversions::
+
+
+File: jed.info,  Node: Displaying Characters with the High Bit Set,  Next: Inputting Characters with the High Bit Set,  Up: Eight Bit Clean Issues
+
+Displaying Characters with the High Bit Set
+-------------------------------------------
+
+   There are several issues to consider here. The most important issue
+is how to get JED to display 8 bit characters in a "clean" way.  By
+"clean" I mean any character with the high bit set is sent to the
+display device as is.  This is achieved by putting the line:
+
+                                 1 =DISPLAY_EIGHT_BIT
+
+in the `jed.rc' (`.jedrc') startup file.  European systems might want
+to put this in the file `site.sl' for all users.  The default is 1 so
+unless its value has been changed, this step may not be necessary.
+
+   There is another issue. Suppose you want to display 8 bit characters
+with extended Ascii codes greater than or equal to some value, say 160.
+This is done by putting `160 =DISPLAY_EIGHT_BIT'.  I believe that ISO
+Latin character sets assume this.  This is the default value for Unix
+and VMS systems.  See also the file `iso-latin.sl'.
+
+
+File: jed.info,  Node: Inputting Characters with the High Bit Set,  Next: Upper Case - Lower Case Conversions,  Prev: Displaying Characters with the High Bit Set,  Up: Eight Bit Clean Issues
+
+Inputting Characters with the High Bit Set
+------------------------------------------
+
+   Inputting a character into JED with the high bit set is another
+issue.  How JED interprets this is controlled by the variable
+`META_CHAR'.  Specifically what happens is this: When JED reads a
+character from the input device with the high bit set, it:
+
+  1. Checks the value of `META_CHAR'.  If this value is -1, JED simply
+     inserts the character into the buffer.
+
+  2. For any other value of `META_CHAR' in the range 0 to 255, JED
+     returns two 7-bit characters.  The first character returned is
+     `META_CHAR' itself.  The next character returned is the original
+     character but with the high bit stripped.
+
+The default value of `META_CHAR' is -1 which means that when JED sees a
+character with the high bit set, JED leaves it as is.  Please note that
+a character with the high bit set  cannot be the prefix character of a
+keymap. It can be a part of the keymap but not the prefix.
+
+   Some systems only handle 7-bit character sequences and as a result,
+JED will only see 7-bit characters.  JED is still able to insert any
+character in the range 0-255 on a 7-bit system.  This is done through
+the use of the `quoted_insert' function which, by default, is bound to
+the backquote key `.  If the `quoted_insert' function is called with a
+digit argument (repeat argument), the character with the value of the
+argument is inserted into the buffer.  Operationally, one hits ESC,
+enters the extended Ascii code and hits the backquote key.  For
+example, to insert character 255 into the buffer, simply press the
+following five keys: `ESC 2 5 5 `'.
+
+
+File: jed.info,  Node: Upper Case - Lower Case Conversions,  Prev: Inputting Characters with the High Bit Set,  Up: Eight Bit Clean Issues
+
+Upper Case - Lower Case Conversions
+-----------------------------------
+
+   The above discussion centers around input and output of characters
+with the high bit set.  How JED treats them internally is another issue
+and new questions arise.  For example, what is the uppercase equivalent
+of a character with ASCII code 231?  This may vary from language to
+language.  Some languages even have characters whose uppercase
+equivalent correspond to multiple characters.  For JED, the following
+assumptions have been made:
+
+  1.    Each character is only 8 bits.
+
+  2.    Each character has a unique uppercase equivalent.
+
+  3.    Each character has a unique lowercase equivalent.
+
+It would be nice if a fourth assumption could be made:
+
+   4. The value of the lowercase of a character is greater than or
+     equal to its uppercase counterpart.
+
+However, apparently this is not possible since most IBMPC character sets
+violate this assumption.  Hence, JED does not assume it.  Suppose X is
+the upper case value of some character and suppose Y is its lower case
+value.  Then to make JED aware of this fact and use it it case
+conversions, it may be necessary to put a statement of the form:
+
+                              X Y define_case
+
+in the startup file.  For example, suppose 211 is the uppercase of 244.
+Then, the line `211 244 define_case' will make JED use this fact in
+operations involving the case of a character.
+
+   This has already been done for the ISO Latin 1 character set. See
+the file `iso-latin.sl' for details. For MSDOS, this will not work.
+Instead use the files `dos437.sl' and `dos850.sl'.  By default, JED's
+internal lookup tables are initialized to the ISO Latin set for Unix
+and VMS systems and to the DOS 437 code page for the IBMPC.  To change
+the defaults, it is only necessary to load the appropriate file. For
+example, to load `dos850.sl' definitions, put
+
+                               "dos850.sl" evalfile pop
+
+in the startup file (e.g., `site.sl').  In addition to
+uppercase/lowercase information, these files also contain word
+definitions, i.e., which characters constitute a "word".
+
+
+File: jed.info,  Node: Miscellaneous,  Prev: Eight Bit Clean Issues,  Up: Top
+
+Miscellaneous
+=============
+
+* Menu:
+
+* Abort Character::
+* Input Translation::
+* Display Sizes::
+
+
+File: jed.info,  Node: Abort Character,  Next: Input Translation,  Up: Miscellaneous
+
+Abort Character
+---------------
+
+   The abort character ( by default) is special and should not be
+rebound.  On the IBMPC, the keyboard interrupt 0x09 is hooked and a quit
+condition is signaled when it is pressed.  For this reason, it should
+not be used in any keybindings. A similar statement holds for the other
+systems.
+
+   This character may be changed using the function `set_abort_char'
+Using this function affects all keymaps.  For example, putting the line
+
+                                   30 set_abort_char
+
+in your `jed.rc' file will change the abort character from its current
+value to 30 which is Control-^.
+
+
+File: jed.info,  Node: Input Translation,  Next: Display Sizes,  Prev: Abort Character,  Up: Miscellaneous
+
+Input Translation
+-----------------
+
+   By using the function `map_input' the user is able to remap
+characters input from the terminal before JED's keymap routines have a
+chance to act upon them.  This is useful when it is difficult to get
+JED to see certain characters.  For example, consider the  character.
+This character is especially notorious because many systems use it and
+ for flow control.  Nevertheless Emacs uses  for searching.  Short
+of rebinding all keys which involve a  how does one work with
+functions that are bound to key sequences using ?  This is where
+`map_input' comes into play.  The `map_input' function requires two
+integer arguments which define how a given ascii character is to be
+mapped.  Suppose that you wish to substitute  for  everywhere.  The
+line
+
+                                   28  19  map_input
+
+will do the trick.  Here 28 is the ascii character of  and 19 is the
+ascii character for the .
+
+   As another example, consider the case where the backspace key sends
+out a  instead of the DEL character (?).
+
+                                   8  127 map_input
+
+will map the  (8) to the delete character (127).
+
+
+File: jed.info,  Node: Display Sizes,  Prev: Input Translation,  Up: Miscellaneous
+
+Display Sizes
+-------------
+
+   On VMS and unix systems, the screen size may be changed to either 80
+or 132 columns by using the functions `w80' and `w132' respectively.
+Simply enter the appropriate function name at the `M-x' prompt in the
+minibuffer.  The default binding for access to the minibuffer is `ESC
+X'.  Most window systems, e.g., DECWindows, allow the window size to be
+changed.  When this is done, JED should automatically adapt to the new
+size.
+
+   On the PC, at this time the screen size cannot be changed while JED
+is running.  Instead it is necessary to exit JED first then set the
+display size and rerun JED.
+
+

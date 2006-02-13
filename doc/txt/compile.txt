@@ -1,0 +1,50 @@
+This document describes the Jed's compiler interface.
+
+Jed has the ability to run a compiler asynchronously in a separate
+buffer and parse the output for errors.  This greatly facilitates
+program development by reducing the time spent in the compile-edit
+cycle.
+
+By default, jed assumes that the GNU C compiler is used.  If another
+compiler is used instead, then put a line such as
+
+   variable Compile_Default_Compiler = "bcc";
+
+in your jedrc startup file.  This is important because different
+compilers produce different looking error messages and jed needs to
+know what compiler is producing the error messages in order to parse
+them properly.  The currently supported compilers include:
+
+      gcc              (GNU C Compiler)
+      bcc              (Borland C Compiler)
+      tcc              (Turbo C Compiler)
+      ultrix_cc        (Ultrix C Compiler)
+      hp_cc            (HP C compiler)
+      sun_acc          (SunOS ANSI C compiler)
+      aix, xlc, xlf    (Various AIX C compilers)
+      wcc              (Watcom C compiler)
+      javac            (Java Compiler)
+      vc               (Microsoft Visual C)
+
+To run a compiler from within the editor, type `ESC-x compile'.  You
+will then be prompted for the command to run in a subshell.
+Usually, this will be something like `make', or `make -k', assuming of
+course that you are using makefiles.  If not, then just give some
+other command that has the desired effect, e.g., `cc -g myfile.c'.
+
+Once the compile command has been given, jed will run the command
+asynchronously in a buffer named `*compile*'.  However, some systems
+(e.g., msdos) do not support asynchronous processes and jed will have
+wait for the process to complete before returning to the user.
+However, on Unix, Win32, and OS/2 systems, the process will run
+asynchrounously allowing the user to continue editing while the
+compile process is running.
+
+To go from one error message to another, use the "Ctrl-X '" key
+sequence (Ctrl-X apostrophe), which is bound to the
+`compile_parse_errors' function.  Assuming that you have specified the
+compiler properly as described above, jed will find the file causing
+the error and put the cursor on the guilty line.  After correcting the
+errors, run the compile process again.
+
+

@@ -1,0 +1,6 @@
+Basic Commands in CUA mode:
+File:       Region:   Search/Replace:      Edit:                Emergency:
+^Q    exit  ^C copy   ^FF   find forward   ^A mark all          ^H/F1 help
+^O    open  ^X kill   ^L/F3 find next      ^B format paragraph  ^Z    undo
+^S/F2 save  ^V paste  ^FE   regexp search  ^K kill line         ^D    abort
+^P    print           ^FR   replace        ^J goto line

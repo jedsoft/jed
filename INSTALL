@@ -1,0 +1,54 @@
+Before reading this, read the appropriate install file for you system, e.g.,
+INSTALL.unx.  For MSDOS, WINDOWS, or OS/2, read INSTALL.pc.
+
+This file contains hints for customizing jed in such a way that it is easy
+to upgrade to later releases.
+
+When jed starts up, it loads the file `site.sl' which is located in the lib
+directory under $JED_ROOT.  This file contains much of the code that defines
+the look of the editor.  For instance, it defines how the command line
+parameters are to be interpreted and the name of the user's personal
+initialization file.
+
+One could always edit site.sl and tailor it to the needs of a given system.
+However, one would have to do this with every upgrade.  There is a better
+way.  
+
+Immediately after loading site.sl, the editor will attempt to load a
+file called `defaults.sl' from $JED_ROOT/lib.  If it fails to find
+such a file, then on Unix systems it will look a file called jed.conf
+in /etc/, /usr/local/etc/, and finally in /usr/etc/.  This file
+is not distributed with jed.  It is up to the installer to create this
+file if that is the desire.  Two examples are provided: lib/jed.conf,
+and lib/linux.sl.
+
+What is this file used for?  It is used to modify site.sl.  Since site.sl is
+written in S-Lang, any of the functions defined in it can simply be
+redefined by creating new ones.  The same is true for the variables that it
+defines.
+
+For example, many systems have a directory where info files are kept.  Let's
+assume that this directory is `/usr/info'.  Then one should point the
+`Info_Directory' variable defined by `site.sl' to this directory:
+
+% defaults.sl
+Info_Directory = "/usr/info";
+
+It is probably a good idea to copy the files in $JED_ROOT/info to directory
+where the info files are kept and edit the info DIR file appropriately.
+
+Another idea is to take advantage of the fact that jed's info reader has the
+ability to search along a path list.  Simply edit the /usr/info/DIR file and
+add jed to the tree but leave jed's info files in JED_ROOT/info.  Then, use
+something like:
+
+%defaults.sl
+Info_Directory = strcat ("/usr/info,", Info_Directory);
+
+Other things that may be customized include the default emulation and
+color scheme, e.g.,
+
+   _Jed_Default_Emulation = "ide";
+   _Jed_Default_Color_Scheme = "blue2";
+
+Enjoy.

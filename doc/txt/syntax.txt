@@ -1,0 +1,72 @@
+JED is now able to do simple syntax highlighting while in C, Fortran, or TeX
+mode.  To enable syntax highlighting, in your startup file (.jedrc, jed.rc)
+set the variable `WANT_SYNTAX_HIGHLIGHT' to 1.  On Unix and VMS systems, it
+is also necessary to set the variable `USE_ANSI_COLORS' to a non-zero value.
+
+To control how to do color syntax highlight highlighting, use the
+`set_color' function.  This function takes three parameters: the first says
+what to color and the last two specify what foreground and background colors
+to use.  The `what' parameter can be any one of:
+
+    "operator"      
+    "number"     
+    "comment"    
+    "string"     
+    "keyword"    
+    "delimiter"  
+    "preprocess" 
+    
+What these actually refer to is mode dependent.  For C mode, they have the
+following meaning:
+
+    "operator"     : `+', `-', `*', `/', `?', etc.
+    "number"       : 1.23, -3, 0x101, etc...
+    "comment"      : /* c comment */    // c++ comment
+    "string"       : "anything in single or double quotes"
+    "keyword"      : c++ keywords such as `if', `while', `register', `class'
+    "delimiter"    : Braces {}, parenthesis, commas, etc...
+    "preprocess"   : Lines starting with `#'
+
+Fortran mode syntax highlighting is similar to C mode.
+
+In TeX mode only
+
+    "number"       : a formula: $c^2 = a^2 + b^2$
+    "comment"      : % This is a comment
+    "keyword"      : Anything following a slash(e.g., \begin) and `{', `}',
+                      `&', etc...
+
+have meaning.  
+
+Any other object not falling in any of the above categories is not
+highlighted.  
+
+In C mode, to avoid the task of parsing the buffer on every screen update,
+comments must either be confined to a single line, or have the following
+format:
+
+    /* This is a multi-line
+     * comment.  Note how the lines
+     * following the initial one
+     * start with a `*' followed by a
+     * whitespace character
+     */
+
+That is, the second, third, and lines must start with one or more `*'
+followed by at least one whitespace character.  This means that
+
+      *p++ = ' ';
+      
+will not be interpreted as comment but 
+
+      * p++ = ' ';
+      
+will be flagged by the editor as a comment line.
+
+Finally, if the screen is panned to the right, syntax highlighting will
+sometimes fail.  This is because the highlighting is performed based
+entirely upon the visible information.  This is only a problem when strings
+are split with the beginning off to the left of the display (not visible)
+and the end lying in the visible portion of the buffer.  A similar statement
+holds for comments as well.
+

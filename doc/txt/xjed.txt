@@ -1,0 +1,155 @@
+These are some notes about using xjed, the X Window version of JED.  It also
+mentions information about how to setup the EDT emulation under Linux.
+
+xjed recognizes the following resources:
+
+   Display    [d]    Display to run on
+   Name              Instance name
+   Geometry          Initial geometry specifications
+   font              Default font to use
+   background [bg]   Background color
+   foreground [fg]   Forground color
+   Title             name to be displayed on the title bar
+   fgStatus   [sfg]  foreground color of the xjed buffer status line
+   bgStatus   [sbg]  background color of the xjed buffer status line
+   fgRegion   [rfg]  foreground color of a region as defined by point and mark
+   bgRegion   [rbg]  background color of a region as defined by point and mark
+   fgCursor   [cfg]  text cursor foreground color
+   bgCursor   [cbg]  text cursor background color
+   fgMouse    [mfg]  mouse cursor foreground color
+   bgMouse    [mbg]  mouse cursor background color
+   fgMenu     [fgm] Foreground color for menubar
+   bgMenu     [bgm] Foreground color for menubar
+   fgMessage  [fgms] Foreground color for messages
+   bgMessage  [bgms] Background color for messages
+   fgError    [fger] Foreground color for error messages
+   bgError    [bger] Background color for messages
+   
+These resources specify color syntax highlighting options:
+
+   fgOperator    [fgop]   forground color for operators (+, -, etc...)
+   bgOperator    [bgop]   background color for operators
+   fgNumber      [fgnm]   forground color for numbers
+   bgNumber      [bgnm]   background color for numbers
+   fgString      [fgst]   forground color for strings
+   bgString      [bgst]   background color for strings
+   fgComments    [fgco]   forground color for comments
+   bgComments    [bgco]   background color for comments
+   fgKeyword     [fgkw]   forground color for keywords
+   bgKeyword     [bgkw]   background color for keywords
+   fgKeyword1    [fgkw1]  forground color for keywords1
+   bgKeyword1    [bgkw1]  background color for keywords1
+   fgKeyword2    [fgkw2]  forground color for keywords2
+   bgKeyword2    [bgkw2]  background color for keywords2
+   fgDelimiter   [fgde]   forground color for delimeters
+   bgDelimiter   [bgde]   background color for delimeters
+   fgPreprocess  [fgpr]   forground color for preprocessor lines
+   bgPreprocess  [bgpr]   background color for preprocessor lines
+
+Any of the above items may be specified on the xjed command line. Quantities
+enclosed in square brackets may be used as a shortform of their longer
+counterparts.
+
+For example, 
+
+ xjed -d space:0.0 -font 9x15 -bg blue -fg white
+
+will start xjed using the server on amy using a white on blue 9x15 font.
+
+Once the X Window resource specifications have been parsed, any remaining
+command line arguments are parsed as normal JED command line arguments.
+
+The easiest way to specify the resources is to make use of a `.Xdefaults'
+in your $HOME directory.  Here is an example entry for Xjed:
+
+xjed*Geometry: 80x36+100+100
+xjed*font: 10x20
+xjed*background: white
+xjed*foreground: black
+xjed*fgNumber: blue
+
+The first line specifies that the initial window size is 80 columns by 36
+rows and that the top left corner of the window is to be positioned at (100,
+100). The second line specifies a fixed 10x20 font.  The other two lines
+specify the foreground and background colors of the window.
+
+---------------------------------------------------------------------------
+Delete Key:
+
+   Once every month or two, someone sends me a patch for ``fixing''
+the delete key.  The patch usually involves changing the escape
+sequence associated with the DELETE keysym (0xFFFF) from "^?" to
+"\e[3~".  The reason for the patch is to get the key labeled DELETE to
+delete the character at the cursor and not the previous one.  However,
+this solution creates as many problems as it solves because on many
+systems, the BACKSPACE key also sends the DELETE keysym and the patch
+would create havoc on such systems.  This is another manifestation of
+the backspace vs delete debate.
+
+   If you are sure that your X Windows server distinguishes between
+the backspace key and the delete key, then you can get your delete key
+to delete the character under the cursor by putting:
+
+    x_set_keysym (0xFFFF, 0, "\e[3~");
+    setkey ("delete_char_cmd", "\e[3~");
+
+in your .jedrc file.
+
+
+------------------------------------------------------------------------
+Mouse Usage:
+
+XJED S-Lang specific functions:
+
+   x_set_window_name   :  Set the name of the window (for title bar)
+   x_warp_pointer      :  Move mouse position to cursor position
+   x_insert_cutbuffer  :  insert contents of system cut buffer in current
+                          buffer
+   x_copy_region_to_cutbuffer
+                       :  insert a region in system cutbuffer
+   x_set_keysym        :  define an equivalence string to be returned
+                          when a function key is pressed.
+			  
+  also, set_color() may be used to set colors of mouse, cursor, normal,
+  region, and status line as well as the colors used by the syntax
+  highlighting routines.  For example,
+  
+      set_color ("mouse", "red", "blue");
+
+  gives the mouse cursor a red forground with a blue background.  The color
+  values must be recognizable by the X server.
+  
+  In addition to the usual keybindings, the X version binds:
+  
+     Control-UP     :  goto top of buffer
+     Control-DOWN   :  goto end of buffer
+     Shift-UP       :  move to top of window
+     Shift-DOWN     :  move to bottom of window
+     Control-RIGHT  :  Pan the window to the right
+     Control-LEFT   :  Pan the window to the left
+     Shift-RIGHT    :  skip to next word
+     Shift-LEFT     :  skip to previous word
+     
+Miscellaneous:
+
+   Suspending XJed is not allowed.  If ^Z is pressed, the window is raised
+   if it is obscured, or lowered if it is totally visible.
+
+
+EDT emulation under Linux.  
+
+Angelo Pagan (pagan@astrpd.pd.astro.it) suggests putting 
+
+	keycode 22  = Delete
+	keycode 77  = KP_F1
+	keycode 112 = KP_F2
+	keycode 63  = KP_F3
+	keycode 82  = KP_F4
+	keycode 86  = KP_Separator
+
+in the .Xmodmap file to enable EDT keypad emulation.
+
+Send comments and suggestions to davis@space.mit.edu
+
+
+   

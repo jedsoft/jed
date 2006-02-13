@@ -1,0 +1,38 @@
+This file documents rgrep, a recursive, highlighting grep program.
+
+Currently, rgrep is only available on Unix systems.  To build it, move to
+the src directory for JED and enter: `make rgrep'.
+
+Why use rgrep instead of more traditional Unix tools?
+------------------------------------------------------
+
+Unlike grep and egrep, rgrep has the ability to recursively descend
+directories. The traditional way of performing this kind of search on Unix
+systems utilizes the `find' command in conjunction with `grep'.  However,
+this results in very poor performance.  Consider the tradional approach
+where one wants to search the /usr/include directory for the string `FD_SET':
+For this, one would use:
+
+% find /usr/include -exec grep -l FD_SET \{\} \; -print
+
+Ignoring the fact that the above expression looks complex, it failed to find
+any occurence of FD_SET under the /usr/include directory of my Ultrix
+system.  
+
+Now, if rgrep is used, one types:
+
+% rgrep -lFr FD_SET /usr/include
+
+which yielded: /usr/include/sys/types.h
+
+The reason that `find' failed is that /usr/include/sys is a symbolic link to
+/sys/h.  `rgrep' was able to succeed because of the `-F' flag which telles
+it to follow links.  I looked in the man page for a similar option for
+`find' but nothing turned up.
+
+
+
+
+
+
+

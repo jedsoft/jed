@@ -1,0 +1,113 @@
+0. Building and installing JED requires that you also have the S-Lang library
+   to link to.  Build it first.  
+
+1. Pick some place for JED.
+   JED is distributed in a TREE structure:
+
+     JED_ROOT:
+     JED_ROOT:[src]
+     JED_ROOT:[info]
+     JED_ROOT:[doc]
+     JED_ROOT:[lib]
+     JED_ROOT:[bin.vms]
+     
+   Here JED_ROOT can be anything.  Its value is up to you.  It should be a
+   concealed logical.  For example, suppose that JED is unpacked in a
+   directory 
+   
+       dev$source:[editors.jed]
+       
+   You CANNOT simply define JED_ROOT to be this value.  Instead, it must be a
+   concealed logical defined as:
+   
+     $ define/job/trans=(concealed) jed_root dev$source:[editors.jed.]
+
+   It is important to note the final `.' after jed.  This logical must be
+   placed in the job table; system managers may put it in the system table
+   instead.
+
+   Instead of the above, I recommend something like:
+   
+     $ jedroot = f$logical("DEV$SOURCE") - "]" + "EDITORS.JED.]"
+     $ define/job/trans=(concealed) jed_root 'jedroot'
+   
+   It is best to put the definition in the appropriate startup file
+   (systartup.com, sylogin.com, login.com).
+   
+   Note: If are currently using a very old version of JED and and you have
+   JED_LIBRARY defined as a logical, please remove it.
+
+2. Build the jed.exe executable file: After you have properly setup the
+   JED_ROOT logical, change to the directory 'jed_root:[src]'.  You should
+   now edit the 'vmsmake.com' file to indicate the location of the S-Lang
+   library constructed in step 0. Directions are included in VMSMAKE.COM.
+   
+   Currently the file is structured such that typing `@VMSMAKE' at the VMS
+   DCL prompt will make jed.exe for systems which have DEC's VMS C compiler.
+   For systems that use GCC, `@vmsmake gcc' might also work.  That is:
+   
+     $ @vmsmake          ! VMS CC, DEC C
+     $ @vmsmake gcc      ! GNU GCC
+     
+   After building the JED.EXE and XJED.EXE images, copy them into the
+   JED_ROOT:[BIN.VMS] directory, giving them architecture-specific
+   names such as JED.VAX_EXE or JED.ALPHA_EXE.
+
+4. Put one of the following in either your sylogin.com for all users
+   or in login.com.  Note that JED_ROOT must be defined!
+
+     $ @JED_ROOT:[bin.vms]init_jed.com  0 0 ! no kept editor/no mail
+     $ @JED_ROOT:[bin.vms]init_jed.com  0 1 ! no kept editor/ use for mail
+     $ @JED_ROOT:[bin.vms]init_jed.com  1 0 ! kept editor/ no mail (most systems)
+     $ @JED_ROOT:[bin.vms]init_jed.com  1 1 ! kept editor/use for mail
+
+   The first flag indicates whether jed should be installed as a standalone
+   executable or as a kept editor.  Use 1 for kepteditor or 0 for standalone.
+   The second flag indicates whether or not mail$edit logical should be 
+   defined to point to jed.  If it is set to 1, vms mail will call jed to
+   edit the mail message.  If JED is run as a kept editor, mail will simply
+   attach to JED for editing.   Most systems will probably use the 3rd
+   choice above.    
+     
+5. The file JED_ROOT:[lib]jed.rc contains some default settings for
+   users that do not have a jed.rc file in SYS$LOGIN.  If
+   SYS$LOGIN:jed.rc exists, then it will be used instead.  By default,
+   jed starts up with EMACS keybindings. You may want to specify some
+   other emulation, such as the Borland IDE emulation or even EDT
+   emulation.  It is not necessary for every user to have a copy of
+   this file.
+
+6. It may be necessary to edit site.sl if you have an info directory where
+   info files are kept.  If you do not understand this statement, then you
+   do not have info.
+   
+7. Make sure all users who will be using JED have permission to do so.  The
+   easiest way to do this is to type:
+   
+     $ set file/protection=(w:re) jed_root:[000000...]
+   
+8. Optional but highly recommended.  Preparse the S-Lang files.  This
+   is done by running JED as:
+     
+         $ jed -batch -n -l preparse
+	 
+   This creates pre-parsed *.slc files that load quicker than *.sl files.
+   It is also a convenient test to see if JED has been installed properly.
+   
+   Once you do this, make sure that you give the WORLD read permission on
+   the files.  Do:
+   
+         $ set file/protection=(W:RE) JED_ROOT:[lib]*.slc
+	 
+     !!! Do not use *.*.   Use *.slc.
+     
+9. It is possible that you have the PC distribution.  This distribution
+   truncates filenames to 8+3 style names.  If you have
+   JED_ROOT:[LIB]VMS_SHEL.COM, rename it to VMS_SHELL.COM.  Also make sure
+   that JED_ROOT:[INFO] contains dir.info and not dir.inf.
+   
+10. Read the bit about defaults.sl in install.all for customizing your
+    distribution. 
+   
+11. Please email bugs, installation problems, or hints about how to better
+    install JED to `davis@space.mit.edu'.

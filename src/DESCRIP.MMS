@@ -1,0 +1,96 @@
+#
+#  MMS file to build Jed  (Thanks to Hunter Goatley)
+#
+.IFDEF __MATTS_MMS__
+.ELSE
+EXE = .EXE
+OBJ = .OBJ
+.ENDIF
+
+.IFDEF __ALPHA__
+CC = CC/STANDARD=VAXC
+OPTFILE =
+OPTIONS =
+.ELSE
+OPTFILE = ,VAXCRTL.OPT
+OPTIONS = $(OPTFILE)/OPTIONS
+.ENDIF
+
+.IFDEF __DEBUG__
+CFLAGS = $(CFLAGS)/DEBUG/NOOPTIMIZE
+LINKFLAGS = $(LINKFLAGS)/DEBUG
+.ELSE
+LINKFLAGS = $(LINKFLAGS)/NOTRACE
+.ENDIF
+
+.IFDEF SLANG_OLB
+.ELSE
+SLANG_DIR = [-.-.SLANG.SRC]
+SLANG_OLB = $(SLANG_DIR)SLANG$(OLB)
+.ENDIF
+
+CFLAGS = $(CFLAGS)/DEFINE=(JED)/INCLUDE=([],$(SLANG_DIR))
+
+OBJS =	ABBREV$(OBJ), -
+	BUFFER$(OBJ), -
+	CMDS$(OBJ), -
+	FILE$(OBJ), -
+	INDENT$(OBJ), -
+	INS$(OBJ), -
+	INTRIN$(OBJ), -
+	KEYMAP$(OBJ), -
+	LEDIT$(OBJ), -
+	LOCK$(OBJ), -
+	LINE$(OBJ), -
+	LINEATTR$(OBJ)
+	MAIN$(OBJ), -
+	MISC$(OBJ), -
+	PASTE$(OBJ), -
+	REPLACE$(OBJ), -
+	SCREEN$(OBJ), -
+	COLORS$(OBJ), -
+	SEARCH$(OBJ), -
+	SIG$(OBJ), -
+	SYNTAX$(OBJ), -
+	SYSDEP$(OBJ), -
+	TEXT$(OBJ), -
+	UNDO$(OBJ), -
+	VFILE$(OBJ), -
+	VMSHELP$(OBJ), -
+	VMSMAIL$(OBJ), -
+	VTERM$(OBJ), -
+	BLOCAL$(OBJ), -
+	MENU$(OBJ), -
+	MOUSE$(OBJ), -
+	WINDOW$(OBJ), -
+	VERSION$(OBJ), -
+	HOOKS$(OBJ), -
+	USERINFO$(OBJ)
+
+JEDOBJS = $(OBJS) DISPLAY$(OBJ)
+
+HFILES = BUFFER.H,CMDS.H,DISPLAY.H,FILE.H,INS.H,KEYMAP.H,LEDIT.H,LINE.H,-
+         MISC.H,PASTE.H,SCREEN.H,SEARCH.H,SIG.H,SYSDEP.H,TEXT.H,VTERM.H,-
+         REPLACE.H,WINDOW.H,UNDO.H,COLORS.H
+
+JED$(EXE) : JED$(OLB)($(JEDOBJS))$(OPTFILE),$(SLANG_OLB)
+        $(LINK)$(LINKFLAGS) JED$(OLB)/INCLUDE=main/LIBRARY$(OPTIONS),-
+		$(SLANG_OLB)/LIBRARY
+
+#
+#  Most modules depend on most of the .H files, so I'm going to be lazy
+#  and just make them all depend on all of them.
+#
+SYSDEP$(OBJ) :	SYSDEP.C,VMS.C
+
+$(OBJS),DISPLAY$(OBJ) : $(HFILES)
+ 
+
+#
+#  Build the linker options file for OpenVMS VAX and VAX C.
+#
+VAXCRTL.OPT :
+        @ open/write tmp vaxcrtl.opt
+        @ write tmp "SYS$SHARE:VAXCRTL.EXE/SHARE"
+        @ close tmp
+

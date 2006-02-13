@@ -1,0 +1,4 @@
+The `undo' function is bound to keys `Ctrl-_' and `Ctrl-X u'.  There is
+no `redo' function.  However, it is possible to `redo' by first
+pressing `Ctrl-G' followed immediately by either `Ctrl-_' or `Ctrl-X u'.
+That is, `Ctrl-G' tells the `undo' function to `redo'.

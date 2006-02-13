@@ -1,0 +1,202 @@
+This file was provided by rgo@drmail.dr.att.com.
+
+                Default Key Bindings for JED EMACS
+		==================================
+
+KEY         ACTION                        JED FUNCTION (Invoke via ESC X)
+
+ ENTER      New line and indent           newline_and_indent
+ DEL        Backward delete character     backward_delete_char_untabify
+ Backspace  Help                          help_prefix
+ TAB        "Smart" line indent           indent_line
+ PageDown   Move forward by pages         page_down
+ PageUp     Move backward by pages        page_up
+ Up Arrow   Move backward by lines        previous_line_cmd
+ Down Arrow Move forward by lines         next_line_cmd
+
+
+CONTROL
+
+ ^A   Go to start of line                 beg_of_line
+ ^B   Move backward by characters         previous_char_command
+ ^D   Forward delete character            delete_char_cmd
+ ^E   Go to end of line                   eol_cmd
+ ^F   Move forward by characters          next_char_cmd
+ ^G   Abort out of things                 kdb_quit
+ ^H   Help                                help_prefix
+
+      ^HA  Show related functions
+      ^HF  Help on function
+      ^HH  Show basic key bindings
+      ^HK  Show key binding
+      ^HI  Bring up Info Browser
+      ^HM  Display Unix man page
+      ^HV  Show variable definition and value
+      ^HW  Show what key is bound to a command
+      ^H?  Show Menus
+
+ ^I   "Smart" line indent                 indent_line
+ ^J   New line (CR-LF)                    newline
+ ^K   Kill to end of line                 yp_kill_line
+ ^L   Put current line in center          emacs_recenter
+ ^M   New line and indent                 newline_and_indent
+ ^N   Move forward by lines               next_line_cmd
+ ^O   Open up a blank line                emacs_open_line
+ ^P   Move backward by lines              previous_line_cmd
+ ^Q   Insert literal                      quoted_insert
+ ^R   Search backwards                    search_backward
+ ^S   Search forward                      search_forward
+ ^T   Transpose characters                transpose_chars
+ ^U   Repeat command four times           universal_argument
+ ^V   Move forward by pages               page_down
+ ^W   Kill region                         yp_kill_region
+ ^X   Command prefix
+ ^Y   Yank back from kill buffer          yp_yank
+ ^Z   Suspend JED                         sys_spawn_cmd
+ ^_   Undo                                undo
+ ^@   Start to define region (set mark)   smart_set_mark_cmd
+
+
+ESCAPE
+
+ ESC B   Backup by words                  bskip_word
+ ESC C   Initial capitalize word          capitalize_word
+ ESC D   Delete forward word              yp_kill_word
+ ESC F   Advance by words                 skip_word
+ ESC L   Lower case word                  downcase_word
+ ESC N   Narrow paragraph                 narrow_paragraph
+ ESC n   Scroll up in place               scroll_up_in_place
+ ESC O   Command prefix
+ ESC P   Scroll down in place             scroll_down_in_place
+ ESC Q   Format paragraph                 format_paragraph
+ ESC S   Center line                      center_line
+ ESC U   Upper case word                  upcase_word
+ ESC V   Move backward by pages           page_up
+ ESC W   Copy region to kill buffer       yp_copy_region_as_kill
+ ESC X   Execute JED command              emacs_escape_x
+ ESC Y   Yank and pop                     yp_yank_pop
+
+ ESC ^B  Go back to matching (, {, or [   backward_sexp
+ ESC ^F  Go ahead to matching ), }, or ]  forward_sexp
+ ESC ^H  Go to start of function          c_mark_function
+ ESC ^K  Kill to matching ), }, or ]      kill_sexp
+ ESC %   Query search and replace         replace_cmd
+ ESC <   Move to start of buffer          beg_of_buffer
+ ESC >   Move to end of buffer            end_of_buffer
+ ESC !   Execute shell command            do_shell_cmd
+ ESC .   Find tag                         find_tag
+ ESC ;	 Create language comment          c_make_comment
+ ESC $   Invoke ispell                    ispell
+ ESC /   Abbreviation (?)                 dabbrev
+ ESC DEL Backward delete word             yp_bkill_word
+ ESC \   Delete all whitespace            trim_whitespace
+
+ ESC space  Trim whitespace to one space  .bskip_white trim insert_single_space
+ ESC right arrow  Advance by words        skip_word
+ ESC left arrow   Backup by words         bskip_word
+
+CONTROL-X
+
+ ^X B   Switch to buffer                  switch_to_buffer
+ ^X D   Invoke directory editor           dired
+ ^X E   Execute macro                     execute_macro
+ ^X F   Set fill column                   set_fill_column
+ ^X G   Insert from register              reg_insert_register
+ ^X H   Mark buffer                       emacs_mark_buffer
+ ^X I   Insert file                       insert_file
+ ^X J   Go to last spot and unmark it     pop_spot
+ ^X K   Kill buffer                       kill_buffer
+ ^X M   Send mail                         mail
+ ^X N   Delete everything but region      narrow_to_region
+ ^X O   Goto other window                 other_window
+ ^X Q   Macro query                       macro_query
+ ^X RK  Kill rectangular region           kill_rect
+ ^X RO  Open rectangular region           open_rect
+ ^X RR  Copy rectangular region           copy_rect
+ ^X RY  Insert rectangular region         insert_rect
+ ^X S   Save buffers                      save_buffers
+ ^X U   Undo                              undo
+ ^X W   Undo effects of Narrow to region  widen_region
+ ^X X   Copy region to register           reg_copy_to_register
+
+ ^X (   Begin macro                       begin_macro
+ ^X )   End macro                         end_macro
+ ^X /   Mark a spot                       mark_spot
+ ^X 0   Delete current window             delete_window
+ ^X 1   One window                        one_window
+ ^X 2   Split current window              split_window
+ ^X 4B  Switch to buffer in other window  find_buffer_other_window
+ ^X 4F  Find file in other window         find_file_other_window
+ ^X <   Scroll left                       scroll_left
+ ^X >   Scroll right                      scroll_right
+ ^X ^   Enlarge display window            enlarge_window
+ ^X ?   Show the cursor position          whatpos
+ ^X =   Show the cursor position          whatpos
+ ^X '   Compile parse errors              compile_parse_errors
+
+ ^X ^B  Display buffer list               list_buffers
+ ^X ^C  Exit JED                          exit_jed
+ ^X ^F  Find file                         find_file
+ ^X ^O  Collapse blank lines to one       delete_blank_lines
+ ^X ^Q  Toggle read-only mode             toggle_readonly
+ ^X ^S  Save current buffer               save_buffer
+ ^X ^T  Transpose lines                   transpose_lines
+ ^X ^V  Find alternate file               find_alternate_file
+ ^X ^W  Write buffer to file              write_buffer
+ ^X ^X  Go to other end of region         exchange
+ ^X ESC Invoke S-LANG Interpreter         evaluate_cmd
+
+
+     JED FUNCTIONS NOT BOUND TO KEYS - ACCESS VIA ESC X
+     (OR BIND TO KEYS IN YOUR .jedrc FILE)
+     =========================================================
+
+  FUNCTION              MEANING
+
+  abbrev_mode
+  append_region         Append region to file
+  beep
+  blank_rect            Blank-fill rectangular region
+  c_mode                Set C program mode
+  calendar		Display a 3-month calendar in a new window
+  compile
+  define_abbreviation
+  describe_bindings
+  describe_mode
+  digit_arg
+  edit_tab_stops        Define tab stops in arbitrary columns
+  evalbuffer
+  exit_mini
+  find_binary_file      Edit binary file
+  fortran_mode          Set Fortran program mode
+  goto_column_cmd       Go to column number
+  goto_line_cmd         Go to line number
+  goto_match            Go to matching delimiter: (, ), [, ], {, or }
+  insert_buffer         Insert buffer
+  isearch_backward      Incremental search backward
+  isearch_forward       Incremental search forward
+  latex_mode            Set LaTex mode
+  mini_complete
+  narrow
+  no_mode               Set no mode
+  occur			Find all occurrences of a regular expression
+  query_replace_match   Regular expression query search and replace
+  re_search_backward	Regular expression search backward
+  re_search_forward	Regular expression search forward
+  recover_file          Recover file from backup
+  redraw
+  replace_across_buffer_files
+  save_abbrevs
+  self_insert_cmd
+  set_mark_cmd
+  sh_mode               Set shell mode
+  shell                 Open a window running a Unix shell
+  sort                  Sort a region
+  text_mode             Set text mode
+  text_smart_quote
+  toggle_crmode
+  toggle_undo           Enable/disable undo capability on a buffer
+  trim_buffer           Trim trailing whitespace in a buffer
+  untab                 Convert tabs to blanks in a region
+  widen
+  write_region          Write region to file

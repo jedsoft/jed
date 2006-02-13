@@ -1,0 +1,56 @@
+The main reason JED's version number is below 1.0 is due to the lack of
+adequate documentation.  It is slowing being improved.
+
+There are several sub-directories here including:
+
+    txt/
+    
+       Many text files that describe various aspects of the editor are
+       in this directory. They will eventually be stitched together
+       and included in the manual.
+
+    tm/
+    
+       This directory contains the text-macro source for the intrinsic
+       functions.  In addition, it contains Guido Gonzato's quick
+       reference guide for jed.
+
+    manual/
+       
+       Eventually the jed manual will be put here.  Right now what is
+       in there is old and is most likely out of date.
+
+
+ACKNOWLEDGEMENTS
+----------------
+
+   I am extremely grateful to the following individuals for their
+   contributions to jed.  For many of them, this is long overdue.
+
+     Luchesar Ionkov
+     Mark Olesen
+     John Burnell
+     Darrel Hankerson
+     Dominik Wujastyk
+     Ulli Horlacher
+     Hunter Goatley
+     Simon Tatham
+     Nick Tatham
+     Andy Harper
+     John Skilleter
+     Jim Knoble
+     Guido Gonzato
+     Charl Botha
+     Eddie Penninkhof
+     Jouk Jansen
+     Martin P.J. Zinser
+     Tom Culliton
+     Kazuhisa Yoshino
+     Jim Clifton
+     Jan Hlavacek
+     Francesc Rocher
+     Thomas J. Moore
+
+   There are other names that belong on this list, particularly from
+   those who supported jed when the version was still 0.8.
+   Unfortunately I no longer have any records of their contributions.

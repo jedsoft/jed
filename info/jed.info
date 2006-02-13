@@ -1,0 +1,65 @@
+This is Info file jed.info, produced by Makeinfo-1.55 from the input
+file jed.ti.
+
+START-INFO-DIR-ENTRY
+* JED: (jed).         The JED editor
+END-INFO-DIR-ENTRY
+
+
+Indirect:
+jed.1in: 83
+jed.2in: 24234
+jed.3in: 49114
+
+Tag Table:
+(Indirect)
+Node: Top83
+Node: Introduction709
+Node: Installing JED1313
+Node: Startup Files3430
+Node: Starting JED4438
+Node: Emulating Other Editors6529
+Node: Emacs Emulation7026
+Node: EDT Emulation7590
+Node: Wordstar Emulation9907
+Node: File Types and Sizes10279
+Node: Backup and Autosave Files10894
+Node: Status line and Windows12656
+Node: MiniBuffer13580
+Node: Command Line Completion14501
+Node: File Names16808
+Node: Buffer Name and File Name Completion19290
+Node: Basic Editing20155
+Node: Undo21943
+Node: Marking Text (Point and Mark)22967
+Node: Tab Issues.24234
+Node: Searching27481
+Node: Rectangles29905
+Node: Sorting30926
+Node: Modes33018
+Node: Wrap Mode33723
+Node: Formatting paragraphs34040
+Node: Smart Quotes35827
+Node: C Mode36987
+Node: Fortran Mode38152
+Node: Keyboard Macros38869
+Node: Shells and Shell Commands40843
+Node: Getting Help42061
+Node: Editing Binary Files42866
+Node: Dired43608
+Node: Mail45714
+Node: Customization47963
+Node: Setting Keys49114
+Node: Predefined Variables52820
+Node: Hooks54172
+Node: S-Lang Programming Hints (Debugging)57163
+Node: Eight Bit Clean Issues61244
+Node: Displaying Characters with the High Bit Set61539
+Node: Inputting Characters with the High Bit Set62645
+Node: Upper Case - Lower Case Conversions64483
+Node: Miscellaneous66739
+Node: Abort Character66919
+Node: Input Translation67632
+Node: Display Sizes68904
+
+End Tag Table

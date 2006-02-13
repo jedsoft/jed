@@ -1,0 +1,211 @@
+IDE Mode for Jed
+-----------------
+
+By Guido Gonzato, <ggonza@tin.it>
+Version 1.3.0. 27 February 2001.
+
+
+Introduction
+-------------
+
+IDE mode is a compatibility mode for the editor Jed, specifically designed
+for former DOS/Windows users. It aims at making Jed as similar to the
+Borland IDE as possible. If you have experience with any of the Borland (now
+Imprise) languages (Turbo Pascal, Turbo C++, etc), or DOS/Windows edit, or
+even the ancestor WordStar, you will feel immediately at home with Jed. Joe
+users accustomed to the Jstar version will like IDE mode, too.
+
+I wrote IDE Mode because many years ago I used WordStar, whose key bindings
+are now firmly etched in my DNA. Years of experience with DOS, Turbo Pascal,
+and Turbo C++ don't help switching to Emacs...
+
+IDE mode is based on John E. Davis' original wordstar.sl, which IMHO should
+be considered obsolete. This version works with Jed B0.99.12 upwards, under
+Linux (console, xterms and Xjed) and DOS/Windows; it won't work with Wjed.
+
+
+Installation
+============
+
+To enable IDE mode, include this line in your .jedrc (Linux) or jed.rc
+(DOS/Windows):
+
+  () = evalfile ("ide");
+
+Make sure that all references to emacs.sl, brief.sl, and wordstar.sl 
+are commented out.
+
+IDE mode has been tested on a wide range of terminals, and should work well
+even if you use Jed over a Telnet/SSH session. I tried successfully with
+these fine telnet/ssh clients for Windows: TeraTerm
+(http://www.zip.com.au/%7Eroca/ttssh.html), Putty
+(http://www.chiark.greenend.org.uk/%7Esgtatham/putty.html), and Mindterm
+(http://www.mindbright.se/mindterm). Some terminal emulators may cause
+problems, though. If you get this error:
+
+  S-Lang Error: Inconsistency in define key.
+
+or if there are problems with colours and/or function keys, then try to
+redefine the TERM variable to `xterm-color' or `vt220':
+
+  $ export TERM=xterm-color   # bash
+  $ setenv TERM xterm-color   # csh
+
+This may be required for recent rxvts and xterms. Your mileage may vary.
+
+
+Note for EDT users
+-------------------
+
+IDE mode and EDT mode can happily coexist, and I actually use them both. To
+try out IDE and EDT mode together, edit your .jedrc so that it reads:
+
+  () = evalfile("edt");         % EDT mode can coexist with IDE mode
+  () = evalfile("ide");         % use IDE mode in addition to EDT
+
+That way you can use *both* EDT and IDE keybindings, taking advantage of
+some of the features that EDT mode doesn't offer.
+
+
+Main Features
+--------------
+
+Writing ide.sl I tried hard to implement as many of the Borland key bindings
+and routines as possible; some ideas were copied from Jstar. To begin with,
+most special keys are supported:
+
+  F1:	 	help
+  F2:		save current buffer
+  F3:		load file in a new buffer
+  F4:			(unimplemented)
+  F5:		magnify the current window
+  F6:		switch to the next buffer
+  F7:		ispell
+  F8:			(unimplemented)
+  F9:		compile
+  F10:		invoke the system menu
+  ESC-F3:	close the current buffer
+  ESC-F1:	help on the function under the cursor
+
+ESC-letter is equivalent to Alt-letter. There are a few inevitable
+differences (see below). IDE mode also modifies the standard menus, adding a
+few items.
+
+This is the help file for IDE mode:
+
+------------------------------------------------------------------------------
+JED IDE mode 1.3.0.  ^ = Ctrl (e.g., ^X = Ctrl-X); M = Alt (M-X = Alt-X)
+Press `q' to quit this help screen; F6 or ^KP to switch to the next buffer
+
+CURSOR              GO TO               BLOCK          DELETE       EXIT
+^S left  ^D right   ^R  prev. screen    ^KB begin      M-G char     ^KX save
+^E up    ^Z down    ^C^C next screen    ^KY cut        ^Y  line     ^KZ shell
+^A <word ^F >word   ^QS beg. of line    ^KH copy       ^T  >word    
+                    ^QD end of line     ^KC paste      M-BS <word   BUFFER
+SEARCH              ^QE screen top      ^KW to file    ^QY >line    ^KE new
+^QF find text       ^QX screen end      ^KT word       ^U undo      ^KR insert
+^QA replace         ^QR top of file     ^K/ filter                  ^KQ kill
+^L  find next       ^QC end of file     ^KG to reg.    MACRO        ^KD save
+^QT toggle case     ^Q0-9 bookmark      ^KJ from reg.  ESC-( beg.   ^KS save as
+                    ^QI line No.        ^KU up. case   ESC-) end    ^KN next
+MISC                ^QP prev.position   ^KL lo. case   M-R run      ^KP prev.
+^B reformat
+^K0-9 set bookmark  ^KI one window      ^V completion  ^P compose char
+
+Press M-X or ESC-X to issue commands; press ^G to quit the command line
+Press F10 to activate the menus. Please read the documentation!
+------------------------------------------------------------------------------
+
+Other features you may find handy:
+
+  o after any movement or operation you can go back to the previous location
+  with ^QP.
+
+  o additional block operations: ^KT selects a word, ^KL turns the block to
+  lowercase, ^KU to uppercase, ^K/ filters the block through an external
+  filter (e.g. sort, tr, tac...), ^K; comments out the block according to
+  the language (TeX, C, Fortran...), ^K: uncomments the block, ^KG copies
+  the block to a "register" (multiple clipboard), ^KJ pastes the contents of
+  a register.
+
+  o macros: Alt-( or ESC-( to start defining a macro, Alt-) or ESC-) to end,
+  Alt-R or ESC-R to run the macro.
+  
+  o special characters: press ^P + ASCII code to insert a special character
+  (e.g., ^P123 inserts a left curly bracket '{').
+  
+There could be many more things to say. If you are curious, browse the file
+ide.sl for a complete list of available features.
+
+
+Differences
+------------
+
+Some key bindings/actions couldn't be fully implemented. The miss-list
+includes:
+
+  o Ctrl-G doesn't act as DELETE key; use Alt-G instead. The original
+  wordstar.sl uses ^^, which is a pain to find on non-US keyboards.
+
+  o F3 is bound to File->Open as in Borland IDE, instead of Repeat Search as
+  in DOS edit.
+
+  o Alt-F3 doesn't close the current buffer, because this key binding is
+  employed to switch to the third virtual console under Linux. Use ESC-F3
+  instead.
+
+  o Alt-X doesn't quit Jed. This key binding is reserved for Jed's
+  minibuffer.
+
+  o more importantly: blocks are implemented with the usual key bindings,
+  but behave differently. In fact, blocks are handled as in Emacs mode to
+  provide compatibility with many other .sl files. You don't actually use a
+  block, but rather define a region:
+
+    - define the beginning with ^KB
+    - there is no need to define the end with ^KK!!!
+    - press ^KH to copy the block to the clipboard, or
+    - press ^KY to delete ("cut") the block, or
+    - press one of the other keybindings to perform an action on the block;
+      for instance, ^K/ filters the block to an external filter.
+
+  ^QB and ^QK work as usual.
+  
+Can you think of any other differences? If so, please let me know and I'll
+try and see to it.
+
+
+Better Windows Compatibility
+-----------------------------
+
+I strongly suggest that you put these lines in your .jedrc file:
+
+  () = evalfile ("wmark.sl");    % Windows-like regions
+  () = evalfile ("mousex.sl");   % use the mouse in xterm
+
+
+wmark.sl provides the capability of defining blocks using Shift-arrow, plus
+a few other features: Ctrl-Ins to copy the block to the clipboard, Shift-Ins
+to paste the clipboard contents, Bs to delete the block, etc. Unfortunately,
+it doesn't work in Linux console but only in Xjed. 
+
+
+Final Remarks
+--------------
+
+I use IDE Mode every day and I'm very satisfied with it. I hope I have done
+something useful for other people too.
+
+Special thanks to John E. Davis for writing Jed!
+
+
+Cheers,
+	Guido =8-)
+
+--
+Dr. Guido Gonzato <ggonza at tin.it> - NT & Linux System Administrator
+My public PGP key is at http://ibogeo.df.unibo.it/guido/PGP.asc
+
+"It is a good morning exercise for a research scientist to discard
+a pet hypothesis every day before breakfast. It keeps him young."
+      		 -- Konrad Lorenz

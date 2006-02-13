@@ -1,0 +1,20 @@
+XJed is able to utilise the X Render extensions in order to display
+anti-aliased fonts.  If you're going to use this, do the following easy
+steps:
+
+1. Read http://www.xfree86.org/~keithp/render/aafont.txt (and act)
+2. Make sure "xterm -fa mono" renders anti-aliased fonts
+3. Edit the jed src/Makefile (AFTER you've run configure) and modify the
+   XRENDERFONT_LIBS and XRENDERFONT_CFLAGS variables.
+4. Build JED
+5. With the newly compiled xjed, try something like:
+   xjed -fn mono -fs 16 masterpiece.c
+   If you don't specify -fs somenumber (facesize, e.g. -fs 12 or -fs 16) jed
+   will revert to traditional font rendering.  When -fs is specified, the -fn
+   parameter is treated as facename, so you can do things like:
+   xjed -fn trebuc -fs 16 bomb.c
+   
+This functionality was brought to you by:
+Charl P. Botha <http://cpbotha.net>
+March 26, 2001
+(updated Oct 2005)

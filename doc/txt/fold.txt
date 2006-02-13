@@ -1,0 +1,174 @@
+-*- mode: text; mode: fold -*-
+
+This file documents jed's folding mode.
+
+JED will have folding ability only if compiled with the LINE_ATTR feature.
+In particular, the 16 bit jed executables do not support folding.
+
+{{{ What is folding?
+--------------------
+
+Folding is a technique that renders specially marked regions of a file
+invisible.  Such a region is called a fold.  A fold may contain more
+folds, and so on.  Thus, a folded file has a tree-like structure.
+Many argue that folding leads to more ``literate'' programming.
+
+As an example of a folded file, look at `site.sl' that is present in the JED
+library.  This file contains about 2000 lines.  When folded, the file
+appears to contain a far fewer number of lines and the global structure of
+the file will be obvious.
+
+In fact, the file that you are currently reading contains special fold
+marks that enable it to be folded.  After reading this document,
+enable folding mode and re-read it.
+
+}}}
+
+{{{ Fold mode key bindings
+--------------------------
+
+JED's folding mode is activated via the function `folding_mode'.  The
+following functions/key bindings will be made available by this mode:
+
+    fold_whole_buffer         "^C^W"
+    fold_enter_fold           "^C>"
+    fold_exit_fold            "^C<"
+    fold_open_buffer          "^C^O"
+    fold_fold_region          "^C^F"
+    fold_open_fold            "^C^S"
+    fold_close_fold           "^C^X"
+    fold_search_forward       "^Cf"
+    fold_search_backward      "^Cb"
+    
+I realize that these key bindings are sub-optimal.  However, they are
+consistent with the Emacs bindings.  Of course, you are always free to
+re-bind them via a `fold_mode_hook', e.g.,
+
+     define fold_mode_hook ()
+     {
+        local_setkey ("fold_whole_buffer", "^P");
+	 .
+	 .
+     }
+
+The `fold_search_forward' and `fold_search_backward' functions will
+not find matches on hidden buffer lines.  The standard editor search
+functions are indifferent to hidden lines.
+
+Double clicking with the mouse left button on a fold will cause the editor
+to enter the fold (fold_enter_fold).  Double clicking on any other line will
+cause the editor to exit the current fold.
+
+The current fold will be exited when an attempt is made to cross the
+boundary of the fold via the the Up/Down arrow keys (more precisely,
+the functions `previous_line_cmd' and `next_line_cmd').  This behavior
+can be controlled by the variable `Fold_Bob_Eob_Error_Action'.  To
+cause an error to be generated when attempting to cross the boundary
+of a fold, add the line
+
+    variable Fold_Bob_Eob_Error_Action = 0;
+    
+to your jedrc startup initialization file.  To automatically enter the
+next (previous) fold, use    
+
+    variable Fold_Bob_Eob_Error_Action = 2;
+    
+The default value of this variable is 1.    
+
+Of course, the easiest way to learn the folding mode is to fold a buffer and
+use the folding_mode key bindings to navigate it.  Since this file
+contains fold marks, it is a good place to start.
+
+}}}
+
+{{{ Automatically folding files
+-------------------------------
+
+By default, folded files are not automatically folded when they are loaded
+into the editor.  To automatically fold a file, set the variable,
+Fold_Mode_Ok to a non-zero value in your .jedrc file:
+
+    Fold_Mode_Ok = 1;
+    
+Then any file that contains the line of the form
+
+    -*- bla bla...  mode: fold; -*-
+
+near the top will be folded.  For example, the first line of both site.sl
+and folding.sl look like:
+
+    % -*- mode: slang; mode: fold -*-
+  
+This tells the editor to load slang mode, then load fold mode.  A C file
+might contain the line
+
+    /* -*- mode: C; mode: fold -*- */
+   
+as its first line.  It is important to note that `mode: fold' must
+follow the main mode of the buffer, i.e., using
+
+    /* -*- mode: fold; mode: C -*- */
+
+will NOT work.
+
+The function `fold_mode', defined in os.sl looks like:
+
+     define fold_mode ()
+     {
+        if (Fold_Mode_Ok) folding_mode ();
+     }
+     
+That is, it is simply a wrapper around `folding_mode'.
+}}}
+
+{{{ Fold Marks
+--------------
+
+By now it should be fairly obvious that the curly braces that appear
+near the beginning and end of sections of this document have something
+to do with folding.
+
+The line that starts a fold must contain a special string of
+characters (called a folding mark) either at the beginning of the line
+or at the end of the line.  Similarly, the line that denotes end of a
+fold is denoted by a mark which must be different from the mark that
+starts a fold.
+
+The marks usually vary on a mode-by-mode basis.  For example, this
+file uses the characters `{{{' to denote the start of a fold, and the
+characters `}}}' denote the end of a fold.  C mode uses `/*{{{ TEXT */' to
+start a fold and `/*}}}*/' to end it.  The function
+`fold_add_mode_marks' may be used to associate marks with a fold.  See
+folding.sl for more information.
+
+The function `fold_fold_region' may be used to facilitate the
+placement of folding marks.  To use this function simply mark a region
+of text and press `Ctrl-C Ctrl-F' (or whatever key sequence is bound
+to the `fold_fold_region' function').  If the beginning of the region
+is located anywhere on a non-blank line, the start-fold mark will be
+placed at the END of that line; otherwise, the start-fold mark will be
+placed at the beginning.
+
+See the folding.sl file for examples of both kinds of start-fold marks.
+
+}}}
+
+{{{ Caveats
+-----------
+
+  One should exercise care when editing a folded file to make sure
+  that only visible lines are modified.  Most of the interactive
+  insert/delete functions are aware of whether or not a line is
+  hidden.  However, other functions, e.g., `replace_cmd', will allow a
+  hidden line to be modified.
+
+  Fortunately, the interactive cursor movement functions, e.g.,
+  `next_line_cmd', avoid leaving the editing point within a fold.
+  However, lower level functions such as `down' do not know about
+  folds or hidden lines.
+
+  The bottom line is that if you need to modify text within a fold,
+  either enter the fold (fold_enter_fold) or unfold the buffer
+  (fold_open_buffer).
+  
+}}}

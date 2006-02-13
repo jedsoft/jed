@@ -1,0 +1,3478 @@
+bufed
+
+ SYNOPSIS
+  bufed
+
+ DESCRIPTION
+ Mode designed to aid in navigating through multiple buffers
+ patterned somewhat after dired.
+
+ To invoke Bufed, do `M-x bufed' or bind to `C-x C-b' (emacs)
+
+ `g'	Update the buffer listing.
+
+ `k'	Kill the buffer described on the current line, like typing
+ 	`M-x kill_buffer' and supplying that buffer name.
+
+ `s'	Save the buffer described on the current line.
+
+ `f', `SPC', `CR', `TAB'
+ 	Visit the buffer described on the current line.
+ 	`f' and `SPC' will create a new window if required.
+ 	`CR' will use the current window.
+ 	`TAB' will revert to a single window.
+
+ `Q'	Quit bufed mode.
+
+--------------------------------------------------------------
+
+save_buffers
+
+ SYNOPSIS
+  save_buffers
+
+ USAGE
+  Void save_buffers ();
+
+ DESCRIPTION
+ Save all modified buffers that are associated with a file without
+ user intervention.
+
+--------------------------------------------------------------
+
+next_buffer
+
+ SYNOPSIS
+  Cycle through the list of buffers
+
+ USAGE
+  Void next_buffer ()
+
+ DESCRIPTION
+   Switches to the next in the list of buffers.
+
+ NOTES
+   (This is the same function as mouse_next_buffer in mouse.sl)
+
+ SEE ALSO
+  buffer_list, list_buffers
+
+--------------------------------------------------------------
+
+save_buffer_as
+
+ SYNOPSIS
+  Save the buffer to a different file/directory
+
+ USAGE
+  Void save_buffer_as(force_overwrite=0)
+
+ DESCRIPTION
+   Asks for a new filename and saves the buffer under this name.
+   Asks before overwriting an existing file, if not called with
+   force_overwrite=1.
+   Sets readonly flag to 0, becouse if we are able to write,
+   we can also modify.
+
+ SEE ALSO
+  save_buffer, write_buffer
+
+--------------------------------------------------------------
+
+C_Autoinsert_CPP_Comments
+
+ SYNOPSIS
+  Control insertion of C++ comments
+
+ DESCRIPTION
+ In c-mode, if a line starts with //, then pressing return will cause the
+ next line to also start with //.  This feature is useful for writing
+ multiple comment lines using C++ style comments.
+
+ SEE ALSO
+  c_mode
+
+--------------------------------------------------------------
+
+C_Class_Offset
+
+ SYNOPSIS
+  C_Class_Offset
+
+ DESCRIPTION
+ Integer C_Class_Offset = 3;
+ This variable may be changed to adjust the indentation of members
+ inside of a class declaration block.
+
+ SEE ALSO
+  c_mode
+
+ SEE ALSO
+  C_BRA_NEWLINE, C_BRACE, C_INDENT, C_Namespace_Offset
+
+--------------------------------------------------------------
+
+C_Param_Offset_Max
+
+ SYNOPSIS
+  Control indentation of continued parameter list
+
+ USAGE
+  Integer C_Param_Offset_Max = 6
+
+ DESCRIPTION
+ This variable may be changed to adjust the indentation of parameters
+ in a funcion call that extends over multiple lines.
+
+ If the value is less than 0, the feature is off, otherwise
+ it holds the max number of spaces to indent the parameters on
+ the continuation line(s).
+
+ SEE ALSO
+  c_mode
+
+ SEE ALSO
+  C_BRA_NEWLINE, C_BRACE, C_INDENT
+
+--------------------------------------------------------------
+
+c_mode
+
+ SYNOPSIS
+  c_mode
+
+ USAGE
+  Void cmode ();
+
+ DESCRIPTION
+ This is a mode that is dedicated to facilitate the editing of C language files.
+ Functions that affect this mode include:
+
+  function:             default binding:
+  c_insert_bra               {
+  c_insert_ket               }
+  newline_and_indent         RETURN
+  indent_line                TAB
+  goto_match                 Ctrl-\
+  c_make_comment             ESC ;
+  c_top_of_function          ESC Ctrl-A
+  c_end_of_function          ESC Ctrl-E
+  c_mark_function            ESC Ctrl-H
+
+ Variables affecting indentation include:
+
+  C_INDENT
+  C_BRACE
+  C_BRA_NEWLINE
+  C_CONTINUED_OFFSET
+  C_Comment_Column  (used by c_make_comment)
+  C_Class_Offset
+  C_Switch_Offset
+  C_Colon_Offset
+  C_Namespace_Offset
+
+
+ Hooks: `c_mode_hook'
+
+ SEE ALSO
+  c_set_style
+
+--------------------------------------------------------------
+
+c_set_style
+
+ SYNOPSIS
+  Set the indentation style for C mode
+
+ USAGE
+  Void c_set_style (style)
+
+ DESCRIPTION
+ This function sets the C mode indentation variables appropriate for
+ a common indentation style.  Currently supported styles include:
+
+    "gnu"      Style advocated by GNU
+    "k&r"      Style popularized by Kernighan and Ritchie
+    "linux"    Linux kernel indentation style
+    "bsd"      Berkeley style
+    "jed"      Style used by the the author
+
+
+ SEE ALSO
+  c_mode
+
+--------------------------------------------------------------
+
+get_comment_info
+
+ SYNOPSIS
+  Get comment information according to mode
+ }
+
+ USAGE
+  Struct_Type = get_comment_info ( [mode] );
+
+ DESCRIPTION
+ Retrieves the comment information according to the optional `mode'
+ argument, or for the present mode it `mode' is not present.
+ Every mode that wants to use this function should provide comment information
+ using the `set_comment_info' function.
+
+ The returned value is a structure with the following fields:
+
+     cbeg       % begin comment string
+     cend       % end comment string
+     flags      % flags
+     column     % preferred column for comments
+
+ If comment information does not exist for the mode, then `NULL' will
+ be returned.
+
+ SEE ALSO
+  set_comment_info, comment_region, comment_line, uncomment_region
+
+--------------------------------------------------------------
+
+set_comment_info
+
+ SYNOPSIS
+  Set comment information for a mode
+
+ USAGE
+  set_comment_info ([mode,] cbeg, cend, flags)
+
+ DESCRIPTION
+ This function sets comment information for a specified mode. If the
+ optional mode argument is not present, the current mode will be used.  The
+ other 3 required arguments represent the comment start string (`cbeg'),
+ the comment end string (`cend'), and an integer flags argument that
+ indications how these strings are to be used by the `comment_region'
+ function.  In particular, `flags' is a bitmapped integer whose bits
+ have the following meaning:
+
+     0x01  :  Comments will start at column defined by the region start,
+               otherwise comments will be indented to the level of the
+               first line in the region.
+     0x02  :  Lines in the region will be padded out to the same column.
+     0x04  :  Blank lines will be commented.
+
+
+ SEE ALSO
+  set_comment_info, comment_region, comment_line, uncomment_region
+
+--------------------------------------------------------------
+
+strncat
+
+ SYNOPSIS
+  strncat
+
+ USAGE
+  Void strncat (String a, String b, ..., Integer n);
+
+ DESCRIPTION
+ Returns concatenated string "abc..."
+
+ NOTES
+ This function is obsolete.
+
+--------------------------------------------------------------
+
+Compile_Default_Compiler
+
+ USAGE
+  variable Compile_Default_Compiler = "gcc";
+
+ DESCRIPTION
+  This variable specifies the default compiler to be assumed when parsing
+  error messages in the compile buffer.  If not set, "gcc" is assumed.
+  Currently supported compilers include:
+
+      gcc              (GNU C Compiler)
+      bcc              (Borland C Compiler)
+      tcc              (Turbo C Compiler)
+      ultrix_cc        (Ultrix C Compiler)
+      hp_cc            (HP C compiler)
+      sun_acc          (Sun ANSI C compiler)
+      aix, xlc, xlf    (Various AIX C compilers)
+      wcc              (Watcom C compiler)
+      javac            (Java Compiler)
+      vc               (Microsoft Visual C)
+
+
+ NOTES
+  The primary purpose of this variable is to select a compiler prior to
+  loading compile.sl.  Once compile.sl has been loaded, the value of this
+  variable has no effect.  To switch compilers, the `compile_select_compiler'
+  function must be used.
+
+ SEE ALSO
+  compile_select_compiler, compile_add_compiler
+
+--------------------------------------------------------------
+
+auto_compression_mode
+
+ SYNOPSIS
+  Toggle auto-compression-mode
+
+ USAGE
+  auto_compression_mode ([Int_Type state])
+
+ DESCRIPTION
+ The `auto_compression_mode' function toggles the auto-compression-mode
+ on or off. When on, files whose names end with `.gz', `.Z', or
+ `.bz2' will automatically uncompressed when read in, and compressed
+ when written out.
+
+--------------------------------------------------------------
+
+cua_delete_word
+
+ SYNOPSIS
+  Delete the current word (or a defined region)
+
+ USAGE
+   Void cua_delete_word ()
+
+ DESCRIPTION
+   cua_delete_word is somewhat context sensitive:
+    * Delete from the current position to the end of a word.
+    * If there is just whitespace following the editing point, delete it.
+    * If there is any other non-word char, delete just one char.
+    * If a region is defined, delete it (instead of the above actions).
+   This way, you can do a "piecewise" deletion by repeatedly pressing
+   the same key-combination.
+
+ NOTES
+   This is actually the ide_delete_word function form Guido Gonzatos
+   ide.sl mode, put here to be usable also with other emulations.
+
+ SEE ALSO
+  delete_word, delete_cmd, cua_kill_region
+
+--------------------------------------------------------------
+
+repeat_search
+
+ SYNOPSIS
+  continue searching with last searchstring
+
+ USAGE
+  define repeat_search ()
+
+ SEE ALSO
+  LAST_SEARCH, search_forward, search_backward
+
+--------------------------------------------------------------
+
+cua_indent_region_or_line
+
+ SYNOPSIS
+  Indent the current line or (if defined) the region
+
+ USAGE
+  Void cua_indent_region_or_line ()
+
+ DESCRIPTION
+   Call the indent_line_hook for every line in a region.
+   If no region is defined, call it for the current line.
+
+ SEE ALSO
+  indent_line, set_buffer_hook, is_visible_mark
+
+--------------------------------------------------------------
+
+cua_escape_cmd
+
+ SYNOPSIS
+  Escape from a command/aktion
+
+ USAGE
+  cua_escape_cmd()
+
+ DESCRIPTION
+   Undo/Stop an action. If a region is defined, undefine it. Else
+   call kbd_quit.
+
+ SEE ALSO
+  kbd_quit
+
+--------------------------------------------------------------
+
+cua_escape_cmd
+
+ SYNOPSIS
+  Distinguish the ESC key from other keys starting with "\e"
+
+ USAGE
+  Void cua_escape_cmd()
+
+ DESCRIPTION
+   If there is input pending (i.e. if the keycode is multi-character),
+   "\e" will be put back to the input stream. Otherwise (if the
+   ESC key is pressed, "\e\e\e" is pushed back. With ALT_CHAR = 27, the Alt
+   key can be used as Meta-key as usual (i.e. press both ALT + <some-key>
+   to get the equivalent of the ESC <some-key> key sequence.
+
+ SEE ALSO
+  escape_cmd, one_press_escape, kbd_quit, map_input, setkey
+
+--------------------------------------------------------------
+
+cua_one_press_escape
+
+ SYNOPSIS
+  Redefine the ESC key to issue "\e\e\e"
+
+ USAGE
+  cua_one_press_escape()
+
+ DESCRIPTION
+   Dependend on the jed-version, either x_set_keysym or
+   meta_escape_cmd is used to map the ESC key to "\e\e\e"
+
+ EXAMPLE
+ To let the ESC key abort functions but retain bindings for
+ keystrings that start with "\e" do
+
+    cua_one_press_escape();
+    setkey ("cua_escape_cmd", "\e\e\e");     % Triple-Esc -> abort
+
+
+ NOTES
+   The function is experimental and has sideeffects if not using xjed.
+   For not-x-jed:
+
+   It uses the "^^" character for temporarily remapping, i.e. Ctrl-^ will
+   call cua_escape_cmd().
+
+   In order to work, it must be loaded before any mode-specific keymaps are
+   defined -- otherwise this modes will be widely unusable due to not
+   working cursor keys...!
+
+   It breaks functions that rely on getkey() (e.g. isearch, showkey, old
+   wmark(pre 99.16), ...)
+
+   It will not work in keybord macros and might fail on slow terminal links.
+
+ SEE ALSO
+  cua_escape_cmd, cua_escape_cmd, getkey, setkey, x_set_keysym
+
+--------------------------------------------------------------
+
+cua_save_buffer
+
+ SYNOPSIS
+  cua_save_buffer
+
+ USAGE
+  Void cua_save_buffer();
+
+ DESCRIPTION
+ Save current buffer.
+
+--------------------------------------------------------------
+
+Dabbrev_delete_tail
+
+ SYNOPSIS
+  Let completion replace word tail?
+
+ USAGE
+  Int_Type Dabbrev_delete_tail = 0
+
+ DESCRIPTION
+  Should the completion replace the part of the word behind the cursor?
+
+ SEE ALSO
+  dabbrev
+
+--------------------------------------------------------------
+
+Dabbrev_Default_Buflist
+
+ SYNOPSIS
+  Which buffers should dabbrev expand from?
+
+ USAGE
+  Int_Type Dabbrev_Default_Buflist = 0
+
+ DESCRIPTION
+ The buffer-list when dabbrev is called without argument
+     0 = current buffer,
+     1 = visible buffers (including the current),
+     2 = all buffers of same mode,
+     3 = all buffers,
+     4 = other visible buffers (excluding the current),
+     5 = all other buffers of same mode  (excluding the current),
+     6 = all other buffers  (excluding the current)
+
+ SEE ALSO
+  dabbrev
+
+--------------------------------------------------------------
+
+Dabbrev_Look_in_Folds
+
+ SYNOPSIS
+  Scan folds for expansions
+
+ USAGE
+  Int_Type Dabbrev_Look_in_Folds = 1
+
+ DESCRIPTION
+ Should dabbrev scan folded parts of the source buffer(s)
+ for expansions too?
+
+ SEE ALSO
+  dabbrev
+
+--------------------------------------------------------------
+
+Dabbrev_Case_Search
+
+ SYNOPSIS
+  Let dabbrev stick to case
+
+ USAGE
+  Int_Type Dabbrev_Case_Search = 1
+
+ DESCRIPTION
+  Should dabbrev consider the case of words when looking for expansions?
+  Will be overridden by a blocal variable "Dabbrev_Case_Search" or by the
+  mode-info variable "dabbrev_case_search".
+
+ SEE ALSO
+  dabbrev
+
+--------------------------------------------------------------
+
+dabbrev
+
+ SYNOPSIS
+  Complete the current word looking for similar words
+
+ USAGE
+  dabbrev([optional_argument])
+
+ DESCRIPTION
+ Takes the current stem (part of word before the cursor)
+ and scans the current buffer for words that begin with this stem.
+ The current word is expanded by the non-stem part of the finding.
+ Subsequent calls to dabbrev replace the last completion with the next
+ guess.
+
+ The search for completions takes place over a list of buffers specified
+ by the `Dabbrev_Default_Buflist' variable unless `dabbrev' has
+ been called with an argument.  The optional argument may either be an
+ integer whose value is interpreted as for `Dabbrev_Default_Buflist',
+ or a string containing a newline separated list of buffer names to search.
+
+ The scan proceeds as follows:
+
+     foreach buffer in buflist
+       from cursor backwards to the beginning of the buffer
+       from cursor forwards to the end of the buffer
+
+
+ EXAMPLE
+ The current buffer contains the line
+
+   foo is better than foobar, foobase or foo
+
+ with the cursor at the end of the line.
+ dabbrev completes foo with foobase.
+ If called again (immediately) foobase is changed to foobar
+ If called once again, foobase is changed to foo and a message is
+ given: No more completions.
+
+ NOTES
+  You can use the optional argument to have keybindings to different
+  "flavours" of dabbrev.
+
+ setkey("dabbrev", "^A");                 % expand from Dabbrev_Default_Buflist
+ setkey("dabbrev(1)", "\ea");             % expand from visible buffers
+ setkey("dabbrev(\"wordlist\")","\e^A");  % expand from the buffer "wordlist"
+
+
+ SEE ALSO
+  Dabbrev_Default_Buflist, Dabbrev_Look_in_Folds
+
+--------------------------------------------------------------
+
+dired
+
+ SYNOPSIS
+  dired
+
+ DESCRIPTION
+ Mode designed for maintaining and editing a directory.
+
+ To invoke Dired, do `M-x dired' or `C-x d' (emacs)
+
+ Dired will prompt for a directory name and get a listing of files in the
+ requested directory.
+
+ The primary use of Dired is to "flag" files for deletion and then delete
+ the previously flagged files.
+
+ `d'	Flag this file for deletion.
+ `u'	Remove deletion flag on this line.
+ DEL	Move point to previous line and remove deletion flag.
+ `~'	Flag all backup files for deletion.
+
+ `x'	eXpunge all flagged files.  Dired will show a list of the
+ 	files tagged for deletion and ask for confirmation before actually
+ 	deleting the files.
+
+ `r'	Rename file on the current line; prompts for a newname
+ `m'	Move tagged files to a new dir; prompts for dir name
+
+ `g'	Update the entire contents of the Dired buffer
+
+ `f'	Visit the file described on the current line, like typing
+ 	`M-x find_file' and supplying that file name.  If current line is a
+ 	directory, runs dired on the directory and the old buffer is killed.
+
+ `v'	View the file described on the current line in MOST mode.
+
+ `q'	Quit dired mode.
+
+ `M-x dired_search'
+ 	use fsearch to perform a search through the files listed in the
+ 	dired buffer from the current point forward.  `M-x dired_search'
+ 	from the visited file will revert to the dired buffer and continue
+ 	the search from the next file in the list.
+
+ all the usual motion commands plus some extras:
+
+ `C-n' `n' SPC
+ 	move point to the next line (at the beginning of the file name)
+
+ `C-p' `p'
+ 	move point to the previous line (at the beginning of the file name)
+
+ `M-x dired_kill_line'	`^K' (emacs)
+ 	removes a line from the dired buffer
+
+--------------------------------------------------------------
+
+docbook_mode
+
+ SYNOPSIS
+  docbook_mode
+
+ USAGE
+  Void docbook_mode ();
+
+ DESCRIPTION
+ This mode is designed to facilitate the editing of Docbook 3.1 SGML files.
+ If a region is defined (i.e., if a mark is set), many SGML tags will
+ insert around the region; e.g. '<emphasis>' and '</emphasis>'. Tags are
+ inserted either using the Mode menu, or with a key combination resembling
+ the menu entry, e.g. ^Cce inserts <emphasis> (M&ode/&Character/<&emphasis>).
+ Functions that affect this mode include (Emacs mode assumed - IDE mode
+ uses ^Z instead of ^C):
+
+  sgml_bskip_tag            ^C^B
+  sgml_skip_tag             ^C^F
+  sgml_para                 ^CP
+  sgml_section              ^CS
+  sgml_sect                 ^CN
+  insert &dollar;           ^C$
+  insert &amp;              ^C&
+  insert &hellip;           ^C.
+  insert &lt;               ^C<
+  insert &gt;               ^C>
+
+ Variables affecting this mode include:
+
+  Variable                  Default value
+
+  SGML_INDENT               2
+  Sgml_Compile_PS_Cmd       "db2ps"
+  Sgml_Compile_Pdf_Cmd      "db2pdf"
+  Sgml_Compile_Html_Cmd     "db2html"
+  Sgml_View_PS_Cmd          "gv"
+  Sgml_View_Pdf_Cmd         "gv"
+  Sgml_View_Html_Cmd        "netscape"
+
+ To change the value of a variable, define that variable in .jedrc
+ before loading docbook.sl. For example:
+
+  variable SGML_INDENT = 3;
+
+ Hooks: `sgml_mode_hook'
+
+--------------------------------------------------------------
+
+edt_advance
+
+ SYNOPSIS
+  edt_advance
+
+ DESCRIPTION
+ ADVANCE - (4)
+ Sets the current direction to forward for the CHAR, WORD, LINE, EOL, PAGE,
+ SECT, SUBS, FIND, and FNDNXT keys.  ADVANCE means that movement will be
+ toward the end of the buffer; that is, to the right and down.
+
+--------------------------------------------------------------
+
+edt_backup
+
+ SYNOPSIS
+  edt_backup
+
+ DESCRIPTION
+ BACKUP - (5)
+ Sets the cursor direction to backward for the CHAR, WORD, LINE, EOL, PAGE,
+ SECT, SUBS, FIND, and FNDNXT keys.  BACKUP means that movement will be
+ toward the beginning of the buffer% that is, to the left and up.
+
+--------------------------------------------------------------
+
+edt_wdel
+
+ SYNOPSIS
+  edt_wdel
+
+ DESCRIPTION
+ DEL W - (-)
+ Deletes text from the cursor to the beginning of the next word, storing the
+ text in the delete word buffer.
+
+--------------------------------------------------------------
+
+edt_uwdel
+
+ SYNOPSIS
+  edt_uwdel
+
+ DESCRIPTION
+ UND W - (GOLD -)
+ Inserts the contents of the delete word buffer directly to the left of the
+ cursor.
+
+--------------------------------------------------------------
+
+edt_ldel
+
+ SYNOPSIS
+  edt_ldel
+
+ DESCRIPTION
+ DEL L - (PF4)
+ Deletes text from the cursor position to the end of the current line, including
+ the line terminator.  If the cursor is positioned at the beginning of a line,
+ the entire line is deleted.  The deleted text is saved in the delete line
+ buffer.
+
+--------------------------------------------------------------
+
+edt_uldel
+
+ SYNOPSIS
+  edt_uldel
+
+ DESCRIPTION
+ UND L - (GOLD PF4)
+ Inserts the contents of the delete line buffer directly to the left of the
+ cursor.
+
+--------------------------------------------------------------
+
+edt_find
+
+ SYNOPSIS
+  edt_find
+
+ DESCRIPTION
+ FIND - (GOLD PF3)
+ Searches for an occurrence of a string.  Press the FIND key and then enter the
+ string using the main keyboard.  End the string by pressing either the ADVANCE
+ or BACKUP key to set the direction of the search, or the ENTER key to search in
+ the current direction.
+
+--------------------------------------------------------------
+
+edt_findnxt
+
+ SYNOPSIS
+  edt_findnxt
+
+ DESCRIPTION
+ FNDNXT - (PF3)
+ Searches for the next occurrence of the search string previously entered with
+ the FIND key.  The direction of the search is the current one (ADVANCE or
+ BACKUP).
+
+--------------------------------------------------------------
+
+edt_sect
+
+ SYNOPSIS
+  edt_sect
+
+ DESCRIPTION
+ SECT - (8)
+ Moves the cursor 16 lines (one section) forward or backward, depending on the
+ current direction (see ADVANCE and BACKUP).  The cursor is moved to the
+ beginning of the appropriate line.
+
+--------------------------------------------------------------
+
+edt_page
+
+ SYNOPSIS
+  edt_page
+
+ DESCRIPTION
+ PAGE - (7)
+ Moves the cursor to the top of a page.  A page is defined by a delimiter
+ string, which can be set by the SET ENTITY command.  The default page
+ delimiter is the formfeed character (CTRL/L).
+
+--------------------------------------------------------------
+
+edt_append
+
+ SYNOPSIS
+  edt_append
+
+ DESCRIPTION
+ APPEND - (9)
+ Moves the select range to the end of the PASTE buffer.  The select range is all
+ the text between the selected position (see SELECT) and the current cursor
+ position.  If no SELECT has been made and the cursor is positioned on the
+ current search string, that string is appended.
+
+--------------------------------------------------------------
+
+edt_replace
+
+ SYNOPSIS
+  edt_replace
+
+ DESCRIPTION
+ REPLACE - (GOLD 9)
+ Deletes the select range and replaces it with the contents of the PASTE
+ buffer.
+
+--------------------------------------------------------------
+
+f90_mode
+
+ SYNOPSIS
+  f90_mode
+
+ DESCRIPTION
+ Mode designed for the purpose of editing F90 files.
+ After the mode is loaded, the hook 'f90_hook' is called.
+ Useful functions include:
+
+  Function:                    Default Binding:
+   f90_continue_newline          ESC RETURN
+     indents current line, and creates a continuation line on next line.
+   f90_comment                   ESC ;
+     comments out current line
+   f90_uncomment                 ESC :
+     uncomments current line
+   f90_electric_label            0-9
+     Generates a label for current line or simply inserts a digit.
+   f90_next_statement            ^C^N
+     moves to next f90 statementm skips comment lines
+   f90_previous_statement        ^C^P
+     moves to previous f90 statement, skips comment lines
+   f90_ruler                     ^C^R
+     inserts a ruler above the current line. Press any key to continue
+   f90_beg_of_subprogram         ESC ^A
+     moves cursor to beginning of current subroutine/function
+   f90_end_of_subprogram         ESC ^E
+     moves cursor to end of current subroutine/function
+   f90_mark_subprogram           ESC ^H
+     mark the current subroutine/function
+
+ Variables include:
+
+   F90_Continue_Char   --- character used as a continuation character.
+     By default, its value is ">"
+   F90_Comment_String  --- string used by 'f90_comment' to
+     comment out a line.  The default string is "C ";
+   F90_Indent_Amount   --- number of spaces to indent statements in
+                               a block.  The default is 2.
+   F90_Default_Format --- Either "fixed" or "free".
+
+
+--------------------------------------------------------------
+
+Fold_Bob_Eob_Error_Action
+
+ SYNOPSIS
+  Fold_Bob_Eob_Error_Action
+
+ USAGE
+  Integer Fold_Bob_Eob_Error_Action = 1;
+
+ DESCRIPTION
+ This value of this variable determines the what will happen upon
+ reaching the boundary of the current fold via the up/down keys.
+ If the value is 0, an error will be generated; if the value is 1,
+ the fold will be exited; otherwise, the next/previous fold will be
+ entered.
+
+--------------------------------------------------------------
+
+fortran_mode
+
+ SYNOPSIS
+  fortran_mode
+
+ DESCRIPTION
+ Mode designed for the purpose of editing FORTRAN files.
+ After the mode is loaded, the hook 'fortran_hook' is called.
+ Useful functions include
+
+  Function:                    Default Binding:
+   fortran_continue_newline          ESC RETURN
+     indents current line, and creates a continuation line on next line.
+   fortran_comment                   ESC ;
+     comments out current line
+   fortran_uncomment                 ESC :
+     uncomments current line
+   fortran_electric_label            0-9
+     Generates a label for current line or simply inserts a digit.
+   fortran_next_statement            ^C^N
+     moves to next fortran statementm skips comment lines
+   fortran_previous_statement        ^C^P
+     moves to previous fortran statement, skips comment lines
+   fortran_ruler                     ^C^R
+     inserts a ruler above the current line. Press any key to continue
+   fortran_beg_of_subprogram         ESC ^A
+     moves cursor to beginning of current subroutine/function
+   fortran_end_of_subprogram         ESC ^E
+     moves cursor to end of current subroutine/function
+   fortran_mark_subprogram           ESC ^H
+     mark the current subroutine/function
+
+ Variables include:
+   Fortran_Continue_Char   --- character used as a continuation character.
+     By default, its value is "&"
+   Fortran_Comment_String  --- string used by 'fortran_comment' to
+     comment out a line.  The default string is "C ";
+   Fortran_Indent_Amount   --- number of spaces to indent statements in
+                               a block.  The default is 2.
+
+--------------------------------------------------------------
+
+expand_keystring
+
+ SYNOPSIS
+  expand_keystring
+
+ USAGE
+  String expand_keystring (String key)
+
+ DESCRIPTION
+ This function takes a key string that is suitable for use in a 'setkey'
+ definition and expands it to a human readable form.
+ For example, it expands ^X to the form "Ctrl-X", ^[ to "ESC",
+ ^[[A to "UP", etc...
+
+ SEE ALSO
+  setkey
+
+--------------------------------------------------------------
+
+History_File
+
+ SYNOPSIS
+  History_File
+
+ USAGE
+  String_Type History_File = "jed.his";
+
+ DESCRIPTION
+ The variable `History_File' is used by the function `history_save'
+ to know the file name in which to store all non-blank lines of the
+ mini-buffer. Its default value is "~/.jed-history" under Unix and
+ "~/jed.his" on other platforms.
+
+ SEE ALSO
+  history_load, history_save
+
+--------------------------------------------------------------
+
+history_load
+
+ SYNOPSIS
+  history_load
+
+ USAGE
+  Void_Type history_load ();
+
+ DESCRIPTION
+ This function reads a history file, i.e. each line of the file is
+ stored in the mini-buffer, but not evaluated. By default, historical
+ records are kept in a file whose name is stored in the `History_file'
+ variable. This file is written in the current working directory
+ associated with jed, i.e. the directory from which you started the jed
+ process. For example, to read your history file every time you start
+ jed and give an alternative name to the history file, put:
+
+   variable History_File;
+   if (BATCH == 0)
+   {
+      () = evalfile ("history");
+      History_File = ".my-jed-history";
+      history_load ();
+   }
+
+ in your .jedrc (or jed.rc) file. The `History_File' variable can be
+ assigned either a file name or an absolute path+filename. In the first
+ case, a file will be saved in the current working directory (the one
+ you were in when you started jed), so you will find a history file in
+ every directory you work in. In the second one, only one file will be
+ created, but you can handle 'local' history files easily (see
+ `history_local_save' to know how to do it).
+
+ SEE ALSO
+  history_save, history_local_save, minued_mode
+
+ SEE ALSO
+  History_File
+
+--------------------------------------------------------------
+
+history_save
+
+ SYNOPSIS
+  history_save
+
+ USAGE
+  Int_Type history_save ()
+
+ DESCRIPTION
+ This function saves the contents of the mini-buffer (see `history_load'
+ for more information) to the file specified by the variable `History_File'
+ or to the local history file (see `history_local_save' for more
+ information). It returns -1 upon failure, or 0 upon success.
+
+ NOTES
+ When history.sl is loaded, `history_save' will automatically get attached
+ to the editors exit hooks.  As a result, it is really not necessary to call
+ this function directly.
+
+ SEE ALSO
+  history_load, history_local_save
+
+ SEE ALSO
+  History_File
+
+--------------------------------------------------------------
+
+history_local_save
+
+ SYNOPSIS
+  history_local_save
+
+ USAGE
+  Void_Type history_local_save ()
+
+ DESCRIPTION
+ This function saves the contents of the mini-buffer at some arbitrary file.
+ If you give the same filename as in `History_File' but use a different
+ path, then `history_load' will load this file into the mini-buffer every
+ time you start jed from that (and only from that) directory. This behavior is
+ only useful when the value of `History_File' is an absoulte filename
+ and you want a local history when you start jed from some specific directory.
+
+ SEE ALSO
+  history_load, history_save
+
+ SEE ALSO
+  History_File
+
+--------------------------------------------------------------
+
+html_skip_tag
+
+ SYNOPSIS
+  html_skip_tag
+
+ DESCRIPTION
+ skip forward past html tag
+
+--------------------------------------------------------------
+
+html_bskip_tag
+
+ SYNOPSIS
+  html_bskip_tag
+
+ DESCRIPTION
+ skip backward past html tag
+
+--------------------------------------------------------------
+
+html_mark_next_tag
+
+ SYNOPSIS
+  html_mark_next_tag
+
+ DESCRIPTION
+ mark the next html tag forward
+
+--------------------------------------------------------------
+
+html_mark_prev_tag
+
+ SYNOPSIS
+  html_mark_prev_tag
+
+ DESCRIPTION
+ mark the previous html tag
+
+--------------------------------------------------------------
+
+html_mode
+
+ SYNOPSIS
+  html_mode
+
+ USAGE
+  Void html_mode ();
+
+ DESCRIPTION
+ `html_mode' is a mode designed for editing HTML files.
+ If a region is defined (i.e., if a mark is set), many HTML
+ tags will insert around the region, e.g. '<B>' and '</B>'.
+
+ Keybindings begin with ^C and are grouped according to function:
+     ^CA...  Anchors (<A>...</A>)
+     ^CD...  Definition lists (<DL>...</DL>)
+     ^CF...  Forms (<form>...</form>)
+     ^CH...  Headings, document type, etc.
+     ^CI...  Images
+     ^CL...  Lists (<UL>...</UL>)
+     ^CP...  Paragraph styles, etc. (<P>, <BR>, <HR>, <ADDRESS>, etc.)
+     ^CS...  Character styles (<EM>, <STRONG>, <B>, <I>, etc.)
+     ^CT...  Tables
+ Additionally, some special movement commands and miscellaneous
+ characters are defined:
+     ^C^B    skip to beginning of prior HTML tag
+     ^C^F    skip to end of next HTML tag
+     ^C^N    mark next HTML tag from '<' to '>'
+     ^C^P    mark prior HTML tag from '<' to '>'
+     ^C&     insert HTML text for '&'
+     ^C>     insert HTML text for '>'
+     ^C<     insert HMTL text for '<'
+     ^C<enter> insert HMTL text for '<br>'
+     ^C<space> insert HMTL text for NonBreakableSPace
+     ^Ce     insert HMTL text for 'Eurosymbol'
+     ^CC     insert HTML comment (around region, if marked)
+
+ For a complete list of keybindings, use `describe_bindings'.
+
+ This function calls `html_mode_hook' if it exists.
+
+--------------------------------------------------------------
+
+latex_mode
+
+ SYNOPSIS
+  latex_mode
+
+ USAGE
+  Void latex_mode ();
+
+ DESCRIPTION
+ This mode is designed to facilitate the task of editing latex files.
+ It calls the function `latex_mode_hook' if it is defined.  In addition,
+ if the abbreviation table `"TeX"' is defined, that table is used.
+
+ The default key-bindings for this mode include:
+
+    "tex_insert_braces"       "^C{"
+    "tex_font"                "^C^F"
+    "latex_environment"       "^C^E"
+    "latex_section"           "^C^S"
+    "latex_close_environment" "^C]"
+    "latex_insert_item"       "^C^J"
+    "tex_comment_region"      "^C;"
+    "tex_uncomment_region"    "^C:"
+    "tex_comment_paragraph"   "^C%"
+    "tex_mark_environment"    "^C."
+    "tex_mark_section"        "^C*"
+    "latex_toggle_math_mode"  "^C~"
+    "tex_insert_macro"        "^C^M"
+    "tex_complete_symbol"     "^[^I"
+    "latex_help"              "^Ci"
+    "latex_indent_next_line"   "^J"
+    "latex_indent_region"      "^C^Q^R"
+    "latex_indent_section"     "^C^Q^S"
+    "latex_indent_environment" "^C^Q^E"
+
+
+--------------------------------------------------------------
+
+lua_mode
+
+ SYNOPSIS
+  lua_mode
+
+ USAGE
+  lua_mode ()
+
+ DESCRIPTION
+ A major mode for editing lua files.
+
+ The following keys have lua specific bindings:
+
+ DELETE deletes to previous indent level
+ TAB indents line
+ ^C# comments region or current line
+ ^C> shifts line or region right
+ ^C< shifts line or region left
+ ^C^C executes the region, or the buffer if region not marked.
+ ^C|  executes the region
+ ^C\t reindents the region
+
+ Hooks: `lua_mode_hook'
+
+ SEE ALSO
+  Lua_Indent_Level
+
+ SEE ALSO
+  set_mode, c_mode
+
+--------------------------------------------------------------
+
+man_clean_manpage
+
+ SYNOPSIS
+  man_clean_manpage
+
+ DESCRIPTION
+ remove _^H and ^H combinations and multiple blank lines (man page)
+
+--------------------------------------------------------------
+
+unix_man
+
+ SYNOPSIS
+  unix_man
+
+ DESCRIPTION
+ retrieve a man page entry and use clean_manpage to clean it up
+
+--------------------------------------------------------------
+
+matlab_mode
+
+ SYNOPSIS
+  matlab_mode
+
+ DESCRIPTION
+ Protoytype: Void matlab_mode ();
+ This is a mode that is dedicated to facilitate the editing of
+ Matlab/Octave language files.
+ Functions that affect this mode include:
+
+  function:             default binding:
+  matlab_indent         RETURN
+
+ Variables affecting indentation include:
+ Hooks: `matlab_mode_hook'
+
+--------------------------------------------------------------
+
+Minued_Lines
+
+ SYNOPSIS
+  Minued_Lines
+
+ USAGE
+  Integer_Type Minued_Lines = 0;
+
+ DESCRIPTION
+ This variable controls the number of lines shown in the minued
+ buffer. If the value of `Minued_Lines' is -1, then the entire
+ screen is used. If it is 0, the window splits vertically. A positive
+ value selects the exact number of lines to show. This value shouldn't
+ be greater than `SCREEN_HEIGHT'-4, and is only useful while you are
+ working with one window.
+
+ Default value is 0.
+
+ SEE ALSO
+  minued
+
+ SEE ALSO
+  SCREEN_HEIGHT
+
+--------------------------------------------------------------
+
+minued_mode
+
+ SYNOPSIS
+  minued_mode
+
+ USAGE
+  Void minued_mode ();
+
+ DESCRIPTION
+ `minued_mode' is a mini-buffer's contents editor with which you can view all
+ previously entered lines in it. Select and modify one of them. Press return
+ and that line will be updated in the mini-buffer and evaluated in the buffer
+ from which minued was called.
+
+ All lines appears numbered, in the same order that they are stored in the
+ mini-buffer. Use the last line of minued if you want to add a new one.
+ Instead of a number, that line shows "add> ".
+
+ The following key-bindings are defined in `minued_mode':
+
+    Return        Update and evaluate the current line.
+    Meta-Return   Evaluate the current line.
+    Ctrl-U        Update the current line, don't leave 'minued_mode'.
+    Meta-R        Remove the current line, don't leave 'minued_mode'.
+    Ctrl-C        Quit.
+
+ Note: Minued cannot be invoked from the mini-buffer.
+
+ SEE ALSO
+  history_load, history_save
+
+ SEE ALSO
+  Minued_Lines
+
+--------------------------------------------------------------
+
+make_tmp_buffer_name
+
+ SYNOPSIS
+  make_tmp_buffer_name
+
+ USAGE
+  String make_tmp_buffer_name (String base);
+
+ DESCRIPTION
+ Generates a unique buffer name using the string 'base' for the beginning
+ of the name.  The buffer name is returned.  The buffer is not created.
+
+--------------------------------------------------------------
+
+append_string_to_file
+
+ SYNOPSIS
+  append_string_to_file
+
+ USAGE
+  Integer append_string_to_file (String str, String file);
+
+ DESCRIPTION
+ The string 'str' is appended to file 'file'.  This function returns -1
+ upon failure or the number of lines written upon success.
+ See append_region_to_file for more information.
+
+--------------------------------------------------------------
+
+write_string_to_file
+
+ SYNOPSIS
+  write_string_to_file
+
+ USAGE
+  Integer write_string_to_file (String str, String file);
+
+ DESCRIPTION
+ The string 'str' is written to file 'file'.  This function returns -1
+ upon failure or the number of lines written upon success.
+ This function does not modify a buffer visiting the file.
+
+--------------------------------------------------------------
+
+Enable_Mode_Hook_Eval
+
+ SYNOPSIS
+  Control the use of "eval" from a file's mode statement
+
+ DESCRIPTION
+ When a file is read into a buffer, the editor will look for a line near the
+ top of the file containing `-*- TEXT -*-', where `TEXT' usually
+ specifies the mode to be applied to the buffer, e.g.,
+
+    /* -*- C -*- */
+
+ For this reason, such a line is referred to as the files mode statement.
+ In addition, an arbitrary S-Lang expression may be executed by
+ the mode statement through the use of `eval' and `evalfile', e.g.,
+
+   /* -*- mode: C; eval: set_buffer_no_backup; -*- */
+
+ This example would cause c-mode to be assigned to the buffer, and backups
+ for the file turned-off.  Obviously this poses a security risk, since it
+ permits the evaluation of arbitrary S-Lang code.
+
+ The `Enable_Mode_Hook_Eval' variable may be used to control how
+ `eval', and other potentially risky constructs are handled by the file's
+ mode statement.  If its value is 0, such statements will not get executed.
+ If the value of `Enable_Mode_Hook_Eval' is NULL, then the editor will
+ query the user about whether to execute the statement, otherwise such
+ statements will get executed.  The default value is NULL, i.e., to
+ query the user.
+
+ SEE ALSO
+  modeline_hook2, eval, evalfile, set_mode
+
+--------------------------------------------------------------
+
+most_mode
+
+ SYNOPSIS
+  most_mode
+
+ DESCRIPTION
+ Emulates MOST fileviewer
+ The following keys are defined:
+
+ SPACE            next screen
+ DELETE           previous screen
+ /                search_forward
+ ?                search_backward
+ n                find next occurrence
+ q                quit most mode  (usually kills buffer if not modified)
+ e                edit buffer
+ h                help summary
+ t                Top of Buffer
+ b                End of Buffer
+
+
+--------------------------------------------------------------
+
+Mouse_Save_Point_Mode
+
+ SYNOPSIS
+  Mouse_Save_Point_Mode
+
+ USAGE
+  Integer Mouse_Save_Point_Mode = 1;
+
+ DESCRIPTION
+ If this variable is non-zero, the editing point will be restored to its
+ original position when the left button is used to copy a region to the
+ cutbuffer.  If the variable is zero, the current point is left at the
+ end of the copied region.
+
+--------------------------------------------------------------
+
+nroff_mode
+
+ SYNOPSIS
+  nroff_mode
+
+ DESCRIPTION
+ Protoytype: Void nroff_mode ();
+ A primitive mode for editing nroff/troff files.
+ mostly to define the paragraph separator
+
+--------------------------------------------------------------
+
+occur
+
+ SYNOPSIS
+  occur
+
+ USAGE
+  Void occur ();
+
+ DESCRIPTION
+ This function may be used to search for all occurances of a string in the
+ current buffer.  It creates a separate buffer called `*occur*' and
+ associates a keymap called `Occur' with the new buffer.  In this
+ buffer, the `g' key may be used to go to the line described by the
+ match.
+
+--------------------------------------------------------------
+
+Perl_Indent
+
+ SYNOPSIS
+  Perl_Indent
+
+ USAGE
+  Integer Perl_Indent = 4;
+
+ DESCRIPTION
+ This value determines the number of columns the current line is indented
+ past the previous line containing an opening `'{'' character.
+ eg.,
+
+  if (test)
+  {
+      block_statement();
+  }
+  else
+  {
+      block_statement();
+  }
+
+
+ SEE ALSO
+  C_INDENT, Perl_Continued_Offset
+
+--------------------------------------------------------------
+
+Perl_Expert_Flags
+
+ SYNOPSIS
+  Perl_Expert_Flags
+
+ USAGE
+  String Perl_Expert_Flags = "-w";
+
+ DESCRIPTION
+ Extra (or 'expert') command-line options (switches) for running Perl.
+ eg, `'-I'' or `'-M''.
+ You only need these if you know why you need these.
+
+ Warnings are *always* enabled, regardless of what you try here.
+ If your code doesn't run with `'-w'', re-write it or you're an
+ expert and know which sections of code should have disabled warnings.
+
+--------------------------------------------------------------
+
+perltidy
+
+ SYNOPSIS
+  perltidy
+
+ USAGE
+  Void perltidy();
+
+ DESCRIPTION
+ This function runs the program perltidy on a region or the whole buffer.
+ The style preferences should be set in the ~/.perltidyrc config file.
+ The perltidy program must be installed!
+
+--------------------------------------------------------------
+
+perl_mode
+
+ SYNOPSIS
+  perl_mode
+
+ USAGE
+  Void perl_mode();
+
+ DESCRIPTION
+ This is a mode that is dedicated to editing Perl language files
+ including a bimodal Pod/Perl indentation mode.
+ The indentation style matches the results of perltidy(1) with
+ '-ci=2 -i=4 -en=8' fairly closely, except some of the closing brackets.
+
+ Functions that affect this mode include:
+
+  function:             default binding:
+  indent_line                TAB
+  perl_beg_chunk             ESC Ctrl-A
+  perl_end_chunk             ESC Ctrl-E
+  perl_mark_chunk            ESC Ctrl-H
+  perl_mark_matching         ESC Ctrl-M
+  perl_next_chuck            ESC Ctrl-N
+  perl_prev_chunk            ESC Ctrl-P
+  perl_indent_region         ESC TAB
+  perl_indent_region         Ctrl-C TAB
+  perl_format_paragraph      ESC q
+  perl_newline_and_indent    not bound (Ctrl-M)
+  perl_indent_buffer         not bound
+
+  perl_exec                  not bound  (Ctrl-C Ctrl-C)
+  perl_check                 not bound  (Ctrl-C ?)
+  perltidy                   ESC Ctrl-T
+
+
+  perl_exec, perl_check, and perltidy work on a region or the whole buffer
+
+
+ Variables affecting this mode include:
+
+  Perl_Indent
+  Perl_Continued_Offset
+
+ Hooks: `perl_mode_hook'
+
+--------------------------------------------------------------
+
+php_mode
+
+ SYNOPSIS
+  php_mode
+
+ USAGE
+  Void php_mode ();
+
+ DESCRIPTION
+ This is a mode that is dedicated to faciliate the editing of PHP language files.
+ It calls the function `php_mode_hook' if it is defined. It also manages
+ to recognice whetever it is in a php block or in a html block, for those people
+ that doesnt seperate function from form ;)
+
+ Functions that affect this mode include:
+
+  function:             default binding:
+  php_top_of_function        ESC Ctrl-A
+  php_end_of_function        ESC Ctrl-E
+  php_mark_function          ESC Ctrl-H
+  php_mark_matching          ESC Ctrl-M
+  php_indent_buffer          Ctrl-C Ctrl-B
+  php_insert_class           Ctrl-C Ctrl-C
+  php_insert_function        Ctrl-C Ctrl-F
+  php_insert_bra             {
+  php_insert_ket             }
+  php_insert_colon           :
+  php_format_paragraph       ESC q
+  indent_line                TAB
+  newline_and_indent         RETURN
+  goto_match                 Ctrl-\
+  php_insert_tab             Ctrl-C Ctrl-I
+
+ Variables affecting indentation include:
+
+ PHP_INDENT
+ PHP_BRACE
+ PHP_BRA_NEWLINE
+ PHP_KET_NEWLINE
+ PHP_Colon_Offset
+ PHP_CONTINUED_OFFSET
+ PHP_Class_Offset
+ PHP_Autoinsert_Comments
+ PHP_Switch_Offset
+
+ Hooks: `php_mode_hook'
+
+--------------------------------------------------------------
+
+python_mode
+
+ SYNOPSIS
+  python_mode
+
+ USAGE
+  python_mode ()
+
+ DESCRIPTION
+ A major mode for editing python files.
+
+ The following keys have python specific bindings:
+
+ DELETE deletes to previous indent level
+ TAB indents line
+ ^C# comments region or current line
+ ^C> shifts line or region right
+ ^C< shifts line or region left
+ ^C^C executes the region, or the buffer if region not marked.
+ ^C|  executes the region
+ ^C\t reindents the region
+ :    colon dedents appropriately
+
+ Hooks: `python_mode_hook'
+
+ SEE ALSO
+  Py_Indent_Level
+
+ SEE ALSO
+  set_mode, c_mode
+
+--------------------------------------------------------------
+
+shell_builtin
+
+ SYNOPSIS
+  shell_builtin
+
+ DESCRIPTION
+ rudimentary `builtin' shell commands:
+ 	`cd [dir]'	change the default directory
+ 	`exit'		exit the subshell
+ 	`pwd'		Print Working Directory
+
+ functions to eliminate some jed/shell vs. real shell problems
+ 	`clear'		erase the *shell* buffer
+ 	`e'		simulate ^X^F keybinding
+ 	`jed'		simulate ^X^F keybinding
+
+ returns one of the following on the stack
+ 	Null_String	- builtin dispatched, no prompt
+ 	"pwd"		- builtin dispatched, give prompt
+ 	cmd		- use shell to execute CMD
+
+--------------------------------------------------------------
+
+Tab_Always_Inserts_Tab
+
+ SYNOPSIS
+  Configure the tab key
+
+ DESCRIPTION
+ If this variable is non-zero, then the tab key will insert tab characters
+ into the buffer.  It is possible to override this setting via a mode hook.
+
+ SEE ALSO
+  local_setkey
+
+--------------------------------------------------------------
+
+Info_Directory
+
+ SYNOPSIS
+  Info_Directory
+
+ DESCRIPTION
+ A comma-separated list of info directories to search.
+
+--------------------------------------------------------------
+
+Jed_Highlight_Cache_Path
+
+ SYNOPSIS
+  Search path for DFA syntax tables
+
+ A comma-separated list of directories to search for cached DFA syntax
+ highlighting tables.  If a table is not found, it will be created on the
+ fly and then cached in the directory specified by the
+ `Jed_Highlight_Cache_Dir' variable.
+
+ SEE ALSO
+  Jed_Highlight_Cache_Dir, use_dfa_syntax
+
+--------------------------------------------------------------
+
+Jed_Highlight_Cache_Dir
+
+ SYNOPSIS
+  Directory where newly created DFA syntax tables are placed
+
+ If the caching of DFA syntax tables is enabled, the newly created tables
+ will be saved in the directory specified by this variable.
+
+ SEE ALSO
+  Jed_Highlight_Cache_Path, use_dfa_syntax
+
+--------------------------------------------------------------
+
+C_CONTINUED_OFFSET
+
+ SYNOPSIS
+  C_CONTINUED_OFFSET
+
+ USAGE
+  Integer C_CONTINUED_OFFSET = 2;
+
+ DESCRIPTION
+ This variable controls the indentation of statements that are continued
+ onto the next line as in the following example:
+
+  if (something)
+    continued_statement ();
+  else
+    another_continued_statement ();
+
+
+ SEE ALSO
+  C_BRA_NEWLINE, C_BRACE, C_INDENT, C_Colon_Offset
+
+--------------------------------------------------------------
+
+C_Colon_Offset
+
+ SYNOPSIS
+  C_Colon_Offset
+
+ DESCRIPTION
+ Integer C_Colon_Offset = 1;
+ This variable may be changed to adjust the indentation of `case' statements
+ in C-Mode.
+
+ SEE ALSO
+  c_mode
+
+ SEE ALSO
+  C_BRA_NEWLINE, C_BRACE, C_INDENT, C_Colon_Offset
+
+--------------------------------------------------------------
+
+C_Preprocess_Indent
+
+ SYNOPSIS
+  C_Preprocess_Indent
+
+ USAGE
+  Integer C_Preprocess_Indent = 1;
+
+ DESCRIPTION
+ This variable controls the indentation of preprocessor directives in
+ C-mode.
+
+ SEE ALSO
+  c_mode
+
+ SEE ALSO
+  C_BRA_NEWLINE, C_BRACE, C_INDENT, C_Colon_Offset
+
+--------------------------------------------------------------
+
+C_Comment_Column
+
+ SYNOPSIS
+  C_Comment_Column
+
+ DESCRIPTION
+ Column to begin a C comment--- used by c_make_comment
+
+--------------------------------------------------------------
+
+C_INDENT
+
+ SYNOPSIS
+  C_INDENT
+
+ USAGE
+  Integer C_INDENT = 3;
+
+ DESCRIPTION
+ This value determines the number of columns the current line is indented
+ past the previous line containing an opening `'{'' character.
+
+ SEE ALSO
+  C_BRACE, C_BRA_NEWLINE.
+
+--------------------------------------------------------------
+
+C_BRACE
+
+ SYNOPSIS
+  C_BRACE
+
+ USAGE
+  Integer C_BRACE = 2;
+
+ DESCRIPTION
+ This is a C-mode variable that specifies how much an opening brace
+ should be indented compared its surrounding block.
+
+ SEE ALSO
+  C_INDENT, C_BRA_NEWLINE
+
+--------------------------------------------------------------
+
+C_BRA_NEWLINE
+
+ SYNOPSIS
+  C_BRA_NEWLINE
+
+ USAGE
+  Integer C_BRA_NEWLINE = 1;
+
+ DESCRIPTION
+ This variable is used by the indentation routines for the C langauge.
+ If it is non-zero, the `'{'' character will be placed on a line by
+ itself when one presses the `'{'' character.  For K&R indentation style,
+ set this variable to zero.
+
+ SEE ALSO
+  C_INDENT, C_BRACE
+
+--------------------------------------------------------------
+
+custom_variable
+
+ SYNOPSIS
+  custom_variable
+
+ USAGE
+  Integer_Type custom_variable (String_Type name, Any_Type value)
+
+ DESCRIPTION
+ This function is used to create a new public global variable called
+ `name', initialized to `value', unless it exists. If the variable
+ already exists but is not initialized, then it is initialized to
+ `value'. This is quite useful for slang files with user configurable
+ variables. These variables can be defined and initialized by users
+ before evaluating the file, or can be defined and initialized to
+ a default value in a file using this function.
+
+ This function returns 2 if the variable `name' has been defined and
+ initialized, or 1 if it has only been intialized. If the variable
+ `name' has already been defined and initialized, this function does
+ nothing and returns 0. If `name' is an invalid variable name, this
+ function does nothing and returns -1.
+
+ This function should be only used by slang programmers, not users.
+
+ SEE ALSO
+  custom_color
+
+--------------------------------------------------------------
+
+str_replace_all
+
+ SYNOPSIS
+  str_replace_all
+
+ USAGE
+  String str_replace_all (str, old, new);
+
+ DESCRIPTION
+ Replace all occurances of `old' in `str' with `new' and return the
+ result.
+
+ SEE ALSO
+  str_replace, replace_cmd
+
+--------------------------------------------------------------
+
+vinsert
+
+ SYNOPSIS
+  vinsert
+
+ USAGE
+  Void vinsert (String, fmt,...);
+
+ DESCRIPTION
+ This function is like `insert' except that it takes a variable number
+ of arguments and a format string.
+
+ SEE ALSO
+  insert, sprintf, insert_char
+
+--------------------------------------------------------------
+
+dircat
+
+ SYNOPSIS
+  Merge a directory name and file name
+
+ USAGE
+  String_Type = dircat (String_Type a, String_Type b);
+
+ DESCRIPTION
+  The `dircat' function may be used to obtain the path name of a file with
+  filename `b' in directory `a'.  It performs this function in an
+  operating system dependent manner.
+
+--------------------------------------------------------------
+
+bol_skip_white
+
+ SYNOPSIS
+  bol_skip_white
+
+ USAGE
+  Void bol_skip_white ();
+
+ DESCRIPTION
+ This function combines the two functions `bol' and `skip_white' into a
+ single operation.  That is, it moves the point to the beginning of the
+ line and then skips over whitespace to the first non-whitespace character.
+
+ SEE ALSO
+  bol, skip_white, skip_chars
+
+--------------------------------------------------------------
+
+bskip_white
+
+ SYNOPSIS
+  bskip_white
+
+ USAGE
+  Void bskip_white ();
+
+ DESCRIPTION
+ This function skips backward over whitespace.
+ Note: it does not cross lines.
+
+ SEE ALSO
+  skip_white, bskip_chars
+
+--------------------------------------------------------------
+
+buffer_filename
+
+ SYNOPSIS
+  buffer_filename
+
+ USAGE
+  String buffer_filename ();
+
+ DESCRIPTION
+ Returns the name of the file associated with the current buffer.  If
+ there is none associated with it, the empty string is returned.
+
+--------------------------------------------------------------
+
+file_type
+
+ SYNOPSIS
+  file_type
+
+ DESCRIPTION
+ returns type of file.  e.g., /usr/a.b/file.c --> c
+
+ SEE ALSO
+  path_extname
+
+--------------------------------------------------------------
+
+search_path_for_file
+
+ SYNOPSIS
+  search_path_for_file
+
+ USAGE
+  String_Type search_path_for_file (path, file [,delim])
+
+ DESCRIPTION
+ The `search_path_for_file' function searches the directories specified
+ by the comma separated set of directories `path' for the filename `file'.
+ If the file exists, it returns the expanded filename, otherwise it returns
+ NULL.  The optional parameter may be used to specify the path delimiter.
+
+--------------------------------------------------------------
+
+expand_jedlib_file
+
+ SYNOPSIS
+  expand_jedlib_file
+
+ DESCRIPTION
+ Search for FILE in jed lib search directories and return
+ expanded pathname if found or the Null string otherwise.
+
+--------------------------------------------------------------
+
+find_jedlib_file
+
+ SYNOPSIS
+  find_jedlib_file
+
+ DESCRIPTION
+ find a file from JED_LIBRARY, returns number of lines read or 0 if not
+ found.
+
+--------------------------------------------------------------
+
+parse_filename
+
+ SYNOPSIS
+  parse_filename
+
+ USAGE
+  (dir, file) = parse_filename(fn)
+
+ DESCRIPTION
+ breaks a filespec into dir filename---
+ this routine returns dir and filename such that a simple strcat will
+ suffice to put them together again.  For example, on unix, /a/b/c
+ returns /a/b/ and c
+
+--------------------------------------------------------------
+
+go_up
+
+ SYNOPSIS
+  go_up
+
+ USAGE
+  Void go_up (Integer n);
+
+ DESCRIPTION
+ Move up 'n' lines.
+
+ SEE ALSO
+  up, go_down
+
+--------------------------------------------------------------
+
+up_1
+
+ SYNOPSIS
+  up_1
+
+ USAGE
+  Void up_1 ();
+
+ DESCRIPTION
+ Move up 1 line.  If successful, returns 1 otherwise it returns 0.
+
+ SEE ALSO
+  up, go_down, go_up, go_up_1
+
+--------------------------------------------------------------
+
+go_up_1
+
+ SYNOPSIS
+  go_up_1
+
+ USAGE
+  Void go_up_1 ();
+
+ DESCRIPTION
+ Move up exactly 1 line if possible.
+
+ SEE ALSO
+  up, go_down
+
+--------------------------------------------------------------
+
+go_down
+
+ SYNOPSIS
+  go_down
+
+ USAGE
+  Void go_down (Integer n);
+
+ DESCRIPTION
+ Move down 'n' lines.
+
+ SEE ALSO
+  go_up, down
+
+--------------------------------------------------------------
+
+down_1
+
+ SYNOPSIS
+  down_1
+
+ USAGE
+  Int_Type down_1 ();
+
+ DESCRIPTION
+ Move down exactly one line.  If sucessful, 1 is returned otherwise
+ zero is returned.
+
+ SEE ALSO
+  go_up, down, go_down_1
+
+--------------------------------------------------------------
+
+go_down_1
+
+ SYNOPSIS
+  go_down_1
+
+ USAGE
+  Void go_down_1 ();
+
+ DESCRIPTION
+ Move down one lines.
+
+ SEE ALSO
+  go_up, down
+
+--------------------------------------------------------------
+
+go_left
+
+ SYNOPSIS
+  go_left
+
+ USAGE
+  Void go_left (Integer n);
+
+ DESCRIPTION
+ Move backward 'n' characters.
+
+ SEE ALSO
+  left, go_right
+
+--------------------------------------------------------------
+
+go_right
+
+ SYNOPSIS
+  go_right
+
+ USAGE
+  Void go_right (Integer n);
+
+ DESCRIPTION
+ Move forward 'n' characters.
+
+ SEE ALSO
+  right, go_left
+
+--------------------------------------------------------------
+
+go_right_1
+
+ SYNOPSIS
+  go_right_1
+
+ USAGE
+  Void go_right_1 ();
+
+ DESCRIPTION
+ Move forward 1 characters.
+
+ SEE ALSO
+  right, go_left
+
+--------------------------------------------------------------
+
+go_left_1
+
+ SYNOPSIS
+  go_left_1
+
+ USAGE
+  Void go_left_1 ();
+
+ DESCRIPTION
+ Move forward 1 characters.
+
+ SEE ALSO
+  left, go_left
+
+--------------------------------------------------------------
+
+newline
+
+ SYNOPSIS
+  newline
+
+ USAGE
+  Void newline (Void);
+
+ DESCRIPTION
+ insert a newline in the buffer at point.
+
+ SEE ALSO
+  insert, insert_char
+
+--------------------------------------------------------------
+
+insert_single_space
+
+ SYNOPSIS
+  insert_single_space
+
+ DESCRIPTION
+ insert a single space into the buffer.
+
+--------------------------------------------------------------
+
+looking_at_char
+
+ SYNOPSIS
+  looking_at_char
+
+ USAGE
+  Integer looking_at_char (Integer ch);
+
+ DESCRIPTION
+ This function returns non-zero if the character at the current editing
+ point is 'ch' otherwise it retuns zero.  This function performs a case
+ sensitive comparison.
+
+--------------------------------------------------------------
+
+local_setkey
+
+ SYNOPSIS
+  local_setkey
+
+ USAGE
+  Void local_setkey (String fun, String key);
+
+ DESCRIPTION
+ This function is like 'setkey' but unlike 'setkey' which operates on the
+ global keymap, 'local_setkey' operates on the current keymap which may or
+ may not be the global one.
+
+ SEE ALSO
+  setkey, definekey, local_unsetkey
+
+--------------------------------------------------------------
+
+local_unsetkey
+
+ SYNOPSIS
+  local_unsetkey
+
+ USAGE
+  Void local_unsetkey (String key);
+
+ DESCRIPTION
+ This function is like 'unsetkey' but unlike 'unsetkey' which unsets a key
+ from the global keymap, 'local_unsetkey' operates on the current keymap
+ which may or may not be the global one.
+
+ SEE ALSO
+  unsetkey, undefinekey, local_setkey
+
+--------------------------------------------------------------
+
+call_function
+
+ SYNOPSIS
+  Call a function with arguments
+
+ USAGE
+  call_function (String_Type f, [optional args...])
+
+--------------------------------------------------------------
+
+runhooks
+
+ SYNOPSIS
+  runhooks
+
+ USAGE
+  Void runhooks (String_Type hook, [optional args...]);
+
+--------------------------------------------------------------
+
+make_tmp_file
+
+ SYNOPSIS
+  make_tmp_file
+
+ USAGE
+  String make_tmp_file (String base);
+
+ DESCRIPTION
+ This function returns a unique file name that begins with `base'.
+
+--------------------------------------------------------------
+
+_featurep
+
+ SYNOPSIS
+  Test whether or not a feature is present
+
+ USAGE
+  Int_Type _featurep (String_Type feature)
+
+ DESCRIPTION
+  The `_featurep' function returns a non-zero value if the specified
+  feature is present.  Otherwise, it returns 0 to indicate that the feature
+  has not been loaded.
+
+ SEE ALSO
+  require, provide
+
+--------------------------------------------------------------
+
+provide
+
+ SYNOPSIS
+  Declare that a specified feature is available
+
+ USAGE
+  provide (String_Type feature)
+
+ DESCRIPTION
+ The `provide' function may be used to declare that a "feature" has
+ been loaded.  See the documentation for `require' for more information.
+
+ SEE ALSO
+  require, _featurep
+
+--------------------------------------------------------------
+
+require
+
+ SYNOPSIS
+  Make sure a feature is present, and load it if not
+
+ USAGE
+  require (String_Type feature [,String_Type file]
+
+ DESCRIPTION
+  The `require' function ensures that a specified "feature" is present.
+  If the feature is not present, the `require' function will attempt to
+  load the feature from a file.  If called with two arguments, the feature
+  will be loaded from the file specified by the second argument.  Otherwise,
+  the feature will be loaded from a file given by the name of the feature,
+  with ".sl" appended.
+
+  If after loading the file, if the feature is not present,
+  a warning message will be issued.
+
+ NOTES
+  "feature" is an abstract quantity that is undefined here.
+
+  A popular use of the `require' function is to ensure that a specified
+  file has already been loaded.  In this case, the feature is the
+  filename itself.  The advantage of using this mechanism over using
+  `evalfile' is that if the file has already been loaded, `require'
+  will not re-load it.  For this to work, the file must indicate that it
+  provides the feature via the `provide' function.
+
+ SEE ALSO
+  provide, _featurep, evalfile
+
+--------------------------------------------------------------
+
+pop_mark_0
+
+ SYNOPSIS
+  pop_mark_0
+
+ USAGE
+  Void pop_mark_0 ();
+
+ DESCRIPTION
+ Since `pop_mark' is used so often with an argument of `0', this function
+ is simply equivalent to `pop_mark(0)'.
+
+ SEE ALSO
+  pop_mark, pop_mark_1
+
+--------------------------------------------------------------
+
+pop_mark_1
+
+ SYNOPSIS
+  pop_mark_1
+
+ USAGE
+  Void pop_mark_1 ();
+
+ DESCRIPTION
+ Since `pop_mark' is used so often with an argument of `1', this function
+ is simply equivalent to `pop_mark(1)'.
+
+ SEE ALSO
+  pop_mark, pop_mark_0
+
+--------------------------------------------------------------
+
+goto_spot
+
+ SYNOPSIS
+  goto_spot
+
+ USAGE
+  Void goto_spot ();
+
+ DESCRIPTION
+ This function returns to the position of the last pushed spot.  The spot
+ is not popped.
+
+ SEE ALSO
+  push_spot, pop_spot, create_user_mark
+
+--------------------------------------------------------------
+
+push_spot_bob
+
+ SYNOPSIS
+  push_spot_bob
+
+ USAGE
+  Void push_spot_bob ();
+
+ DESCRIPTION
+ The function sequence `push_spot (); bob ();' occurs so often that
+ it makes sense to have a single function that performs this task.
+
+ SEE ALSO
+  push_spot, bob, pop_spot, push_spot_bol
+
+--------------------------------------------------------------
+
+push_spot_bol
+
+ SYNOPSIS
+  push_spot_bol
+
+ USAGE
+  Void push_spot_bol ();
+
+ DESCRIPTION
+ The function sequence `push_spot (); bol ();' occurs so often that
+ it makes sense to have a single function that performs this task.
+
+ SEE ALSO
+  push_spot, bol, pop_spot, push_spot_bob
+
+--------------------------------------------------------------
+
+push_mark_eol
+
+ SYNOPSIS
+  push_mark_eol
+
+ USAGE
+  Void push_mark_eol ();
+
+ DESCRIPTION
+ The function sequence `push_mark (); eol ();' occurs so often that
+ it makes sense to have a single function that performs this task.
+
+ SEE ALSO
+  push_mark, eol, pop_mark, push_mark_eob
+
+--------------------------------------------------------------
+
+push_mark_eob
+
+ SYNOPSIS
+  push_mark_eob
+
+ USAGE
+  Void push_mark_eob ();
+
+ DESCRIPTION
+ The function sequence `push_mark (); eob ();' occurs so often that
+ it makes sense to have a single function that performs this task.
+
+ SEE ALSO
+  push_mark, eob, pop_mark, push_mark_eob
+
+--------------------------------------------------------------
+
+mark_buffer
+
+ SYNOPSIS
+  mark_buffer
+
+ USAGE
+  mark_buffer ();
+
+ DESCRIPTION
+ This function marks the whole buffer leaving the point at the end
+ of the buffer.
+
+ SEE ALSO
+  push_mark, pop_mark, bob, eob
+
+--------------------------------------------------------------
+
+bufsubstr_delete
+
+ SYNOPSIS
+  bufsubstr_delete
+
+ USAGE
+  String bufsubstr_delete ()
+
+ DESCRIPTION
+ This functions returns the contents of a region defined my the mark
+ and the current point.  The region will be deleted.
+
+ SEE ALSO
+  bufsubstr
+
+--------------------------------------------------------------
+
+del_eol
+
+ SYNOPSIS
+  del_eol
+
+ USAGE
+  Void del_eol ();
+
+ DESCRIPTION
+ This function deletes from the current position to the end of the line.
+
+ SEE ALSO
+  del, delete_line, del_through_eol
+
+--------------------------------------------------------------
+
+del_through_eol
+
+ SYNOPSIS
+  del_through_eol
+
+ USAGE
+  del_through_eol ();
+
+ DESCRIPTION
+ This function deletes all text from the current point through the end of
+ the line.
+
+ SEE ALSO
+  del, del_eol, del_region
+
+--------------------------------------------------------------
+
+line_as_string
+
+ SYNOPSIS
+  line_as_string
+
+ USAGE
+  String line_as_string ()
+
+ DESCRIPTION
+ This function returns the current line as a string.  This does not include
+ the newline character at the end of the line.  The editing point is left
+ at the end of the line.  That is, this function does not preserve the point.
+
+ SEE ALSO
+  bufsubstr
+
+--------------------------------------------------------------
+
+bol_trim
+
+ SYNOPSIS
+  bol_trim
+
+ USAGE
+  Void bol_trim ();
+
+ DESCRIPTION
+ Move to beginning of line and remove whitespace.
+
+ SEE ALSO
+  bol, trim
+
+--------------------------------------------------------------
+
+eol_trim
+
+ SYNOPSIS
+  eol_trim
+
+ USAGE
+  Void eol_trim ();
+
+ DESCRIPTION
+ Move to end of line and remove whitespace.
+
+ SEE ALSO
+  eol, trim
+
+--------------------------------------------------------------
+
+whatpos
+
+ SYNOPSIS
+  whatpos
+
+ DESCRIPTION
+ display row and column information in minibuffer
+
+--------------------------------------------------------------
+
+redo
+
+ SYNOPSIS
+  Undo the last undo
+
+ USAGE
+  redo()
+
+ DESCRIPTION
+ Undo the last undo. This works only one step, however
+ as any undo is appended to the end of the undo buffer, you can
+ actually roll the whole history back.
+
+ SEE ALSO
+  undo
+
+--------------------------------------------------------------
+
+no_mode
+
+ SYNOPSIS
+  no_mode
+
+ DESCRIPTION
+  Generic mode not designed for anything in particular.
+  Related Functions: `text_mode', `c_mode'
+
+--------------------------------------------------------------
+
+Mode_Hook_Pointer
+
+ SYNOPSIS
+  Mode_Hook_Pointer
+
+ DESCRIPTION
+ called from mode_hook.  Returns 0 if it is desired that control return
+ to mode_hook or 1 if mode hook should exit after calling mode_hook_ptr
+
+--------------------------------------------------------------
+
+modeline_hook
+
+ SYNOPSIS
+  modeline_hook
+
+ DESCRIPTION
+ check first line for the simplest Emacs mode statement
+ -*- modename -*-
+
+--------------------------------------------------------------
+
+add_mode_for_extension
+
+ SYNOPSIS
+  add_mode_for_extension
+
+ USAGE
+  Void add_mode_for_extension (String mode, String ext);
+
+ DESCRIPTION
+ This function modifies Mode_List in such a way that when a file with
+ filename extension `ext' is read in, function strcat (mode, "_mode")
+ will be called to set the mode.   That is, the first parameter 'mode'
+ is the name of a mode without the '_mode' added to the end of it.
+
+--------------------------------------------------------------
+
+mode_hook
+
+ SYNOPSIS
+  mode_hook
+
+ DESCRIPTION
+ This is a hook called by find_file routines to set the mode
+ for the buffer. This function takes one parameter, the filename extension
+ and returns nothing.
+
+--------------------------------------------------------------
+
+set_buffer_modified_flag
+
+ SYNOPSIS
+  set_buffer_modified_flag
+
+ DESCRIPTION
+ sets buf modified flag. If argument is 1, mark
+ buffer as modified.  If argument is 0, mark buffer as unchanged.
+
+--------------------------------------------------------------
+
+buffer_modified
+
+ SYNOPSIS
+  buffer_modified
+
+ USAGE
+  Int_Type buffer_modified ()
+
+ DESCRIPTION
+  returns non-zero if the buffer modified flag is set.  It returns zero
+  if the buffer modified flag is not been set.  This works on the
+  current buffer.  See also 'set_buffer_modified_flag'.
+
+--------------------------------------------------------------
+
+set_buffer_undo
+
+ SYNOPSIS
+  set_buffer_undo
+
+ DESCRIPTION
+ set undo mode for buffer.  If argument is 1, undo is on.  0 turns it off
+
+--------------------------------------------------------------
+
+set_readonly
+
+ SYNOPSIS
+  set_readonly
+
+ DESCRIPTION
+ Takes 1 parameter: 0 turn off readonly
+                    1 turn on readonly
+
+--------------------------------------------------------------
+
+is_readonly
+
+ SYNOPSIS
+  Test whether or not the buffer is in read-only mode
+
+ USAGE
+  Int_Type is_readonly ()
+
+ DESCRIPTION
+ This function returns a non-zero value if the buffer is read-only;
+ otherwise it returns 0.
+
+ SEE ALSO
+  set_readonly, getbuf_info, setbuf_info
+
+--------------------------------------------------------------
+
+is_overwrite_mode
+
+ SYNOPSIS
+  Checks whether or not the buffer is in overwrite mode
+
+ USAGE
+  Int_Type is_overwrite_mode ()
+
+ DESCRIPTION
+ This function returns a non-zero value if the buffer is in overwrite-mode;
+ otherwise it returns 0.
+
+ SEE ALSO
+  toggle_overwrite, getbuf_info, setbuf_info
+
+--------------------------------------------------------------
+
+set_overwrite
+
+ SYNOPSIS
+  set_overwrite
+
+ USAGE
+  set_overwrite (Int_Type x)
+
+ DESCRIPTION
+ If the parameter `x' is non-zero, the buffer will be put in overwrite
+ mode; otherwise it will be ut in insert mode.
+
+ SEE ALSO
+  toggle_overwrite, is_overwrite_mode, getbuf_info, setbuf_info
+
+--------------------------------------------------------------
+
+toggle_crmode
+
+ SYNOPSIS
+  Toggle the buffer line endings between CRLF and LF
+
+ USAGE
+  toggle_crmode ()
+
+ DESCRIPTION
+ The `toggle_crmode' function causes the line endings of the buffer to
+ alternate between CRLF and LF characters.
+
+ SEE ALSO
+  getbuf_info, setbuf_info
+
+--------------------------------------------------------------
+
+toggle_readonly
+
+ SYNOPSIS
+  Toggle the readonly status of the buffer
+
+ USAGE
+  toggle_readonly ()
+
+ DESCRIPTION
+ The `toggle_readonly' function toggles the read-only status of the
+ current buffer.
+
+ SEE ALSO
+  set_readonly, is_readonly, getbuf_info, setbuf_info
+
+--------------------------------------------------------------
+
+toggle_overwrite
+
+ SYNOPSIS
+  Toggle the overwrite mode of the buffer
+
+ USAGE
+  toggle_overwrite ()
+
+ DESCRIPTION
+ The `toggle_overwrite' function toggles the overwrite mode of the
+ current buffer.
+
+ SEE ALSO
+  set_overwrite, is_overwrite_mode, getbuf_info, setbuf_info
+
+--------------------------------------------------------------
+
+toggle_undo
+
+ SYNOPSIS
+  Toggle the undo mode of the buffer
+
+ USAGE
+  toggle_undo ()
+
+ DESCRIPTION
+ The `toggle_undo' function toggles the undo mode of the
+ current buffer.
+
+ SEE ALSO
+  getbuf_info, setbuf_info
+
+--------------------------------------------------------------
+
+set_buffer_no_backup
+
+ SYNOPSIS
+  set_buffer_no_backup
+
+ USAGE
+  Void set_buffer_no_backup ();
+
+ DESCRIPTION
+
+--------------------------------------------------------------
+
+set_buffer_no_autosave
+
+ SYNOPSIS
+  set_buffer_no_autosave
+
+ USAGE
+  Void set_buffer_no_autosave ();
+
+ DESCRIPTION
+
+--------------------------------------------------------------
+
+toggle_line_number_mode
+
+ SYNOPSIS
+  toggle_line_number_mode
+
+ USAGE
+  Void toggle_line_number_mode ();
+
+ DESCRIPTION
+ This function toggles the line number display state on or off.
+
+ SEE ALSO
+  set_line_number_mode
+
+--------------------------------------------------------------
+
+custom_color
+
+ SYNOPSIS
+  Create a color object to be customized by the user
+
+ USAGE
+  custom_color (color, fg, bg)
+
+ DESCRIPTION
+ This function may be used to create a specified color object.  If the object
+ does not already exist, it will be given the specified foreground and
+ background colors.
+
+ SEE ALSO
+  custom_variable
+
+--------------------------------------------------------------
+
+help_for_help_string
+
+ SYNOPSIS
+  help_for_help_string
+
+ DESCRIPTION
+ string to display at bottom of screen upon JED startup and when
+ user executes the help function.
+
+--------------------------------------------------------------
+
+Help_File
+
+ SYNOPSIS
+  Help_File
+
+ DESCRIPTION
+ name of the file to load when the help function is called.
+
+--------------------------------------------------------------
+
+help
+
+ SYNOPSIS
+  help
+
+ USAGE
+  Void help ([String_Type help_file])
+
+ DESCRIPTION
+ This function pops up a window containing the specified help file.  If the
+ function was called with no arguments, the the file given by the `Help_File'
+ variable will be used.
+
+--------------------------------------------------------------
+
+read_file_from_mini
+
+ SYNOPSIS
+  read_file_from_mini
+
+ USAGE
+  String read_file_from_mini (String p);
+
+ DESCRIPTION
+ This function prompts the user for a file name using `p' as a prompt.
+ It reads a filename with completion from the mini-buffer and returns
+ it.
+
+ SEE ALSO
+  read_with_completion, read_mini
+
+--------------------------------------------------------------
+
+read_string_with_completion
+
+ SYNOPSIS
+  read_string_with_completion
+
+ USAGE
+  String read_string_with_completion (prompt, dflt, list)
+
+ DESCRIPTION
+ This function takes 3 String parameters and returns a String.  The
+ first parameter is used as the prompt, the second parameter is the
+ default value to be returned and the third parameter is a list to be used
+ for completions.  This list is simply a comma separated list of strings.
+
+--------------------------------------------------------------
+
+Startup_With_File
+
+ SYNOPSIS
+  Startup_With_File
+
+ DESCRIPTION
+ If non-zero, startup by asking user for a filename if one was
+ not specified on the command line.
+
+--------------------------------------------------------------
+
+jed_startup_hook
+
+ SYNOPSIS
+  jed_startup_hook
+
+ DESCRIPTION
+ Function that gets executed right before JED enters its main editing
+ loop.  This is for last minute modifications of data structures that
+ did not exist when startup files were loaded.
+
+--------------------------------------------------------------
+
+save_buffer
+
+ SYNOPSIS
+  save_buffer
+
+ USAGE
+  Void save_buffer ();
+
+ DESCRIPTION
+ Save current buffer.
+
+--------------------------------------------------------------
+
+push_visible_mark
+
+ SYNOPSIS
+  push_visible_mark
+
+ USAGE
+  Void push_visible_mark ();
+
+ DESCRIPTION
+ This function is performs the same task as `push_mark' except that the
+ region between this mark and the cursor position will be highlighted.
+ Such a mark is said to be a visible mark.
+
+ SEE ALSO
+  push_mark, pop_mark, set_mark_cmd
+
+--------------------------------------------------------------
+
+set_mark_cmd
+
+ SYNOPSIS
+  set_mark_cmd
+
+ USAGE
+  Void set_mark_cmd ();
+
+ DESCRIPTION
+ If a mark is already set, and that mark is a visible mark, then this
+ function will remove that mark.  It will then push a visible mark onto
+ the mark stack.
+
+ SEE ALSO
+  push_visible_mark, pop_mark, smart_set_mark_cmd
+
+--------------------------------------------------------------
+
+smart_set_mark_cmd
+
+ SYNOPSIS
+  smart_set_mark_cmd
+
+ USAGE
+  Void smart_set_mark_cmd ();
+
+ DESCRIPTION
+ If the top mark is a visible mark, this function will remove that mark;
+ otherwise it will push a visible mark onto the mark stack.  Use of
+ this function has the effect of toggling a highlighted region.
+
+ SEE ALSO
+  set_mark_cmd, push_mark, push_visible_mark
+
+--------------------------------------------------------------
+
+buffer_format_in_columns
+
+ SYNOPSIS
+  buffer_format_in_columns
+
+ DESCRIPTION
+ Prototype Void buffer_format_in_columns();
+ takes a buffer consisting of a sigle column of items and converts the
+ buffer to a multi-column format.
+
+--------------------------------------------------------------
+
+rename_buffer
+
+ SYNOPSIS
+  Rename the current buffer
+
+ USAGE
+  rename_buffer (String_Type new_name)
+
+ DESCRIPTION
+ This function may be used to change the name of the current buffer to the
+ one specified by the `new_name' parameter.
+
+ SEE ALSO
+  setbuf_info, whatbuf
+
+--------------------------------------------------------------
+
+deln
+
+ SYNOPSIS
+  deln
+
+ USAGE
+  Void deln (Integer n);
+
+ DESCRIPTION
+ delete the next 'n' characters.
+
+--------------------------------------------------------------
+
+disable_dfa_syntax_for_mode
+
+ SYNOPSIS
+  Use DFA syntax highlighting for one or more modes
+
+ USAGE
+  disable_dfa_syntax_for_mode (String_Type mode, ...)
+
+ DESCRIPTION
+  This function may be used to disable the use of DFA syntax highlighting
+  for one or more specified modes.  Each of the String_Type arguments must
+  be the name of a mode.  The name of a buffer's mode is usually displayed on
+  the status line.
+
+ EXAMPLE
+  To disable DFA syntax highlighting for C and S-Lang modes, use
+
+     disable_dfa_syntax_for_mode ("C", "SLang");
+
+
+ SEE ALSO
+  enable_dfa_syntax_for_mode, use_dfa_syntax
+
+--------------------------------------------------------------
+
+Jed_Home_Directory
+
+ SYNOPSIS
+  User's jed home directory
+
+ DESCRIPTION
+  The value of this variable specifies the user's so-called home directory
+  where personal jed-related files are assumed to be found.  Normally, this
+  corresponds to the user's home directory unless the user has specified
+  an alternate directory via the `JED_HOME' environment variable.
+
+--------------------------------------------------------------
+
+toggle_case_search
+
+ SYNOPSIS
+  Toggle the CASE_SEARCH variable
+
+ USAGE
+  Void toggle_case_search ()
+
+ SEE ALSO
+  CASE_SEARCH
+
+--------------------------------------------------------------
+
+open_filter_process
+
+ SYNOPSIS
+  Open a subprocess as a filter
+
+ USAGE
+  Int_Type pid = open_filter_process (String_Type argv[], String_Type output)
+
+ DESCRIPTION
+ The `open_filter_process' function may be used to open an interactive
+ synchronous process.  The first argument should be an array of strings
+ representing the program to be run in the subprocess, and the command line
+ parameters passed to it.  The second argument specifies what to do with the
+ output generated by the process.  It can be any value supported by the
+ "output" option of the `set_process' function.  The process should be
+ closed using the `close_filter_process' function.
+
+ SEE ALSO
+  close_filter_process, send_process, call_process_region
+
+--------------------------------------------------------------
+
+close_filter_process
+
+ SYNOPSIS
+  Close a filter process and return its status
+
+ USAGE
+  Int_Type close_filter_process (Int_Type pid)
+
+ DESCRIPTION
+ The `close_filter_process' function waits for the specified process
+ to terminate and returns the exit status of the process.  The process must
+ have been previously opened via the `open_filter_process' function.
+
+ SEE ALSO
+  open_filter_process, send_process, get_process_input
+
+--------------------------------------------------------------
+
+add_keywords
+
+ SYNOPSIS
+  add_keywords
+
+ USAGE
+  String add_keywords (String tbl, String kws, Int len, Int n);
+
+ DESCRIPTION
+
+ Adds a set of keywords `kws', each of length `len', to the already
+ existing syntax table `tbl'.  For convenience of the user, the function
+ does alphabetical sorting and removes duplicate entries.
+
+ The previous list of keywords is returned.
+
+ SEE ALSO
+  define_keywords_n, create_syntax_table, add_keyword_n
+
+--------------------------------------------------------------
+
+add_keyword_n
+
+ SYNOPSIS
+  add_keyword_n
+
+ USAGE
+  Void add_keyword_n (String tbl, String kw, Int n);
+
+ DESCRIPTION
+
+ Adds a single keyword `kw' to the already existing syntax table `tbl'.
+
+ SEE ALSO
+  define_keywords_n, create_syntax_table, add_keywords
+
+--------------------------------------------------------------
+
+add_keyword
+
+ SYNOPSIS
+  add_keyword
+
+ USAGE
+  Void add_keyword (String_Type tbl, String_Type kw);
+
+ DESCRIPTION
+
+ Adds a single keyword `kw' to the already existing syntax table `tbl'.
+
+ SEE ALSO
+  define_keywords_n, create_syntax_table, add_keyword_n
+
+--------------------------------------------------------------
+
+remove_keywords
+
+ SYNOPSIS
+  remove_keywords
+
+ USAGE
+  String remove_keywords (String tbl, String kws, Int len, Int n);
+
+ DESCRIPTION
+ Removes a set of keywords `kws', each of length `len', from the already
+ existing syntax table `tbl'.
+
+ The previous list of keywords is returned.
+
+ SEE ALSO
+  add_keywords, define_keywords_n, create_syntax_table, add_keyword_n
+
+--------------------------------------------------------------
+
+tcl_mode
+
+ SYNOPSIS
+  tcl_mode
+
+ DESCRIPTION
+ Protoytype: Void tcl_mode ();
+ This is a mode that is dedicated to facilitate the editing of Tcl language files.
+ See the source (tclmode.sl) for more info.
+ Functions that affect this mode include:
+
+  function:             default binding:
+  tcl_insert_bra             {
+  tcl_insert_ket             }
+  tcl_insert_comment         #
+  newline_and_indent         RETURN
+  indent_line                TAB
+  tcl_indent_region          Ctrl-C Ctrl-Q
+
+ Variables affecting indentation include:
+
+  C_INDENT
+  C_CONTINUED_OFFSET
+
+ Hooks: `tcl_mode_hook'
+
+--------------------------------------------------------------
+
+tex_mode
+
+ SYNOPSIS
+  tex_mode
+
+ DESCRIPTION
+ Mode useful for editing TeX and LaTeX modes.
+ Useful bindings:
+
+  '"'  :  tex_insert_quote
+  '\'' :  tex_insert_quote
+  '$'  :  tex_blink_dollar
+  '.'  :  tex_ldots.  Inserts a '.' except if preceeded by two dots.  In
+           this case, the dots are converted to \ldots.
+
+  When tex mode is loaded, 'tex_mode_hook' is called.  This hook will allow
+  users to customize the mode.  In particular, certain functions here have
+  no keybindings, e.g., 'latex_do_environment'.  So, in your jed.rc file,
+  add something like:
+
+    define tex_mode_hook () {
+       local_setkey ("latex_do_environment", "^C^E");
+    }
+
+  which binds the function to Ctrl-C Ctrl-E.
+
+--------------------------------------------------------------
+
+text_indent_relative
+
+ SYNOPSIS
+  Indent to next indentation point
+
+ DESCRIPTION
+ The `text_indent_relative' function inserts enough whitespace to move
+ the editing point to the next indentation level defined by the whitespace
+ pattern of the previous non-blank line.  If the current point is beyond
+ the last indentation level of the reference line, then a literal TAB will
+ be inserted into the buffer.
+
+ SEE ALSO
+  set_buffer_hook, newline_and_indent
+
+--------------------------------------------------------------
+
+text_mode
+
+ SYNOPSIS
+  text_mode
+
+ DESCRIPTION
+ Mode for indenting and wrapping text
+ Functions that affect this mode include:
+
+
+     Function:                 Default Binding:
+       text_indent_relative        TAB
+       newline_and_indent          RETURN
+       format_paragraph            ESC Q
+       narrow_paragraph            ESC N
+
+
+ SEE ALSO
+  no_mode, c_mode, set_buffer_hook
+
+ SEE ALSO
+  WRAP_INDENTS, WRAP, TAB, TAB_DEFAULT
+
+--------------------------------------------------------------
+
+untab
+
+ SYNOPSIS
+  untab
+
+ USAGE
+  Void untab ();
+
+ DESCRIPTION
+ This function may be used either to convert tabs to spaces or, if called
+ with a prefix argument, it will perform the opposite conversion from
+ spaces to tabs.  This function operates on a region.
+
+--------------------------------------------------------------
+
+vhdl_mode
+
+ SYNOPSIS
+  vhdl_mode
+
+ DESCRIPTION
+ Mode designed for the purpose of editing VHDL files.
+ After the mode is loaded, the hook 'vhdl_hook' is called.
+ Useful functions include
+
+  Function:                    Default Binding:
+   vhdl_beg_of_subprogram         ESC ^A
+        moves cursor to beginning of current function/process
+   vhdl_end_of_subprogram         ESC ^E
+        moves cursor to end of current function/process
+   vhdl_mark_subprogram           ESC ^H
+        mark the current function/process
+
+ Variables include:
+   VHDL_Comment_String : string used by 'vhdl_comment' to
+                         comment out a line.  Default is "--".
+   VHDL_Indent_Amount  : number of spaces to indent statements in
+                         a block.  The default is 2.
+
+--------------------------------------------------------------

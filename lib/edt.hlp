@@ -1,0 +1,22 @@
++-----------------------------------+    +--------+--------+--------+-------+
+|   ^    |  DOWN  |        |        |    |        |        | FNDNXT | DEL L |
+|   |    |   |    | <----  |  ----> |    | *GOLD  |  HELP  |        |       |
+|   |    |   |    |  LEFT  |  RIGHT |    |        |        | *FIND  | *UND L|
+|   UP   |   v    |        |        |    +--------+--------+--------+-------+
++-----------------------------------+    |  PAGE  |  SECT  | APPEND | DEL W |
+DELETE      Delete character             |        |        |        |       |
+LINEFEED    Delete to beginning of word  |*COMMAND|  *FILL |*REPLACE|*UND W |
+BACKSPACE   Backup to beginning of line  +--------+--------+--------+-------+
+CTRL/R      Refresh screen               | ADVANCE| BACKUP |  CUT   | DEL C |
+GOLD-Q      Quit                         |        |        |        |       |
+GOLD-E      Quit                         |*BOTTOM | *TOP   |*PASTE  |*UND C |
+                                         +--------+--------+--------+-------+
+                                         |  WORD  |  EOL   |  CHAR  |       |
+                                         |        |        |        | ENTER |
+  More help follows below.               |*CHGCASE|*DEL EOL|*SPECINS|       |
+                                         +--------+--------+--------+       |
+                                         |      LINE       | SELECT |       |
+                                         |                 |        | *SUBS |
+                                         |   *OPEN LINE    | *RESET |       |
+                                         +-----------------+--------+-------+
+

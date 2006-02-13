@@ -1,0 +1,166 @@
+This document explains how to use abbreviations with JED.
+
+Overview
+========
+
+   Abbreviations are possible only when `abbrev' mode is enabled.  It can be
+   toggled on and off on a buffer by buffer basis using the `abbrev_mode'
+   command.  If it is on, the word `abbrev' will appear on the status line.
+   
+   Each buffer can have its own abbreviation table or use the ``Global''
+   abbreviation table.  If a table has not been defined for a given buffer,
+   the ``Global'' table will be used.  Typically, abbreviation tables are
+   mode dependent and are usually assigned to the buffer when a mode is
+   selected.
+   
+   An abbreviation table consists of abbreviations as well as a definition
+   of characters that are allowed to appear in an abbreviation.  By default,
+   the characters that comprise a word are used.  However, this is not
+   always what is desired.  For example, one might like to use abbreviations
+   like `\be' for `\begin{equation}' in TeX mode.  For this to happen, the
+   `\' character should be included in the definition of a word.  The
+   examples below should shed more light on this concept.
+   
+Using Abbreviations
+===================
+
+   Once abbreviations have been loaded into the editor (the mechanism is
+   explained below), they can be used only if abbrev mode is turned on. This
+   mode can be turned on or off by pressing `ESC X' and entering
+   `abbrev_mode' at the prompt.  It can also be turned on in a mode hook.
+
+   After entering an abbreviation into the buffer, the abbreviation will be
+   expanded if the next character inserted into the buffer immediately after
+   the position of the abbreviation is NOT a member of the set of characters
+   that is allowed in an abbreviation.  Then the editor scans backward
+   across the text until it finds a character that is NOT part of the set of
+   special characters.  Finally it attempts to expand the resulting
+   abbreviation.
+
+   For example, consider an abbreviation for TeX mode and assume that, when
+   the abbreviation table was created, the characters `\', `a-z', `A-Z', and
+   `0-9' were specified as the special set of characters that may be used in
+   an abbreviation.  This means that `\be' is a valid abbreviation but `@be'
+   is not since `@' is not part of the above set.  Suppose that `\be' is the
+   abbreviation for `\begin{equation}' and `\be' is entered on a line as
+
+      This is an equation.\be
+
+   At this point nothing happens.  However, if a SPACE is inserted, the
+   editor will realize that the space is not part of the special
+   abbreviation character set and scan back until another character NOT in
+   the set is found.  In this case, it will find a `.'.  From this
+   information, it looks up `\be' in the table, finds `\begin{equation}' and
+   expands the line to look like:
+
+      This is an equation.\begin{equation}
+      
+   However, if the line had looked like:
+   
+      This is an equation\be
+
+   the expansion would have failed because the editor would have scanned
+   back to the space character between `an' and `equation' and tried to expand
+   `equation\be'.
+
+   Although this sounds complex, it is trivial in practice.
+   
+The Abbreviation File
+======================
+
+   An abbreviation file is simply a file that contains the approrite S-Lang
+   function calls to create abbreviation tables and assign abbreviations to
+   the tables.  It is loaded like any other S-Lang file, via `evalfile'.
+   Simply turning abbreviations on via `abbrev_mode' is sufficient to cause
+   JED to load the file.
+   
+   The variable `Abbrev_File' may be used to specify the name of the
+   abbreviation file.  If this variable is undefined, the file name defaults
+   to `abbrevs.sl' on non-Unix systems and `.abbrevs.sl' on Unix.  It is
+   assumed to reside in the HOME directory.  To specify a different name,
+   e.g., `/usr/lib/jed/abbrev.sl', put 
+   
+      variable Abbrev_File = "/usr/lib/jed/abbrev.sl";
+      
+   in the JED startup file.
+   
+   Here is a simple file that is sufficient to create a global abbreviation
+   table and a local table for TeX mode:
+   
+       % abbrevs.sl
+       create_abbrev_table ("Global", "");
+       define_abbrev ("Global", "adn",    "and");
+       define_abbrev ("Global", "amy",    "amy.tch.harvard.edu");
+       
+       create_abbrev_table ("TeX", "\\A-Za-z0-9");
+       define_abbrev ("TeX", "\\be", "\\begin{equation}");
+       define_abbrev ("TeX", "\\ee", "\\end{equation}");
+       
+   Note that `create_abbrev_table' takes 2 parameters.  The first parameter
+   is simply the name of the table to be created and the second parameter
+   represents the list of characters that are allowed to be in an
+   abbreviation.  If the second parameter is the empty string, JED's word
+   definition willbe used.  Also note that the backslash character must be
+   typed twice for S-Lang to interpret it properly as a backslash character.
+   
+   The `define_abbrev' function takes 3 parameters: the name of the table,
+   the abbreviation, and the expansion for the abbreviation.
+   
+   If the last character of the expansion is the backspace character
+   (\010), then the character that triggered the expansion (e.g., a
+   space) will not get inserted.  For example,
+
+       define_abbrev ("TeX", "\\s", "\\section{\010");
+     
+   is preferable to
+   
+       define_abbrev ("TeX", "\\s", "\\section{");
+
+   There is really nothing special about an abbreviation file.  The code
+   that appears in it can also appear in the JED startup file.
+   
+   Usually the abbreviation mode is enabled in a hook.  For example, to
+   enable abbreviations for TeX mode, use a mode hook of the form:
+   
+         define tex_mode_hook ()
+	 {
+	    set_abbrev_mode (1);
+	 }
+
+   This way, when TeX mode is enabled, the abbreviation file will be
+   automatically loaded if not already loaded and abbrev mode will be turned
+   on.  
+   
+
+Creating Abbreviations
+======================
+       
+    There are two ways to create abbreviations:
+    
+       1.  Simply create an abbreviation file by hand.
+       2.  Use the `define_abbreviation' function call.
+       
+    Here the latter method is explained.
+
+    The `define_abbreviation' function uses the abbreviation table
+    associated with the current buffer.  If there is none explicitly
+    associated with the buffer, the Global table will be used.  If the table
+    does not exist, it will be created.  This function will prompt for an
+    abbreviation.  It may or may not prompt for an expansion.  If a region
+    is defined when `define_abbreviation' is called, the region will be
+    taken as the expansion.  This is useful if the expansion consists of of
+    more than one word. If a region is not defined, the expansion will
+    consist of the previous word as defined by the table.  Only if that
+    fails will the user be prompted for an expansion, e.g., this could
+    happen if the Point is at the beginning of a line.
+
+    Note that simply using `define_abbreviation' by itself does not
+    save the abbreviation for future use.  To save the abbreviations to the
+    abbreviation file, use the function `save_abbrevs'.   That is, press
+    `ESC X' and enter `save_abbrevs' at the prompt.  The editor will then
+    prompt for a file name.  Simply hitting RETURN at the prompt means that
+    the `Abbrev_File' definition will be used.  Enter a different filename
+    to save them elsewhere.  Note that entering a new file name will not
+    change the value of `Abbrev_File'.  Also, this function saves ALL
+    currently defined abbreviation tables.
+    
