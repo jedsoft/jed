@@ -39,8 +39,6 @@ define textmac_wrap_hook ()
 	insert ("#% ");
 	return;
      }
-
-   variable col = 1;
    if (looking_at_char ('#'))
      {
 	eol ();
@@ -50,15 +48,8 @@ define textmac_wrap_hook ()
 	     insert_char ('\\');
 	  }
      }
-   else
-     {
-	skip_white ();
-	col = what_column ();
-     }
-
    go_down_1 ();
-   bol_trim ();
-   whitespace (col-1);
+   indent_line ();
 }
 
 private define in_verbatim ()
