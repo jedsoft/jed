@@ -71,13 +71,14 @@ define tex_wrap_hook ()
    push_spot ();
    yep = up_1 () and tex_is_comment ();
    pop_spot ();
-   if (yep) 
+   if (yep)
      {
 	push_spot ();
 	bol_skip_white ();
 	insert ("% ");
 	pop_spot ();
      }
+   indent_line ();
 }
 
 define tex_isolate_paragraph ()

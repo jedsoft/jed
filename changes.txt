@@ -384,8 +384,11 @@ Changes since B0.99-16
      Sangoid).
 165. src/win32.c: Apparantly the stat function on windows cannot cope
      with network shares.  Dino Sangoid provided a work-around.
-
-Made searches for tags case-sensitive.
+-------- snapshot B0.99.17-135 released (Feb 14, 2006) -------
+166. lib/texcom.sl, mailedit.sl: Call indent_line from the wrap hooks.
+167. src/Makefile.in: Tweaked to call my update_changes_version
+     script.  This jed-script reads this file (changes.txt) and
+     updates the patch level number in src/version.h accordingly.
 
 {{{ Previous Versions 
 

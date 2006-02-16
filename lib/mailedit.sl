@@ -364,12 +364,16 @@ private define wrap_hook ()
      }
    if (in_mail_body ())
      {
+#iftrue
+	indent_line ();
+#else	
 	go_up_1 ();
 	bol_skip_white ();
 	variable col = what_column ();
 	go_down_1 ();
 	bol_trim ();
 	whitespace (col - 1);
+#endif
 	return;
      }
 }

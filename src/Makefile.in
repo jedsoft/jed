@@ -116,6 +116,7 @@ EXEC_LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) -lslang $(MISCLIBS)
 
 jprocess_O_DEP = $(SRCDIR)/pty.c
 version_O_DEP = $(SRCDIR)/version.h
+UPDATE_VERSION_SCRIPT = $(HOME)/bin/update_changes_version
 
 TAG_FILES = $(CFILES) $(HFILES)
 TAGS_FILE_NAME = tags
@@ -150,6 +151,10 @@ $(SRCDIR)/xterm.c: $(SRCDIR)/xkeys.c
 	touch $(SRCDIR)/xterm.c
 $(SRCDIR)/syntax.c: $(SRCDIR)/dfasyntx.c
 	touch $(SRCDIR)/syntax.c
+$(SRCDIR)/version.h: $(SRCDIR)/../changes.txt
+	if [ -x $(UPDATE_VERSION_SCRIPT) ]; then \
+	  $(UPDATE_VERSION_SCRIPT) $(SRCDIR)/../changes.txt $(SRCDIR)/version.h; \
+	fi
 #
 xjed : $(OBJDIR) $(CONFIG_H) slangversion $(OBJDIR)/xjed
 	@echo xjed created in $(OBJDIR)
