@@ -18,6 +18,7 @@ define man_clean_manpage ()
    % Convert unicode versions of - to ascii -.
    replace ("\x{2212}", "-");
    replace ("\x{2010}", "-");
+   replace ("\x{00AD}", "-");
 
    replace ("_\010", Null_String);	% remove _^H underscores
    while ( fsearch ("\010") )

@@ -864,7 +864,11 @@ int insert_rectangle() /*{{{*/
    Line *rline;
 
    CHECK_READ_ONLY
-   if (Rectangle_Buffer == NULL) return(0);
+   if (0 == buffer_exists (Rectangle_Buffer))
+     {
+	Rectangle_Buffer = NULL;
+	return 0;
+     }
 
    Suspend_Screen_Update = 1;
    c1 = calculate_column();

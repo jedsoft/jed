@@ -354,7 +354,7 @@ Changes since B0.99-16
 151. lib/edt.sl: Made the Gold-Key configurable.  See doc/txt/edt.txt
      for more information.
 152. lib/cmode.sl: Removed the explicit binding to c_format_paragraph.
-     It is not called through the paragraph_hook.
+     It is now called through the paragraph_hook.
 153. lib/slmode.sl: Added a format_paragraph_hook for slang_mode.
 154. src/buffer.c: New hook: "wrapok_hook".  May be used to determine
      whether or not a line should be wrapped.  Used by slmode.sl to
@@ -390,6 +390,17 @@ Changes since B0.99-16
 167. src/Makefile.in: Tweaked to call my update_changes_version
      script.  This jed-script reads this file (changes.txt) and
      updates the patch level number in src/version.h accordingly.
+168. src/buffer.c: If NULL passed as a buffer to buffer_exists, return 0.
+169. src/paste.c: Deleting the rectangle buffer " <rect>" would cause
+     a SEGV if the buffer was used again.  (Paul Boekholt).
+170. lib/ctags.sl: The goto_position function used a slang-2 construct
+     without a slang-1 workaround.
+171. lib/man.sl: Convert "\x{00AD}" to the ASCII hyphen (Suggested by
+     Paul Boekholt).
+172. lib/site.sl: Moved slang-2 compatibility functions strbytelen and
+     substrbytes from syntax.sl and made them public (Paul Boekholt).
+173. doc/txt/hooks.txt: The documentation for the "wrap_hook" has been
+     updated as well as the example accompanying it.
 
 {{{ Previous Versions 
 

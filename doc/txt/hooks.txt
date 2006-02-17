@@ -58,20 +58,20 @@ The following buffer-local hooks are supported:
     indented beyond the number.  This is accomplished via a wrap_hook
     such as:
 
-       static define text_mode_wrap_hook ()
+       private define text_mode_wrap_hook ()
        {
-	  variable p;
 	  push_spot ();
 	  go_up(1); bol (); skip_white ();
-	  p = what_column ();
+	  variable p = what_column ();
 	  skip_chars ("0-9"); 
 	  if ((p != what_column ()) and looking_at (". "))
 	    {
-	       go_down(1); bol (); skip_white ();
+	       go_right (1);
+	       skip_white ();
 	       p = what_column ();
-	       bol (); trim ();
-	       whitespace (p + 3);
 	    }
+	  go_down(1); bol (); trim ();
+	  whitespace (p-1);
 	  pop_spot ();
        }
 
@@ -81,6 +81,9 @@ The following buffer-local hooks are supported:
        {
           set_buffer_hook ("wrap_hook", &text_mode_wrap_hook);
        }
+       
+    Note that if a buffer has been assigned a "wrap_hook", the value
+    of the WRAP_INDENTS variable will be ignored for the buffer.
 
  "wrapok_hook"
      This hook may be used to enable automatic wrapping on a
@@ -335,7 +338,7 @@ _jed_exit_hooks
   For instance, suppose that one wants to be prompted before exiting.
   The following accomplishes this:
 
-        static define my_exit_hook ()
+        private define my_exit_hook ()
 	{
 	   variable ch;
 	   
@@ -386,7 +389,7 @@ _jed_resume_hooks
    returning from a suspension state.  Hooks in this list take no
    arguments and return no values.  A silly example of this hook is:
    
-       static define my_resume_hook ()
+       private define my_resume_hook ()
        {
           message ("Welcome back to JED");
        }
@@ -489,7 +492,7 @@ _jed_switch_active_buffer_hooks
   The following example shows how this hook may be used to set the
   name of the Xjed window to that of the currently active buffer.
 
-     static define my_switch_buffer_hook (old_buffer)
+     private define my_switch_buffer_hook (old_buffer)
      {
          x_set_window_name (whatbuf ());
      }

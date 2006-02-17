@@ -1223,6 +1223,10 @@ Buffer *find_buffer(char *name) /*{{{*/
 int buffer_exists(Buffer *b) /*{{{*/
 {
    Buffer *c = CBuf;
+
+   if (b == NULL)
+     return 0;
+
    do
      {
 	if (b == c) return 1;

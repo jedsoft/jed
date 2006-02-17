@@ -4,16 +4,6 @@
 %  Note: Eventually code here will need to be changed to use character semantics.
 %  The user should not have to worry about multibyte encodings.
 %
-#ifeval (_slang_version < 20000)
-private define strbytelen (s)
-{
-   return strlen (s);
-}
-private define substrbytes (s, n, len)
-{
-   return substr (s, n, len);
-}
-#endif
    
 private define add_hash_to_syntax_table (tbl, hash, len, n)
 {

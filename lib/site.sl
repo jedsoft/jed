@@ -260,10 +260,22 @@ define str_replace_all (str, old, new)
 
 %}}}
 
+
+%{{{ Compatibility functions
+
 if (_slang_version < 10308)
   () = evalfile ("emul.sl");
 
-%{{{ Compatibility functions
+#ifeval (_slang_version < 20000)
+define strbytelen (s)
+{
+   return strlen (s);
+}
+define substrbytes (s, n, len)
+{
+   return substr (s, n, len);
+}
+#endif
 
 define define_keywords ()
 {
