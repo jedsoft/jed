@@ -127,6 +127,27 @@ private define write_encrypted_region (file)
    return _write_encrypted_region (file, 0);
 }
 
+private define parse_gpg_errors (file)
+{
+   variable st = stat_file (file);
+   if (st == NULL)
+     return;
+   if (0 == st.st_size)
+     return;
+   
+   % For now, just insert the contents into a separate buffer.
+   variable cbuf = whatbuf ();
+   setbuf ("*gpg-errors*");
+   erase_buffer ();
+   () = insert_file (file);
+   % TODO: warnings such as these can probably be ignored.
+   % gpg: CAST5 encrypted data
+   % gpg: encrypted with 1 passphrase
+   % gpg: WARNING: message was not integrity protected
+
+   setbuf (cbuf);
+}
+   
 private define _insert_encrypted_file (file, use_blocal_phrase, set_blocal_phrase, confirm_phrase)
 {
    variable i = check_is_encrypted (file);
@@ -136,11 +157,18 @@ private define _insert_encrypted_file (file, use_blocal_phrase, set_blocal_phras
    if (1 != file_status (file))
      return 0;
 
-   variable pid = open_filter_process (["/bin/sh", "-c", GPG_Decrypt_Program + " " + file], ".");
+   variable stderr_filename = make_tmp_file ("gpgerr");
+   () = fopen (stderr_filename, "w");
+   () = chmod (stderr_filename, 0600);
+
+   variable cmd = sprintf ("%s %s 2>%s", GPG_Decrypt_Program, file, stderr_filename);
+   variable pid = open_filter_process (["/bin/sh", "-c", cmd], ".");
    send_process (pid, get_pass_phrase (file, use_blocal_phrase, set_blocal_phrase, confirm_phrase));
    send_process (pid, "\n");
-   
+
    () = close_filter_process (pid);
+   parse_gpg_errors (stderr_filename);
+   () = delete_file (stderr_filename);
 
    return 1;
 }

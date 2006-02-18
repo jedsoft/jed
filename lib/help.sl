@@ -57,19 +57,18 @@ define expand_keystring (key)
      {
 	ch = typecast (key[i - 1], UChar_Type);
 	++i;
-	switch (ch)
+	if (((ch == '^') and (i <= n)) or (ch < 32))
 	  {
-	     (case '^' and (i <= n)) or (ch < 32) :   
 	     % control char
 	     %% common cases are '^[, ^[[?, ^[O?'
-	  
+
 	     if (ch < 32)
 	       {
 		  str = char (ch + '@') + substr (key, i, 2);
 		  i--;
 	       }
-	     else str = substr (key, i, 3);
-	     if (int(str) == '[')
+	     else str = substr (key, i, 3);   %  ^[ form
+	     if (str[0] == '[')
 	       {
 		  i += 3;
 		  switch (str)
@@ -85,19 +84,17 @@ define expand_keystring (key)
 #endif
 		    { is_gold_key(str): "GOLD"; }
 		    { % default
-		       i += 2; "ESC";
+		       i -= 2; "ESC";
 		    }
+		  the_key = ();
 	       }
 	     else
 	       {
 		  i++;
-		  "Ctrl-" + char(int(str));
+		  the_key = "Ctrl-" + char(int(str));
 	       }
 	  }
-	  {
-	     char (ch);
-	  }
-	the_key = ();
+	else the_key = char (ch);
 	
 	if (strlen(key_string)) key_string += " ";
 	key_string += the_key;

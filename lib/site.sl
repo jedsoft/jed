@@ -1091,14 +1091,34 @@ private define run_user_exit_hook ()
 add_to_hook ("_jed_exit_hooks", &run_user_exit_hook);
 
 %!%+
+%\variable{Jed_Tmp_Directory}
+%\synopsis{Directory used to hold temporary files}
+%\usage{Jed_Tmp_Directory = "/tmp";}
+%\description
+% This variable is used by the \sfun{make_tmp_file} function to create 
+% temporary filenames.
+%\seealso{make_tmp_file, make_tmp_buffer_name}
+%!%-
+variable Jed_Tmp_Directory = NULL;
+#ifdef UNIX
+Jed_Tmp_Directory = "/tmp";
+#endif
+
+%!%+
 %\function{make_tmp_file}
 %\synopsis{make_tmp_file}
 %\usage{String make_tmp_file (String base);}
 %\description
 % This function returns a unique file name that begins with \var{base}.
+% If \exmp{base} does not specify an absolute path, the value of
+% \svar{Jed_Tmp_Directory} will be used for the directory.
 %!%-
 define make_tmp_file(base)
 {
+   if ((Jed_Tmp_Directory != NULL)
+       and (path_is_absolute (base) == 0))
+     base = path_concat (Jed_Tmp_Directory, base);
+
    base = path_sans_extname (base);
 
    () = random (-1, 0);

@@ -404,6 +404,16 @@ Changes since B0.99-16
 174. lib/site.sl: When looking up the install-prefix for the slang
      modules, the __argv[0] based search was not looking at $PATH.
      (Gunter Milde).
+175. lib/site.sl: New variable called Jed_Tmp_Directory may be used to
+     set the directory for temporary files.  The default value is /tmp
+     on Unix.  There is no default on other OSs.  This variable is
+     used by the make_tmp_file function.
+176. lib/gpg.sl: When calling gpg to decrypt a file, stderr is
+     redirected to a temporary file whose contents are inserted into a
+     buffer call *gpg-errors*.  Previously, error messages were being
+     inserted into the decrypted file's buffer.
+177. lib/help.sl: Fixed a bug introduced when support for the Gold-Key
+     was added.
 
 {{{ Previous Versions 
 
