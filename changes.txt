@@ -401,6 +401,9 @@ Changes since B0.99-16
      substrbytes from syntax.sl and made them public (Paul Boekholt).
 173. doc/txt/hooks.txt: The documentation for the "wrap_hook" has been
      updated as well as the example accompanying it.
+174. lib/site.sl: When looking up the install-prefix for the slang
+     modules, the __argv[0] based search was not looking at $PATH.
+     (Gunter Milde).
 
 {{{ Previous Versions 
 

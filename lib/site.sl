@@ -3179,26 +3179,6 @@ if (getenv ("COLORTERM") == "rxvt")
 %---------------------------------------------------------------------------
 
 #ifdef UNIX
-if (is_defined ("import"))
-{
-   foreach ([
-#ifexists _slang_install_prefix
-	     _slang_install_prefix,
-#endif
-	     path_dirname(path_dirname(__argv[0]))])
-     {
-	$1 = ();
-	$1 = path_concat ($1, "share/slsh/local-packages");
-	if (2 != file_status ($1))
-	  continue;
-	set_jed_library_path (strcat (get_jed_library_path (), ",", path_dirname ($1)));
-	set_jed_library_path (strcat (get_jed_library_path (), ",", $1));
-	break;
-     }
-}
-#endif
-
-#ifdef UNIX
 define get_executable_path (pgm)
 {
    variable dir = path_dirname (pgm);
@@ -3221,6 +3201,40 @@ define get_executable_path (pgm)
      return NULL;
    return path_concat (cwd, dir);
 }
+
+% If jed is located in /some/install/prefix/bin/, return /some/install/prefix
+private variable Jed_Install_Prefix;
+private define guess_jed_install_prefix ()
+{
+   if (0 == __is_initialized (&Jed_Install_Prefix))
+     {
+	Jed_Install_Prefix = get_executable_path (__argv[0]);
+	if (NULL != Jed_Install_Prefix)
+	  Jed_Install_Prefix = path_dirname (Jed_Install_Prefix);
+     }
+   return Jed_Install_Prefix;
+}
+#endif
+
+#ifdef UNIX
+if (is_defined ("import"))
+{
+   foreach ([
+# ifexists _slang_install_prefix
+	     _slang_install_prefix,
+# endif
+	     guess_jed_install_prefix ()
+	     ])
+     {
+	$1 = ();
+	$1 = path_concat ($1, "share/slsh/local-packages");
+	if (2 != file_status ($1))
+	  continue;
+	set_jed_library_path (strcat (get_jed_library_path (), ",", path_dirname ($1)));
+	set_jed_library_path (strcat (get_jed_library_path (), ",", $1));
+	break;
+     }
+}
 #endif
 
 %
@@ -3236,10 +3250,10 @@ else
      $1 = getenv ("JED_CONF_DIR");
      if ($1 == NULL)
        {
-	  $1 = get_executable_path (__argv[0]);
+	  $1 = guess_jed_install_prefix ();
 	  if ($1 != NULL)
 	    {
-	       $1 = path_concat (path_dirname ($1), "etc");
+	       $1 = path_concat ($1, "etc");
 	       if (($1 == "/usr/etc") and (0 == file_status ($1)))
 		 $1 = "/etc";
 	    }
