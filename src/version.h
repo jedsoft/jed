@@ -1,7 +1,7 @@
 #ifndef JED_VERSION
 #define JED_VERSION	9917
 
-#define JED_VERSION_STR "B0.99.17-177"
+#define JED_VERSION_STR "B0.99.17-178"
 
 /* Copyright (c) 1999, 2000, 2001, 2005 John E. Davis
  * This file is part of JED editor library source.

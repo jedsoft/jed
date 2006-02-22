@@ -10,6 +10,7 @@ custom_variable ("ChangeLog_Filename",
 
 custom_variable ("ChangeLog_User",
 		 sprintf ("%s  <%s>", get_realname (), get_emailaddress ()));
+custom_variable ("ChangeLog_Indent_Amount", 8);
 
 private define get_changelog_date ()
 {
@@ -84,6 +85,13 @@ private define get_changelog_function ()
    return fun;
 }
 
+private define wrap_hook ()
+{
+   push_spot ();
+   bol_trim (); whitespace (ChangeLog_Indent_Amount + 2);
+   pop_spot ();
+}
+
 public define changelog_add_change ()
 {
    variable heading = format_changelog_heading ();
@@ -102,9 +110,10 @@ public define changelog_add_change ()
    
    () = read_file (changelog);
    set_buffer_no_backup ();
-   WRAP_INDENTS = 1;		       %  FIXME!!! This needs to be buffer local
    pop2buf (whatbuf ());
    text_mode ();
+
+   set_buffer_hook ("wrap_hook", &wrap_hook);
 
    bob ();
    !if (bol_fsearch (heading))
@@ -131,7 +140,7 @@ public define changelog_add_change ()
      {
 	goto_user_mark (m);
 	insert ("\n\n");
-	whitespace (8);
+	whitespace (ChangeLog_Indent_Amount);
 	vinsert ("* %s ", file);
      }
    else 
