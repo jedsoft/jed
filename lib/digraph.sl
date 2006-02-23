@@ -30,6 +30,22 @@
 %   curses ACS (Alternate Character Set), except 'P' invented to == `Plus'
 %
 % Mark Olesen	16 Aug 1995
+% Modified by JED, Feb 2006.
+
+% This function has the effect of converting an ISO-Latin string UTF-8 if in
+% UTF-8 mode.  It does not work on DOS/Windows.
+#ifndef IBMPC_SYSTEM
+private define convert_string (str)
+{
+   variable new_str = "";
+   _for (0, strbytelen (str)-1, 1)
+     {
+	variable i = ();
+	new_str = strcat (new_str, char (str[i]));
+     }
+   return new_str;
+}
+#endif
 
 define digraph_cmd ()
 {
@@ -116,6 +132,9 @@ define digraph_cmd ()
      { return; }	% default
 
    (letters, accent) = ();
+#ifndef IBMPC_SYSTEM
+   accent = convert_string (accent);
+#endif
    i = is_substr (letters, 
 		  char (get_mini_response (sprintf ("Enter [%s] to get [%s]",
 						    letters, accent))));
@@ -125,7 +144,5 @@ define digraph_cmd ()
 	beep ();
 	return;
      }
-   
-   i--;
-   insert_char (accent[i]);
+   insert (substr (accent, i, 1));
 }

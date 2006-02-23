@@ -416,6 +416,7 @@ Changes since B0.99-16
      was added.
 178. lib/chglog.sl: Added a wrap_hook and made the indent amount
      customizable.
+179. lib/digraph.sl: Tweaked to work in UTF-8 mode.
 
 {{{ Previous Versions 
 
