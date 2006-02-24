@@ -2439,6 +2439,24 @@ get_key_binding
 
 --------------------------------------------------------------
 
+_getkey
+
+ SYNOPSIS
+  Read an input byte from the keyboard
+
+ USAGE
+  Int_Type _getkey ()
+
+ DESCRIPTION
+  The `_getkey' function may be used to read a byte character from the
+  keyboard.  It should be used instead of `getkey' when
+  byte-semantics are required.
+
+ SEE ALSO
+  input_pending, _ungetkey, getkey
+
+--------------------------------------------------------------
+
 getkey
 
  SYNOPSIS
@@ -2456,7 +2474,7 @@ getkey
   value of byte.
 
  SEE ALSO
-  input_pending, ungetkey
+  input_pending, ungetkey, _getkey
 
 --------------------------------------------------------------
 
@@ -2691,6 +2709,24 @@ undefinekey
 
  SEE ALSO
   unsetkey, definekey, what_keymap
+
+--------------------------------------------------------------
+
+_ungetkey
+
+ SYNOPSIS
+  Push a byte onto the input stream
+
+ USAGE
+  Void _ungetkey (Int_Type c)
+
+ DESCRIPTION
+  This function may be used to push a byte `c' onto the input
+  stream. This means that the next keyboard byte to be read will be
+  `c'.
+
+ SEE ALSO
+  buffer_keystring, _getkey, get_key_binding
 
 --------------------------------------------------------------
 

@@ -30,9 +30,9 @@ SL2TM = sl2tm
 
 help: jedfuns.hlp libfuns.hlp
 all: $(HTML_FILES) $(TEX_FILES)
-jedfuns.hlp :
+jedfuns.hlp : rtl/*.tm
 	cat rtl/*.tm | $(TM2HLP) - jedfuns.hlp
-libfuns.hlp :
+libfuns.hlp : $(SL_LIBDIR)/*.sl
 	$(SL2TM) -sl $(SL_LIBDIR)/*.sl | $(TM2HLP) - libfuns.hlp
 #
 %.tex : %.sgml

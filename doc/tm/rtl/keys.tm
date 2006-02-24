@@ -220,6 +220,16 @@
 \seealso{getkey, input_pending}
 \done
 
+\function{_getkey}
+\synopsis{Read an input byte from the keyboard}
+\usage{Int_Type _getkey ()}
+\description
+  The \ifun{_getkey} function may be used to read a byte character from the
+  keyboard.  It should be used instead of \ifun{getkey} when
+  byte-semantics are required.
+\seealso{input_pending, _ungetkey, getkey}
+\done
+
 \function{getkey}
 \synopsis{Read an input character from the keyboard}
 \usage{Long_Type getkey ()}
@@ -230,7 +240,7 @@
   sequence.  In such a case, the value returned will correspond to the
   first byte of the sequence, and will be equal in magnitude to the
   value of byte.
-\seealso{input_pending, ungetkey}
+\seealso{input_pending, ungetkey, _getkey}
 \done
 
 \function{input_pending}
@@ -389,6 +399,16 @@
   keymap.  The key sequence is given by the parameter \var{key} and the
   keymap is specified by the second parameter \var{kmap}.
 \seealso{unsetkey, definekey, what_keymap}
+\done
+
+\function{_ungetkey}
+\synopsis{Push a byte onto the input stream}
+\usage{Void _ungetkey (Int_Type c)}
+\description
+  This function may be used to push a byte \exmp{c} onto the input
+  stream. This means that the next keyboard byte to be read will be
+  \exmp{c}.
+\seealso{buffer_keystring, _getkey, get_key_binding}
 \done
 
 \function{ungetkey}

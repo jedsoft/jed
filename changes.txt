@@ -443,6 +443,10 @@ Changes since B0.99-16
 190. lib/site.sl: The expand_keystring function was rewritten and now
      takes advantage of keydefs.sl.  As a result, it is cleaner.
 191. lib/paste.sl, mousex.sl: Use _getkey instead of getkey.
+192. src/jdmacros.h: Do not include malloc.h on FreeBSD (Renato Botelho
+     garga at freebsd, org).
+193. doc/tm/rtl/keys.tm: Added docs for _getkey and _ungetkey.  Also
+     added rtl/*.tm to dependency list in doc/tm/Makefile.
 
 {{{ Previous Versions 
 
