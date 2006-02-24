@@ -18,10 +18,10 @@ if (is_list_element ("linux,console,con80x25,con80x28", $1, ','))
    USE_ANSI_COLORS = 1;   % uncomment if your console is a color one!
    OUTPUT_RATE = 0;
    TERM_CANNOT_SCROLL = -1;   % Truth is, linux console does not scroll well.
-   setkey("bol",      		"^[[1~");	% home
-   setkey("toggle_overwrite",	"^[[2~");       % insert
-   setkey("delete_char_cmd",	"^[[3~");       % delete
-   setkey("eol",		"^[[4~");       % end
-   setkey("page_up",		"^[[5~");	
-   setkey("page_down",		"^[[6~");
+   setkey("bol",      		"\e[1~");	% home
+   setkey("toggle_overwrite",	"\e[2~");       % insert
+   setkey("delete_char_cmd",	"\e[3~");       % delete
+   setkey("eol",		"\e[4~");       % end
+   setkey("page_up",		"\e[5~");	
+   setkey("page_down",		"\e[6~");
 }

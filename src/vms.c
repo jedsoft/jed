@@ -788,6 +788,9 @@ char *jed_standardize_filename_static(char *file) /*{{{*/
    static char work [1024];
    int len;
 
+   if (NULL != strstr (file, "::"))
+     goto ugly;
+
    strcpy(work, jed_get_cwd()); strcat(work, file); file = work;
 
     /*  start at end and look for ']' then look for ':' */
@@ -842,6 +845,8 @@ char *jed_standardize_filename_static(char *file) /*{{{*/
 	 p++;
       }
    *p1 = 0;
+
+   ugly:
    
    switch(vms_parse_file(file))
       {
@@ -1018,9 +1023,9 @@ int sys_chmod(char *file, int what, mode_t *mode, uid_t *uid, gid_t *gid) /*{{{*
 /*}}}*/
 
 #if (__VMS_VER < 70000000)
-int rmdir (char *d) /*{{{*/
+int rmdir (const char *d) /*{{{*/
 {
-   return(-1);
+   return -1;
 }
 
 /*}}}*/

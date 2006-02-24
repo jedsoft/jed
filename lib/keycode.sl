@@ -52,6 +52,7 @@ define keycode ()
 		  char(ch);
 	       }
 	       {
+		  % Eventually I should use \u{XXXX} for unicode
 		  if (ch > 127) "\\d" + string (ch); else char (ch);
 	       }
 	     ch = ();

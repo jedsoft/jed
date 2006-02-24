@@ -1,42 +1,57 @@
 %% help.sl
+require ("keydefs");
 
-%% apropos function
-define apropos ()
+% Convert all controls chars in key and return ^ form.  (\e --> ^[)
+private define convert_keystring (key)
 {
-   variable n, cbuf, s, a;
-   if (MINIBUFFER_ACTIVE) return;
-   
-   s = read_mini("apropos:", "", "");
-   a = _apropos("Global", s, 0xF);
-   vmessage ("Found %d matches.", length (a));
-   a = a[array_sort (a)];
-   cbuf = whatbuf();
-   pop2buf("*apropos*");
-   erase_buffer();
-   foreach (__tmp(a))
+   variable new_key = "";
+   variable i = 1, n = strlen (key);
+   while (i <= n)
      {
-	insert(());
-	newline();
+	variable the_key = substr (key, i, 1); i++;
+	if (the_key[0] < ' ')
+	  the_key = strcat ("^", char (the_key[0] + '@'));
+	new_key = strcat (new_key, the_key);
      }
-   buffer_format_in_columns();   
-   bob();
-   set_buffer_modified_flag(0);
-   pop2buf(cbuf);
+   return new_key;
+}	     
+
+private define make_key_name_table ()
+{
+   variable key_vars = _apropos ("Global", "\\c^Key_", 8);
+   variable a = Assoc_Type[String_Type];
+   foreach (key_vars)
+     {
+	variable key_name = ();
+	variable vref = __get_reference (key_name);
+	if (vref == NULL)
+	  continue;
+	if (0 == __is_initialized (vref))
+	  continue;
+	variable value = @vref;
+	if (typeof (value) != String_Type)
+	  continue;
+	if (value == "")
+	  continue;
+	key_name = strtrans (substr (key_name, 5, -1), "_", "-");
+	value = convert_keystring (value);
+	a[value] = key_name;
+     }
+   return a;
 }
 
-private define is_gold_key (str)
+private variable Key_Name_Table = make_key_name_table ();
+private define make_key_name_table (); %  nolonger needed
+
+private define keyeqs (seq, key)
 {
-   variable gold = __get_reference ("Key_Gold");
-   if (gold == NULL)
+   variable n = strbytelen (key);
+   if (strnbytecmp (seq, key, n))
      return 0;
 
-   gold = @gold;
-   if (gold[0] == '\e')
-     gold = "[" + substr (gold, 2, -1);
-   return str == gold;
+   return n;
 }
-
-
+	
 %!%+
 %\function{expand_keystring}
 %\synopsis{expand_keystring}
@@ -48,61 +63,62 @@ private define is_gold_key (str)
 % ^[[A to "UP", etc...
 %\seealso{setkey}
 %!%-
-define expand_keystring (key)
+define expand_keystring (seq)
 {
-   variable n = strlen (key);
-   variable str, i = 1, ch, key_string = "", the_key;
-   
-   while (i <= n)
-     {
-	ch = typecast (key[i - 1], UChar_Type);
-	++i;
-	if (((ch == '^') and (i <= n)) or (ch < 32))
-	  {
-	     % control char
-	     %% common cases are '^[, ^[[?, ^[O?'
+   seq = convert_keystring (seq);
 
-	     if (ch < 32)
+   if (assoc_key_exists (Key_Name_Table, seq))
+     return Key_Name_Table[seq];
+
+   variable key_seqs = assoc_get_keys (Key_Name_Table);
+   variable key_name, expanded_key = "";
+
+   forever 
+     {
+	variable n = strbytelen (seq);
+	if (n == 0)
+	  break;
+
+	variable dn = 0;
+	foreach (key_seqs)
+	  {
+	     variable key_seq = ();
+	     dn = keyeqs (seq, key_seq);
+	     if (dn)
 	       {
-		  str = char (ch + '@') + substr (key, i, 2);
-		  i--;
+		  key_name = Key_Name_Table[key_seq];
+		  break;
 	       }
-	     else str = substr (key, i, 3);   %  ^[ form
-	     if (str[0] == '[')
+	  }
+	if (dn == 0)
+	  {
+	     if ((seq[0] == '^') and (n > 1))
 	       {
-		  i += 3;
-		  switch (str)
-#ifndef IBMPC_SYSTEM	     
-		    { case "[[A" : "UP"; }
-		    { case "[[B" : "DOWN"; }
-		    { case "[[C" : "RIGHT"; }
-		    { case "[[D" : "LEFT"; }
-		    { case "[OA" : "UP"; }
-		    { case "[OB" : "DOWN"; }
-		    { case "[OC" : "RIGHT"; }
-		    { case "[OD" : "LEFT"; }
-#endif
-		    { is_gold_key(str): "GOLD"; }
-		    { % default
-		       i -= 2; "ESC";
+		  variable ch = seq[1];
+		  switch (ch)
+		    { case 'I': "TAB";}
+		    { case 'M': "RET";}
+		    { case '[': "ESC";}
+		    {
+		       % default
+		       "Ctrl-" + char (seq[1]);
 		    }
-		  the_key = ();
+		  key_name = ();
+		  dn = 2;
 	       }
 	     else
 	       {
-		  i++;
-		  the_key = "Ctrl-" + char(int(str));
+		  key_name = substr (seq, 1, 1);
+		  dn = strbytelen (key_name);
 	       }
 	  }
-	else the_key = char (ch);
-	
-	if (strlen(key_string)) key_string += " ";
-	key_string += the_key;
+	expanded_key = strcat (expanded_key, " ", key_name);
+	seq = substrbytes (seq, dn+1, -1);
      }
-   
-   key_string;
+   if (strlen (expanded_key))
+     return substr (expanded_key, 2, -1);
+   return expanded_key;
 }
-
 
 %% show key
 public define showkey ()
@@ -146,6 +162,30 @@ public define showkey ()
       case 4:
 	vmessage ("Key \"%s\" is a reference %S", ks, f);
      }
+}
+
+%% apropos function
+define apropos ()
+{
+   variable n, cbuf, s, a;
+   if (MINIBUFFER_ACTIVE) return;
+   
+   s = read_mini("apropos:", "", "");
+   a = _apropos("Global", s, 0xF);
+   vmessage ("Found %d matches.", length (a));
+   a = a[array_sort (a)];
+   cbuf = whatbuf();
+   pop2buf("*apropos*");
+   erase_buffer();
+   foreach (__tmp(a))
+     {
+	insert(());
+	newline();
+     }
+   buffer_format_in_columns();   
+   bob();
+   set_buffer_modified_flag(0);
+   pop2buf(cbuf);
 }
 
 define where_is ()

@@ -1456,6 +1456,31 @@ static void get_keymaps (void)
    SLang_push_array (at, 1);
 }
 
+static void getkey_wchar_intrin (void)
+{
+   int ch;
+   SLwchar_Type wch;
+   
+   if (-1 == jed_getkey_wchar (&wch))
+     {
+	ch = (int) wch;
+	(void) SLang_push_integer (-ch);
+	return;
+     }
+   (void) SLclass_push_long_obj (SLANG_LONG_TYPE, (long)wch);
+}
+
+static void ungetkey_wchar_intrin (long *chp)
+{
+   if (*chp < 0)
+     {
+	int ch = -(int)*chp;
+	ungetkey (&ch);
+	return;
+     }
+   jed_ungetkey_wchar ((SLwchar_Type)*chp);
+}
+
 static SLang_Intrin_Fun_Type Keymap_Intrinsics [] = 
 {
    MAKE_INTRINSIC_0("setkey", set_key, VOID_TYPE),
@@ -1468,11 +1493,13 @@ static SLang_Intrin_Fun_Type Keymap_Intrinsics [] =
    MAKE_INTRINSIC_S("dump_bindings", dump_bindings, VOID_TYPE),
    MAKE_INTRINSIC_SS("undefinekey", unset_key_in_keymap, VOID_TYPE),
    MAKE_INTRINSIC_S("which_key", which_key, INT_TYPE),
-   MAKE_INTRINSIC("getkey", jed_getkey, INT_TYPE, 0),
    MAKE_INTRINSIC_S("make_keymap", make_keymap_cmd, VOID_TYPE),
    MAKE_INTRINSIC_SS("copy_keymap", copy_keymap_cmd, VOID_TYPE),
-   MAKE_INTRINSIC_I("ungetkey", ungetkey, VOID_TYPE),
    MAKE_INTRINSIC_S("use_keymap",  use_keymap, VOID_TYPE),
+   MAKE_INTRINSIC("_getkey", jed_getkey, INT_TYPE, 0),
+   MAKE_INTRINSIC_I("_ungetkey", ungetkey, VOID_TYPE),
+   MAKE_INTRINSIC_0("getkey", getkey_wchar_intrin, VOID_TYPE),
+   MAKE_INTRINSIC_1("ungetkey", ungetkey_wchar_intrin, VOID_TYPE, SLANG_LONG_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 

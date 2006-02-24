@@ -17,7 +17,7 @@ define paste ()
    flush ("Pasting in progress...");
    while (input_pending (10))
      {
-	variable ch = getkey ();
+	variable ch = _getkey ();
 	if (ch == '\r')
 	  {
 	     ch = '\n';

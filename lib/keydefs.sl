@@ -138,30 +138,30 @@ private define setkey_via_terminfo (tc, def)
    return def;
 }
 
-variable Key_F1		= setkey_via_terminfo ("k1",	"^[[11~");
-variable Key_F2		= setkey_via_terminfo ("k2",	"^[[12~");
-variable Key_F3		= setkey_via_terminfo ("k3",	"^[[13~");
-variable Key_F4		= setkey_via_terminfo ("k4",	"^[[14~");
-variable Key_F5		= setkey_via_terminfo ("k5",	"^[[15~");
-variable Key_F6		= setkey_via_terminfo ("k6",	"^[[17~");
-variable Key_F7		= setkey_via_terminfo ("k7",	"^[[18~");
-variable Key_F8		= setkey_via_terminfo ("k8",	"^[[19~");
-variable Key_F9		= setkey_via_terminfo ("k9",	"^[[20~");
-variable Key_F10	= setkey_via_terminfo ("k;",	"^[[21~");
-variable Key_F11	= setkey_via_terminfo ("F1",	"^[[23~");
-variable Key_F12	= setkey_via_terminfo ("F2",	"^[[24~");
+variable Key_F1		= setkey_via_terminfo ("k1",	"\e[11~");
+variable Key_F2		= setkey_via_terminfo ("k2",	"\e[12~");
+variable Key_F3		= setkey_via_terminfo ("k3",	"\e[13~");
+variable Key_F4		= setkey_via_terminfo ("k4",	"\e[14~");
+variable Key_F5		= setkey_via_terminfo ("k5",	"\e[15~");
+variable Key_F6		= setkey_via_terminfo ("k6",	"\e[17~");
+variable Key_F7		= setkey_via_terminfo ("k7",	"\e[18~");
+variable Key_F8		= setkey_via_terminfo ("k8",	"\e[19~");
+variable Key_F9		= setkey_via_terminfo ("k9",	"\e[20~");
+variable Key_F10	= setkey_via_terminfo ("k;",	"\e[21~");
+variable Key_F11	= setkey_via_terminfo ("F1",	"\e[23~");
+variable Key_F12	= setkey_via_terminfo ("F2",	"\e[24~");
 
-variable Key_Up		= setkey_via_terminfo ("ku", "^[[A");
-variable Key_Down	= setkey_via_terminfo ("kd", "^[[B");
-variable Key_Right	= setkey_via_terminfo ("kr", "^[[C");
-variable Key_Left	= setkey_via_terminfo ("kl", "^[[D");
+variable Key_Up		= setkey_via_terminfo ("ku", "\e[A");
+variable Key_Down	= setkey_via_terminfo ("kd", "\e[B");
+variable Key_Right	= setkey_via_terminfo ("kr", "\e[C");
+variable Key_Left	= setkey_via_terminfo ("kl", "\e[D");
 
-variable Key_Ins	= setkey_via_terminfo ("kI", "^[[2~");
-variable Key_Del	= setkey_via_terminfo ("kD", "^[[3~");
-variable Key_Home	= setkey_via_terminfo ("kh", "^[[1~");
-variable Key_End	= setkey_via_terminfo ("@7", "^[[4~");
-variable Key_PgUp	= setkey_via_terminfo ("kP", "^[[5~");
-variable Key_PgDn	= setkey_via_terminfo ("kN", "^[[6~");
+variable Key_Ins	= setkey_via_terminfo ("kI", "\e[2~");
+variable Key_Del	= setkey_via_terminfo ("kD", "\e[3~");
+variable Key_Home	= setkey_via_terminfo ("kh", "\e[1~");
+variable Key_End	= setkey_via_terminfo ("@7", "\e[4~");
+variable Key_PgUp	= setkey_via_terminfo ("kP", "\e[5~");
+variable Key_PgDn	= setkey_via_terminfo ("kN", "\e[6~");
 
 variable Key_BS		= _Backspace_Key;
 

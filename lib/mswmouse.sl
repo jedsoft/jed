@@ -12,36 +12,36 @@
 %  Other buttons are undefined.
 %
 
-setkey ("mouse_set_point_open",		"^[^@Dl");   % left button down
-setkey ("mouse_set_point_close",	"^[^@Ul");   % left button up
-setkey ("mouse_yank_cutbuffer",		"^[^@Dm");   % middle down
-setkey ("mouse_yank_cutbuffer",		"^[^@Dr");   % right down
-setkey ("mouse_null",			"^[^@Um");   % middle up
-setkey ("mouse_null",			"^[^@Ur");   % right up
+setkey ("mouse_set_point_open",		"\e^@Dl");   % left button down
+setkey ("mouse_set_point_close",	"\e^@Ul");   % left button up
+setkey ("mouse_yank_cutbuffer",		"\e^@Dm");   % middle down
+setkey ("mouse_yank_cutbuffer",		"\e^@Dr");   % right down
+setkey ("mouse_null",			"\e^@Um");   % middle up
+setkey ("mouse_null",			"\e^@Ur");   % right up
 
 % dragging
-setkey ("mouse_drag",			"^[^@^@l");  % left dragging
-setkey ("mouse_drag",			"^[^@^@r");  % right dragging
-setkey ("mouse_null",			"^[^@^@^L"); % C-left dragging
-setkey ("mouse_drag",			"^[^@^@^R"); % C-right dragging
-setkey ("mouse_null",			"^[^@^@L");  % S-left dragging
-setkey ("mouse_null",			"^[^@^@R");  % S-right dragging
+setkey ("mouse_drag",			"\e^@^@l");  % left dragging
+setkey ("mouse_drag",			"\e^@^@r");  % right dragging
+setkey ("mouse_null",			"\e^@^@^L"); % C-left dragging
+setkey ("mouse_drag",			"\e^@^@^R"); % C-right dragging
+setkey ("mouse_null",			"\e^@^@L");  % S-left dragging
+setkey ("mouse_null",			"\e^@^@R");  % S-right dragging
 
 % shifted
-setkey ("mouse_split_window",		"^[^@DL");   % Shift-left button down
-setkey ("mouse_null",			"^[^@UL");   % left button up
-setkey ("mouse_yank_from_jed",		"^[^@DM");   % middle down
-setkey ("mouse_yank_from_jed",		"^[^@DR");   % right down
-setkey ("mouse_null",			"^[^@UR");   % right up
-setkey ("mouse_null",			"^[^@UM");   % middle up
+setkey ("mouse_split_window",		"\e^@DL");   % Shift-left button down
+setkey ("mouse_null",			"\e^@UL");   % left button up
+setkey ("mouse_yank_from_jed",		"\e^@DM");   % middle down
+setkey ("mouse_yank_from_jed",		"\e^@DR");   % right down
+setkey ("mouse_null",			"\e^@UR");   % right up
+setkey ("mouse_null",			"\e^@UM");   % middle up
 
 % ctrl
-setkey ("mouse_delete_window",		"^[^@D^L");  % left button down
-setkey ("mouse_null",			"^[^@U^L");  % left button up
-setkey ("mouse_null",			"^[^@D^M");  % middle down
-setkey ("mouse_null",			"^[^@D^R");  % middle down
-setkey ("mouse_null",			"^[^@U^M");  % middle up
-setkey ("mouse_null",			"^[^@U^R");  % middle up
+setkey ("mouse_delete_window",		"\e^@D^L");  % left button down
+setkey ("mouse_null",			"\e^@U^L");  % left button up
+setkey ("mouse_null",			"\e^@D^M");  % middle down
+setkey ("mouse_null",			"\e^@D^R");  % middle down
+setkey ("mouse_null",			"\e^@U^M");  % middle up
+setkey ("mouse_null",			"\e^@U^R");  % middle up
 
 define mouse_null ();
 

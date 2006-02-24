@@ -139,7 +139,7 @@ definekey_reserved ("latex_toggle_math_mode",  "~",  $1);
 definekey_reserved ("tex_insert_macro",        "^M", $1);
 definekey_reserved ("latex_help",              "i",  $1);
 
-definekey ("tex_complete_symbol",     "^[^I", $1);
+definekey ("tex_complete_symbol",     "\e^I", $1);
 % indentation
 definekey ("latex_indent_next_line",   "^J",     $1);
 definekey_reserved ("latex_indent_region",      "^Q^R", $1);
@@ -951,7 +951,7 @@ private define init_menu (menu)
 %    "tex_mark_section"        "^C*"
 %    "latex_toggle_math_mode"  "^C~"
 %    "tex_insert_macro"        "^C^M"
-%    "tex_complete_symbol"     "^[^I"
+%    "tex_complete_symbol"     "\e^I"
 %    "latex_help"              "^Ci"
 %    "latex_indent_next_line"   "^J"
 %    "latex_indent_region"      "^C^Q^R"

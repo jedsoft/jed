@@ -59,10 +59,10 @@ define enable_menu_keys ();
 #ifdef XWINDOWS
 . "HOST" getenv =$1
 % . $1 NULL != { "XJed@" $1 strcat x_set_window_name } if
-. "skip_word" 		"^[[c" setkey      %/* shift-right */
-. "bskip_word"		"^[[d" setkey      %/* shift-left */
-. "goto_top_of_window"	"^[[a" setkey      %/* shift-up */
-. "goto_bottom_of_window"	"^[[b" setkey      %/* shift-down */
+. "skip_word" 		"\e[c" setkey      %/* shift-right */
+. "bskip_word"		"\e[d" setkey      %/* shift-left */
+. "goto_top_of_window"	"\e[a" setkey      %/* shift-up */
+. "goto_bottom_of_window"	"\e[b" setkey      %/* shift-down */
 . "beg_of_line"		"\e[1~" setkey		% Home
 . "eol_cmd"		"\e[4~" setkey		% End
 

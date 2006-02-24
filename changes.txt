@@ -417,6 +417,32 @@ Changes since B0.99-16
 178. lib/chglog.sl: Added a wrap_hook and made the indent amount
      customizable.
 179. lib/digraph.sl: Tweaked to work in UTF-8 mode.
+180. doc/tm/rtl/keys.tm: For the documentation for the (un)getkey
+     functions, use "byte" instead of "character".
+181. lib/site.sl: #ifdef out out abbrev functions if abbrev_table_p is
+     not defined (Paul Boekholt).
+182. doc/txt/color.txt: Typos corrected (Ulli Horlacher horlacher at
+     belwue, de).
+183. doc/tm/rtl/color.tm: The set_color function was updated to
+     include the "default" color.
+184. lib/isearch.sl: Fixed an isearch problem that with SEARCH_WRAP
+     set to 1, and the search failed, the cursor would jump to the
+     beginning the buffer.  (Paul Boekholt)
+185. src/vms.c,sig.c: VMS-specific patches: If SIGTSTP is undefined,
+     don't use it. (Thomas Pfau pfau at nbpfaus, net)
+186. src/DESCRIP.MMS: Typo corrected (Hartmut Becker Hartmut, Becker
+     at hp, com)
+186. lib/bytecomp.sl: tiasm.sl was listed twice (Hartmut Becker).
+187. src/vms.c: Add support for DECNET filenames (Hartmut Becker)
+188. src/misc.c: Made changes to the getkey and ungetkey intrinsic
+     functions so that they will work with wide-characters when in
+     unicode mode.  The old byte-based behavior is still available via
+     the _getkey and _ungetkey functions.  This change was required to
+     make isearch unicode-aware.
+189. lib/*.sl: Changed ^[ in key-definitions to \e for consistency.
+190. lib/site.sl: The expand_keystring function was rewritten and now
+     takes advantage of keydefs.sl.  As a result, it is cleaner.
+191. lib/paste.sl, mousex.sl: Use _getkey instead of getkey.
 
 {{{ Previous Versions 
 

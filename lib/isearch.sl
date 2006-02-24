@@ -273,11 +273,12 @@ define isearch_dir (dir)
 	     % the buffer, depending on whether we've been going forwards or
 	     % backwards.
 	     Last_Search_Failed = 0;
+	     push_mark ();
 	     if (dir > 0)
 	       bob();
 	     else
 	       eob();
-	     () = perform_search (str, dir);
+	     pop_mark (not (perform_search (str, dir)));
 	     continue;
 	  }
 

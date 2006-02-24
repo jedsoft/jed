@@ -171,7 +171,7 @@ int my_getkey() /*{{{*/
    if (Batch)
      {
 	fgets(buf, 9 ,stdin);
-	return (int) *buf;
+	return (int) (unsigned char)*buf;
      }
 
    /* Apparantly this hack causes problems when dealing with a unicode-aware
@@ -239,7 +239,6 @@ int my_getkey() /*{{{*/
 }
 
 /*}}}*/
-
 
 void ungetkey_string(char *s, int n) /*{{{*/
 {

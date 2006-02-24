@@ -483,8 +483,8 @@ private variable bibtexModeName = bibtexName + "-Mode";
    %definekey ("bibtex_next_field", "^N",	bibtexModeName);
    %definekey ("bibtex_prev_field", "^P",	bibtexModeName);
 
-   definekey ("bibtex_next_entry", "^[N",	bibtexModeName);
-   definekey ("bibtex_prev_entry", "^[P",	bibtexModeName);
+   definekey ("bibtex_next_entry", "\eN",	bibtexModeName);
+   definekey ("bibtex_prev_entry", "\eP",	bibtexModeName);
    definekey("self_insert_cmd", "\"", bibtexModeName);
 
    % These are the keys that have a ^C prefix

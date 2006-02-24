@@ -39,9 +39,9 @@ char Error_Buffer[256];
 char Message_Buffer[256];
 int Exit_From_MiniBuffer;
 
-char Macro_Buffer[JED_KBD_MACRO_SIZE];
-char *Macro_Buffer_Ptr = Macro_Buffer;
-char *Macro_Ptr_Max = Macro_Buffer;
+static unsigned char Macro_Buffer[JED_KBD_MACRO_SIZE];
+unsigned char *Macro_Buffer_Ptr = Macro_Buffer;
+static unsigned char *Macro_Ptr_Max = Macro_Buffer;
 int Defining_Keyboard_Macro = 0;
 int Executing_Keyboard_Macro = 0;
 
@@ -562,9 +562,9 @@ int execute_keyboard_macro() /*{{{*/
 
 void get_last_macro () /*{{{*/
 {
-   register char *m, *s, ch;
-   char buf[2 * JED_KBD_MACRO_SIZE + 1];
-   
+   unsigned char *m, *s;
+   unsigned char buf[2 * JED_KBD_MACRO_SIZE + 1];
+
    if (Defining_Keyboard_Macro)
      {
 	msg_error("Complete Macro first!");
@@ -577,11 +577,10 @@ void get_last_macro () /*{{{*/
 	msg_error("Macro not defined.");
 	return;
      }
-   
    s = buf;
    while (m < Macro_Ptr_Max)
      {
-	ch = *m++;
+	unsigned char ch = *m++;
 	if ((ch < ' ') || (ch == 127))
 	  {
 	     *s++ = '^';
@@ -592,10 +591,10 @@ void get_last_macro () /*{{{*/
 	     *s++ = '\\';
 	  }
 	
-	*s++ = ch;
+	*s++ = (char)ch;
      }
    *s = 0;
-   SLang_push_string(buf);
+   SLang_push_string ((char *)buf);
 }
 
 /*}}}*/
@@ -733,6 +732,54 @@ Buffer *jed_get_mini_action_buffer (void)
      }
    return NULL;
 }
+
+/* Returns 0, if the keysequence is valid, otherwise returns -1. */
+int jed_getkey_wchar (SLwchar_Type *wchp)
+{
+   int ch;
+#if JED_HAS_UTF8_SUPPORT
+   SLuchar_Type buf[SLUTF8_MAX_MBLEN+1];
+   unsigned int i;
+#endif
+
+   ch = jed_getkey ();
+   *wchp = (SLwchar_Type) ch;
+
+#if JED_HAS_UTF8_SUPPORT
+   if ((ch < 128) || (Jed_UTF8_Mode == 0))
+     return 0;
+
+   buf[0] = (SLuchar_Type) ch;
+   i = 1;
+   while (1)
+     {
+	unsigned int n;
+	if (NULL != SLutf8_decode (buf, buf+i, wchp, &n))
+	  break;
+	if ((i == SLUTF8_MAX_MBLEN) || (ch < 128))
+	  {
+	     ungetkey_string ((char *)buf + 1, i-1);
+	     *wchp = buf[0];
+	     return -1;
+	  }
+	ch = jed_getkey ();
+	buf[i] = (SLuchar_Type) ch;
+	i++;
+     }
+#endif
+   return 0;
+}
+
+void jed_ungetkey_wchar (SLwchar_Type wc)
+{
+   SLuchar_Type *b, buf[SLUTF8_MAX_MBLEN];
+
+   if (NULL == (b = jed_wchar_to_multibyte (wc, buf)))
+     return;
+   
+   ungetkey_string ((char *)buf, (int)(b-buf));
+}
+
 
 #if SLANG_VERSION < 10410
 int SLang_get_error (void)

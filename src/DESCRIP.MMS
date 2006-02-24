@@ -42,7 +42,7 @@ OBJS =	ABBREV$(OBJ), -
 	LEDIT$(OBJ), -
 	LOCK$(OBJ), -
 	LINE$(OBJ), -
-	LINEATTR$(OBJ)
+	LINEATTR$(OBJ), -
 	MAIN$(OBJ), -
 	MISC$(OBJ), -
 	PASTE$(OBJ), -

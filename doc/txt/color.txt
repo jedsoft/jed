@@ -1,7 +1,7 @@
-This is a short note explaining how to use JED with a color terminal.  This
-only applies to Unix and VMS spplies to Unix and VMS systems.  This is
-particularly relevant if you want to exploit JED's ability to do color
-syntax highlighting on a character based terminal.
+This is a short note explaining how to use JED with a color terminal.
+This only applies to Unix and VMS.  This is particularly relevant if
+you want to exploit JED's ability to do color syntax highlighting on a
+character based terminal.
 
   *Note: If you use MS-Kermit as a terminal emulator, you will need
 	 to tell it what foreground/background colors you want via

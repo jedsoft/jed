@@ -18,6 +18,8 @@ extern void read_string(char *, int *);
 extern void clear_error(void);
 extern int jed_getkey(void);
 extern int jed_check_string_key_buffer (void);
+extern int jed_getkey_wchar (SLwchar_Type *);
+extern void jed_ungetkey_wchar (SLwchar_Type);
 
 extern char *jed_malloc0 (unsigned int);
 
@@ -49,7 +51,7 @@ extern Buffer *jed_get_mini_action_buffer (void);
 
 extern int get_macro(void);
 extern int Exit_From_MiniBuffer;
-extern char *Macro_Buffer_Ptr;
+extern unsigned char *Macro_Buffer_Ptr;
 extern char *read_from_minibuffer(char *, char *, char *, int *);
 extern char *safe_strcat (char *, char *, unsigned int);
 extern char *safe_strcpy (char *, char *, unsigned int);

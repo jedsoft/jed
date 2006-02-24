@@ -222,11 +222,14 @@
 
 \function{getkey}
 \synopsis{Read an input character from the keyboard}
-\usage{Integer getkey ();}
+\usage{Long_Type getkey ()}
 \description
   The \var{getkey} function may be used to read an input character from the
-  keyboard.  It returns an integer in the range 0 to 256 which represents
-  the ASCII or extended ASCII value of the character.
+  keyboard.  If UTF-8 mode is in effect, the value returned can be
+  negative if the key-sequence corresponds to an invalid UTF-8 encoded
+  sequence.  In such a case, the value returned will correspond to the
+  first byte of the sequence, and will be equal in magnitude to the
+  value of byte.
 \seealso{input_pending, ungetkey}
 \done
 
@@ -389,12 +392,12 @@
 \done
 
 \function{ungetkey}
-\synopsis{Push a character "ch" onto the input stream}
-\usage{Void ungetkey (Integer ch);}
+\synopsis{Push a character onto the input stream}
+\usage{Void ungetkey (Integer c);}
 \description
-  This function may be used to push a character \var{ch} represented by its
-  ASCII value, onto the input stream.  This means that the next keyboard
-  to be read will be \var{ch}.
+  This function may be used to push a character \exmp{c} represented by its
+  character code onto the input stream.  This means that the next
+  keyboard character to be read will be \exmp{c}.
 \seealso{buffer_keystring, getkey, get_key_binding}
 \done
 

@@ -1207,7 +1207,7 @@ latex_mode
     "tex_mark_section"        "^C*"
     "latex_toggle_math_mode"  "^C~"
     "tex_insert_macro"        "^C^M"
-    "tex_complete_symbol"     "^[^I"
+    "tex_complete_symbol"     "\e^I"
     "latex_help"              "^Ci"
     "latex_indent_next_line"   "^J"
     "latex_indent_region"      "^C^Q^R"
@@ -2340,6 +2340,23 @@ runhooks
 
 --------------------------------------------------------------
 
+Jed_Tmp_Directory
+
+ SYNOPSIS
+  Directory used to hold temporary files
+
+ USAGE
+  Jed_Tmp_Directory = "/tmp";
+
+ DESCRIPTION
+ This variable is used by the `make_tmp_file' function to create
+ temporary filenames.
+
+ SEE ALSO
+  make_tmp_file, make_tmp_buffer_name
+
+--------------------------------------------------------------
+
 make_tmp_file
 
  SYNOPSIS
@@ -2350,6 +2367,8 @@ make_tmp_file
 
  DESCRIPTION
  This function returns a unique file name that begins with `base'.
+ If `base' does not specify an absolute path, the value of
+ `Jed_Tmp_Directory' will be used for the directory.
 
 --------------------------------------------------------------
 

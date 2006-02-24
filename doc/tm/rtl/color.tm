@@ -45,10 +45,18 @@
    "magenta"          "brightmagenta"
    "cyan"             "brightcyan"
    "lightgray"        "white"
+   "default"
 #v-
  One most terminals, the values in the second column have no affect
- when used as the background color.
-
+ when used as the background color.  
+ 
+ Using "default" as a foreground or background color instructs the
+ editor to tell the terminal to use the default foreground and
+ background colors of the window.  If you use a terminal that uses a
+ transparant background, then you need to specify "default" as the
+ background color.  Not all terminals support the notion of the
+ "default" color.  
+ 
  The valid names for \var{obj} are:
 #v+
    "normal"      Default foreground/background

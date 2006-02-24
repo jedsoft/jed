@@ -185,7 +185,6 @@ $0 = _stkdepth ();
 "matlab.sl";
 "recent.sl";
 "tpascal.sl";
-"tiasm.sl";
 "aprocess.sl";
 "tmmode.sl";
 "xformreg.sl";

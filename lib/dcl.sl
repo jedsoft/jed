@@ -145,7 +145,7 @@ set_color ("keyword2","blue","black");
 {
    make_keymap ("DCL");
    definekey ("dcl_newline", "^M", "DCL");
-   definekey ("newline_and_indent", "^[^M", "DCL");
+   definekey ("newline_and_indent", "\e^M", "DCL");
    definekey ("dcl_indent", "^I" , "DCL");
    definekey ("self_insert_cmd", "\"", "DCL");
    definekey ("self_insert_cmd", "'", "DCL");

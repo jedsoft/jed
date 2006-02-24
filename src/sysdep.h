@@ -30,6 +30,7 @@ extern int init_tty(void);
 extern void reset_tty(void);
 extern void sys_suspend(void);
 extern int my_getkey(void);
+
 extern int input_pending(int *);
 extern void flush_input(void);
 extern void ungetkey_string(char *, int);

@@ -139,9 +139,9 @@ define mouse_event (Mod)
 
    META_CHAR = -1;
    DEC_8BIT_HACK = 0;
-   n = getkey () - 040;		% button number + Modifiers
-   Mouse_X = getkey () - 040;		% Column
-   Mouse_Y = getkey () - 040;		% Row
+   n = _getkey () - 040;		% button number + Modifiers
+   Mouse_X = _getkey () - 040;		% Column
+   Mouse_Y = _getkey () - 040;		% Row
    META_CHAR = meta;
    dec8 = DEC_8BIT_HACK;
 

@@ -169,8 +169,9 @@ static void (*Old_Sigtstp_Handler)(int);
 void jed_reset_signals (void)
 {
    SLsignal (SIGINT, Old_Sigint_Handler);
+#ifdef SIGTSTP
    SLsignal (SIGTSTP, Old_Sigtstp_Handler);
-   
+#endif
    /* return 0; */
 }
 

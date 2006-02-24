@@ -760,9 +760,17 @@ set_color
    "magenta"          "brightmagenta"
    "cyan"             "brightcyan"
    "lightgray"        "white"
+   "default"
 
  One most terminals, the values in the second column have no affect
  when used as the background color.
+
+ Using "default" as a foreground or background color instructs the
+ editor to tell the terminal to use the default foreground and
+ background colors of the window.  If you use a terminal that uses a
+ transparant background, then you need to specify "default" as the
+ background color.  Not all terminals support the notion of the
+ "default" color.
 
  The valid names for `obj' are:
 
@@ -2437,12 +2445,15 @@ getkey
   Read an input character from the keyboard
 
  USAGE
-  Integer getkey ();
+  Long_Type getkey ()
 
  DESCRIPTION
   The `getkey' function may be used to read an input character from the
-  keyboard.  It returns an integer in the range 0 to 256 which represents
-  the ASCII or extended ASCII value of the character.
+  keyboard.  If UTF-8 mode is in effect, the value returned can be
+  negative if the key-sequence corresponds to an invalid UTF-8 encoded
+  sequence.  In such a case, the value returned will correspond to the
+  first byte of the sequence, and will be equal in magnitude to the
+  value of byte.
 
  SEE ALSO
   input_pending, ungetkey
@@ -2686,15 +2697,15 @@ undefinekey
 ungetkey
 
  SYNOPSIS
-  Push a character "ch" onto the input stream
+  Push a character onto the input stream
 
  USAGE
-  Void ungetkey (Integer ch);
+  Void ungetkey (Integer c);
 
  DESCRIPTION
-  This function may be used to push a character `ch' represented by its
-  ASCII value, onto the input stream.  This means that the next keyboard
-  to be read will be `ch'.
+  This function may be used to push a character `c' represented by its
+  character code onto the input stream.  This means that the next
+  keyboard character to be read will be `c'.
 
  SEE ALSO
   buffer_keystring, getkey, get_key_binding

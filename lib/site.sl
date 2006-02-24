@@ -1078,8 +1078,10 @@ define run_mode_hooks (hook)
    runhooks (hook);
    % This is called after the hook to give the hook a chance to load the
    % abbrev table.
+#ifexists abbrev_table_p
    if (abbrev_table_p (get_mode_name ()))
      use_abbrev_table (get_mode_name ());
+#endif
 }
 
 % This is for backwards compatibility in case the user has exit_hook
@@ -2482,8 +2484,10 @@ add_to_hook ("_jed_find_file_after_hooks", &find_file_hook);
 % I just push the strings onto the stack and loop 'add_completion' over them
 %
 $0 = _stkdepth();
-_add_completion ("toggle_undo", "calendar", "trim_buffer", "abbrev_mode",
-		 "define_abbreviation", "save_abbrevs",
+_add_completion ("toggle_undo", "calendar", "trim_buffer",
+#ifexists abbrev_table_p
+		 "abbrev_mode", "define_abbreviation", "save_abbrevs",
+#endif
 		 "occur", "append_region", "write_region",
 		 "replace_across_buffer_files",
 		 "recover_file", "compile", "sort", "untab", "fortran_mode",
