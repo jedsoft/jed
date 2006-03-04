@@ -11,9 +11,7 @@
 extern void exit_error(char *, int);
 extern void msg_error(char *);
 extern void jed_verror (char *, ...);
-extern void message(char *);
 extern void jed_vmessage (int, char *, ...);
-extern void clear_message (void);
 extern void read_string(char *, int *);
 extern void clear_error(void);
 extern int jed_getkey(void);
@@ -33,7 +31,6 @@ extern int Defining_Keyboard_Macro;
 extern int Executing_Keyboard_Macro;
 
 extern char Error_Buffer[256];
-extern char Message_Buffer[256];
 
 /* information needed by minibuffer and display routines */
 typedef struct MiniInfo_Type

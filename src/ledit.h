@@ -24,7 +24,6 @@ extern int insert_file_cmd(void);
 extern void init_minibuffer(void);
 extern int exit_minibuffer(void);
 extern int select_minibuffer(void);
-extern void flush_message(char *);
 extern int mini_complete(void);
 extern void buffer_substring(void);
 extern char *make_line_string(char *, unsigned int);

@@ -142,7 +142,7 @@ typedef struct /*{{{*/
    XFontStruct *font;
    char *font_name;
    int font_height, font_width, font_base;
-
+   int is_dual_font;		       /* if both single and double width */
 #if XJED_HAS_XRENDERFONT
    XftFont *xftfont;
    XftDraw *xftdraw;
@@ -167,7 +167,6 @@ typedef struct /*{{{*/
 
    int visible;			       /* from visibilitynotify */
    Cursor mouse;
-
 }
 /*}}}*/
 JXWindow_Type;
@@ -582,7 +581,9 @@ static void JX_write_smgchars(int row, int col, SLsmg_Char_Type *s, SLsmg_Char_T
 {
    SLwchar_Type *b, *bend, buf[512];
    int oldcolor, color;
-    
+   SLsmg_Char_Type *s0;
+   int is_dual_font;
+
    b = buf;
    bend = buf + 510;
 
@@ -590,6 +591,8 @@ static void JX_write_smgchars(int row, int col, SLsmg_Char_Type *s, SLsmg_Char_T
    if ((oldcolor < 0) || (oldcolor >= JMAX_COLORS))
      oldcolor = 0;
    
+   is_dual_font = XWin->is_dual_font;
+   s0 = s;
    while (s < smax)
      {
         color = (SLSMG_EXTRACT_COLOR(*s) & SLSMG_COLOR_MASK);
@@ -601,14 +604,25 @@ static void JX_write_smgchars(int row, int col, SLsmg_Char_Type *s, SLsmg_Char_T
 	    || SLSMG_COUNT_CHARS(*s) > 1)  /* a combining character */
           {
 	     (void) xdraw(XWin->text_gc+oldcolor, row, col, buf, b-buf, 0);
-	     col += b-buf;
+	     col += (int)(s-s0);
+	     s0 = s;
 	     b = buf;
              oldcolor = color;
           }
 #if SLANG_VERSION >= 20000
 	if (s->nchars > 1)
-	  /* this cell has combining characters */
-	  JX_write_smgchar(row, col++, s);
+	  {
+	     /* this cell has combining characters */
+	     JX_write_smgchar(row, col, s);
+	     col++;
+	     s0 = s + 1;
+	  }
+	else if (s->nchars == 0)
+	  {
+	     /* SLsmg thinks this is a double width character, but the font has no such characters */
+	     if (is_dual_font == 0)
+	       *b++ = ' ';
+	  }
 	else
 #endif
 	  *b++ = SLSMG_EXTRACT_CHAR(*s);
@@ -1595,6 +1609,37 @@ static void xjed_suspend (void) /*{{{*/
 
 /*}}}*/
 
+static int get_font_width (XFontStruct *f, int *wp, int *is_dualp)
+{
+   int w0, w1;
+
+   *is_dualp = 0;
+   if (f->min_bounds.width == f->max_bounds.width)
+     {
+	*wp = f->max_bounds.width;
+	return 0;
+     }
+
+   /* Simple heristic */
+   w0 = XTextWidth (f, "M", 1);
+   w1 = XTextWidth (f, "l", 1);
+   if (w0 != w1)
+     (void) fprintf (stderr, "This font does not appear to be single-width.  Expect rendering problems.\n");
+   
+#if SLANG_VERSION >= 20000
+   if (Jed_UTF8_Mode
+       && (f->min_bounds.width * 2 == f->max_bounds.width))
+     {
+	*wp = f->min_bounds.width;
+	*is_dualp = 1;
+	return 0;
+     }
+#endif
+   
+   *wp = f->max_bounds.width;
+   return 0;
+}
+
 static int load_font (char *font) /*{{{*/
 {
    static XFontStruct *xfont;
@@ -1620,9 +1665,14 @@ static int load_font (char *font) /*{{{*/
    if (xfont == NULL) return -1;
    XWin->font = xfont;
    XWin->font_name = font;
-   XWin->font_height = XWin->font->ascent + XWin->font->descent;
-   XWin->font_width = XWin->font->max_bounds.width;
-   XWin->font_base = XWin->font->ascent;
+   XWin->font_height = xfont->ascent + xfont->descent;
+   XWin->font_base = xfont->ascent;
+   (void) get_font_width (xfont, &XWin->font_width, &XWin->is_dual_font);
+   if (XWin->font_width <= 0)
+     {
+	fprintf (stderr, "Font width for %s is <= 0\n", font);
+	return -1;
+     }
    return 0;
 }
 
@@ -2145,6 +2195,8 @@ static int init_Xdisplay (void) /*{{{*/
      }
 
    XWin = &XWin_Buf;
+   memset ((char *)XWin, 0, sizeof (JXWindow_Type));
+
    get_xdefaults ();
    XWin->border = atoi(This_Internal_Border_Name);
    if (XWin->border < 0)

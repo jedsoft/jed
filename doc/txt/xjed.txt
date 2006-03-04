@@ -149,7 +149,7 @@ Angelo Pagan (pagan@astrpd.pd.astro.it) suggests putting
 
 in the .Xmodmap file to enable EDT keypad emulation.
 
-Send comments and suggestions to davis@space.mit.edu
+Send comments and suggestions to jed@jedsoft.org.
 
 
    

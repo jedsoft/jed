@@ -1436,36 +1436,10 @@ static int update_1(Line *top, int force)
 
 int Mini_Ghost = 0;
 
-static void update_minibuffer(void)
-{
-   Window_Type *w;
+char Message_Buffer[256];
 
-   if (Executing_Keyboard_Macro) return;
 
-   if (MiniBuffer != NULL)
-     {
-	w = JWindow;
-	while (!IS_MINIBUFFER) other_window();
-
-	JWindow->beg.line = CLine;
-	mark_window_attributes (1);
-	display_line(CLine, Jed_Num_Screen_Rows-1, 0);
-	while (w != JWindow) other_window();
-	Mini_Ghost = 1;
-     }
-   else if (Mini_Ghost && !*Error_Buffer && !*Message_Buffer)
-     {
-	/* if < 0, it is a result of flush message so let it pass this round */
-	if (Mini_Ghost < 0) Mini_Ghost = 1;
-	else Mini_Ghost = 0;
-     }
-   else Mini_Ghost = ((*Message_Buffer) || (*Error_Buffer));
-
-   if (Mini_Ghost == 0)
-     display_line(NULL, Jed_Num_Screen_Rows-1, 0);
-}
-
-void do_dialog(char *b)
+static void do_dialog(char *b)
 {
    char *quit = "Quit!";
 
@@ -1510,6 +1484,72 @@ void do_dialog(char *b)
 	Mini_Ghost = -1;
      }
    else Mini_Ghost = 0;
+}
+
+void clear_message (void) /*{{{*/
+{
+   message (NULL);
+}
+
+/*}}}*/
+
+void message (char *msg)
+{
+   if (Executing_Keyboard_Macro) return;
+   if (msg == NULL) 
+     {
+	if (Batch)
+	  return;
+	msg = "";
+     }
+   
+   if (Batch) fprintf(stdout, "%s\n", msg);
+
+   if (*msg == 0) 
+     Mini_Ghost = 1;
+
+   strncpy(Message_Buffer, msg, sizeof(Message_Buffer));
+   Message_Buffer[sizeof(Message_Buffer)-1] = 0;
+}
+
+void flush_message (char *m)
+{
+   message(m);
+   if (Batch || (JWindow == NULL)) return;
+   do_dialog(Message_Buffer);
+   SLsmg_gotorc (Jed_Num_Screen_Rows - 1, strlen(Message_Buffer));
+   *Message_Buffer = 0;
+   JWindow->trashed = 1;
+   SLsmg_refresh ();
+}
+
+static void update_minibuffer(void)
+{
+   Window_Type *w;
+
+   if (Executing_Keyboard_Macro) return;
+
+   if (MiniBuffer != NULL)
+     {
+	w = JWindow;
+	while (!IS_MINIBUFFER) other_window();
+
+	JWindow->beg.line = CLine;
+	mark_window_attributes (1);
+	display_line(CLine, Jed_Num_Screen_Rows-1, 0);
+	while (w != JWindow) other_window();
+	Mini_Ghost = 1;
+     }
+   else if (Mini_Ghost && !*Error_Buffer && !*Message_Buffer)
+     {
+	/* if < 0, it is a result of flush message so let it pass this round */
+	if (Mini_Ghost < 0) Mini_Ghost = 1;
+	else Mini_Ghost = 0;
+     }
+   else Mini_Ghost = ((*Message_Buffer) || (*Error_Buffer));
+
+   if (Mini_Ghost == 0)
+     display_line(NULL, Jed_Num_Screen_Rows-1, 0);
 }
 
 static void set_hscroll(int col)

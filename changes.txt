@@ -447,6 +447,15 @@ Changes since B0.99-16
      garga at freebsd, org).
 193. doc/tm/rtl/keys.tm: Added docs for _getkey and _ungetkey.  Also
      added rtl/*.tm to dependency list in doc/tm/Makefile.
+194. src/screen.c: Moved message routines here for better localization.
+195. src/xterm.c: print a warning message if the font does not look
+     like a fixed width one.
+196. src/xterm.c: Fixed some rendering bugs associated with
+     double-width fonts.  The problem is that SLsmg's idea about the
+     width of a character from its unicode properties can be quite
+     different from the width specified by the font.  In the future,
+     Xjed will have to employ at least 2 fonts: one for single width
+     characters, and one for double width.
 
 {{{ Previous Versions 
 

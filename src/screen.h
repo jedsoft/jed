@@ -31,7 +31,11 @@ extern void touch_window(void);
 extern int cursor_visible(void);
 extern Line *find_top(void);
 extern Line *jed_find_top_to_recenter (Line *);
-extern void do_dialog(char *);
+
+extern char Message_Buffer[256];
+extern void message(char *);
+extern void clear_message (void);
+extern void flush_message(char *);
 extern void jed_fillmem(char *, char, int);
 extern int Goal_Column;
 extern int User_Prefers_Line_Numbers;

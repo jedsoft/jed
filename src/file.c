@@ -116,6 +116,7 @@ extern unsigned int sleep (unsigned int);
 #include "ledit.h"
 #include "userinfo.h"
 #include "hooks.h"
+#include "screen.h"
 #include "sig.h"
 
 /*}}}*/

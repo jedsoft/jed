@@ -1276,25 +1276,6 @@ char *pop_to_buffer(char *name) /*{{{*/
 
 /*}}}*/
 
-/* I need to make this take another parameter which indicates what to do 
- * with the cursor rather than sticking it at the end.  Call the parameter p.
- * Then try:
- * if (p <= 0) p = strlen(Message_Buffer) + 1;
- * tt_goto_rc(Screen_Height, p); */
-
-void flush_message(char *m) /*{{{*/
-{
-   message(m);
-   if (Batch || (JWindow == NULL)) return;
-   do_dialog(Message_Buffer);
-   SLsmg_gotorc (Jed_Num_Screen_Rows - 1, strlen(Message_Buffer));
-   *Message_Buffer = 0;
-   JWindow->trashed = 1;
-   SLsmg_refresh ();
-}
-
-/*}}}*/
-
 #if defined (REAL_UNIX_SYSTEM) || defined(__WIN32__) || (defined (__os2__) && !defined(__WATCOMC__))
 
 # if defined (__WIN32__) /* defined (__BORLANDC__) || defined (_MSC_VER) */

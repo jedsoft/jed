@@ -14,6 +14,7 @@
 #include "ins.h"
 #include "line.h"
 #include "misc.h"
+#include "screen.h"
 
 
 #define LAST_UNDO CBuf->undo->Last_Undo

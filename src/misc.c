@@ -36,7 +36,6 @@
 
 /* Do not malloc these without changing occurances of sizeof() first */
 char Error_Buffer[256];
-char Message_Buffer[256];
 int Exit_From_MiniBuffer;
 
 static unsigned char Macro_Buffer[JED_KBD_MACRO_SIZE];
@@ -250,28 +249,6 @@ void msg_error(char *msg) /*{{{*/
      SLang_set_error (SL_INTRINSIC_ERROR);
 
    if (Error_Buffer[0] == 0) safe_strcpy(Error_Buffer, msg, sizeof (Error_Buffer));
-}
-
-/*}}}*/
-
-/* later I will do more with this-- for now, keep last one */
-void message (char *msg) /*{{{*/
-{
-   if (Executing_Keyboard_Macro) return;
-   if (msg == NULL) 
-     {
-	if (Batch)
-	  return;
-	msg = "";
-     }
-   
-   if (Batch) fprintf(stdout, "%s\n", msg);
-
-   if (*msg == 0) 
-     Mini_Ghost = 1;
-
-   strncpy(Message_Buffer, msg, 255);
-   Message_Buffer[255] = 0;
 }
 
 /*}}}*/
@@ -629,14 +606,6 @@ char *safe_strcat (char *a, char *b, unsigned int n) /*{{{*/
 }
 
 /*}}}*/
-
-void clear_message (void) /*{{{*/
-{
-   message (NULL);
-}
-
-/*}}}*/
-
 
 void jed_vmessage (int now, char *fmt, ...)
 {
