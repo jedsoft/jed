@@ -8,8 +8,9 @@ xjed recognizes the following resources:
    Geometry          Initial geometry specifications
    font              Default font to use
    background [bg]   Background color
-   foreground [fg]   Forground color
+   foreground [fg]   Foreground color
    Title             name to be displayed on the title bar
+
    fgStatus   [sfg]  foreground color of the xjed buffer status line
    bgStatus   [sbg]  background color of the xjed buffer status line
    fgRegion   [rfg]  foreground color of a region as defined by point and mark
@@ -18,8 +19,8 @@ xjed recognizes the following resources:
    bgCursor   [cbg]  text cursor background color
    fgMouse    [mfg]  mouse cursor foreground color
    bgMouse    [mbg]  mouse cursor background color
-   fgMenu     [fgm] Foreground color for menubar
-   bgMenu     [bgm] Foreground color for menubar
+   fgMenu     [fgm] Foreground color for menu bar
+   bgMenu     [bgm] Foreground color for menu bar
    fgMessage  [fgms] Foreground color for messages
    bgMessage  [bgms] Background color for messages
    fgError    [fger] Foreground color for error messages
@@ -27,27 +28,27 @@ xjed recognizes the following resources:
    
 These resources specify color syntax highlighting options:
 
-   fgOperator    [fgop]   forground color for operators (+, -, etc...)
+   fgOperator    [fgop]   foreground color for operators (+, -, etc...)
    bgOperator    [bgop]   background color for operators
-   fgNumber      [fgnm]   forground color for numbers
+   fgNumber      [fgnm]   foreground color for numbers
    bgNumber      [bgnm]   background color for numbers
-   fgString      [fgst]   forground color for strings
+   fgString      [fgst]   foreground color for strings
    bgString      [bgst]   background color for strings
-   fgComments    [fgco]   forground color for comments
+   fgComments    [fgco]   foreground color for comments
    bgComments    [bgco]   background color for comments
-   fgKeyword     [fgkw]   forground color for keywords
+   fgKeyword     [fgkw]   foreground color for keywords
    bgKeyword     [bgkw]   background color for keywords
-   fgKeyword1    [fgkw1]  forground color for keywords1
+   fgKeyword1    [fgkw1]  foreground color for keywords1
    bgKeyword1    [bgkw1]  background color for keywords1
-   fgKeyword2    [fgkw2]  forground color for keywords2
+   fgKeyword2    [fgkw2]  foreground color for keywords2
    bgKeyword2    [bgkw2]  background color for keywords2
-   fgDelimiter   [fgde]   forground color for delimeters
+   fgDelimiter   [fgde]   foreground color for delimiters
    bgDelimiter   [bgde]   background color for delimeters
-   fgPreprocess  [fgpr]   forground color for preprocessor lines
+   fgPreprocess  [fgpr]   foreground color for preprocessor lines
    bgPreprocess  [bgpr]   background color for preprocessor lines
 
 Any of the above items may be specified on the xjed command line. Quantities
-enclosed in square brackets may be used as a shortform of their longer
+enclosed in square brackets may be used as a short form of their longer
 counterparts.
 
 For example, 
@@ -62,16 +63,21 @@ command line arguments are parsed as normal JED command line arguments.
 The easiest way to specify the resources is to make use of a `.Xdefaults'
 in your $HOME directory.  Here is an example entry for Xjed:
 
-xjed*Geometry: 80x36+100+100
-xjed*font: 10x20
-xjed*background: white
-xjed*foreground: black
-xjed*fgNumber: blue
+  xjed*Geometry: 80x36+100+100
+  xjed*font: 10x20
+  xjed*background: white
+  xjed*foreground: black
+  xjed*fgNumber: blue
 
 The first line specifies that the initial window size is 80 columns by 36
 rows and that the top left corner of the window is to be positioned at (100,
 100). The second line specifies a fixed 10x20 font.  The other two lines
 specify the foreground and background colors of the window.
+
+When running in UTF-8 mode, "UXjed" may be used for the resource
+prefix, e.g.,
+
+  UXjed*font: -Misc-Fixed-Medium-R-Normal--20-200-75-75-C-100-ISO10646-1
 
 ---------------------------------------------------------------------------
 Delete Key:
@@ -99,7 +105,7 @@ in your .jedrc file.
 ------------------------------------------------------------------------
 Mouse Usage:
 
-XJED S-Lang specific functions:
+Xjed S-Lang specific functions:
 
    x_set_window_name   :  Set the name of the window (for title bar)
    x_warp_pointer      :  Move mouse position to cursor position
@@ -116,7 +122,7 @@ XJED S-Lang specific functions:
   
       set_color ("mouse", "red", "blue");
 
-  gives the mouse cursor a red forground with a blue background.  The color
+  gives the mouse cursor a red foreground with a blue background.  The color
   values must be recognizable by the X server.
   
   In addition to the usual keybindings, the X version binds:
@@ -132,7 +138,7 @@ XJED S-Lang specific functions:
      
 Miscellaneous:
 
-   Suspending XJed is not allowed.  If ^Z is pressed, the window is raised
+   Suspending xjed is not allowed.  If ^Z is pressed, the window is raised
    if it is obscured, or lowered if it is totally visible.
 
 
@@ -147,7 +153,7 @@ Angelo Pagan (pagan@astrpd.pd.astro.it) suggests putting
 	keycode 82  = KP_F4
 	keycode 86  = KP_Separator
 
-in the .Xmodmap file to enable EDT keypad emulation.
+in the .xmodmap file to enable EDT keypad emulation.
 
 Send comments and suggestions to jed@jedsoft.org.
 

@@ -384,7 +384,7 @@ Changes since B0.99-16
      Sangoid).
 165. src/win32.c: Apparantly the stat function on windows cannot cope
      with network shares.  Dino Sangoid provided a work-around.
--------- snapshot B0.99.17-135 released (Feb 14, 2006) -------
+-------- snapshot B0.99.17-165 released (Feb 14, 2006) -------
 166. lib/texcom.sl, mailedit.sl, tmmode.sl: Call indent_line from the
      wrap hooks.
 167. src/Makefile.in: Tweaked to call my update_changes_version
@@ -456,6 +456,13 @@ Changes since B0.99-16
      different from the width specified by the font.  In the future,
      Xjed will have to employ at least 2 fonts: one for single width
      characters, and one for double width.
+197. lib/comments.sl: Changes made to support "minor-modes" (Gunter
+     Milde).
+198. src/mini.sl: If Mini_Store_Duplicates is -2, then use a
+     "Least-Recently-Used" strategy (Marko Mahnic marko, mahnic at
+     email, si).
+199. src/xterm.c: Order of the resource-names changed a bit.
+200. doc/txt/xjed.txt: Updated to mention the UXjed resource prefix.
 
 {{{ Previous Versions 
 

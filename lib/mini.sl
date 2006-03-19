@@ -2,6 +2,7 @@
 %  Recall previous commands in MiniBuffer
 %
 
+% If -2, never store duplicates, use Least-Recently-Used strategy
 % If -1, store only if not equal to last entered value
 % If 0, never store duplicates
 custom_variable ("Mini_Store_Duplicates", 1);
@@ -97,6 +98,29 @@ public define mini_exit_minibuffer ()
 	     variable i = (Mini_Next_Line + Max_Num_Lines - 1) mod Max_Num_Lines;
 	     if (Mini_Previous_Lines[i] == line)
 	       line = NULL;
+	  }
+	  {
+	   case -2:		       %  never, use LRU
+             variable il, delta, la = Mini_Last_Line;
+             if (la < Mini_First_Line) la = la + Max_Num_Lines;
+             delta = 0;
+             il = Mini_First_Line;
+             while (il < la)
+	       {
+		  if (Mini_Previous_Lines[il mod Max_Num_Lines] == line) delta++;
+		  if (delta)
+		    {
+		       if ((il + delta) > la) 
+			 break;
+		       Mini_Previous_Lines[il mod Max_Num_Lines] = Mini_Previous_Lines[(il + delta) mod Max_Num_Lines];
+		    }
+		  il++;
+	       }
+             if (delta)
+	       {
+		  Mini_Last_Line = (Mini_Last_Line + Max_Num_Lines - delta) mod Max_Num_Lines;
+		  Mini_Next_Line = Mini_Last_Line;
+	       }
 	  }
 	store_line (line);
      }

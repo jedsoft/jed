@@ -1,20 +1,28 @@
 % Functions and variables for (un-)commenting lines and regions
 % taken from ide.sl
-% modified by GM <g.milde@physik.tu-dresden.de>
+% modified by GM <g.milde web.de>
 % modified by JED
 
 custom_variable ("JED_COMMENT_COLUMN", 40);
 
 private variable Comment_Data = Assoc_Type[Struct_Type];
+
+private define extract_major_mode (mode)
+{
+   % mode can be: "major-mode (minor-mode)"
+   return extract_element (mode, 0, ' ');
+}
+
+
 %!%+
 %\function{get_comment_info}
 %\synopsis{Get comment information according to mode} }
 %\usage{Struct_Type = get_comment_info ( [mode] ); }
 %\description
-% Retrieves the comment information according to the optional \var{mode}
-% argument, or for the present mode it \var{mode} is not present.
+% Retrieves the comment information according to the optional \exmp{mode}
+% argument, or for the present mode if \exmp{mode} is not present.
 % Every mode that wants to use this function should provide comment information
-% using the \var{set_comment_info} function.
+% using the \sfun{set_comment_info} function.
 %
 % The returned value is a structure with the following fields:
 %#v+
@@ -23,7 +31,7 @@ private variable Comment_Data = Assoc_Type[Struct_Type];
 %     flags      % flags
 %     column     % preferred column for comments
 %#v-
-% If comment information does not exist for the mode, then \var{NULL} will
+% If comment information does not exist for the mode, then \ivar{NULL} will
 % be returned.
 %\seealso{set_comment_info, comment_region, comment_line, uncomment_region}
 %!%-
@@ -33,11 +41,17 @@ public define get_comment_info ()
      get_mode_name ();
 
    variable modename = ();
+   
+   modename = extract_major_mode (modename);
 
-   !if (assoc_key_exists (Comment_Data, modename))
-     return NULL;
-
-   return Comment_Data[modename];
+   loop (2)
+     {
+	if (assoc_key_exists (Comment_Data, modename))
+	  return Comment_Data[modename];
+	
+	modename = strlow (modename);
+     }
+   return NULL;
 }
 
 %!%+
@@ -47,10 +61,10 @@ public define get_comment_info ()
 %\description
 % This function sets comment information for a specified mode. If the
 % optional mode argument is not present, the current mode will be used.  The
-% other 3 required arguments represent the comment start string (\var{cbeg}), 
-% the comment end string (\var{cend}), and an integer flags argument that 
-% indications how these strings are to be used by the \var{comment_region} 
-% function.  In particular, \var{flags} is a bitmapped integer whose bits
+% other 3 required arguments represent the comment start string (\exmp{cbeg}), 
+% the comment end string (\exmp{cend}), and an integer flags argument that 
+% indications how these strings are to be used by the \sfun{comment_region} 
+% function.  In particular, \exmp{flags} is a bitmapped integer whose bits
 % have the following meaning:
 %#v+
 %     0x01  :  Comments will start at column defined by the region start,
@@ -92,6 +106,7 @@ public define set_comment_column (column)
 private define _get_comment_info ()
 {
    variable m = get_mode_name ();
+   m = extract_major_mode (m);
    variable s = get_comment_info (m);
    if (s == NULL)
      verror("No comment strings defined for %s mode", m);
@@ -359,6 +374,7 @@ set_comment_info ("TPas", "{ ", " }", 0);
 set_comment_info ("PHP", "// ", "", 0);
 set_comment_info ("java", "/* ", " */", 0);
 set_comment_info ("tm", "#% ", "", 0);
+set_comment_info ("python", "# ", "", 0);
 
 provide ("comments");
 

@@ -264,10 +264,6 @@ static XWindow_Arg_Type X_Arg_List[] = /*{{{*/
       * also, change order of names a little?
       */
      {"font",		"fn",	STRING_TYPE,	NULL,	&This_Font_Name},
-#ifdef XJED_USE_R6IM
-     {"inputMethod",      "im",   STRING_TYPE,    NULL,   &R6IM_Input_Method},
-     {"inputStyle",       "is",   STRING_TYPE,    NULL,   &R6IM_Preedit_Type},
-#endif
      {"fgMouse",		"mfg", 	STRING_TYPE,	NULL,	&This_MFG},
      {"bgMouse",		"mbg", 	STRING_TYPE,	NULL,	&This_MBG},
      {"background",	"bg", 	STRING_TYPE,	NULL,	&Default_GC_Info[JNORMAL_COLOR].bg_name},
@@ -313,6 +309,10 @@ static XWindow_Arg_Type X_Arg_List[] = /*{{{*/
      {"Iconic",		"ic",	VOID_TYPE,	NULL,	&Iconic},
      {"xrm",		NULL,	STRING_TYPE,	NULL,	NULL},
      {"internalBorder", "ib",	STRING_TYPE,	NULL,	&This_Internal_Border_Name},
+#ifdef XJED_USE_R6IM
+     {"inputMethod",      "im",   STRING_TYPE,    NULL,   &R6IM_Input_Method},
+     {"inputStyle",       "is",   STRING_TYPE,    NULL,   &R6IM_Preedit_Type},
+#endif
 #if XJED_HAS_XRENDERFONT
      {"facesize",	"fs",	STRING_TYPE,	NULL,	&This_Face_Size},
 #endif	
