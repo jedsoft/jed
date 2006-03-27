@@ -12,7 +12,7 @@
 #ifdef __WIN32__
 /* This needs to go first before stdio is included. */
 # include <windows.h>
-# if !defined(__MINGW32__) && !defined(__CYGWIN32__)
+# if !defined(__CYGWIN32__)
 #  define sleep Sleep
 # endif
 #endif

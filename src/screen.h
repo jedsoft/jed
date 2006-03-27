@@ -60,6 +60,7 @@ extern int jed_compute_effective_length (unsigned char *, unsigned char *);
 extern int jed_find_line_on_screen (Line *, int);
 extern int jed_get_screen_size (int *, int *);
 
+#define JED_HAS_DISPLAY_TABLE 0
 #if JED_HAS_DISPLAY_TABLE
 extern unsigned char Output_Display_Table[256];
 #endif

@@ -463,6 +463,15 @@ Changes since B0.99-16
      email, si).
 199. src/xterm.c: Order of the resource-names changed a bit.
 200. doc/txt/xjed.txt: Updated to mention the UXjed resource prefix.
+201. src/screen.h: set JED_HAS_DISPLAY_TABLE to 0 since this feature
+     is still under development.
+202. src/win32.c: The sys_chmod function was broken on win32 systems
+     (Dino Sangoid).
+203. src/wterm.c: Add support for recoding double byte characters to
+     wide char for display purposes (Dino Sangoid with hints from Marko
+     Mahnic).
+204. src/sysdep.c,main.c: When compiled minw32, use Sleep instead of
+     sleep.  (Marko Mahnic).
 
 {{{ Previous Versions 
 

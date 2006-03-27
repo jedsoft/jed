@@ -269,20 +269,22 @@ int sys_chmod(char *file, int what, mode_t *mode, uid_t *uid, gid_t *gid)
        stat(ourname, &buf) < 0
 #endif
        )
+     {
+	if (ourname[0] == SLASH_CHAR && ourname[1] == SLASH_CHAR)
+	  {
+	     int at = GetFileAttributes(ourname);
 
-     if (ourname[0] == SLASH_CHAR && ourname[1] == SLASH_CHAR)
-       {
-	  int at = GetFileAttributes(ourname);
+	     if (at >= 0)
+	       {
+		  if (at & FILE_ATTRIBUTE_DIRECTORY)
+		    return 2;
+		  else
+		    return 1;
+	       }
+	  }
+	return 0;
+     }
 
-	  if (at >= 0)
-	    {
-	       if (at & FILE_ATTRIBUTE_DIRECTORY)
-		 return 2;
-	       else
-		 return 1;
-	    }
-	  return 0;
-       }
 
    *mode = buf.st_mode & 0777;
 

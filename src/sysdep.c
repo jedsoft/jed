@@ -35,7 +35,7 @@
 #  undef VOID
 # endif
 # include <windows.h>
-# if !defined(__MINGW32__) && !defined(__CYGWIN32__)
+# if !defined(__CYGWIN32__)
 #  define sleep Sleep
 # endif
 # undef _POSIX_SOURCE
@@ -553,7 +553,7 @@ static char *make_abs_filename (char *file)
 	       return file;
 	     /* Insert a slash */
 	     buf[0] = file[0]; buf[1] = ':'; buf[2] = SLASH_CHAR; buf[3] = 0;
-	     file1 = strcat_malloc (buf, file+3);
+	     file1 = strcat_malloc (buf, file+2);
 	     SLfree (file);
 	     return file1;
 	  }

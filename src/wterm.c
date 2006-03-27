@@ -65,6 +65,10 @@ int NumLock_Is_Gold = 0;
 int PC_Alt_Char = 27;
 int PC_Fn_Char = 0;
 
+/* Last Charset used: keep track of input language changes */
+static DWORD JedCharSet = DEFAULT_CHARSET;
+static DWORD JedACP = CP_ACP;
+
 #define SPACE_CHAR        (32 | (JNORMAL_COLOR << 8))
 
 #define MAX_MENU_ID       256
@@ -456,15 +460,19 @@ static SLang_Intrin_Fun_Type Jed_WinGUI_Table[] =
 #undef S
 #undef I
 
+static int wjed_has_unicode(void)
+{
+   static int unicode = -1;
+
+   if (unicode == -1)
+     unicode = SLsmg_is_utf8_mode();
+   return unicode;
+}
+
 static void _putkey (WCHAR wc)
 {
 #if SLANG_VERSION >= 20000
-   static int is_unicode = -1;
-   
-   if (is_unicode == -1)
-     is_unicode = SLsmg_is_utf8_mode();
-   
-   if (is_unicode)
+   if (wjed_has_unicode ())
      {
         unsigned char buf[SLUTF8_MAX_MBLEN+1], *b;
         b = SLutf8_encode((SLwchar_Type)wc, buf, SLUTF8_MAX_MBLEN);
@@ -657,8 +665,16 @@ static int select_font(char *fontname, int fontheight, int fontbold)
 
    font = CreateFont(height, 0, 0, 0,
                      weight, 0, 0, 0,
-                     DEFAULT_CHARSET, 0, 0, 0, FIXED_PITCH,
+                     JedCharSet, 0, 0, 0, FIXED_PITCH,
                      fontname);
+
+   if (font == NULL)
+     {
+	font == CreateFont(height, 0, 0, 0,
+			   weight, 0, 0, 0,
+			   DEFAULT_CHARSET, 0, 0, 0, FIXED_PITCH,
+			   fontname);
+     }
 
    if (font == NULL)
      {
@@ -784,6 +800,7 @@ static void init_instance (void)
 #if !defined(__WIN32__) || !JED_HAS_SUBPROCESSES
    SetTimer(This_Window.w, 42, 30000, NULL);     /* used for updating display time */
 #endif
+   JedACP = GetACP();
 }
 
 static int msw_init_term (void)
@@ -898,29 +915,34 @@ static void _tt_writeW(WCHAR *s, int n, int color)
    release_dc();
 }
 
+# define LEAD_OFFSET      (0xD800 - (0x10000 >> 10))
+static int decode_utf32 (unsigned int u, WCHAR *buf)
+{
+   if (u < 0xFFFF)
+     {
+	*buf = u;
+	return 1;
+     }
+    else
+      {
+	 *(buf)   = LEAD_OFFSET + (u >> 10);
+	 *(buf+1) = 0xDC00 + (u & 0x3FF);
+	 return 2;
+      }
+}
+
 /* SLsmg_Char_Type decode/compare: the char internals changed for SLang2 */
 #if SLANG_VERSION >= 20000
-# define LEAD_OFFSET      (0xD800 - (0x10000 >> 10))
+   
 static int decode_smgchar(SLsmg_Char_Type *s, WCHAR *buf)
 {
-   int n = 1;
+   if (s->nchars > 0) 
+     return decode_utf32(s->wchars[0], buf);
 
-   if (s->nchars == 0) 
-     *buf = (WCHAR)' ';
-   else
-     {
-        /* ignore composing characters */
-        if (s->wchars[0] < 0xFFFF)
-	  *buf = s->wchars[0];
-        else
-          {
-             *(buf)   = LEAD_OFFSET + (s->wchars[0] >> 10);
-             *(buf+1) = 0xDC00 + (s->wchars[0] & 0x3FF);
-             n++;
-          }
-     }
-   return n;
+   *buf = (WCHAR)' ';
+   return 1;
 }
+
 # define SLSMGCHAR_EQUAL(o, n) \
    ( ((o)->nchars == (n)->nchars) \
 	&& ((o)->color  == (n)->color) \
@@ -1551,6 +1573,10 @@ static void msw_select_font (char *fontname, int *height, int *bold)
      {
 	jed_init_display ();
 	jed_redraw_screen (1);
+	/* update font data, As I need it if the user changes Language */
+	strcpy(Font_Name, fontname);
+	Font_Height = *height;
+	Font_Bold = *bold;	
 	return;
      }
    jed_verror ("Unable to allocate font %s", fontname);
@@ -1957,6 +1983,17 @@ LRESULT CALLBACK JEDWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
    switch (msg)
      {
+      case WM_INPUTLANGCHANGE:
+	  {
+	     CHARSETINFO csi;
+
+	     JedCharSet = wParam;
+	     TranslateCharsetInfo((DWORD *)wParam, &csi, TCI_SRCCHARSET);
+	     JedACP = csi.ciACP;
+	     (void) msw_select_font (Font_Name, &Font_Height, &Font_Bold);
+	  }
+	return 0;
+
       case WM_CREATE:
 	This_Window.w = hWnd;
 	DragAcceptFiles (hWnd, TRUE);
@@ -2045,8 +2082,36 @@ LRESULT CALLBACK JEDWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		       break;
 		    }
 	       }
-	     /* if (wParam == 0xE0) _putkey(wParam); */
-	     _putkey(wParam);
+	     if (!wjed_has_unicode())
+	       _putkey(wParam);
+	     else
+	       {
+		  static char dbcsbuf[3] = "";
+		  WCHAR buf[10];
+		  int i, buflen = 10;
+		  int dbcsl;
+		  
+		  // Here I get ANSI characters, but _putkey() wants UTF-16.
+		  if (!dbcsbuf[0] && IsDBCSLeadByte((unsigned char)wParam)) {
+		     dbcsbuf[0] = (char)wParam;
+		     break;
+		  }
+		  dbcsl = 1;
+		  if (dbcsbuf[0]) 
+		    {
+		       dbcsbuf[1] = (unsigned char) wParam;
+		       dbcsl = 2;
+		    } 
+		  else 
+		    {
+		       dbcsbuf[0] = (unsigned char) wParam;
+		    }
+		  dbcsbuf[2] = 0;
+		  buflen = MultiByteToWideChar(JedACP, 0, dbcsbuf, dbcsl, buf, buflen);
+		  for (i = 0; i < buflen; i++)
+		    _putkey(buf[i]);
+		  dbcsbuf[0] = 0;
+	       }
 	     break;
 	  }
 	return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -2737,7 +2802,6 @@ static int init_wheel_mouse (void)
 #if defined(__BORLANDC__) || defined(__WIN32__) || defined(__VC__)
 extern int main(int, char **);
 
-/* I do not think that this gets called.  Does it???? */
 int PASCAL WinMain(HINSTANCE inst, HINSTANCE pinst, LPSTR lpszCmdLine, int nCmdShow)
 {
    char **argv;
