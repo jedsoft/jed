@@ -125,18 +125,18 @@ define wmark_eob () { wmark_eval (&eob); }
 define wmark_skip_word () { wmark_eval (&skip_word); }
 define wmark_bskip_word () { wmark_eval (&bskip_word); }
 
-setkey ("wmark_up",	Key_Shift_Up);	% S-Up
-setkey ("wmark_down",	Key_Shift_Down);	% S-Down
-setkey ("wmark_left",	Key_Shift_Left);	% S-Left
-setkey ("wmark_right",	Key_Shift_Right);	% S-Right
-setkey ("wmark_page_up", Key_Shift_PgUp);	% S-PageUp
-setkey ("wmark_page_down",Key_Shift_PgDn);	% S-PageDown
-setkey ("wmark_bol",	Key_Shift_Home);	% S-Home
-setkey ("wmark_eol",	Key_Shift_End);	% S-End
-setkey ("yank",		Key_Shift_Ins);	% S-Insert
-setkey ("kill_region",	Key_Shift_Del);	% S-Delete
-setkey ("copy_region",	Key_Ctrl_Ins);	% C-Insert
-setkey ("del_region",	Key_Ctrl_Del);	% C-Delete
+setkey ("wmark_up",		Key_Shift_Up);		% S-Up
+setkey ("wmark_down",		Key_Shift_Down);	% S-Down
+setkey ("wmark_left",		Key_Shift_Left);	% S-Left
+setkey ("wmark_right",		Key_Shift_Right);	% S-Right
+setkey ("wmark_page_up", 	Key_Shift_PgUp);	% S-PageUp
+setkey ("wmark_page_down",	Key_Shift_PgDn);	% S-PageDown
+setkey ("wmark_bol",		Key_Shift_Home);	% S-Home
+setkey ("wmark_eol",		Key_Shift_End);		% S-End
+setkey ("yank",			Key_Shift_Ins);		% S-Insert
+setkey ("kill_region",		Key_Shift_Del);		% S-Delete
+setkey ("copy_region",		Key_Ctrl_Ins);		% C-Insert
+setkey ("del_region",		Key_Ctrl_Del);		% C-Delete
 
 #ifndef IBMPC_SYSTEM
 private define wmark_reset_display_hook ()

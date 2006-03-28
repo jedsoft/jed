@@ -4,7 +4,7 @@
 
 
 %% The following defines the tab stops to be 8 column:
-custom_variable ("Tab_Stops", [0:19] * 8 + 1);
+custom_variable ("Tab_Stops", [0:19] * TAB_DEFAULT + 1);
 
 define tab_to_tab_stop ()
 {

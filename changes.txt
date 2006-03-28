@@ -472,6 +472,12 @@ Changes since B0.99-16
      Mahnic).
 204. src/sysdep.c,main.c: When compiled minw32, use Sleep instead of
      sleep.  (Marko Mahnic).
+205. lib/tabs.sl: Use TAB_DEFAULT instead of assuming 8 column tabs
+     (Thei Wijnen t, wijnen at hef, ru, nl).
+206. lib/pscript.sl: Added define_syntax statements to correct the
+     syntax highlighting of .ps files.  (Thei Wijnen).
+207. lib/vhdlmode.sl: Updated to latest version (Thei Wijnen)
+
 
 {{{ Previous Versions 
 

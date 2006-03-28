@@ -1,13 +1,13 @@
 %  VHDL mode		-* SLang -*-
-
+%
 % This is a simple vhdl mode. First it implements a highlighting scheme.
 %
 % modified by Thei Wijnen 22-nov-2001: added: xor xnor with after alias select
 % modified by Thei Wijnen 21-mar-2002: added: generate transport rising_edge falling_edge
 % Modified by Thei Wijnen 10-Aug-2003: implemented indentation style and folding.
+% Modified by Thei Wijnen 06-Jun-2004: indent region, added more keywords.
+% Modified by Thei Wijnen 03-Mar-2005: allow mixed case, added more keywords.
 % 
-
-
 % Loading this file, then executing 'vhdl_mode' will start
 % VHDL mode on the current buffer.
 
@@ -119,7 +119,7 @@ define vhdl_indent ()
   {
     not (bolp()) or eolp ():	% general case
     bol_trim ();
-     goal--;
+    goal--;
     insert_spaces (goal);
   }
   pop_spot ();
@@ -202,6 +202,32 @@ define vhdl_mark_subprogram ()
 }
 
 
+% Indent the selected region (bound to \e^i)
+
+define vhdl_indent_region ()
+{
+  check_region(1);
+  pop_mark_1 (); 
+  push_mark();
+  vhdl_indent();        % set initial line indentation before narrowing
+  pop_spot();
+
+  push_spot();
+  go_up_1 ();
+  narrow();
+  bob();
+
+  flush("Indenting region...");
+  while (down_1 ()) {   % indent line by line (ie slowly)
+    vhdl_indent();
+    % flush(Sprintf("Indenting line %d", what_line(), 1));
+  }
+  flush("Indenting region... Done.");
+
+  widen();
+  pop_spot();
+}
+
 %
 % main entry point into the VHDL mode
 %
@@ -210,40 +236,52 @@ define vhdl_mark_subprogram ()
 $1 = "VHDL";
 
 create_syntax_table ($1);
-define_syntax ("--","",'%', $1);
-define_syntax ("([{", ")]}", '(', $1);
-define_syntax ('"', '"', $1);
-%define_syntax ('\'', '\'', $1);
-define_syntax ('\'', '\\', $1);
-define_syntax ("0-9a-zA-Z_", 'w', $1);        % words
-define_syntax ("-+0-9a-FA-F.xXL", '0', $1);   % Numbers
-define_syntax (",;.?:=<>", ',', $1);
-define_syntax ('#', '#', $1);
-define_syntax ("%-+/&*<>|!~^", '+', $1);
-set_syntax_flags ($1, 8);
+define_syntax ("--","",'%', $1);                % comments
+define_syntax ("([{", ")]}", '(', $1);          % parentheses
+define_syntax ('"', '"', $1);                   % quoted strings
+%define_syntax ('\'', '\'', $1);                 % quoted characters (paired ')
+define_syntax ('\'', '\\', $1);                 % continuations
+define_syntax ("0-9a-zA-Z_", 'w', $1);          % words
+define_syntax ("-+0-9a-fA-F.xXL", '0', $1);     % numbers
+define_syntax (",;.?:=<>", ',', $1);            % delimiters
+define_syntax ('#', '#', $1);                   % preprocessor
+define_syntax ("%-+/&*<>|!~^", '+', $1);        % operators
+set_syntax_flags ($1, 8);                       %
 
 % Type 0 keywords
 
-() = define_keywords ($1, "IFINISOFORTOifinisoforto", 2);
-() = define_keywords ($1, "ANDENDFORMAXMINNOTOUTRUNUSEXORandendformaxminnotoutrunusexor", 3);
-() = define_keywords ($1, "CASEELSELOOPPORTTHENTYPEWAITWHENWITHXNORcaseelseloopportthentypewaitwhenwithxnor", 4);
-() = define_keywords ($1, "AFTERALIASBEGINELSIFRANGETRACEUNTILafteraliasbeginelsifrangetraceuntil", 5);
-() = define_keywords ($1, "ASSIGNBUFFERDOWNTOENTITYOTHERSRETURNSELECTSIGNALassignbufferdowntoentityothersreturnselectsignal", 6);
-() = define_keywords ($1, "GENERICINTEGERLIBRARYPACKAGEPROCESSSUBTYPEgenericintegerlibrarypackageprocesssubtype", 7);
-() = define_keywords ($1, "CONSTANTFUNCTIONGENERATEVARIABLEconstantfunctiongeneratevariable", 8);
-() = define_keywords ($1, "COMPONENTTRANSPORTcomponenttransport", 9);
-%() = define_keywords ($1, "RISING_EDGErising_edge", 11);
-%() = define_keywords ($1, "ARCHITECTUREFALLING_EDGEarchitecturefalling_edge", 12);
-() = define_keywords ($1, "ARCHITECTUREarchitecture", 12);
-() = define_keywords ($1, "CONFIGURATIONconfiguration", 13);
+() = define_keywords ($1, "ifinisofonorto", 2);
+() = define_keywords ($1, "absandendformapmaxminmodnornotoutremrunusexor", 3);
+() = define_keywords ($1, "casebodyelsefileloopnandnextopenportpurethentypewaitwhenwithxnor", 4);
+() = define_keywords ($1, "afteraliasbeginelsifgroupinoutlabeltraceuntilwhile", 5);
+() = define_keywords ($1, "accessassertassignbufferdowntoentityimpureothersrecordrejectreportreturnselectsharedsignal", 6);
+() = define_keywords ($1, "genericguardedlibraryliteralpackageprocesssubtype", 7);
+() = define_keywords ($1, "constantfunctiongenerateinertialregisterseverityvariable", 8);
+() = define_keywords ($1, "attributecomponentpostponedproceduretransport", 9);
+() = define_keywords ($1, "architecture", 12);
+() = define_keywords ($1, "configuration", 13);
 
 % Type 1 keywords - use for operator like keywords
-() = define_keywords_n ($1, "eqgegtleltneor", 2, 1);
-() = define_keywords_n ($1, "andnot", 3, 1);
-%() = define_keywords_n ($1, "true", 4, 1);
-%() = define_keywords_n ($1, "false", 5, 1);
-() = define_keywords_n ($1, "RISING_EDGErising_edge", 11, 1);
-() = define_keywords_n ($1, "FALLING_EDGEfalling_edge", 12, 1);
+() = define_keywords_n ($1, "eqgegtleltne", 2, 1);
+() = define_keywords_n ($1, "lowposslasllsrasrlval", 3, 1);
+() = define_keywords_n ($1, "basehighleftnotepredsucctrue", 4, 1);
+() = define_keywords_n ($1, "erroreventfalseimagequietrangerightvalue", 5, 1);
+() = define_keywords_n ($1, "activeleftoflengthstable", 6, 1);
+() = define_keywords_n ($1, "delayeddrivingfailurerightofwarning", 7, 1);
+() = define_keywords_n ($1, "ascendingdecending", 9, 1);
+() = define_keywords_n ($1, "last_eventlast_value", 10, 1);
+() = define_keywords_n ($1, "last_activerising_edgetransaction", 11, 1);
+() = define_keywords_n ($1, "falling_edge", 12, 1);
+() = define_keywords_n ($1, "driving_valuereverse_range", 13, 1);
+                             
+% Type 2 keywords - use for type declarator keywords
+() = define_keywords_n ($1, "msnspsus", 2, 2);
+() = define_keywords_n ($1, "linetime", 4, 2);
+() = define_keywords_n ($1, "string", 6, 2);
+() = define_keywords_n ($1, "booleanintegernatural", 7, 2);
+() = define_keywords_n ($1, "unsigned", 8, 2);
+() = define_keywords_n ($1, "characterstd_logic", 9, 2);
+() = define_keywords_n ($1, "std_logic_vector", 16, 2);
 
 % Set up syntax table
 
@@ -253,6 +291,7 @@ $1 = "VHDL";
 definekey ("vhdl_beg_of_subprogram",	"\e^A",	$1);
 definekey ("vhdl_end_of_subprogram",	"\e^E",	$1);
 definekey ("vhdl_mark_subprogram",	"\e^H", $1);
+definekey ("vhdl_indent_region",	"\e^I", $1);
 
 %!%+
 %\function{vhdl_mode}
@@ -283,6 +322,7 @@ define vhdl_mode ()
   set_mode (mode, 0x4 | 0x10);
   use_keymap (mode);
   use_syntax_table (mode);
+  set_syntax_flags (mode, 0x01);
   set_buffer_hook ("indent_hook", "vhdl_indent");
   set_buffer_hook ("newline_indent_hook", "vhdl_newline");
   mode_set_mode_info (mode, "fold_info", "--{{{\r--}}}\r\r");
