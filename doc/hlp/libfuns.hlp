@@ -214,7 +214,7 @@ get_comment_info
 
  DESCRIPTION
  Retrieves the comment information according to the optional `mode'
- argument, or for the present mode it `mode' is not present.
+ argument, or for the present mode if `mode' is not present.
  Every mode that wants to use this function should provide comment information
  using the `set_comment_info' function.
 
