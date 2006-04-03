@@ -416,17 +416,35 @@ unsigned char sys_getkey() /*{{{*/
 int sys_input_pending(int *secs, int unused) /*{{{*/
 {
    unsigned long daytim[2];
-   
+   unsigned long EFstate;
+   float delay = 0.1;
+
    if (Batch) return(0);
    if (Input_Buffer_Len) return(Input_Buffer_Len);
    
    if (X_Input_Pending_Hook != NULL) 
      {
 	if ((*X_Input_Pending_Hook) ()) return 1;
-	/* I need to make this work with DECWIndows */
-	return 0;
+   	if (*secs == 0) return 0;
+   	daytim[1] = 0xFFFFFFFF;
+   	daytim[0] = -(*secs * 1000 * 1000);   /* 1000 * 1000 is a tenth of a sec */
+	sys$setimr(Timer_Event_Flag, daytim, 0, 1);
+   	/* Loop until a key is pressed or the timer event flag gets set */
+	while (1)
+	  {
+	     lib$wait(&delay);	/* so we don't chew up so much cpu time */
+	     if ((*X_Input_Pending_Hook) ())
+	       {
+		  sys$cantim(1, 3);
+		  return 1;
+	       } 
+	     else 
+	       {
+		  if (sys$readef(Timer_Event_Flag, &EFstate) == SS$_WASSET) 
+		    return 0;
+	       }
+	  }
      }
-   
    
    if (*secs) 
      {
