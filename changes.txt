@@ -477,6 +477,9 @@ Changes since B0.99-16
 206. lib/pscript.sl: Added define_syntax statements to correct the
      syntax highlighting of .ps files.  (Thei Wijnen).
 207. lib/vhdlmode.sl: Updated to latest version (Thei Wijnen)
+208. src/vms.c: Patch submitted by joukj at hrem, nano, tudelft, nl (Jacob
+     Jouk Jansen) to add a delay for parenthesis blinking under
+     decwindows.  (Original author is someone named Brian).
 
 
 {{{ Previous Versions 
