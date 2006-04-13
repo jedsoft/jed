@@ -525,7 +525,8 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 
 	if (syntax & QUOTE_SYNTAX)
 	  {
-	     p1 = p + 2;
+	     p1 = jed_multibyte_chars_forward (p, pmax, 2, NULL, 1);
+	     /* p1 = p + 2; */
 	     if (p1 < pmax)
 	       {
 		  p = write_using_color (p, p1, 0);

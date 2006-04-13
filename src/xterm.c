@@ -212,6 +212,8 @@ static char *Iconic = NULL;
 static Atom Xjed_Prop;
 static Atom Compound_Text_Atom;
 static Atom UTF8_String_Atom;
+static Atom Text_Atom;
+static Atom Targets_Atom;
 
 static XEvent Current_Event;
 static char *Selection_Send_Data = NULL;
@@ -2271,7 +2273,9 @@ static int init_Xdisplay (void) /*{{{*/
    i18init ();
 #endif
    Compound_Text_Atom = XInternAtom(This_XDisplay, "COMPOUND_TEXT", False);
+   Text_Atom = XInternAtom(This_XDisplay, "TEXT", False);
    UTF8_String_Atom = XInternAtom (This_XDisplay, "UTF8_STRING", False);
+   Targets_Atom = XInternAtom (This_XDisplay, "TARGETS", False);
    Xjed_Prop = XInternAtom(This_XDisplay, "XJED_PROPERTY_TEXT", False);
    return ConnectionNumber (This_XDisplay);
 }
@@ -2880,59 +2884,95 @@ static int send_selection (XEvent *ev)
    int len;
    XTextProperty tp;
    XSelectionEvent sev;
+   XSelectionRequestEvent *xsr;
    int status;
    Atom target;
-   int (*text_to_property)(Display *, char **, int, XICCEncodingStyle, XTextProperty *);
-   XICCEncodingStyle style;
+   int free_tp_value;
 
    if (NULL == Selection_Send_Data) 
      return 0;
 
    memset ((char *)&tp, 0, sizeof (tp));
 
-   len = strlen (Selection_Send_Data);
-   target = ev->xselectionrequest.target;
+   xsr = &ev->xselectionrequest;
+   target = xsr->target;
 
-#if USE_XUTF8_CODE
-   if (Jed_UTF8_Mode)
-     text_to_property = Xutf8TextListToTextProperty;
-   else
-#endif
-     text_to_property = XmbTextListToTextProperty;
+   if (target == Targets_Atom)
+     {
+	/* The requester wants to know what targets we support.  How polite. */
+#define MAX_SELECTION_TARGETS 5
+	Atom target_atoms[MAX_SELECTION_TARGETS];
+	unsigned int ntargets = 0;
 
-   if (target == Compound_Text_Atom)
-     style = XCompoundTextStyle;
+	target_atoms[ntargets++] = XA_STRING;
+	target_atoms[ntargets++] = Text_Atom;
+	target_atoms[ntargets++] = Compound_Text_Atom;
 #if USE_XUTF8_CODE
-   else if (target == UTF8_String_Atom)
-     style = XUTF8StringStyle;
+	target_atoms[ntargets++] = UTF8_String_Atom;
 #endif
+	tp.value = (unsigned char *)target_atoms;
+	tp.format = 8;
+	tp.nitems = sizeof(Atom)*ntargets;
+	free_tp_value = 0;
+	len = 0;
+     }
    else
      {
-	style = XStringStyle;
-	target = XA_STRING;
-     }   
+	int (*text_to_property)(Display *, char **, int, XICCEncodingStyle, XTextProperty *);
+	XICCEncodingStyle style;
 
-   status = (*text_to_property) (This_XDisplay, &Selection_Send_Data, 1, style, &tp);
+#if USE_XUTF8_CODE
+	if (Jed_UTF8_Mode)
+	  text_to_property = Xutf8TextListToTextProperty;
+	else
+#endif
+	  text_to_property = XmbTextListToTextProperty;
 
-   if ((status != Success) || (tp.value == NULL))
-     return -1;
+	if (target == Compound_Text_Atom)
+	  style = XCompoundTextStyle;
+#if USE_XUTF8_CODE
+	else if (target == UTF8_String_Atom)
+	  style = XUTF8StringStyle;
+#endif
+	else if (target == Text_Atom)
+	  style = XTextStyle;
+	else
+	  {
+	     char *name = XGetAtomName(This_XDisplay, target);
+	     if (name != NULL)
+	       {
+		  (void) fprintf (stderr, "Unsupported selection target: %s\n", name);
+		  XFree (name);
+	       }
+	     return -1;
+	  }   
+	status = (*text_to_property) (This_XDisplay, &Selection_Send_Data, 1, style, &tp);
+
+	if ((status != Success) || (tp.value == NULL))
+	  return -1;
+	
+	free_tp_value = 1;
+	len = strlen (Selection_Send_Data);
+     }
+
+   status = XChangeProperty (This_XDisplay, xsr->requestor,
+			     xsr->property, xsr->target, tp.format,
+			     PropModeReplace, tp.value, tp.nitems);
 
    sev.type = SelectionNotify;
-   sev.requestor = ev->xselectionrequest.requestor;
-   sev.selection = ev->xselectionrequest.selection;
+   sev.requestor = xsr->requestor;
+   sev.selection = xsr->selection;
    sev.target = target;
-   sev.time = ev->xselectionrequest.time;
-   sev.property = ev->xselectionrequest.property;
-   status = XChangeProperty (This_XDisplay, ev->xselectionrequest.requestor,
-			     ev->xselectionrequest.property, ev->xselectionrequest.target, tp.format,
-			     PropModeReplace, tp.value, tp.nitems);
+   sev.time = xsr->time;
+   sev.property = xsr->property;
    /* Apparantly XChangeProperty can return BadRequest, even if it succeeds.
     * So ignore its return value except for BadAlloc
     */
    if (status != BadAlloc)
-     (void) XSendEvent (This_XDisplay, ev->xselectionrequest.requestor, False, (long)NULL, (XEvent*)&sev);
+     (void) XSendEvent (This_XDisplay, xsr->requestor, False, (long)NULL, (XEvent*)&sev);
 
-   XFree (tp.value);
+   if (free_tp_value)
+     XFree (tp.value);
 
    return len;
 }

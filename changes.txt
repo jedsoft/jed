@@ -1,6 +1,15 @@
 -*- mode: text; mode: fold -*-
+Changes since 0.99-18.0
+1. src/syntax.c: If a multibyte character was prefixed by a character
+   with a "quote" character syntax, then the multibyte character was
+   not being properly displayed.
+2. src/jed-feat.h: Added definition for XJED_HAS_XRENDERFONT
+3. src/xterm.c: Added support for selection-target TARGETS.  Does this
+   fix cut/paste between KDE apps?
 
-Changes since B0.99-16
+{{{ Previous Versions 
+
+Changes since B0.99-16 {{{
 0. Many internal organizational changes and cleanups to provide UTF-8
    support and S-Lang 2 compatibility.
 1. lib/f90.sl: keywords for free-format mode were not working.
@@ -482,7 +491,7 @@ Changes since B0.99-16
      decwindows.  (Original author is someone named Brian).
 
 
-{{{ Previous Versions 
+}}}
 
 Changes since B0.99-15 {{{
 1. lib/edt.sl: Hard-coded escape sequences \e= and \e> were swapped.

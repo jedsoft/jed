@@ -1067,6 +1067,17 @@ define runhooks ()
    call_function (__push_args (args));
 }
 
+%!%
+%\function{run_mode_hooks}
+%\synopsis{Run the user's mode hooks for the specified mode}
+%\usage{run_mode_hooks (mode_hook_name)}
+%\description
+% This function should be called at the end of the mode setting
+% function to allow the user to hook into the function.  It takes a
+% single parameter: the name of the mode hook.  Prior to call the
+% specified user-hook, this function calls \slfun{global_mode_hook}.
+%\seealso{runhooks, global_mode_hook}
+%!%
 define run_mode_hooks (hook)
 {
    if (Tab_Always_Inserts_Tab)

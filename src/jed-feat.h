@@ -78,6 +78,9 @@
  */
 #define XJED_SET_WM_COMMAND	0
 
+/* For antialiased fonts, set this to 1 and modify Makefile accordingly */
+#define XJED_HAS_XRENDERFONT	0
+  
 #if JED_HAS_EMACS_LOCKING && !defined(HAVE_SYMLINK)
 # undef JED_HAS_EMACS_LOCKING
 # define JED_HAS_EMACS_LOCKING 0
