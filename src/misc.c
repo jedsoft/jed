@@ -741,7 +741,7 @@ int jed_getkey_wchar (SLwchar_Type *wchp)
 
 void jed_ungetkey_wchar (SLwchar_Type wc)
 {
-   SLuchar_Type *b, buf[SLUTF8_MAX_MBLEN];
+   SLuchar_Type *b, buf[JED_MAX_MULTIBYTE_SIZE];
 
    if (NULL == (b = jed_wchar_to_multibyte (wc, buf)))
      return;

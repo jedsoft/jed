@@ -6,6 +6,10 @@ Changes since 0.99-18.0
 2. src/jed-feat.h: Added definition for XJED_HAS_XRENDERFONT
 3. src/xterm.c: Added support for selection-target TARGETS.  Does this
    fix cut/paste between KDE apps?
+4. src/misc.c: slang-1 specific patch from vmiklos at
+   frugalware, org to avoid undefined symbol error (SLUTF8_MAX_MBLEN).
+5. lib/shell.sl: Unset the buffer-modified flag for the *shell-output*
+   buffer after the shell command has run (phreakuencies at gmail, com)
 
 {{{ Previous Versions 
 

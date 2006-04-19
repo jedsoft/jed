@@ -103,6 +103,9 @@ public define shell_perform_cmd (cmd, same_buf) %{{{
    status = run_shell_cmd (cmd);
    pop_spot ();
 
+   !if (same_buf)
+     set_buffer_modified_flag (0);
+
    vmessage ("Exit Status: %d", status);
 }
 
