@@ -30,51 +30,51 @@ For complete documentation, see GNU info files, this manual only
 provides brief tutorial.
 .SH OPTIONS
 .LP
-.I -batch
+.I \-batch
 .RS
 run Jed in batch mode.
 This is a non-interactive mode.
 .RE
-.I -n             
+.I \-n             
 .RS
 do not load 
 .I .jedrc 
 file.
 .RE
-.I -a 'file'
+.I \-a 'file'
 .RS
 load
 .I file
 as user configuration file instead of .jedrc.
 .RE
-.I -g 'n'
+.I \-g 'n'
 .RS
 goto line 
 .I n 
 in buffer (notice that in order to this option to take effect, if must
-appear after the file name in the command line, like 'jed file -g 3')
+appear after the file name in the command line, like 'jed file \-g 3')
 .RE
-.I -l 'file'      
+.I \-l 'file'      
 .RS
 load 
 .I file 
-as S-Lang code.
+as S\-Lang code.
 .RE
-.I -f 'function' 
+.I \-f 'function' 
 .RS
-execute S-Lang function named
+execute S\-Lang function named
 .I function
 .RE
-.I -s 'string'
+.I \-s 'string'
 .RS
 search forward for 
 .I string
 .RE
-.I -2             
+.I \-2             
 .RS
 split window
 .RE
-.I -i 'file'
+.I \-i 'file'
 .RS
 insert 
 .I file 
@@ -87,7 +87,7 @@ into current buffer.
 .RE
 .LP
 JED's ability to create new functions using the 
-.I S--Lang 
+.I S\--Lang 
 programming language as well as allowing the user to choose key bindings,
 makes the emulation of other editors possible. Currently, JED provides
 reasonable emulation of the
@@ -99,7 +99,7 @@ editors.
 .RE
 .LP
 .I Emacs Emulation
-is provided by the S-Lang code in
+is provided by the S\-Lang code in
 .I emacs.sl.
 The
 basic functionality of Emacs is emulated; most Emacs users
@@ -136,7 +136,7 @@ is in present in the jed.rc (.jedrc) Startup File.
 .I Wordstar Emulation
 .RE
 .LP
-wordstar.sl contains the S-Lang code for JED's Wordstar
+wordstar.sl contains the S\-Lang code for JED's Wordstar
 emulation. Adding the line
 .LP
 .RS
@@ -211,12 +211,12 @@ for the string in the Mini-Buffer.
 .LP
 The
 .I Mini-Buffer 
-also provides a direct link to the S-Langinterpreter.
+also provides a direct link to the S\-Lang interpreter.
 To access the interpreter, press
 .I Ctrl-X Esc
 and the
-.I S-Lang>
-prompt will appear in the Mini-Buffer.  Enter any valid S-Lang expression for
+.I S\-Lang>
+prompt will appear in the Mini-Buffer.  Enter any valid S\-Lang expression for
 evaluation by the interpreter.
 .LP
 It is possible to recall data previously entered into the
@@ -382,7 +382,7 @@ save some buffers
 .RE
 .I Ctrl-X Esc
 .RS
-Get "S-Lang>" prompt for interface to the S-Lang
+Get "S\-Lang>" prompt for interface to the S\-Lang
 interpreter.
 .RE
 .I Esc .

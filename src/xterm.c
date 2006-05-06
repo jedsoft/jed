@@ -2930,10 +2930,14 @@ static int send_selection (XEvent *ev)
 
 	if (target == Compound_Text_Atom)
 	  style = XCompoundTextStyle;
-#if USE_XUTF8_CODE
 	else if (target == UTF8_String_Atom)
-	  style = XUTF8StringStyle;
+	  {
+#if USE_XUTF8_CODE
+	     style = XUTF8StringStyle;
+#else
+	     style = XTextStyle;
 #endif
+	  }
 	else if (target == Text_Atom)
 	  style = XTextStyle;
 	else

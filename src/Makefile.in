@@ -180,7 +180,7 @@ $(TAGS_FILE_NAME): $(TAG_FILES)
 clean:
 	/bin/rm -f $(OBJDIR)/* *~ \#*
 distclean: clean
-	/bin/rm -rf $(OBJDIR) Makefile sysconf.h
+	/bin/rm -rf $(OBJDIR) Makefile sysconf.h config.h
 
 install_directories:
 	$(MKINSDIR) $(DEST_BIN_DIR)
