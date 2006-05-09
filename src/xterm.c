@@ -2938,7 +2938,7 @@ static int send_selection (XEvent *ev)
 	     style = XTextStyle;
 #endif
 	  }
-	else if (target == Text_Atom)
+	else if ((target == Text_Atom) || (target == XA_STRING))
 	  style = XTextStyle;
 	else
 	  {

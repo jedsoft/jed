@@ -15,6 +15,7 @@ Changes since 0.99-18.0
 7. src/xterm.c: If the X library does not have the Xutf8* functions,
    if a selection requests a UTF8 string, then send the selection
    using XTextStyle. (Jacob (=Jouk) Jansen)
+8. src/xterm.c: Added rest of Jouk's patch (See #7 above).
 
 {{{ Previous Versions 
 
