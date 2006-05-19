@@ -230,6 +230,7 @@ int kbd_quit(void) /*{{{*/
    if (Jed_Menus_Active)
      jed_exit_menu_bar ();
 #endif
+   SLang_set_error (SL_USER_BREAK);
    msg_error("Quit!");
    if (Ignore_User_Abort) 
      SLang_set_error (sle);

@@ -16,6 +16,8 @@ Changes since 0.99-18.0
    if a selection requests a UTF8 string, then send the selection
    using XTextStyle. (Jacob (=Jouk) Jansen)
 8. src/xterm.c: Added rest of Jouk's patch (See #7 above).
+9. src/keymap.c: Explicitly set the slang error to SL_USER_BREAK in
+   the keyboard-quit function.
 
 {{{ Previous Versions 
 
