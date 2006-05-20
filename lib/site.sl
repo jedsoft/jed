@@ -1067,7 +1067,7 @@ define runhooks ()
    call_function (__push_args (args));
 }
 
-%!%
+%!%+
 %\function{run_mode_hooks}
 %\synopsis{Run the user's mode hooks for the specified mode}
 %\usage{run_mode_hooks (mode_hook_name)}
@@ -1077,7 +1077,7 @@ define runhooks ()
 % single parameter: the name of the mode hook.  Prior to call the
 % specified user-hook, this function calls \slfun{global_mode_hook}.
 %\seealso{runhooks, global_mode_hook}
-%!%
+%!%-
 define run_mode_hooks (hook)
 {
    if (Tab_Always_Inserts_Tab)
@@ -2912,6 +2912,7 @@ define find_file_read_only ()
    set_readonly (1);
 }
 
+%!%+
 %\function{enable_dfa_syntax_for_mode}
 %\synopsis{Use DFA syntax highlighting for one or more modes}
 %\usage{enable_dfa_syntax_for_mode (String_Type mode, ...)}

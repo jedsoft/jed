@@ -147,7 +147,7 @@
 %\seealso{C_INDENT, Perl_Continued_Offset}
 %!%-
 custom_variable("Perl_Indent", 4);
-% %!%+
+%!%+
 %\variable{Perl_Continued_Offset}
 %\synopsis{Perl_Continued_Offset}
 %\usage{Integer Perl_Continued_Offset = 2;}
