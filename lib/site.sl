@@ -266,7 +266,7 @@ define str_replace_all (str, old, new)
 if (_slang_version < 10308)
   () = evalfile ("emul.sl");
 
-#ifeval (_slang_version < 20000)
+#ifnexists strbytelen
 define strbytelen (s)
 {
    return strlen (s);

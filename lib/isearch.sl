@@ -176,13 +176,13 @@ define isearch_dir (dir)
 	pop_spot ();
 
 	IGNORE_USER_ABORT++;
-#ifeval _slang_version >= 20000
+#ifexists AnyError
 	try
 	  {
 #endif
 	     c = getkey();
+#ifexists AnyError
 	  }
-#ifeval _slang_version >= 20000
 	finally
 #endif
 	IGNORE_USER_ABORT--;

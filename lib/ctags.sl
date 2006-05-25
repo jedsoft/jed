@@ -55,7 +55,7 @@ private define goto_position ()
 	sw2buf (buf);
      }
 
-#ifeval (_slang_version < 20000)
+#ifnexists AnyError
    variable error_happened = 0;
    ERROR_BLOCK
      {
@@ -292,7 +292,7 @@ private define get_word_at_point (word_chars)
 
 private define get_tag_at_point ()
 {
-#ifeval (_slang_version >= 20000)
+#ifexists _slang_utf8_ok
    variable word_chars = "\\w_";
 #else
    variable word_chars = "0-9A-Za-z_";
