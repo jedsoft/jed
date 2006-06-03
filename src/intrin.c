@@ -245,15 +245,28 @@ static void exit_error_cmd (char *msg, int *severity) /*{{{*/
 
 /*}}}*/
 
-static int do_prefix_argument(int *n) /*{{{*/
+static void do_prefix_argument (void) /*{{{*/
 {
-   int ret = *n;
-   if (Repeat_Factor != NULL)
+   int n;
+
+   if (SLang_Num_Function_Args == 1)
      {
-	ret = *Repeat_Factor;
-	Repeat_Factor = NULL;
+	/* old semantics */
+	if (-1 == SLang_pop_integer (&n))
+	  return;
+
+	if (Repeat_Factor != NULL)
+	  n = *Repeat_Factor;
      }
-   return ret;
+   else if (Repeat_Factor == NULL)
+     {
+	SLang_push_null ();
+	return;
+     }
+   else n = *Repeat_Factor;
+
+   (void) SLang_push_integer (n);
+   Repeat_Factor = NULL;
 }
 
 /*}}}*/
@@ -804,7 +817,7 @@ static SLang_Intrin_Fun_Type Jed_Intrinsics [] = /*{{{*/
    MAKE_INTRINSIC_S("get_mini_response", jed_get_mini_response, INT_TYPE),
    MAKE_INTRINSIC_SS("rename_file", rename_file, INT_TYPE),
    MAKE_INTRINSIC_S("change_default_dir", ch_dir, INT_TYPE),
-   MAKE_INTRINSIC_I("prefix_argument",  do_prefix_argument, INT_TYPE),
+   MAKE_INTRINSIC_0("prefix_argument",  do_prefix_argument, VOID_TYPE),
    MAKE_INTRINSIC_I("set_prefix_argument", set_prefix_argument, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("set_buffer_hook", set_buffer_hook, VOID_TYPE),
    MAKE_INTRINSIC_S("unset_buffer_hook", unset_buffer_hook, VOID_TYPE),

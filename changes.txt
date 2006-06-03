@@ -23,6 +23,11 @@ Changes since 0.99-18.0
     (Morten Bo Johansen).
 11. */*.sl: #ifeval constructs were causing problems when linked
     against slang-1.  These were changed to #ifexists...
+12. src/misc.c: The read_from_minibuffer function preserves the value
+    of the prefix argument.
+13. src/intrin.c: The prefix_argument function semantics have been
+    extended such that if passed no argument, NULL will be returned if
+    there is no prefix argument.  Docs updated accordingly.
 
 {{{ Previous Versions 
 

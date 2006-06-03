@@ -1525,6 +1525,28 @@ Perl_Indent
 
 --------------------------------------------------------------
 
+Perl_Continued_Offset
+
+ SYNOPSIS
+  Perl_Continued_Offset
+
+ USAGE
+  Integer Perl_Continued_Offset = 2;
+
+ DESCRIPTION
+ This variable controls the indentation of statements that are continued
+ onto the next line as in the following example:
+
+  print
+    "hallo ",
+    " world\n";
+
+
+ SEE ALSO
+  C_CONTINUED_OFFSET, Perl_Indent
+
+--------------------------------------------------------------
+
 Perl_Expert_Flags
 
  SYNOPSIS
@@ -2337,6 +2359,25 @@ runhooks
 
  USAGE
   Void runhooks (String_Type hook, [optional args...]);
+
+--------------------------------------------------------------
+
+run_mode_hooks
+
+ SYNOPSIS
+  Run the user's mode hooks for the specified mode
+
+ USAGE
+  run_mode_hooks (mode_hook_name)
+
+ DESCRIPTION
+ This function should be called at the end of the mode setting
+ function to allow the user to hook into the function.  It takes a
+ single parameter: the name of the mode hook.  Prior to call the
+ specified user-hook, this function calls `global_mode_hook'.
+
+ SEE ALSO
+  runhooks, global_mode_hook
 
 --------------------------------------------------------------
 
@@ -3189,6 +3230,31 @@ deln
 
  DESCRIPTION
  delete the next 'n' characters.
+
+--------------------------------------------------------------
+
+enable_dfa_syntax_for_mode
+
+ SYNOPSIS
+  Use DFA syntax highlighting for one or more modes
+
+ USAGE
+  enable_dfa_syntax_for_mode (String_Type mode, ...)
+
+ DESCRIPTION
+  This function may be used to enable the use of DFA syntax highlighting
+  for one or more specified modes.  Each of the String_Type arguments must
+  be the name of a mode.  The name of a buffer's mode is usually displayed on
+  the status line.
+
+ EXAMPLE
+  To enable DFA syntax highlighting for perl and postscript modes, use
+
+     enable_dfa_syntax_for_mode ("perl", "PostScript");
+
+
+ SEE ALSO
+  disable_dfa_syntax_for_mode, use_dfa_syntax
 
 --------------------------------------------------------------
 

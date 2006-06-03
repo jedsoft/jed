@@ -1075,7 +1075,7 @@ define runhooks ()
 % This function should be called at the end of the mode setting
 % function to allow the user to hook into the function.  It takes a
 % single parameter: the name of the mode hook.  Prior to call the
-% specified user-hook, this function calls \slfun{global_mode_hook}.
+% specified user-hook, this function calls \sfun{global_mode_hook}.
 %\seealso{runhooks, global_mode_hook}
 %!%-
 define run_mode_hooks (hook)

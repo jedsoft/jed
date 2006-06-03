@@ -314,25 +314,34 @@
 
 \function{prefix_argument}
 \synopsis{Test if the user has entered a prefix argument}
-\usage{Integer prefix_argument (Integer dflt);}
+\usage{Int_Type prefix_argument ()}
 \description
-  This function may be used to determine whether or not the user has entered
-  a prefix argument from the keyboard.  If a prefix argument is present,
-  its value is returned; otherwise, \var{dflt} is returned.  Calling this
-  function cancels the prefix argument.
-  For example,
+  This function may be used to determine whether or not the user has
+  entered a prefix argument from the keyboard.  If a prefix argument
+  is present, its value is returned, otherwise \NULL will be returned.
+
+  Calling this function cancels the prefix-argument.
+\example
+  This example displays the prefix argument in the message area:
 #v+
-        variable arg = prefix_argument (-9999);
-        if (arg == -9999)
-          message ("No Prefix Argument");
-        else
-          message (Sprintf ("Prefix argument: %d", arg, 1));
+     arg = prefix_argument ();
+     if (arg == NULL)
+       message ("No Prefix Argument");
+     else
+       vmessage ("Prefix argument: %d", arg));
 #v-
-  displays the prefix argument in the message area.
-  Note: This function is incapable of distinguishing between the case of
-  no prefix argument and when the argument's value is \var{dflt}.  Currently,
-  this is not a problem because the editor does not allow negative prefix
-  arguments.
+\notes
+  The old semantics, which are still supported but deprecated allows
+  an integer argument to be passed to the function.  This argument
+  will be returned instead of \NULL if no prefix-argument is present.
+  Using the old semantics, the above example could be written as
+#v+
+     arg = prefix_argument (-9999);
+     if (arg == -9999)
+       message ("No Prefix Argument");
+     else
+       vmessage ("Prefix argument: %d", arg));
+#v-
 \seealso{set_prefix_argument}
 \done
 

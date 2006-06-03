@@ -256,7 +256,7 @@ void msg_error(char *msg) /*{{{*/
 /* read from minibuffer using prompt providing a default, and stuffing
    the minibuffer with init if necessary */
 /* I should make recursive mini buffers */
-char *read_from_minibuffer (char *prompt, char *deflt, char *what, int *n) /*{{{*/
+static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int *n) /*{{{*/
 {
    char buf[JED_MAX_PATH_LEN];
    jmp_buf_struct *mini_jmp_save, mini_jmp_buf;
@@ -442,6 +442,26 @@ char *read_from_minibuffer (char *prompt, char *deflt, char *what, int *n) /*{{{
 }
 
 /*}}}*/
+
+char *read_from_minibuffer (char *prompt, char *deflt, char *what, int *n)
+{
+   int *rf = Repeat_Factor;
+   int repeat = 0;
+   char *s;
+
+   if (rf != NULL)
+     repeat = *rf;
+   
+   s = read_from_minibuffer_1 (prompt, deflt, what, n);
+   
+   if (rf != NULL)
+     {
+	Repeat_Factor = rf;
+	*rf = repeat;
+     }
+
+   return s;	
+}
 
 static int Macro_Illegal_Now = 0;
 static int check_macro_legality(void) /*{{{*/
