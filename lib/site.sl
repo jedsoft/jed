@@ -408,17 +408,22 @@ define bskip_white ()
 %!%+
 %\function{buffer_filename}
 %\synopsis{buffer_filename}
-%\usage{String buffer_filename ();}
+%\usage{String_Type buffer_filename ([String_Type bufname])}
 %\description
-% Returns the name of the file associated with the current buffer.  If
-% there is none associated with it, the empty string is returned.
+% When called with no arguments, this function returns the name of the
+% file associated with the current buffer.  If called with a string
+% argument representing the name of a buffer, it will return the name
+% of the file associated with that buffer.  If no file is associated
+% with the specified buffer, the empty string will be returned.
+%\seealso{getbuf_info}
 %!%-
 define buffer_filename ()
 {
+   variable args = __pop_args (_NARGS);
    variable file, dir;
-   (file, dir, , ) = getbuf_info();
+   (file, dir, , ) = getbuf_info(__push_args (args));
    !if (strlen (file)) dir = "";
-   dir + file;
+   return dir + file;
 }
 
 %}}}

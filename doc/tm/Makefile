@@ -7,6 +7,7 @@ TMEXPAND = /aluche/d1/web/tm-dist/bin/tmexpand
 TM2SGML = $(TMEXPAND)
 MACRODIR = /aluche/d1/web/tm-dist/macros
 TM2HLP = $(TMEXPAND) -I$(MACRODIR) -Mslhlp
+DOCBOOK2MAN = docbook2man
 
 FILES = jedfuns libfuns # quickref
 SL_LIBDIR = ../../lib
@@ -34,6 +35,12 @@ jedfuns.hlp : rtl/*.tm
 	cat rtl/*.tm | $(TM2HLP) - jedfuns.hlp
 libfuns.hlp : $(SL_LIBDIR)/*.sl
 	$(SL2TM) -sl $(SL_LIBDIR)/*.sl | $(TM2HLP) - libfuns.hlp
+jed.1: jed.sgml
+	$(DOCBOOK2MAN) jed.sgml
+jed.sgml: jed.tm
+	$(TM2SGML) -I$(MACRODIR) jed.tm jed.sgml
+view: jed.1
+	nroff -man jed.1 | most
 #
 %.tex : %.sgml
 	$(SGML2LATEX) $*.sgml

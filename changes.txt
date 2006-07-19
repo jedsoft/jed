@@ -28,6 +28,12 @@ Changes since 0.99-18.0
 13. src/intrin.c: The prefix_argument function semantics have been
     extended such that if passed no argument, NULL will be returned if
     there is no prefix argument.  Docs updated accordingly.
+14. lib/site.sl: buffer_filename modified to take an additional
+    argument representing the name of a buffer. (Jörg Sommer)
+15. lib/aboutjed.sl: Updated year in the file.
+16. src/colors.c: If no colors have been associated with a
+    color-object, return "default" for the foreground/background
+    colors instead of NULL.
 
 {{{ Previous Versions 
 

@@ -241,7 +241,9 @@ static int main_initialize (int argc, char **argv)
    for (i = 0; i < 256; i++) Output_Display_Table[i] = i;
 #endif
 
-   if ((argc > 1) && !strcmp (argv[1], "-secure"))
+   if ((argc > 1) 
+       && ((0 == strcmp (argv[1], "-secure"))
+	   || (0 == strcmp (argv[1], "--secure"))))
      {
 	Jed_Secure_Mode = 1;
 	argc--;

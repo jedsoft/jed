@@ -186,8 +186,8 @@ static void get_color (char *obj)
      i = JNORMAL_COLOR;		       
 
    map = Color_Name_Map + i;
-   (void) SLang_push_string (map->fg);
-   (void) SLang_push_string (map->bg);
+   (void) SLang_push_string (map->fg == NULL ? "default" : map->fg);
+   (void) SLang_push_string (map->bg == NULL ? "default" : map->bg);
 }
 
 static void add_color_object_cmd (char *name)
