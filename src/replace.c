@@ -230,56 +230,60 @@ void prepend_region_to_kill_array (int *np) /*{{{*/
 
 #endif  /* NOT 16bit system */
 
-static int bol_bsearch_char (int *ch) /*{{{*/
+static unsigned char *char_to_string (SLwchar_Type wch, unsigned char buf[JED_MAX_MULTIBYTE_SIZE+1])
 {
-   char buf[2];
-   buf[0] = (unsigned char) (*ch); buf[1] = 0;
-   return bol_bsearch (buf);
+   /* Will only fail if the buffer is too small-- it is not here */
+   unsigned char *b;
+   if (NULL == (b = jed_wchar_to_multibyte (wch, buf)))
+     return NULL;
+   *b = 0;			       /* \0 terminate buf */
+   return buf;
+}
+
+static int bol_bsearch_char (SLwchar_Type *wch) /*{{{*/
+{
+   unsigned char buf[JED_MAX_MULTIBYTE_SIZE+1];
+   return bol_bsearch ((char *)char_to_string (*wch, buf));
 }
 
 /*}}}*/
 
-static int bol_fsearch_char (int *ch) /*{{{*/
+static int bol_fsearch_char (SLwchar_Type *wch) /*{{{*/
 {
-   char buf[2];
-   buf[0] = (unsigned char) (*ch); buf[1] = 0;
-   return bol_fsearch (buf);
+   unsigned char buf[JED_MAX_MULTIBYTE_SIZE+1];
+   return bol_fsearch ((char *)char_to_string (*wch, buf));
 }
 
 /*}}}*/
 
-static int fsearch_char (int *ch) /*{{{*/
+static int fsearch_char (SLwchar_Type *wch) /*{{{*/
 {
-   char buf[2];
-   buf[0] = (unsigned char) (*ch); buf[1] = 0;
-   return search_forward (buf);
+   unsigned char buf[JED_MAX_MULTIBYTE_SIZE+1];
+   return search_forward ((char *)char_to_string (*wch, buf));
 }
 
 /*}}}*/
 
-static int bsearch_char (int *ch) /*{{{*/
+static int bsearch_char (SLwchar_Type *wch) /*{{{*/
 {
-   char buf[2];
-   buf[0] = (unsigned char) (*ch); buf[1] = 0;
-   return search_backward (buf);
+   unsigned char buf[JED_MAX_MULTIBYTE_SIZE+1];
+   return search_backward ((char *)char_to_string (*wch, buf));
 }
 
 /*}}}*/
 
-static int ffind_char (int *ch) /*{{{*/
+static int ffind_char (SLwchar_Type *wch) /*{{{*/
 {
-   char buf[2];
-   buf[0] = (unsigned char) (*ch); buf[1] = 0;
-   return forward_search_line (buf);
+   unsigned char buf[JED_MAX_MULTIBYTE_SIZE+1];
+   return forward_search_line ((char *)char_to_string (*wch, buf));
 }
 
 /*}}}*/
 
-static int bfind_char (int *ch) /*{{{*/
+static int bfind_char (SLwchar_Type *wch) /*{{{*/
 {
-   char buf[2];
-   buf[0] = (unsigned char) (*ch); buf[1] = 0;
-   return backward_search_line (buf);
+   unsigned char buf[JED_MAX_MULTIBYTE_SIZE+1];
+   return backward_search_line ((char *)char_to_string (*wch, buf));
 }
 
 /*}}}*/
@@ -363,12 +367,12 @@ SLang_Intrin_Fun_Type Jed_Other_Intrinsics [] = /*{{{*/
    MAKE_INTRINSIC_S("ffind", forward_search_line, INT_TYPE),
    MAKE_INTRINSIC_S("bol_fsearch", bol_fsearch, INT_TYPE),
    MAKE_INTRINSIC_S("bol_bsearch", bol_bsearch, INT_TYPE),   
-   MAKE_INTRINSIC_I("bol_fsearch_char", bol_fsearch_char, INT_TYPE),
-   MAKE_INTRINSIC_I("bol_bsearch_char", bol_bsearch_char, INT_TYPE),
-   MAKE_INTRINSIC_I("fsearch_char", fsearch_char, INT_TYPE),
-   MAKE_INTRINSIC_I("bsearch_char", bsearch_char, INT_TYPE),
-   MAKE_INTRINSIC_I("bfind_char", bfind_char, INT_TYPE),
-   MAKE_INTRINSIC_I("ffind_char", ffind_char, INT_TYPE),
+   MAKE_INTRINSIC_1("bol_fsearch_char", bol_fsearch_char, INT_TYPE, SLANG_WCHAR_TYPE),
+   MAKE_INTRINSIC_1("bol_bsearch_char", bol_bsearch_char, INT_TYPE, SLANG_WCHAR_TYPE),
+   MAKE_INTRINSIC_1("fsearch_char", fsearch_char, INT_TYPE, SLANG_WCHAR_TYPE),
+   MAKE_INTRINSIC_1("bsearch_char", bsearch_char, INT_TYPE, SLANG_WCHAR_TYPE),
+   MAKE_INTRINSIC_1("bfind_char", bfind_char, INT_TYPE, SLANG_WCHAR_TYPE),
+   MAKE_INTRINSIC_1("ffind_char", ffind_char, INT_TYPE, SLANG_WCHAR_TYPE),
    MAKE_INTRINSIC_SS("replace", replace_cmd, VOID_TYPE),
    MAKE_INTRINSIC_IS("replace_chars", replace_chars_intrinsic, INT_TYPE),
    MAKE_INTRINSIC_I("regexp_nth_match", regexp_nth_match, VOID_TYPE),

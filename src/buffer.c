@@ -352,7 +352,9 @@ int jed_multibyte_charcasecmp (unsigned char **ap, unsigned char *amax,
    return -1;
 }
 
-/* The buffer is required to be at least JED_MAX_MULTIBYTE_SIZE bytes wide */
+/* The buffer is required to be at least JED_MAX_MULTIBYTE_SIZE bytes wide.
+ * This routine does not \0 terminate the buffer.
+ */
 unsigned char *jed_wchar_to_multibyte (SLwchar_Type c, unsigned char *buf)
 {
 #if JED_HAS_UTF8_SUPPORT

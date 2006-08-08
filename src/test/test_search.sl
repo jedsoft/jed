@@ -1,5 +1,5 @@
-static variable Failed = 0;
-static define test_rebsearch ()
+private variable Failed = 0;
+private define test_rebsearch ()
 {
    setbuf ("*scratch*");
    erase_buffer ();
@@ -24,4 +24,30 @@ static define test_rebsearch ()
      }
 }
 test_rebsearch ();
+
+private define test_search_char ()
+{
+   setbuf ("*scratch*");
+   erase_buffer ();
+   insert ("foo\x{ABCD}bar\n");
+   bob ();
+   if (1 != ffind_char (0xABCD))
+     {
+	() = fprintf (stderr, "ffind_char: failed to find a wide-character\n");
+	Failed++;
+     }
+   eol ();
+   if (1 != bfind_char (0xABCD))
+     {
+	() = fprintf (stderr, "ffind_char: failed to find a wide-character\n");
+	Failed++;
+     }
+   if (1 != looking_at_char (0xABCD))
+     {
+	() = fprintf (stderr, "looking_at_char: failed\n");
+	Failed++;
+     }
+}
+test_search_char ();
+
 exit (Failed);

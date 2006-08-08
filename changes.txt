@@ -34,6 +34,8 @@ Changes since 0.99-18.0
 16. src/colors.c: If no colors have been associated with a
     color-object, return "default" for the foreground/background
     colors instead of NULL.
+17. src/replace.c: Routines that search for characters (ffind_char,
+    etc) were not working with wide characters.
 
 {{{ Previous Versions 
 
