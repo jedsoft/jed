@@ -36,6 +36,8 @@ Changes since 0.99-18.0
     colors instead of NULL.
 17. src/replace.c: Routines that search for characters (ffind_char,
     etc) were not working with wide characters.
+18. src/test/test_search.sl: Do not run UTF-8 tests unless in UTF-8
+    mode.
 
 {{{ Previous Versions 
 

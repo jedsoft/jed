@@ -27,6 +27,12 @@ test_rebsearch ();
 
 private define test_search_char ()
 {
+   if (0 == _slang_utf8_ok ())
+     {
+	() = fprintf (stdout, "UTF-8 mode not enabled-- test_search_char not run.\n");
+	return;
+     }
+
    setbuf ("*scratch*");
    erase_buffer ();
    insert ("foo\x{ABCD}bar\n");
