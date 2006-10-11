@@ -870,6 +870,8 @@ static SLang_Intrin_Fun_Type Jed_Intrinsics [] = /*{{{*/
    MAKE_INTRINSIC_II("signal_process", jed_signal_process, VOID_TYPE),
    MAKE_INTRINSIC_II("signal_fg_process", jed_signal_fg_process, VOID_TYPE),
    MAKE_INTRINSIC_II("process_query_at_exit", jed_query_process_at_exit, VOID_TYPE),
+   MAKE_INTRINSIC_II("set_process_flags", jed_set_process_flags, VOID_TYPE),
+   MAKE_INTRINSIC_I("get_process_flags", jed_get_process_flags, INT_TYPE),
 #endif
 
 #ifdef HAS_MOUSE

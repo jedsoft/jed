@@ -62,6 +62,13 @@ typedef struct
 # define PROCESS_USE_SLANG	2
 # define PROCESS_SAVE_POINT	4
 # define PROCESS_AT_POINT	8
+
+   int process_flags;
+# define USE_CURRENT_BUFFER	0x1    /* use the current buffer instead of
+					* the one associated with the process
+					*/
+
+   
    Buffer *buffer;		       /* buffer associated with process */
    SLang_Name_Type *slang_fun;	       /* function to pass output to */
    SLang_MMT_Type *umark;	       /* marks point of last output */
@@ -100,13 +107,16 @@ static void call_slang_status_change_hook (Process_Type *p)
    if ((p->status_change_fun == NULL) || (p->buffer == NULL)) return;
 
    cbuf->locked++;
-   switch_to_buffer (p->buffer);
+   if (0 == (p->process_flags & USE_CURRENT_BUFFER))
+     switch_to_buffer (p->buffer);
    SLang_push_integer ((int) (p - Processes));
    SLang_push_integer (p->flags);
    SLang_push_integer (p->return_status);
    SLexecute_function (p->status_change_fun);
    touch_screen ();
-   if (CBuf != cbuf) switch_to_buffer (cbuf);
+   if ((0 == (p->process_flags & USE_CURRENT_BUFFER))
+       && (CBuf != cbuf))
+     switch_to_buffer (cbuf);
    cbuf->locked--;
 }
 #if 0
@@ -295,7 +305,8 @@ void read_process_input(int input_event_number)
 	
 	if (pbuf != NULL)
 	  {
-	     switch_to_buffer (pbuf);
+	     if (0 == (p->process_flags & USE_CURRENT_BUFFER))
+	       switch_to_buffer (pbuf);
 	     pbuf->locked++;
 	  }
 	
@@ -319,7 +330,8 @@ void read_process_input(int input_event_number)
 	
 	if (p->buffer != NULL)
 	  {
-	     if (b != CBuf) switch_to_buffer (b);
+	     if ((b != CBuf) && (0 == (p->process_flags & USE_CURRENT_BUFFER)))
+	       switch_to_buffer (b);
 	     pbuf->locked--;
 	  }
      }
@@ -572,6 +584,24 @@ void jed_set_process (void)
 #if SLANG_VERSION > 10400
    SLang_free_function (f);
 #endif
+}
+
+void jed_set_process_flags (int *fd, int *oflags)
+{
+   Process_Type *p;
+   if (NULL == (p = get_process (*fd))) 
+     return;
+   
+   p->process_flags = *oflags;
+}
+ 
+int jed_get_process_flags (int *fd)
+{
+   Process_Type *p;
+   if (NULL == (p = get_process (*fd))) 
+     return -1;
+
+   return p->process_flags;
 }
 
 void jed_get_process_mark (int *fd)

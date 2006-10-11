@@ -8,6 +8,15 @@
 \seealso{open_process, kill_process}
 \done
 
+\function{get_process_flags}
+\synopsis{Get the flags associated with a process}
+\usage{Int_Type get_process_flags (Int_Type id)}
+\description
+  This function returns the flags associated with the current process.
+  The \ifun{set_process_flags} may be used to set the flags.
+\seealso{open_process, set_process_flags}
+\done
+
 \function{kill_process}
 \synopsis{Kill the subprocess specified by the process handle "id"}
 \usage{Void kill_process (Int_Type id)}
@@ -139,6 +148,26 @@
                     takes arguments: (pid, data) where pid has
                     the above meaning and data is the output from the process.
 #v-
+  Normally \jed automatically switches to the buffer associated with
+  the process prior to handling data from the process.  This behavior
+  may be modified through the use of the \ifun{set_process_flags}
+  function.
+\seealso{set_process_flags, get_process_flags, open_process}
+\done
+
+\function{set_process_flags}
+\synopsis{Set the flags associated with a process}
+\usage{set_process_flags (Int_Type id, Int_Type flags)}
+\description
+  This function may be used to set the flags associated with the
+  specified process.  The flags may be used to affect the behavior of
+  the process.  Currently the following bits are defined:
+#v+
+     0x01     Do not switch to the process buffer prior to calling any
+                hooks associated with the buffer including output from
+                the process.
+#v-
+\seealso{open_process, get_process_flags, set_process}
 \done
 
 \function{signal_process}

@@ -43,6 +43,10 @@ public define text_indent_relative ()
    whitespace (c - c0);
 }
 
+$1 = "Text";
+!if (keymap_p ($1)) make_keymap ($1);
+definekey ("indent_line", "\t", $1);
+
 %!%+
 %\function{text_mode}
 %\synopsis{text_mode}
@@ -63,10 +67,10 @@ public define text_indent_relative ()
 %!%-
 public define text_mode()
 {
+   variable mode = "Text";
    no_mode ();
-   set_mode("Text", 1);
-   
-   local_setkey ("text_indent_relative", "\t");
-   %set_buffer_hook ("indent_hook", "text_indent_relative");
+   set_mode(mode, 1);
+   use_keymap (mode);
+   set_buffer_hook ("indent_hook", "text_indent_relative");
    run_mode_hooks ("text_mode_hook");
 }

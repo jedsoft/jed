@@ -38,6 +38,22 @@ Changes since 0.99-18.0
     etc) were not working with wide characters.
 18. src/test/test_search.sl: Do not run UTF-8 tests unless in UTF-8
     mode.
+20. src/undo.c: Consistency check added to make sure the value of the
+    Point makes sense.
+21. src/ins.c: Make the ins/del functions work in the presence of a
+    slang error.
+22. lib/mailutils.sl: In mailutils_find_header_separator, if the first
+    line does not look like a header, then assume that headers are not
+    present.
+23. lib/mailedit.sl: In mark_paragraph, do not attempt to cross the
+    header separator when marking paragraphs.
+24. lib/isearch.sl: Highlight the current match
+25. lib/textmode.sl: Create a new keymap instead of using the global
+    map.
+26. src/jprocess.c, w32proc.c: Added jed_get/set_process_flags
+    functions.  Also made changes to specify whether or not jed should
+    automatically switch to the buffer associated with a process prior
+    to calling its output handler.
 
 {{{ Previous Versions 
 

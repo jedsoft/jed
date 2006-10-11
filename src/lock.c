@@ -281,7 +281,7 @@ static int get_lock_info (char *lockfile, Lock_Info_Type *l)
    return 1;
 }
 
-/* Returns 1 upon success, 0 is lock exists, or -1 upon failure.  If force
+/* Returns 1 upon success, 0 if lock exists, or -1 upon failure.  If force
  * is non-zero, then this function will not return 0.
  */
 static int perform_lock (char *lockfile, Lock_Info_Type *l, int force)

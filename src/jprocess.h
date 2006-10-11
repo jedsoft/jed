@@ -40,6 +40,9 @@ extern int jed_signal_fg_process (int *, int *);
 extern int jed_processes_ok_to_exit (void);
 extern void jed_query_process_at_exit (int *, int *);
 
+extern void jed_set_process_flags (int *, int *);
+extern int jed_get_process_flags (int *);
+
 #ifdef REAL_UNIX_SYSTEM
 extern void jed_block_child_signal (int);
 #endif

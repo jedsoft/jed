@@ -214,12 +214,21 @@ private define mark_paragraph ()
      }
 
    push_spot ();
-	
+   if (mailutils_find_header_separator ())
+     go_down_1 ();
+   else
+     bob ();
+
+   variable body_start = create_user_mark ();
+
+   goto_spot ();
    % Goto paragraph start
    variable nquotes = count_quotes ();
    while (up_1 ())
      {
-	if (nquotes == count_quotes ())
+	if (andelse
+	    {create_user_mark () >= body_start}
+	      {nquotes == count_quotes ()})
 	  {
 	     skip_white ();
 	     !if (eolp ())

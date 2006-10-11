@@ -24,6 +24,7 @@
 %%
 %% This code fragment checks to see what the isearch keys are bound to
 
+require ("srchmisc");
 private define get_bound_key (search_func, default)
 {
    foreach (["", which_key (search_func), pop()])
@@ -170,12 +171,16 @@ define isearch_dir (dir)
 	message (prompt + str);
 
 	push_spot ();
-	if ((dir > 0) and looking_at (str))
-	  go_right (strlen (str));
+
+	IGNORE_USER_ABORT++;
+
+	if (looking_at (str) and (Last_Search_Failed == 0))
+	  mark_next_nchars (strlen(str), dir);
+	%if ((dir > 0) and looking_at (str))
+	%  go_right (strlen (str));
 	update_sans_update_hook (0);
 	pop_spot ();
 
-	IGNORE_USER_ABORT++;
 #ifexists AnyError
 	try
 	  {

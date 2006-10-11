@@ -1249,6 +1249,84 @@ lua_mode
 
 --------------------------------------------------------------
 
+mailutils_find_header_separator
+
+ SYNOPSIS
+  Searches for the header/body separator
+
+ USAGE
+  Int_Type mailutils_find_header_separator ()
+
+ DESCRIPTION
+  This function searches for the line separating the mail headers
+  from the body.  It returns 1 if found, and 0 otherwise.
+
+ SEE ALSO
+  mailutils_narrow_to_header
+
+--------------------------------------------------------------
+
+mailutils_narrow_to_header
+
+ SYNOPSIS
+  Narrow to the mail headers
+
+ USAGE
+  Int_Type mailutils_narrow_to_header ()
+
+ DESCRIPTION
+ This function narrows the buffer to the mail headers.  It returns 0
+ if sucessful (headers were found), or -1 upon failure.
+
+ SEE ALSO
+  mailutils_find_header_separator, mailutils_set_keyword_value, widen
+
+--------------------------------------------------------------
+
+mailutils_get_keyword_value
+
+ SYNOPSIS
+  Obtain the value of a header keyword
+
+ USAGE
+  String_Type mailutils_get_keyword_value (kw)
+
+ DESCRIPTION
+ This function returns the value of a mail header specified by the
+ `kw' parameter.  If no such header exists, NULL will be
+ returned.
+
+ NOTES
+ This function does not preserve the editing point.
+
+ SEE ALSO
+  mailutils_set_keyword_value
+
+--------------------------------------------------------------
+
+mailutils_set_keyword_value
+
+ SYNOPSIS
+  Set the value of a mail header
+
+ USAGE
+  mailutils_set_keyword_value (String_Type kw, String_Type val)
+
+ DESCRIPTION
+ This function sets the value of the header keyword specified by the
+ `kw' argument to that of the `val' argument.  If no such
+ header exists, one will be created.  The editing point will be left
+ at the end of the header's value.  If the header exists and has a
+ value, then that value will be replace.
+
+ NOTES
+ This function does not preserve the editing point.
+
+ SEE ALSO
+  mailutils_get_keyword_value, mailutils_find_header_separator
+
+--------------------------------------------------------------
+
 man_clean_manpage
 
  SYNOPSIS
@@ -2029,11 +2107,17 @@ buffer_filename
   buffer_filename
 
  USAGE
-  String buffer_filename ();
+  String_Type buffer_filename ([String_Type bufname])
 
  DESCRIPTION
- Returns the name of the file associated with the current buffer.  If
- there is none associated with it, the empty string is returned.
+ When called with no arguments, this function returns the name of the
+ file associated with the current buffer.  If called with a string
+ argument representing the name of a buffer, it will return the name
+ of the file associated with that buffer.  If no file is associated
+ with the specified buffer, the empty string will be returned.
+
+ SEE ALSO
+  getbuf_info
 
 --------------------------------------------------------------
 

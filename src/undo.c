@@ -168,7 +168,13 @@ int undo (void) /*{{{*/
 #else
 	Point = LAST_UNDO->point;
 #endif
-		 
+	if (Point > CLine->len)
+	  {
+	     Point = 0;
+	     msg_error ("Internal Error in undo: Point > CLine->len");
+	     break;
+	  }
+
 	switch (undo_type)
 	  {
 #ifdef UNDO_HAS_REDO

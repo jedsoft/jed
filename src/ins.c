@@ -240,8 +240,8 @@ int jed_prepare_for_modification (int check_line_readonly)
    if (0 == CBuf->file[0])
      return 0;			       /* not attached to a file */
    
-   if ((SLang_get_error () == 0)
-       && (0 == (CBuf->flags & BUFFER_NON_LOCKING)))
+   /* if ((SLang_get_error () == 0) */
+   if (0 == (CBuf->flags & BUFFER_NON_LOCKING))
      {
 	check_buffer (CBuf);
 	if (CBuf->flags & FILE_MODIFIED)
@@ -260,10 +260,10 @@ int jed_prepare_for_modification (int check_line_readonly)
 
 	(void) jed_lock_buffer_file (CBuf);
      }
-
+#if 0
    if (SLang_get_error ())
      return -1;
-
+#endif
    return 0;
 }
 
@@ -371,7 +371,8 @@ int jed_del_nbytes (int n) /*{{{*/
 /* delete n characters, crossing nl if necessary */
 int jed_generic_del_nbytes (int n) /*{{{*/
 {
-   while ((n > 0) && (SLang_get_error () == 0))
+   /* while ((n > 0) && (SLang_get_error () == 0)) */
+   while (n > 0)
      {
 	int dn;
 
