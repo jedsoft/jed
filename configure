@@ -5138,6 +5138,7 @@ fi
 
 
 
+
 for ac_header in \
 stdlib.h \
 unistd.h \
@@ -5147,6 +5148,7 @@ malloc.h \
 termios.h \
 fcntl.h \
 sys/fcntl.h \
+sys/pty.h \
 pty.h \
 
 do
@@ -5956,7 +5958,6 @@ fi
 
 
 
-
 for ac_func in \
 memset \
 memcpy \
@@ -5974,7 +5975,6 @@ gethostname \
 tcgetpgrp \
 openpty \
 snprintf vsnprintf \
-Xutf8LookupString
 
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`

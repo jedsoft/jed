@@ -28,6 +28,7 @@ malloc.h \
 termios.h \
 fcntl.h \
 sys/fcntl.h \
+sys/pty.h \
 pty.h \
 )
 

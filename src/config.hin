@@ -30,6 +30,7 @@
 #undef HAVE_SYS_FCNTL_H
 
 #undef HAVE_PTY_H
+#undef HAVE_SYS_PTY_H
 
 /* define if you have memset */
 #undef HAVE_MEMSET

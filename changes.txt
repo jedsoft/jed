@@ -54,6 +54,8 @@ Changes since 0.99-18.0
     functions.  Also made changes to specify whether or not jed should
     automatically switch to the buffer associated with a process prior
     to calling its output handler.
+27. src/pty.c: AIX support: if <sys/pty.h> exists include it
+    (culliton at io, com)
 
 {{{ Previous Versions 
 

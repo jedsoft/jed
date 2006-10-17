@@ -19,7 +19,7 @@
 #include <errno.h>
 
 #ifdef HAVE_GRANTPT
-# if !defined (__linux__) && !defined(__CYGWIN__) && !defined(__FreeBSD__)
+# if !defined (__linux__) && !defined(__CYGWIN__) && !defined(__FreeBSD__) && !defined(_AIX)
 #  define USE_SYSV_PTYS
 #  include <sys/types.h>
 #  include <stropts.h>
@@ -28,6 +28,10 @@
 
 #ifdef HAVE_PTY_H
 # include <pty.h>
+#endif
+
+#ifdef HAVE_SYS_PTY_H
+# include <sys/pty.h>
 #endif
 
 static int pty_setup_slave_term (int slave, int raw)
