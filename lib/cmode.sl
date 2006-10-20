@@ -1068,7 +1068,7 @@ private define get_macro_names (names)
      {
 	() = ffind ("define");
 	go_right (6);
-	skip_chars (" \t\\");
+	skip_chars (" \t\\\\");
 	names [extract_identifier ()] = what_line ();
      }
 }

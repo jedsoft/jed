@@ -56,6 +56,8 @@ Changes since 0.99-18.0
     to calling its output handler.
 27. src/pty.c: AIX support: if <sys/pty.h> exists include it
     (culliton at io, com)
+28. lib/ctags.sl,cmode.sl,...: skip_chars("..\\X..") was replaced by
+    skip_chars("..\\\\X..") since \\X specifies a character class X.
 
 {{{ Previous Versions 
 

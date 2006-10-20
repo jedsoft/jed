@@ -616,9 +616,9 @@ define ide_open_file_at_cursor ()       % Alt-Return, J.L.
    skip_chars  ("-0-9a-zA-Z_!%+~./"); % right limit
 #else % DOS is supposed here:
    % DOS path names have backslashes and may contain a drive spec.
-   bskip_chars ("-0-9a-zA-Z_!%+~./\\:"); % left limit
+   bskip_chars ("-0-9a-zA-Z_!%+~./:\\"); % left limit
    push_mark ();
-   skip_chars  ("-0-9a-zA-Z_!%+~./\\:"); % right limit
+   skip_chars  ("-0-9a-zA-Z_!%+~./:\\"); % right limit
 #endif
    variable fn = bufsubstr (); % the file name
    pop_mark_0 ();

@@ -130,7 +130,7 @@ private define _ctags_find (tag, sinfo)
 	push_mark ();
 	!if (ffind ("/;\"\t"))
 	  {
-	     eol (); bskip_chars ("\\$/");
+	     eol (); bskip_chars ("\\\\$/");
 	  }
 	if (blooking_at ("$"))
 	  go_left (1);
