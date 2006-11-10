@@ -1309,6 +1309,12 @@ define rmail_build_folder_list ()
    slist;
 }
 
+private define folder_exists (folder)
+{
+   folder = dircat(Rmail_Directory, folder);
+   return file_status(folder) == 2;
+}
+   
 private define query_create_folder (default_folder)
 {
    variable folder, new_dir;
@@ -1323,8 +1329,7 @@ private define query_create_folder (default_folder)
    if (folder == Rmail_Folder_Name)
      return folder;
 
-   new_dir = dircat(Rmail_Directory, folder);
-   if (file_status(new_dir) != 2)
+   if (0 == folder_exists (folder))
      {
 	if (1 != get_yes_no(sprintf("Folder %s does not exist, create it", folder)))
 	  return NULL;
@@ -1485,15 +1490,22 @@ define rmail_resequence_folder ()
 
 define rmail_output_to_folder()
 {
-   variable folder, header, old_n, new_n, new_file, old_file;
+   variable folder = NULL, header, old_n, new_n, new_file, old_file;
    variable old_folder = Rmail_Folder_Name;
    variable buf, vis;
+   
+   if (_NARGS)
+     folder = ();
+
    variable new_dir, old_dir = dircat(Rmail_Directory, Rmail_Folder_Name);
    
    old_n = rmail_extract_file_number ();
    !if (strlen(old_n)) return;
 
-   folder = query_create_folder (Rmail_Last_Folder);
+   if (orelse 
+       {(folder == NULL)}{0 == folder_exists (folder)})
+     folder = query_create_folder (Rmail_Last_Folder);
+     
    if (folder == NULL)
      return;
 

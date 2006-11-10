@@ -86,36 +86,34 @@ define ispell()
    num_win = nwindows();
    pop2buf(buf);
    old_buf = pop2buf_whatbuf(ibuf);   
-   
-   ERROR_BLOCK 
-     {
-	sw2buf(old_buf);
-	pop2buf(buf);
-	if (num_win == 1) onewindow();
-	bury_buffer(ibuf);
-     }
 
    set_buffer_modified_flag(0);
-   num = read_mini("Enter choice. (^G to abort)", "0", Null_String);
-   num = sprintf ("(%s)", num);
-   
-   if (fsearch(num))
+   variable ok = 0;
+   try
      {
+	num = read_mini("Enter choice. (^G to abort)", "0", "");
+	if (0 == fsearch(sprintf ("(%s)", num)))
+	  throw RunTimeError, "$num is an invalid choice"$;
+
 	() = ffind_char (' '); trim();
 	push_mark_eol(); trim(); new_word = bufsubstr();
 	set_buffer_modified_flag(0);
 	sw2buf(old_buf);
 	pop2buf(buf);
+	ok = 1;
 	bskip_chars(letters); push_mark();
 	skip_chars(letters); del_region();
 	insert(new_word);
      }
-   else 
+   finally:
      {
-	sw2buf(old_buf);
-	pop2buf(buf);
+	if (ok == 0)
+	  {
+	     sw2buf(old_buf);
+	     pop2buf(buf);
+	  }
+	if (num_win == 1) onewindow();
+	bury_buffer(ibuf);
      }
-   if (num_win == 1) onewindow();
-   bury_buffer(ibuf);
 }
 

@@ -14,9 +14,13 @@
 %
 % Public Variables:
 % 
-%   Tag_file:  The name of the tags file to use.   The default is
+%   Tags_file:  The name of the tags file to use.   The default is
 %   "tags".
-custom_variable ("Tag_File", "tags");
+%
+% Buffer Local Variables:
+%   Tags_File: The name of the tag file to use
+%   Word_Chars: The characters that make up a word
+custom_variable ("Tags_File", "tags");
 
 private variable Position_Stack = NULL;
 private variable Position_Stack_Ptr = NULL;
@@ -217,6 +221,14 @@ private define locate_tags_file (tags_file)
 {
    variable dir;
 
+   if (path_is_absolute (tags_file))
+     {
+	if (1 == file_status (tags_file))
+	  return tags_file;
+	
+	return NULL;
+     }
+
    (,dir,,) = getbuf_info ();
    
    forever
@@ -224,7 +236,7 @@ private define locate_tags_file (tags_file)
 	variable file = dircat (dir, tags_file);
 	if (1 == file_status (file))
 	  return file;
-	
+
 	% This may need modified for non-Unix systems...
 #ifdef UNIX
 	dir = expand_filename (dircat (dir, "../"));
@@ -253,7 +265,8 @@ private define find_tags_file ()
    variable file, dir, dir1;
    variable tbuf = " *tags*";
 
-   file = locate_tags_file (Tag_File);
+   file = get_blocal_var("Tags_File", Tags_File);
+   file = locate_tags_file (file);
    if (file == NULL)
      error ("Unable to find a tags file");
 
@@ -300,6 +313,7 @@ private define get_tag_at_point ()
 #ifdef VMS
    word_chars = strcat (word_chars, "$");
 #endif
+   word_chars = get_blocal_var ("Word_Chars", word_chars);
    return read_mini ("Find tag:", get_word_at_point (word_chars), "");
 }
 

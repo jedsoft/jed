@@ -58,6 +58,15 @@ Changes since 0.99-18.0
     (culliton at io, com)
 28. lib/ctags.sl,cmode.sl,...: skip_chars("..\\X..") was replaced by
     skip_chars("..\\\\X..") since \\X specifies a character class X.
+29. src/file.c: If the inode/device of the file associated with the
+    current buffer has changed, set the buffer's FILE_MODIFIED flag.
+30. lib/ctags.sl: Modified to use buffer-local variables Word_Chars
+    and Tags_File when they exist.  Also, the global variable Tag_File
+    was renamed to Tags_File.
+31. lib/rmail.sl: rmail_output_to_folder now takes an optional
+    argument: the folder name.
+32. lib/ispell.sl: Use a try/catch block instead of an ERROR_BLOCK for
+    better stack maintenance.
 
 {{{ Previous Versions 
 

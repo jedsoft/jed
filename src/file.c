@@ -1217,7 +1217,10 @@ int write_file_with_backup(char *dirfile) /*{{{*/
 
    if (old != NULL) SLang_free_slstring (old);
 #endif
-   
+
+#ifdef REAL_UNIX_SYSTEM
+   (void) jed_get_inode_info (dirfile, &CBuf->device, &CBuf->inode);
+#endif
    SLfree (dir);
    SLfree (file);
    SLfree (dirfile);
@@ -1654,6 +1657,25 @@ int file_changed_on_disk (Buffer *buf, char *dirfile) /*{{{*/
        )
      return 0;
 
+#ifdef REAL_UNIX_SYSTEM
+   /*
+    * The file may still have been changed via a rename operation.
+    * Update (or even invalidate) inode information since directories may have
+    * been renamed, etc...
+    */
+     {
+	int device, inode;
+	(void) jed_get_inode_info (dirfile, &device, &inode);
+	if ((buf->device != -1) && (buf->inode != -1))
+	  {
+	     if ((device != buf->device) || (inode != buf->inode))
+	       buf->flags |= FILE_MODIFIED;
+	  }
+	buf->device = device;
+	buf->inode = inode;
+     }
+#endif
+
    t = sys_file_mod_time(dirfile);
    if (t == 0)
      {
@@ -1675,11 +1697,7 @@ int file_changed_on_disk (Buffer *buf, char *dirfile) /*{{{*/
 
 	return 1;
      }
-   
-   /* FIXME: The file may still have been changed via a rename operation.  Check
-    * the inodes.
-    */
-   
+
    return 0;
 }
 
@@ -1714,13 +1732,6 @@ void auto_save(void) /*{{{*/
 
 void check_buffer(Buffer *b) /*{{{*/
 {
-#ifdef REAL_UNIX_SYSTEM
-   /* Update (or even invalidate) inode information since directories may have
-    * been renamed, etc...
-    */
-   (void) jed_get_inode_info (b->canonical_dirfile, &b->device, &b->inode);
-#endif
-
    b->flags &= ~FILE_MODIFIED;
    if (*b->file)
      {

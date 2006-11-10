@@ -243,7 +243,8 @@ int jed_prepare_for_modification (int check_line_readonly)
    /* if ((SLang_get_error () == 0) */
    if (0 == (CBuf->flags & BUFFER_NON_LOCKING))
      {
-	check_buffer (CBuf);
+	if (0 == (CBuf->flags & FILE_MODIFIED))
+	  check_buffer (CBuf);
 	if (CBuf->flags & FILE_MODIFIED)
 	  {
 	     if (1 != jed_get_y_n ("File changed on disk.  Do you really want to edit this buffer"))
