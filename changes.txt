@@ -67,6 +67,9 @@ Changes since 0.99-18.0
     argument: the folder name.
 32. lib/ispell.sl: Use a try/catch block instead of an ERROR_BLOCK for
     better stack maintenance.
+33. lib/site.sl,lib/os.sl: The definition of define_blocal_var has been moved
+    from os.sl to site.sl.  Documentation for the functions was
+    provided by G. Milde.
 
 {{{ Previous Versions 
 

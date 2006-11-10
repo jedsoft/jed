@@ -1472,7 +1472,25 @@ define enable_xmouse ()
 #endif
 }
 
-#ifexists _get_blocal_var
+#ifdef HAS_BLOCAL_VAR
+%!%+
+%\function{get_blocal_var}
+%\synopsis{Return the value of a buffer-local variable}
+%\usage{value = get_blocal_var (String name, [default])}
+%\description
+%  This function returns the value of the buffer-local variable
+%  specified by \exmp{name}.  If the the optional \exmp{default}
+%  argument is given, it will be returned if no local variable of the
+%  specified name exists. Otherwise an error will be thrown.
+%\example
+%#v+
+%    if (get_blocal_var("foo", 0))
+%      message("this buffer is fooish");
+%#v-
+%  will print the message if \exmp{foo} is a buffer-local variable
+%  with a nonzero value.
+%\seealso{define_blocal_var, blocal_var_exists}
+%!%-
 define get_blocal_var ()
 {
    variable name, value;
@@ -1484,6 +1502,26 @@ define get_blocal_var ()
      }
    else name = ();
    return _get_blocal_var (name);
+}
+
+%!%+
+%\function{define_blocal_var}
+%\synopsis{Create and initialize a buffer local variable}
+%\usage{define_blocal_var (name, value)}
+%\description
+%  This function may be used to create a buffer-local variable named
+%  \exmp{name} and set it to \exmp{value}.  A buffer-local variable is a 
+%  variable whose value is local to the current buffer. 
+%\notes
+%  The order of the \var{name} and \var{value} arguments to this
+%  function are the reverse from that of the \ifun{set_blocal_var}
+%  function.
+%\seealso{get_blocal_var, create_blocal_var, set_blocal_var}
+%!%-
+define define_blocal_var (name, value)
+{
+   create_blocal_var (name);
+   set_blocal_var (value, name);
 }
 #endif
 %}}}

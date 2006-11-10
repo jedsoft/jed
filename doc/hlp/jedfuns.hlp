@@ -128,7 +128,7 @@ blocal_var_exists
   variable does not exists.
 
  SEE ALSO
-  get_blocal_var, create_blocal_var, set_blocal_var
+  get_blocal_var, create_blocal_var, set_blocal_var, define_blocal_var
 
 --------------------------------------------------------------
 
@@ -146,24 +146,7 @@ create_blocal_var
   local to the current buffer.
 
  SEE ALSO
-  get_blocal_var, set_blocal_var
-
---------------------------------------------------------------
-
-get_blocal_var
-
- SYNOPSIS
-  Return the value of the buffer local variable "name"
-
- USAGE
-  get_blocal_var (String name)
-
- DESCRIPTION
-  This function returns the value of the buffer local variable specified
-  by `name'.
-
- SEE ALSO
-  set_blocal_var, create_blocal_var
+  get_blocal_var, set_blocal_var, define_blocal_var
 
 --------------------------------------------------------------
 

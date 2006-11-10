@@ -134,14 +134,6 @@ define fold_mode ()
 
 #endif
 
-#ifdef HAS_BLOCAL_VAR
-define define_blocal_var (name, value)
-{
-   create_blocal_var (name);
-   set_blocal_var (value, name);
-}
-#endif
-
 #ifdef HAS_DFA_SYNTAX
 define dfa_enable_highlight_cache (file, name)
 {

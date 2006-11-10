@@ -5,7 +5,7 @@
   The \var{blocal_var_exists} function returns non-zero if the
   specified buffer-local variable exists.  It returns zero of the
   variable does not exists.
-\seealso{get_blocal_var, create_blocal_var, set_blocal_var}
+\seealso{get_blocal_var, create_blocal_var, set_blocal_var, define_blocal_var}
 \done
 
 \function{create_blocal_var}
@@ -15,16 +15,7 @@
   This function is used to create a buffer local variable named
   \var{name}. A buffer local variable is a variable whose value is
   local to the current buffer.
-\seealso{get_blocal_var, set_blocal_var}
-\done
-
-\function{get_blocal_var}
-\synopsis{Return the value of the buffer local variable "name"}
-\usage{get_blocal_var (String name)}
-\description
-  This function returns the value of the buffer local variable specified
-  by \var{name}.
-\seealso{set_blocal_var, create_blocal_var}
+\seealso{get_blocal_var, set_blocal_var, define_blocal_var}
 \done
 
 \function{set_blocal_var}
