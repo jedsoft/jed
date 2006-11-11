@@ -72,6 +72,9 @@ Changes since 0.99-18.0
     provided by G. Milde.
 34. lib/site.sl+others: When linked against slang versions >= 2.1.x,
     use the && and || operators instead of the andelse/orelse constructs.
+35. lib/perl.sl: Updated to Mark Olesen's latest version.  Also added
+    perlxtra.sl.
+36. lib/colors/[Xjed/]black4.sl: Updated (Mark Olesen).
 
 {{{ Previous Versions 
 

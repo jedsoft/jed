@@ -114,6 +114,7 @@
 @lib/bufed.sl
 @lib/macro.sl
 @lib/perl.sl
+@lib/perlxtra.sl
 @lib/filter.sl
 @lib/keycode.sl
 @lib/modehook.sl
