@@ -70,6 +70,8 @@ Changes since 0.99-18.0
 33. lib/site.sl,lib/os.sl: The definition of define_blocal_var has been moved
     from os.sl to site.sl.  Documentation for the functions was
     provided by G. Milde.
+34. lib/site.sl+others: When linked against slang versions >= 2.1.x,
+    use the && and || operators instead of the andelse/orelse constructs.
 
 {{{ Previous Versions 
 

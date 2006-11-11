@@ -2880,9 +2880,13 @@ define expand_file_hook (file)
    file2 = file;
    file = Null_String;
    % Check for environment variable of form $(variable)
-   while (andelse
-	  {strlen (file2)}
-	    {string_match (file2, "\\$[^/$]+", 1)})
+   while (
+#if (_slang_version >= 20100)
+	  strlen (file2) && string_match (file2, "\\$[^/$]+", 1)
+#else
+	  andelse {strlen (file2)}{string_match (file2, "\\$[^/$]+", 1)}
+#endif
+	  )
      {
 	changed++;
 	(pos, len) = string_match_nth (0);
@@ -3232,10 +3236,13 @@ define command_line_hook () %{{{
 		  0;
 	       }
 
-	     (andelse
-	      { n and (file[0] == '+')}
-		{integer (file) >= 0})
-		    :
+	     (
+#if (_slang_version >= 20100)
+	      n and (file[0] == '+') && (integer(file) >= 0)
+#else
+	      andelse { n and (file[0] == '+')}{integer (file) >= 0}
+#endif
+	      ):
 	     () = find_file (next_file_arg);
 	     goto_line (integer (file));
 	  }

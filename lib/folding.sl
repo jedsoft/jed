@@ -348,10 +348,14 @@ define fold_close_fold () %{{{
    
    push_spot();
    
-   if (andelse 
-       {fold_is_marker_line (start, end_of_start)}
-	 {down_1()})
-     {
+   if (
+# if (_slang_version >= 20100)
+       fold_is_marker_line (start, end_of_start) && down_1()
+# else
+       andelse {fold_is_marker_line (start, end_of_start)}{down_1()}
+# endif
+       )
+       {
         is_line_hidden();
         go_up_1();
         !if (())
@@ -367,9 +371,13 @@ define fold_close_fold () %{{{
 
    forever
      {
-        if (andelse
-	    {up_1()}
-	      {fold_find_marker_line_reverse (end, end_of_end, 0)})
+        if (
+# if (_slang_version >= 20100)
+	    up_1() && fold_find_marker_line_reverse (end, end_of_end, 0)
+# else
+	    andelse {up_1()}{fold_find_marker_line_reverse (end, end_of_end, 0)}
+# endif
+	    )
           {
              end_line = what_line ();
              move_user_mark (end_mark);
@@ -379,8 +387,13 @@ define fold_close_fold () %{{{
 
         goto_user_mark (beg_mark);
         
-        if (andelse{up_1()}
-	      {fold_find_marker_line_reverse (start, end_of_start, 0)})
+        if (
+# if (_slang_version >= 20100)
+	    up_1() && fold_find_marker_line_reverse (start, end_of_start, 0)
+# else
+	    andelse{up_1()}{fold_find_marker_line_reverse (start, end_of_start, 0)}
+# endif
+	    )
           {
              move_user_mark (beg_mark);
              if ( what_line () > end_line) break;

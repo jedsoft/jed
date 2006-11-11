@@ -507,9 +507,13 @@ define rmail_get_newmail_from_file (file, tmp_mbox, folder)
    nomail = sprintf ("No new mail in %s", file);
    
    st = stat_file (file);
-   if (orelse
-	{NULL == st}
-	{st.st_size <= 0})
+   if (
+#if (_slang_version >= 20100)
+       (st == NULL) || (st.st_size <= 0)
+#else
+       orelse{NULL == st}{st.st_size <= 0}
+#endif
+       )
      {
 	message (nomail);
 	return (0);
@@ -856,10 +860,15 @@ define rmail_skip_quotes ()
 	go_down_1 ();
 	if (re_fsearch (str))
 	  {
-	     while (orelse
-		     { push_mark (), narrow (), bol (),
-			re_fsearch (str), widen () }
-		     { skip_white (), eolp ()} )
+	     while (
+#if (_slang_version >= 20100)
+		    (push_mark (), narrow (), bol (), re_fsearch (str), widen ())
+		    || (skip_white (), eolp ())
+#else
+		    orelse { push_mark (), narrow (), bol (), re_fsearch (str), widen () }
+		      { skip_white (), eolp ()}
+#endif
+		    )
 	       {
 		  !if (down_1 ()) break;
 	       }
@@ -1502,8 +1511,13 @@ define rmail_output_to_folder()
    old_n = rmail_extract_file_number ();
    !if (strlen(old_n)) return;
 
-   if (orelse 
-       {(folder == NULL)}{0 == folder_exists (folder)})
+   if (
+#if (_slang_version >= 20100)
+       (folder == NULL) || (0 == folder_exists (folder))
+#else
+       orelse {(folder == NULL)}{0 == folder_exists (folder)}
+#endif
+       )
      folder = query_create_folder (Rmail_Last_Folder);
      
    if (folder == NULL)
