@@ -47,8 +47,11 @@ extern char *jed_standardize_filename_static (char *);
 
 extern char *jed_expand_filename (char *);
 
-/* return pointer to place filname starts in path */
+/* return pointer to place filename starts in path */
 extern char *extract_file(char *);
+
+/* Like extract_file, except ignores the trailing slash */
+char *jed_extract_file_or_dir (char *);
 
 extern int sys_findfirst(char *);
 extern int sys_findnext(char *);

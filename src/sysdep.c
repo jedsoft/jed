@@ -407,6 +407,32 @@ char *extract_file(char *file) /*{{{*/
 }
 
 /*}}}*/
+
+/* given a canonical filename, return pointer to its name.  
+ * Note: If the file ends in a slash as in a/b/c/, then a pointer to
+ * the c/ is returned.
+ */
+char *jed_extract_file_or_dir (char *file) /*{{{*/
+{
+   char *f;
+   
+   f = file + strlen(file);
+   if (f > file) 
+     {
+	f--;
+	if (*f == SLASH_CHAR)
+	  f--;
+     }
+
+   while (f > file)
+     {
+	f--;
+	if (*f == SLASH_CHAR) return f + 1;
+     }
+   return (file);
+}
+
+/*}}}*/
 #ifdef IBMPC_SYSTEM
 /* I do not know how to do this in a portable fashion.  
  */

@@ -75,6 +75,16 @@ Changes since 0.99-18.0
 35. lib/perl.sl: Updated to Mark Olesen's latest version.  Also added
     perlxtra.sl.
 36. lib/colors/[Xjed/]black4.sl: Updated (Mark Olesen).
+37. src/ledit.c: In the filename completion window, do not show the
+    full pathnames.  Otherwise a pathname could exceed the size of the
+    window rendering it useless.
+38. lib/cmode.sl: Fixed a number of minor annoyances of the
+    indent-line routines, including:
+      * the indentation of array elements and lists.
+      * multiline preprocessor macros.
+      * "stairstepping" of multiple continued lines.
+    Also calls to c_indent_line have been changed to indent_line to
+    allow the resulting behavior to be influenced by the buffer-hooks.
 
 {{{ Previous Versions 
 

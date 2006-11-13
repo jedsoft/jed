@@ -3209,11 +3209,11 @@ define command_line_hook () %{{{
 	  }
 #iftrue
 	  {case "-hook" and n:		% run user hook
-	     if (is_defined (next_file))
+	     variable hookfun = __get_reference (next_file);
+	     if (hookfun != NULL)
 	       {
 		  i++;		% skip next_file
-		  __argv[[i:]]; % leave rest of args on stack
-		  eval (next_file);
+		  (@hookfun)(__argv[[i:]]);
 		  return;
 	       }
 	  }

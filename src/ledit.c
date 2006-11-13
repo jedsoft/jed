@@ -1746,8 +1746,16 @@ int mini_complete (void) /*{{{*/
 	     
 	     if (last_key_char == '\t')
 	       {
-		  while (*pb) pb++;
-		  (void) jed_quick_insert ((unsigned char *)buf, (int) (pb - buf));
+		  if (complete_open == file_findfirst)
+		    {
+		       char *file = jed_extract_file_or_dir (buf);
+		       (void) jed_quick_insert ((unsigned char *) file, strlen(file));
+		    }
+		  else
+		    {
+		       while (*pb) pb++;
+		       (void) jed_quick_insert ((unsigned char *)buf, (int) (pb - buf));
+		    }
 		  newline ();
 	       }
 	  }

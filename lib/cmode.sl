@@ -62,6 +62,12 @@ custom_variable ("C_Class_Offset", 3);
 %!%-
 custom_variable ("C_Param_Offset_Max", -1);
 
+% If non-zero, align matching parenthesis that appear on different lines
+custom_variable ("C_Align_Parenthesis", 1);
+
+% Indent for macros
+custom_variable ("C_Macro_Indent", 2);
+
 define cmode_is_slang_mode ()
 {
    variable is_slang;
@@ -69,9 +75,24 @@ define cmode_is_slang_mode ()
    is_slang & 8;
 }
 
+private define blooking_at_continuation_char ()
+{
+   return eolp () and
+     blooking_at ("\\") and not (blooking_at ("\\\\"));
+}
+
 private define bskip_all_whitespace ()
 {
-   bskip_chars (" \f\t\n");
+   forever
+     {
+	bskip_chars (" \f\t\n");
+	if (blooking_at_continuation_char ())
+	  {
+	     go_left (1);
+	     continue;
+	  }
+	return;
+     }
 }
 
 private define skip_all_whitespace ()
@@ -223,7 +244,7 @@ define c_bskip_over_comment (skip_pp)
 	     while (up_1 ())
 	       {
 		  %eol (); -- up(1) leaves point at eol
-		  !if (blooking_at ("\\"))
+		  !if (blooking_at_continuation_char ())
 		    {
 		       go_down_1 ();
 		       break;
@@ -384,13 +405,12 @@ private define continued_statement_bol ()
 {
    while (up_1 ())
      {
-	!if (blooking_at ("\\"))
+	!if (blooking_at_continuation_char ())
 	  {
 	     go_down_1 ();
 	     break;
 	  }
      }
-
    bol ();
 }
 
@@ -439,6 +459,21 @@ private define inside_class_or_namespace (bra, name)
 }
 #endif
 
+% overview of indentation tracking variables
+%
+% this_char:
+%   - 1st character at the begin of the current line
+% match_char:
+%   - start character of an enclosing '([{}])' construct, or where we gave up
+% match_indent:
+%   - indentation of the match_char (possibly our reference point)
+% match_line:
+%   - where the match occurred
+% prep_indent:
+%   - extra indentation for multi-line preprocessor statements
+% skip_pp:
+%   - 1: indenting normal statement;
+%   - 0: indenting preprocessor statements (use prep_indent)
 define c_indent_line ()
 {
    variable val, col, extra_indent = 0;
@@ -451,7 +486,6 @@ define c_indent_line ()
    push_spot ();
    bol_skip_white ();
    this_char = what_char ();
-
    if (-2 == parse_to_point ())
      {
 	% In a comment.  Indent it at level of matching /* string
@@ -476,21 +510,35 @@ define c_indent_line ()
      }
 
    push_spot ();
+   variable indenting_solitary_left_parens = 0;
+   variable indenting_iostream_op = 0; %  not implemented
+   if (this_char == '(')
+     {
+	go_right_1 ();
+	skip_white ();
+	if (looking_at_char ('\\'))
+	  go_right_1 ();
+	indenting_solitary_left_parens = eolp ();
+     }
+   else if (looking_at (">>") or looking_at ("<<"))
+     {
+	indenting_iostream_op = 1;
+	% TODO
+    }
+
    if (up_1 ())
      {
 	eol ();
-	if (blooking_at ("\\") and not (blooking_at ("\\\\")))
+	if (blooking_at_continuation_char ())
 	  {
 	     continued_statement_bol ();
 	     !if (looking_at_char ('#'))
 	       {
 		  pop_spot ();
-		  bol_trim ();
-		  pop_spot ();
 		  return;
 	       }
 	     %extra_indent += C_INDENT;
-	     prep_indent = C_INDENT;
+	     prep_indent = C_Macro_Indent;
 	     skip_pp = 0;
 	     prep_line = what_line ();
 	  }
@@ -522,7 +570,7 @@ define c_indent_line ()
 	forever
 	  {
 	     c_bskip_over_comment (skip_pp);
-	     if (eolp() and (blooking_at ("\\")))
+	     if (blooking_at_continuation_char ())
 	       {
 		  go_left_1 ();
 		  continue;
@@ -539,16 +587,18 @@ define c_indent_line ()
 		  )
 	       {
 		  if (skip_pp or is_continuation)
-		    extra_indent += C_CONTINUED_OFFSET;
+		    {
+		       if (0 == indenting_solitary_left_parens)
+			 extra_indent = C_CONTINUED_OFFSET;
+		    }
 		  else
 		    {
 		       push_spot ();
 		       bol_skip_white ();
 		       !if (looking_at ("#"))
-			 extra_indent += C_CONTINUED_OFFSET;
+			 extra_indent = C_CONTINUED_OFFSET;
 		       pop_spot ();
 		    }
-
 		  is_continuation++;
 	       }
 	     !if (blooking_at (")")) break;
@@ -575,7 +625,7 @@ define c_indent_line ()
 		  if (looking_at ("#"))
 		    break;
 	       }
-	  }
+	  } %  end of forever loop
      }
 
    if ((skip_pp == 0) and (looking_at ("#")))
@@ -590,10 +640,12 @@ define c_indent_line ()
    if ((val < 0) and looking_at ("/*")) val = -2;
    else if (val == 1)
      {
-	go_right (1);
-	skip_white ();
+	if ((C_Align_Parenthesis == 0) or (this_char != ')'))
+	  {
+	     go_right (1);
+	     skip_white ();
+	  }
      }
-
    col = what_column ();
 
    bol_skip_white ();
@@ -610,7 +662,7 @@ define c_indent_line ()
 #iftrue
    % Added 04/06/98 MDJ to facilitate C++ style comments
    if (val == 0)
-     {
+     {				       %  match not found for ')'
 	push_spot();
 	bol_skip_white();
 	if (eolp())
@@ -633,13 +685,13 @@ define c_indent_line ()
 
    switch (val)
      {
-      case 0:			       %  mismatch
-	if (match_char == '{')
+      case 0: %  Could not find matching '(' for ')'
+	if (match_char == '{') %  within {...} block
 	  {
 	     push_spot ();
 	     goto_user_mark (match_mark);
 	     bskip_all_whitespace ();
-	     if (blooking_at (")"))
+	     if (blooking_at (")"))  %  ... (expr) {...} block
 	       {
 		  variable same_line = (what_line == match_line);
 
@@ -654,6 +706,13 @@ define c_indent_line ()
 			   and looking_at("switch"))
 			 match_indent += C_Switch_Offset;
 		    }
+	       }
+	     else if (blooking_at("="))%  ... = {...} list
+	       {
+		  if (is_continuation)
+		    extra_indent -= C_CONTINUED_OFFSET;
+		  if (this_char == '{') % ... = {\n{...}...}
+		    extra_indent -= C_BRACE;   %  undone below
 	       }
 
 	     pop_spot ();
@@ -673,7 +732,9 @@ define c_indent_line ()
 	else if (match_char == '[')
 	  {
 	     push_spot ();
-	     c_indent_to (col + 1);
+	     if (this_char != ']')
+	       col++;
+	     c_indent_to (col);
 	     pop_spot ();
 	     return;
 	  }
@@ -681,7 +742,8 @@ define c_indent_line ()
 	  {
 	     push_spot ();
 	     bol_skip_white ();
-	     if (skip_pp and looking_at_char ('{'))
+	     %if (skip_pp and looking_at_char ('{'))
+	     if (looking_at_char ('{'))
 	       extra_indent = 0;
 	     extra_indent++;
 	     c_indent_to (extra_indent + prep_indent);
@@ -692,6 +754,7 @@ define c_indent_line ()
      {
       case 1:
 	extra_indent = 0;	       %  match found
+	prep_indent = 0;
         if (C_Param_Offset_Max >= 0)
 	  if (col - match_indent > C_Param_Offset_Max)
 	    extra_indent = match_indent + C_Param_Offset_Max - col;
@@ -734,7 +797,7 @@ define c_indent_line ()
 	if (is_continuation)
 	  col -= C_CONTINUED_OFFSET;
 	col += extra_indent;
-	%!if (skip_pp) col += extra_indent;
+	% !if (skip_pp) col += extra_indent;
      }
      {
 	col += extra_indent;
@@ -769,7 +832,7 @@ define c_newline_and_indent ()
    if (bolp ())
      {
 	newline ();
-	c_indent_line ();
+	indent_line ();
 	return;
      }
 
@@ -820,7 +883,7 @@ define c_newline_and_indent ()
 	c_indent_to (col);
 	insert ("* @ ");
      }
-   else c_indent_line ();
+   else indent_line ();
 }
 
 private define c_parse_to_point ()
@@ -853,7 +916,7 @@ define c_insert_bra ()
 		  bolp ();	       %  on stack
 		  pop_spot ();
 		  insert_char ('{');
-		  if ( () ) c_indent_line ();   %  off stack
+		  if ( () ) indent_line ();   %  off stack
 		  eol ();
 		  if (C_BRA_NEWLINE) c_newline_and_indent ();
 	       }
@@ -897,7 +960,7 @@ define c_insert_ket ()
 	eol ();
 	insert ("\n}");
      }
-   c_indent_line ();
+   indent_line ();
    eol ();
    blink_match ();
    if (C_BRA_NEWLINE) c_newline_and_indent ();
@@ -907,7 +970,7 @@ define c_insert_colon ()
 {
    insert_char (':');
    !if (c_parse_to_point ())
-     c_indent_line ();
+     indent_line ();
 }
 
 $1 = "C";
@@ -1309,23 +1372,23 @@ define c_set_style (name)
    switch (strlow(name))
      {
       case "gnu":
-	(2,2,1,2,0,2,2);
+	(2,2,1,2,0,2,2,2);
      }
      {
       case "k&r":
-	(5,0,0,5,0,5,5);
+	(5,0,0,5,0,5,5,5);
      }
      {
       case "bsd":
-	(4,0,0,4,0,4,4);
+	(4,0,0,4,0,4,4,4);
      }
      {
       case "linux":
-	(8,0,0,8,0,8,8);
+	(8,0,0,8,0,8,8,8);
      }
      {
       case "jed":
-	(3,2,1,2,1,3,3);
+	(3,2,1,2,1,3,3,3);
      }
      {
 	if (is_defined ("c_set_style_hook") > 0)
@@ -1333,7 +1396,9 @@ define c_set_style (name)
      }
 
    (C_INDENT, C_BRACE, C_BRA_NEWLINE, C_CONTINUED_OFFSET,
-    C_Colon_Offset, C_Class_Offset, C_Namespace_Offset)=();
+    C_Colon_Offset, C_Class_Offset, C_Namespace_Offset,
+    C_Macro_Indent)
+	  =();
 }
 
 if (_C_Indentation_Style != NULL)
