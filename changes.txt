@@ -86,6 +86,8 @@ Changes since 0.99-18.0
     Also calls to c_indent_line have been changed to indent_line to
     allow the resulting behavior to be influenced by the buffer-hooks.
     Shamelessly stole some of the comments from Mark Olesen's cmode.sl.
+39. lib/bytecomp.sl: perlxtra.sl added to be preparsed.
+
 
 {{{ Previous Versions 
 

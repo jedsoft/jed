@@ -41,6 +41,7 @@ $0 = _stkdepth ();
 "mailalias.sl";
 "mime.sl";
 "perl.sl";
+"perlxtra.sl";
 "compress.sl";
 # endif
 # ifdef IBMPC_SYSTEM
