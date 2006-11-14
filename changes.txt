@@ -87,7 +87,7 @@ Changes since 0.99-18.0
     allow the resulting behavior to be influenced by the buffer-hooks.
     Shamelessly stole some of the comments from Mark Olesen's cmode.sl.
 39. lib/bytecomp.sl: perlxtra.sl added to be preparsed.
-
+40. lib/cmode.sl: Do not indent successive lines of a structure.
 
 {{{ Previous Versions 
 

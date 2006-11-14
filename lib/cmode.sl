@@ -707,7 +707,8 @@ define c_indent_line ()
 			 match_indent += C_Switch_Offset;
 		    }
 	       }
-	     else if (blooking_at("="))%  ... = {...} list
+	     else if (blooking_at("=") or blooking_at ("struct"))
+	       %  ... = {...} list 
 	       {
 		  if (is_continuation)
 		    extra_indent -= C_CONTINUED_OFFSET;
