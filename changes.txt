@@ -88,6 +88,17 @@ Changes since 0.99-18.0
     Shamelessly stole some of the comments from Mark Olesen's cmode.sl.
 39. lib/bytecomp.sl: perlxtra.sl added to be preparsed.
 40. lib/cmode.sl: Do not indent successive lines of a structure.
+41. lib/ispell.sl: "finally:" changed to "finally" for compatibility
+    with older versions of slang-2.
+42. lib/cmode.sl: Additional comments and a small change so that
+    trailing whitespace does not affect the indentation of ')'.
+    (Mark Olesen).
+43. src/test/*.sl: changed "static" to "private".
+44. src/test/test_cmode.*: Regression script for cmode.sl
+45. lib/isearch.sl: Added Isearch_Highlight variable to control
+    whether or not the match should be highlighted.
+46. lib/cmode.sl: Merged Mark Oleson's patches that support
+    "foam-style" indentation.
 
 {{{ Previous Versions 
 

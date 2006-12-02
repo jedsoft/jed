@@ -105,7 +105,7 @@ define ispell()
 	skip_chars(letters); del_region();
 	insert(new_word);
      }
-   finally:
+   finally
      {
 	if (ok == 0)
 	  {

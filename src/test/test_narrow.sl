@@ -1,4 +1,4 @@
-static variable Failed = 0;
+private variable Failed = 0;
 
 public define test_narrow (str, narrow_str)
 {

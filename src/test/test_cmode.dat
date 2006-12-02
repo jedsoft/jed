@@ -1,0 +1,169 @@
+/* -*- mode: C; TAB: 0; -*-
+ * This file is used to test jed's c-mode indentation routines 
+ */
+
+#ifdef this
+# define that this
+#else
+# define that notthis
+# ifndef those
+#  define those this,that
+# endif
+#endif
+
+struct _pSLang_Ref_Type
+{
+   int is_global;
+   union
+     {
+        SLang_Name_Type *nt;
+        SLang_Object_Type *local_obj;
+     }
+   v;
+};
+
+typedef struct
+{
+   int foo;
+   double bar;                         /* bar */
+   union
+     {
+        int i;
+        double j;
+     }
+   u;
+}
+Some_Type;
+
+typedef struct Some_Tag
+{
+   int foo;
+   double bar;                         /* bar */
+   union
+     {
+        int i;
+        double j;
+     }
+   u;
+}
+Some_Type;
+
+namespace foobar
+{
+   int foo;
+   T bar = 
+     {
+        {1, 2, 3};
+     };
+}
+
+int main (int argc, char **argv)
+{
+   int X[] =
+     {
+        1,2,3,4,
+        5,6,7,8
+        9,10
+     };
+   Foo_Type foo []=
+     {
+        // comment
+        {foo, bar},
+        {baz,bam},
+     };
+   /*
+    * Unbalanced {
+    */
+
+   // not C, but is used in slang
+   X = struct
+     {
+        foo,
+        bar,
+        baz
+     };
+
+   if ((x == 3) ||
+       (y == 2)
+       || ((z == 1)
+           && (y == 3)))
+     dothis ();
+   else if ((y == 3)
+            && (z != 4))
+     dothat ();
+
+#define silly(fun,x) /* a macro */ \
+   int fun(x) \
+   { \
+      return x \
+        + 7;\
+   }
+
+   x = 1 + 2
+     + 3 + 4 /* =7 */
+     + 5 * 6;
+   y = 1 + 2 //add 6
+     + (3 * 4 //12
+        * fun (5 + 6)
+       );
+
+   switch (foo)
+     {
+      case A:
+        B = 3;
+        break;
+      case B: C = 4;
+        break;
+      default:
+        X = bar ()
+          + 2;
+        switch (X)
+          {
+           case 4:
+             X++;
+             break;
+          }
+     }
+   
+   cout >> foo
+     >> bar//foo
+     >> x //x
+     >> y;//y
+
+
+   // This is a test of some of "foam" style indentation
+   while 
+   (
+        x
+      + 10
+     == 3
+   )
+     {
+        if 
+          (
+               x
+             + 10
+            != 3
+          )
+          problem ();
+     }
+        
+        
+
+   // I am not happy with the indentation of the following
+   if (debug)
+     cout >> foo
+     >> bar
+     >> bam;
+
+   if (this)
+     x = 3 + 4
+     + 5 + 6;
+   else if (that
+            || those)
+     x = 3 + 4
+     + 5 + 6;
+   else
+     y = 3 + 4
+     + 5 + 6;
+}

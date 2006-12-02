@@ -1,12 +1,12 @@
-static variable Failed = 0;
-static define new_buffer (str)
+private variable Failed = 0;
+private define new_buffer (str)
 {
    setbuf ("*scratch*");
    erase_buffer ();
    insert (str);
    bob ();
 }
-static define buffer_contents ()
+private define buffer_contents ()
 {
    bob ();
    push_mark ();
@@ -14,7 +14,7 @@ static define buffer_contents ()
    return bufsubstr ();
 }
 
-static define test_replace (str, s, t)
+private define test_replace (str, s, t)
 {
    variable new_s;
 
@@ -31,7 +31,7 @@ static define test_replace (str, s, t)
 	Failed++;
      }
 }
-static define main ()
+private define main ()
 {
    test_replace ("\n\n\n\n\nx\n\ny", "x", "t");
    test_replace ("\n\n\n\n\nx\n\ny", "\n", "t");

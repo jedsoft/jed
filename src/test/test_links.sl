@@ -1,6 +1,6 @@
-static variable Failed = 0;
+private variable Failed = 0;
 
-static variable Tmp_Root = make_tmp_file ("/tmp/jedtest");
+private variable Tmp_Root = make_tmp_file ("/tmp/jedtest");
 % Creates the following directory layout under Tmp_Root:
 %   /tmp/jedtest/ :
 %      A/
@@ -10,15 +10,15 @@ static variable Tmp_Root = make_tmp_file ("/tmp/jedtest");
 %        file.c -> dev/foo
 %      B/
 %        dev2 -> /tmp/jedtest/A/dev
-static variable Tmp_A = path_concat (Tmp_Root, "A");
-static variable Tmp_A_dev = path_concat (Tmp_A, "dev");
-static variable Tmp_A_dev_foo = path_concat (Tmp_A_dev, "foo");
-static variable Tmp_A_dev_hoo = path_concat (Tmp_A_dev, "hoo");
-static variable Tmp_A_filec = path_concat (Tmp_A, "file.c");
-static variable Tmp_B = path_concat (Tmp_Root, "B");
-static variable Tmp_B_dev2 = path_concat (Tmp_B, "dev2");
+private variable Tmp_A = path_concat (Tmp_Root, "A");
+private variable Tmp_A_dev = path_concat (Tmp_A, "dev");
+private variable Tmp_A_dev_foo = path_concat (Tmp_A_dev, "foo");
+private variable Tmp_A_dev_hoo = path_concat (Tmp_A_dev, "hoo");
+private variable Tmp_A_filec = path_concat (Tmp_A, "file.c");
+private variable Tmp_B = path_concat (Tmp_Root, "B");
+private variable Tmp_B_dev2 = path_concat (Tmp_B, "dev2");
 
-static define make_layout ()
+private define make_layout ()
 {
    () = mkdir (Tmp_Root);
    () = mkdir (Tmp_A);
@@ -35,7 +35,7 @@ static define make_layout ()
 % Then it tries to read 
 %   /tmp/jedtest/B/dev2/../file.c
 % where /tmp/jedtest/B/dev2 is a symlink to /tmp/jedtest/A/dev
-static define test_link_read_write_1 ()
+private define test_link_read_write_1 ()
 {
    () = read_file (Tmp_A_filec);
    bob ();
@@ -93,7 +93,7 @@ static define test_link_read_write_1 ()
      }
 }
 
-static define test_read_hard_link ()
+private define test_read_hard_link ()
 {
    () = read_file (Tmp_A_dev_foo);
    variable a = whatbuf ();

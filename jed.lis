@@ -398,6 +398,8 @@
 *src/mkfiles/mkmake.exe
 
 *src/test/runtests.sh 0755
+@src/test/test_cmode.sl
+@src/test/test_cmode.dat
 @src/test/test_links.sl
 @src/test/test_narrow.sl
 @src/test/test_search.sl
