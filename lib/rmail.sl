@@ -1036,24 +1036,16 @@ define rmail_apply_dont_reply_to (from)
    while (sub_f = extract_element (from, n, ','), sub_f != NULL)
      {
 	n++;
-#iftrue
 	variable pats;
 	variable matches;
 
 	pats = "^" + strchop (Rmail_Dont_Reply_To, ',', '\\') + "$";
 	matches = array_map (Int_Type, &string_match, sub_f, pats, 1);
-	!if (length (where (matches)))
+	!if (any (matches))
 	  {
 	     sub_f;
 	     num++;
 	  }
-#else
-	!if (is_list_element(Rmail_Dont_Reply_To, sub_f, ','))
-	  {
-	     sub_f;
-	     num++;
-	  }
-#endif
      }
    create_delimited_string (num);
 }

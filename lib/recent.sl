@@ -149,7 +149,7 @@ public define append_recent_files (buf)
    
    if (List_Of_Buffers != NULL)
      {
-	if (length (where (List_Of_Buffers == buf)))
+	if (any (List_Of_Buffers == buf))
 	  return;
      }
 

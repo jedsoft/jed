@@ -90,7 +90,7 @@ public define mini_exit_minibuffer ()
 	switch (Mini_Store_Duplicates)
 	  {
 	   case 0:		       %  never
-	     if (length (where (line == Mini_Previous_Lines)))
+	     if (any (line == Mini_Previous_Lines))
 	       line = NULL;
 	  }
 	  {

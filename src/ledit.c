@@ -2186,10 +2186,11 @@ void init_minibuffer() /*{{{*/
    if ((-1 == SLang_init_slang ())
 #ifndef SIXTEEN_BIT_SYSTEM
        || (-1 == SLang_init_slmath ())
+       || (-1 == SLang_init_array ())
 #endif
        || (-1 == SLang_init_posix_process ())
        || (-1 == SLang_init_posix_dir ())
-       || (-1 == SLang_init_slassoc ())
+       /* || (-1 == SLang_init_slassoc ()) -- handled by SLang_init_slang */
        || (-1 == SLang_init_stdio ())
        || (-1 == SLang_init_posix_io ())
        || (-1 == SLang_init_ospath ())

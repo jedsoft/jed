@@ -104,6 +104,21 @@ Changes since 0.99-18.0
 48. lib/site.sl: Files with .pm extensions will use perl-mode.
 49. lib/perl*.sl: Fixed a couple of small problems with the embedded
     tm documentation that caused tmexpand to balk.
+50. src/ledit.c: Made slang array intrinsics available to jed:
+       transpose, sum, cumsum, array_swap, array_reverse, min, max,
+       any, all
+    This was motivated by the use of modules that assume these
+    functions are available.
+51. src/*.sl: Changed 'if (length(where(foo)))' to 'if (any(foo))'.
+    This change also makes the code more readable, e.g., compare
+    
+       if (length (where (List_Of_Buffers == buf)))
+         do_something ();
+
+    to
+       
+       if (any (List_Of_Buffers == buf))
+         do_something ();
 
 {{{ Previous Versions 
 

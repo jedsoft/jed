@@ -35,7 +35,7 @@ define mode_set_mode_info (field_name, field_value)
      }
 
    variable fields = get_struct_field_names (mode_info);
-   if (0 == length (where (fields == field_name)))
+   !if (any (fields == field_name))
      {
 	variable new_mode_info = @Struct_Type ([fields, field_name]);
 	
@@ -63,7 +63,7 @@ define mode_get_mode_info (field_name)
    if (mode_info == NULL)
      return NULL;
    
-   if (0 == length (where (field_name == get_struct_field_names (mode_info))))
+   !if (any (field_name == get_struct_field_names (mode_info)))
      return NULL;
 
    return get_struct_field (mode_info, field_name);

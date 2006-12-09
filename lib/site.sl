@@ -277,6 +277,13 @@ define substrbytes (s, n, len)
 }
 #endif
 
+#ifnexists any
+define any (x)
+{
+   return length (where (x));
+}
+#endif
+
 define define_keywords ()
 {
    define_keywords_n (0);
