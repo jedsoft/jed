@@ -99,6 +99,11 @@ Changes since 0.99-18.0
     whether or not the match should be highlighted.
 46. lib/cmode.sl: Merged Mark Oleson's patches that support
     "foam-style" indentation.
+47. src/undo.c: New intrinsic "set_undo_position" that may be used to
+    set a buffer position that "undo" will use.
+48. lib/site.sl: Files with .pm extensions will use perl-mode.
+49. lib/perl*.sl: Fixed a couple of small problems with the embedded
+    tm documentation that caused tmexpand to balk.
 
 {{{ Previous Versions 
 

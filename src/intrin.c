@@ -910,6 +910,7 @@ static SLang_Intrin_Fun_Type Jed_Intrinsics [] = /*{{{*/
    MAKE_INTRINSIC_S("run_program", run_program, INT_TYPE),
    MAKE_INTRINSIC_I("set_line_number_mode", set_line_number_mode, INT_TYPE),
    MAKE_INTRINSIC_S("strwidth", intrin_strwidth, INT_TYPE),
+   MAKE_INTRINSIC_0("set_undo_position", jed_undo_record_position, VOID_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 

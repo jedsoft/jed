@@ -4214,6 +4214,25 @@ set_line_readonly
 
 --------------------------------------------------------------
 
+set_undo_position
+
+ SYNOPSIS
+  Add the current position to the undo stack
+
+ USAGE
+  set_undo_position ()
+
+ DESCRIPTION
+ This function adds the current position to the buffer's undo stack.
+ Ocassionally this may be necessary when using
+ `narrow_to_region' to prevent the cursor from moving to the
+ beginning or the end of a previously narrowed region during "undo".
+
+ SEE ALSO
+  narrow_to_region
+
+--------------------------------------------------------------
+
 suspend
 
  SYNOPSIS

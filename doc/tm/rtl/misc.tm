@@ -231,6 +231,17 @@
 \seealso{getbuf_info}
 \done
 
+\function{set_undo_position}
+\synopsis{Add the current position to the undo stack}
+\usage{set_undo_position ()}
+\description
+ This function adds the current position to the buffer's undo stack.
+ Ocassionally this may be necessary when using
+ \ifun{narrow_to_region} to prevent the cursor from moving to the
+ beginning or the end of a previously narrowed region during "undo".
+\seealso{narrow_to_region}
+\done
+
 \function{suspend}
 \synopsis{Suspend the editor}
 \usage{Void suspend ()}

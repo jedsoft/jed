@@ -94,6 +94,24 @@ C_Autoinsert_CPP_Comments
 
 --------------------------------------------------------------
 
+C_Namespace_Offset
+
+ SYNOPSIS
+  C_Namespace_Offset
+
+ DESCRIPTION
+ Integer C_Namespace_Offset = 3;
+ This variable may be changed to adjust the indentation of members
+ inside of a class declaration block.
+
+ SEE ALSO
+  c_mode
+
+ SEE ALSO
+  C_BRA_NEWLINE, C_BRACE, C_Class_Offset, C_INDENT, C_Namespace_Offset
+
+--------------------------------------------------------------
+
 C_Class_Offset
 
  SYNOPSIS
@@ -118,7 +136,7 @@ C_Param_Offset_Max
   Control indentation of continued parameter list
 
  USAGE
-  Integer C_Param_Offset_Max = 6
+  Integer C_Param_Offset_Max = -1
 
  DESCRIPTION
  This variable may be changed to adjust the indentation of parameters
@@ -133,6 +151,57 @@ C_Param_Offset_Max
 
  SEE ALSO
   C_BRA_NEWLINE, C_BRACE, C_INDENT
+
+--------------------------------------------------------------
+
+C_Macro_Indent
+
+ SYNOPSIS
+  Control indentation of pre-processor macros
+
+ USAGE
+  Integer C_Macro_Indent = 3
+
+ DESCRIPTION
+ This variable may be changed to adjust the indentation of
+ pre-processor macros.
+
+ SEE ALSO
+  c_mode
+
+ SEE ALSO
+  C_INDENT
+
+--------------------------------------------------------------
+
+C_Bracket_Indent
+
+ SYNOPSIS
+  Control indentation within lone brackets
+
+ USAGE
+  Integer C_Bracket_Indent = 4
+
+ DESCRIPTION
+ Control the alignment of within parenthetic content that start with a lone
+ left parenthesis. A value greater than zero uses C_INDENT to determine the
+ indentation level. Additionally, common operators are outdented.
+
+ eg,
+    while
+    (
+        expr1
+      + expr2
+     == expr3
+    ) ...
+
+ A value less than 1 turns this feature off.
+
+ SEE ALSO
+  c_mode
+
+ SEE ALSO
+  C_INDENT
 
 --------------------------------------------------------------
 
@@ -1575,34 +1644,6 @@ occur
 
 --------------------------------------------------------------
 
-Perl_Indent
-
- SYNOPSIS
-  Perl_Indent
-
- USAGE
-  Integer Perl_Indent = 4;
-
- DESCRIPTION
- This value determines the number of columns the current line is indented
- past the previous line containing an opening `'{'' character.
- eg.,
-
-  if (test)
-  {
-      block_statement();
-  }
-  else
-  {
-      block_statement();
-  }
-
-
- SEE ALSO
-  C_INDENT, Perl_Continued_Offset
-
---------------------------------------------------------------
-
 Perl_Continued_Offset
 
  SYNOPSIS
@@ -1620,58 +1661,146 @@ Perl_Continued_Offset
     " world\n";
 
 
+ The default value (2) corresponds to the default for `perltidy'
+
  SEE ALSO
   C_CONTINUED_OFFSET, Perl_Indent
 
 --------------------------------------------------------------
 
-Perl_Expert_Flags
+perl_indent_line
 
  SYNOPSIS
-  Perl_Expert_Flags
-
- USAGE
-  String Perl_Expert_Flags = "-w";
+  Void perl_indent_line (Void)
 
  DESCRIPTION
- Extra (or 'expert') command-line options (switches) for running Perl.
- eg, `'-I'' or `'-M''.
- You only need these if you know why you need these.
+ indents the line
 
- Warnings are *always* enabled, regardless of what you try here.
- If your code doesn't run with `'-w'', re-write it or you're an
- expert and know which sections of code should have disabled warnings.
+ SEE ALSO
+  perl_indent_region, Perl_Indent, Perl_Continued_Offset, perl_mode
 
 --------------------------------------------------------------
 
-perltidy
+perl_indent_region
 
  SYNOPSIS
-  perltidy
-
- USAGE
-  Void perltidy();
+  Void perl_indent_region (Void)
 
  DESCRIPTION
- This function runs the program perltidy on a region or the whole buffer.
- The style preferences should be set in the ~/.perltidyrc config file.
- The perltidy program must be installed!
+ indents each line in the region
+
+ SEE ALSO
+  perl_indent_line, perl_indent_buffer, perltidy, perl_mode
+
+--------------------------------------------------------------
+
+perl_indent_buffer
+
+ SYNOPSIS
+  Void perl_indent_buffer (Void)
+
+ DESCRIPTION
+ indents the entire buffer (NB: using perltidy might be easier)
+
+ SEE ALSO
+  perl_indent_line, perl_indent_region, perltidy, perl_mode
+
+--------------------------------------------------------------
+
+perl_beg_chunk
+
+ SYNOPSIS
+  Void perl_beg_chunk (Void)
+
+ DESCRIPTION
+ move to the beginning of a code chunk
+   (starting with 'sub' in the first column)
+ or to the beginning of a POD chunk.
+
+ SEE ALSO
+  perl_end_chunk, perl_mark_chunk, perl_mode
+
+--------------------------------------------------------------
+
+perl_end_chunk
+
+ SYNOPSIS
+  Void perl_end_chunk (Void)
+
+ DESCRIPTION
+ move to the end of a code chunk or to the end of a POD chunk
+
+ SEE ALSO
+  perl_beg_chunk, perl_mark_chunk, perl_mode
+
+--------------------------------------------------------------
+
+perl_mark_chunk
+
+ SYNOPSIS
+  Void perl_mark_chunk (Void)
+
+ DESCRIPTION
+ marks the code/Pod code
+
+ SEE ALSO
+  perl_beg_chunk, perl_end_chunk, perl_mode
+
+--------------------------------------------------------------
+
+perl_mark_matching
+
+ SYNOPSIS
+  Void perl_mark_matching (Void)
+
+ DESCRIPTION
+ works mostly like find_matching_delimiter, except that it attempts
+ to be extra smart if starting out on whitespace
+
+ SEE ALSO
+  find_matching_delimiter
+
+--------------------------------------------------------------
+
+perl_paragraph_sep
+
+ SYNOPSIS
+  Void perl_paragraph_sep (Void)
+
+ DESCRIPTION
+ defines paragraphs for Perl mode
+
+ SEE ALSO
+  parse_to_point
+
+--------------------------------------------------------------
+
+perl_format_paragraph
+
+ SYNOPSIS
+  Void perl_format_paragraph (Void)
+
+ DESCRIPTION
+ should format a comment paragraph in Perl mode, but not entirely stable?
+
+ SEE ALSO
+  perl_mode
 
 --------------------------------------------------------------
 
 perl_mode
 
  SYNOPSIS
-  perl_mode
-
- USAGE
-  Void perl_mode();
+  Void perl_mode (Void)
 
  DESCRIPTION
  This is a mode that is dedicated to editing Perl language files
  including a bimodal Pod/Perl indentation mode.
  The indentation style matches the results of perltidy(1) with
  '-ci=2 -i=4 -en=8' fairly closely, except some of the closing brackets.
+
+ This seems to be missing, so you might want to add
+ add_mode_for_extension("perl", "pm");
 
  Functions that affect this mode include:
 
@@ -1686,23 +1815,177 @@ perl_mode
   perl_indent_region         ESC TAB
   perl_indent_region         Ctrl-C TAB
   perl_format_paragraph      ESC q
-  perl_newline_and_indent    not bound (Ctrl-M)
-  perl_indent_buffer         not bound
+  perl_newline_and_indent    Ctrl-M (not bound)
+  perl_indent_buffer         (not bound)
 
-  perl_exec                  not bound  (Ctrl-C Ctrl-C)
-  perl_check                 not bound  (Ctrl-C ?)
-  perltidy                   ESC Ctrl-T
-
-
-  perl_exec, perl_check, and perltidy work on a region or the whole buffer
+  perl_help                  Ctrl-C ?
+  perl_check                 Ctrl-C c
+  perl_indent_region	      Ctrl-TAB
+  perl_exec                  Ctrl-C e
+  perl_info                  Ctrl-C i
+  perltidy                   Ctrl-C Ctrl-T
 
 
  Variables affecting this mode include:
 
-  Perl_Indent
   Perl_Continued_Offset
+  Perl_Flags
+  Perl_Indent
 
  Hooks: `perl_mode_hook'
+
+ SEE ALSO
+  perldoc
+
+--------------------------------------------------------------
+
+Perl_Flags
+
+ SYNOPSIS
+  Perl_Flags
+
+ USAGE
+  String Perl_Flags = "-w";
+
+ DESCRIPTION
+ Extra (or 'expert') command-line options (switches) for running Perl.
+ eg, `'-I'' or `'-M''.
+ You only need these if you know why you need these.
+
+ Warnings are *always* enabled, regardless of what you try here.
+ If your code doesn't run with `'-w'', re-write it so it does
+ or you're an expert and know which sections of code should have
+ warnings disabled anyhow.
+
+--------------------------------------------------------------
+
+Perl_Indent
+
+ SYNOPSIS
+  Perl_Indent
+
+ USAGE
+  Integer Perl_Indent = 4;
+
+ DESCRIPTION
+ This value determines the number of columns the current line is indented
+ past the previous line containing an opening `'{'' character.
+ eg.,
+
+  if (test) {
+      statement();
+  }
+  else {
+      statement();
+  }
+
+
+ The default value (4) corresponds to the default for `perltidy'
+
+ SEE ALSO
+  C_INDENT, Perl_Continued_Offset
+
+--------------------------------------------------------------
+
+perltidy
+
+ SYNOPSIS
+  Void perltidy (Void)
+
+ DESCRIPTION
+ Runs the `perltidy' program on a region, buffer or narrowed buffer.
+ The `perltidy' program (available from `http://perltidy.sourceforge.net')
+ must be installed for this to work!
+
+ With a numerical prefix argument (eg Ctrl-U), prompts for extra flags
+ for `perltidy'.
+
+ The following style preferences settings in `~/.perltidyrc' seem to
+ give good results:
+
+   -et=8	# standard tabs
+   -nola	# no outdent labels
+   -wba="."	# break after string concatenation
+   -se		# errors to standard error output
+   -sbt=2	# very tight square brackets
+
+
+ SEE ALSO
+  perl_indent_region, perl_indent_buffer, perl_mode
+
+--------------------------------------------------------------
+
+perl_exec
+
+ SYNOPSIS
+  Void perl_exec (Void)
+
+ DESCRIPTION
+ This function runs `perl' on a region, buffer or narrowed buffer.
+ With a numerical prefix argument (eg Ctrl-U), also prompts for
+ extra Perl flags.
+ Display output in *shell-output* buffer window.
+
+ SEE ALSO
+  perl_check, perl_mode
+
+--------------------------------------------------------------
+
+perl_check
+
+ SYNOPSIS
+  Void perl_check (Void)
+
+ DESCRIPTION
+ This function runs a perl `-CT' check on a region, buffer or narrowed buffer.
+ Display output in *shell-output* buffer window.
+
+ SEE ALSO
+  perl_exec, perltidy, perl_mode
+
+--------------------------------------------------------------
+
+perl_info
+
+ SYNOPSIS
+  Void perl_info (Void)
+
+ DESCRIPTION
+ displays the perl settings `perl -V' in the help buffer
+
+--------------------------------------------------------------
+
+perl_help
+
+ SYNOPSIS
+  Void perl_help (Void)
+
+ DESCRIPTION
+ extract an alphanumeric keyword (a function) and display help
+ via perldoc for it
+
+--------------------------------------------------------------
+
+perldoc
+
+ SYNOPSIS
+  Void perldoc (void)
+
+ DESCRIPTION
+ use perldoc to find information
+ The '-f' option is inferred for lowercase strings not starting with 'perl'
+
+ perldoc [options] PageName|ModuleName|ProgramName...
+ perldoc [options] -f BuiltinFunction
+ perldoc [options] -q FAQRegex
+
+ Options:
+  -u   Display unformatted pod text
+  -m   Display module's file in its entirety
+  -q   Search the text of questions (not answers) in perlfaq[1-9]
+
+ SEE ALSO
+  perl_help, perl_mode
 
 --------------------------------------------------------------
 

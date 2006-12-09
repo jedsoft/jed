@@ -1,5 +1,5 @@
 /* -*- mode: C; TAB: 0; -*-
- * This file is used to test jed's c-mode indentation routines 
+ * This file is used to test jed's c-mode indentation routines
  */
 
 #ifdef this
@@ -51,7 +51,7 @@ Some_Type;
 namespace foobar
 {
    int foo;
-   T bar = 
+   T bar =
      {
         {1, 2, 3};
      };
@@ -124,31 +124,28 @@ int main (int argc, char **argv)
              break;
           }
      }
-   
+
    cout >> foo
      >> bar//foo
      >> x //x
      >> y;//y
 
-
    // This is a test of some of "foam" style indentation
-   while 
+   while
    (
         x
       + 10
      == 3
    )
      {
-        if 
-          (
-               x
-             + 10
-            != 3
-          )
+        if
+        (
+             x
+           + 10
+          != 3
+        )
           problem ();
      }
-        
-        
 
    // I am not happy with the indentation of the following
    if (debug)

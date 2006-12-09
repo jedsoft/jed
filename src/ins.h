@@ -6,12 +6,13 @@
  */
     
 /* For undo, these flags assumed to be <= 0xFF */
-#define CDELETE  0x1
-#define CINSERT  0x2
-#define LDELETE  0x4
-#define NLINSERT  0x8   /* causes marks to be moved to next line */
-#define NLDELETE  0x10    /* opposite of above */
-  
+#define CDELETE		0x1
+#define CINSERT		0x2
+#define LDELETE		0x4
+#define NLINSERT	0x8   /* causes marks to be moved to next line */
+#define NLDELETE	0x10    /* opposite of above */
+#define UNDO_POSITION	0x20	       /* records position */
+
 extern void jed_update_marks(int, int);  
 extern int No_Screen_Update;
 extern int jed_del_nbytes (int);

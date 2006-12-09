@@ -775,8 +775,8 @@ define perl_next_chunk() { perl_pn_chunk(&down_1); }
 %\description
 % move to the beginning of a code chunk
 %   (starting with 'sub' in the first column)
-% or to the beginning of a POD chunk
-%\seealso{perl_end_chunk, perl_mark_chunk, perl_mode
+% or to the beginning of a POD chunk.
+%\seealso{perl_end_chunk, perl_mark_chunk, perl_mode}
 %!%-
 define perl_beg_chunk()
 {
@@ -1000,7 +1000,7 @@ define perl_format_paragraph()
 % including a bimodal Pod/Perl indentation mode.
 % The indentation style matches the results of perltidy(1) with
 % '-ci=2 -i=4 -en=8' fairly closely, except some of the closing brackets.
-
+%
 % This seems to be missing, so you might want to add 
 % add_mode_for_extension("perl", "pm");
 %

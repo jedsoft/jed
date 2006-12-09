@@ -192,6 +192,9 @@ int undo (void) /*{{{*/
 	   case CINSERT: (void) jed_del_nbytes (LAST_UNDO->misc);
 #endif
 	     break;
+	     
+	   case UNDO_POSITION:
+	     break;
 
 	   case NLINSERT: jed_del_wchar (); break;
 
@@ -295,6 +298,20 @@ void record_newline_insertion() /*{{{*/
 }
 
 /*}}}*/
+
+void jed_undo_record_position (void)
+{
+   if (DONT_RECORD_UNDO) return;
+   if (LAST_UNDO->type != 0) prepare_next_undo();
+   if (Undo_Buf_Unch_Flag) LAST_UNDO->type |= UNDO_UNCHANGED_FLAG;
+   LAST_UNDO->point = Point;
+   LAST_UNDO->misc = 0;
+   LAST_UNDO->type |= UNDO_POSITION;
+   LAST_UNDO->linenum = LineNum + CBuf->nup;
+#ifdef UNDO_HAS_REDO
+   set_current_undo ();
+#endif
+}
 
 void delete_undo_ring(Buffer *b) /*{{{*/
 {

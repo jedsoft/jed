@@ -42,7 +42,7 @@ custom_variable("Perl_Flags", Null_String);
 %\usage{Integer Perl_Indent = 4;}
 %\description
 % This value determines the number of columns the current line is indented
-% past the previous line containing an opening \var{'{'} character.
+% past the previous line containing an opening \exmp{'\{'} character.
 % eg.,
 %#v+
 %  if (test) {

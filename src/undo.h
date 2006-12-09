@@ -50,4 +50,6 @@ extern void update_undo_unchanged(void);
 
 extern void unmark_undo_boundary (Buffer *);
 
+extern void jed_undo_record_position (void);
+
 #endif
