@@ -119,6 +119,7 @@ Changes since 0.99-18.0
        
        if (any (List_Of_Buffers == buf))
          do_something ();
+52. lib/site.sl: A typo introduced in #49 was corrected (Paul Boekholt).
 
 {{{ Previous Versions 
 
