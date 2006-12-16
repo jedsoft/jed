@@ -298,8 +298,12 @@ static int main_initialize (int argc, char **argv)
 	     Batch = 2;
 	     SLang_Traceback = 1;
 	     Jed_Load_Quietly = 1;
-	     if (argc > 2) 
-	       script_file = argv[2];
+	     if (argc > 2)
+	       {
+		  script_file = argv[2];
+		  argv += 2;			       /* make argv[0] the name of the script */
+		  argc -= 2;
+	       }
 	  }
 	else if (!strcmp (argv1, "-help"))
 	  {
@@ -504,6 +508,8 @@ static int main_initialize (int argc, char **argv)
 
 int main(int argc, char **argv) /*{{{*/
 {
+   int err;
+
    if (SLang_Version < SLANG_VERSION)
      {
 	fprintf (stderr, "***Warning: Executable compiled against S-Lang %d but linked to %d\n",
@@ -533,21 +539,17 @@ int main(int argc, char **argv) /*{{{*/
 	exit (1);
      }
    
-   if (0 != main_initialize (argc, argv))
-     {
-	jed_reset_display();
-	reset_tty();
-	return SLang_get_error ();
-     }
-
-   /* edit_loop */
-   if (!Batch) jed();  /* never returns */
+   if ((0 == main_initialize (argc, argv))
+       && (Batch == 0))
+     jed (); /* edit_loop -- never returns */
    
-   /* exit_error ("Batch End with no exit", 0); */
    jed_reset_display();
    reset_tty();
 
-   return SLang_get_error ();
+   if (0 != (err = SLang_get_error ()))
+     SLang_restart (1);
+   return err;
 }
+
 
 /*}}}*/

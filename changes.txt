@@ -120,6 +120,10 @@ Changes since 0.99-18.0
        if (any (List_Of_Buffers == buf))
          do_something ();
 52. lib/site.sl: A typo introduced in #49 was corrected (Paul Boekholt).
+53. lib/slmode.sl: Added "then" and "ifnot" as a keywords, which slang
+    2.1 uses.
+54. src/main.c: When run as jed-script, error messages were not always
+    written out.  
 
 {{{ Previous Versions 
 

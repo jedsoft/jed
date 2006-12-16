@@ -42,8 +42,8 @@ dfa_set_init_callback (&setup_dfa_callback, "SLANG");
 
 () = define_keywords ($1, "doifor", 2);
 () = define_keywords ($1, "andchsformodnotpopshlshrsqrtryxor", 3);
-() = define_keywords ($1, "NULL_forcaseelseexchloopmul2sign", 4);
-() = define_keywords ($1, "__tmpbreakcatchthrowusingwhile", 5);
+() = define_keywords ($1, "NULL_forcaseelseexchloopmul2signthen", 4);
+() = define_keywords ($1, "__tmpbreakcatchifnotthrowusingwhile", 5);
 () = define_keywords ($1, "defineorelsepublicreturnstaticstructswitch", 6);
 () = define_keywords ($1, "andelsefinallyforeachforeverprivatetypedef", 7);
 () = define_keywords ($1, "continuevariable", 8);
