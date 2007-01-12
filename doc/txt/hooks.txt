@@ -88,7 +88,7 @@ The following buffer-local hooks are supported:
  "wrapok_hook"
      This hook may be used to enable automatic wrapping on a
      line-by-line basis.  Jed will call this hook prior to wrapping a
-     line, and if it returns a non-zero value, the line wll be
+     line, and if it returns a non-zero value, the line will be
      wrapped.  See lib/slmode.sl for an example of its use.
 
  "newline_indent_hook"

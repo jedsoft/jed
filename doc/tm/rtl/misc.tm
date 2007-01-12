@@ -1,13 +1,12 @@
 \variable{BATCH}
 \synopsis{Non-Zero if in Batch Mode}
-\usage{Int_Type BATCH}
+\usage{Int_Type BATCH (read-only)}
 \description
- \var{BATCH} is a read-only variable will be zero if the editor is run
+ The value of \var{BATCH} will be 0 if the editor is run
  in interactive or full-screen mode.  It will be \1 if the editor is
  in batch mode (via the \exmp{-batch} comment line argument).  If the
  editor is in script mode (via \exmp{-script}), then the value of
  \var{BATCH} will be \2.
-\seealso{}
 \done
 
 \variable{JED_ROOT}
@@ -29,7 +28,7 @@
 \seealso{quit_jed, exit, exit_jed}
 \done
 
-\variable{_jed_secure_mode}
+\variable{_jed_secure_mode (read-only)}
 \synopsis{Indicates if the editor is in secure mode}
 \usage{Int_Type _jed_secure_mode}
 \description
@@ -176,7 +175,7 @@
 \done
 
 \function{is_internal}
-\synopsis{Tst if function "f" is defined as an internal function}
+\synopsis{Test if function "f" is defined as an internal function}
 \usage{Integer is_internal(String f)}
 \description
   \var{is_internal} returns non-zero is function \var{f} is defined as an

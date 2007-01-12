@@ -123,7 +123,25 @@ Changes since 0.99-18.0
 53. lib/slmode.sl: Added "then" and "ifnot" as a keywords, which slang
     2.1 uses.
 54. src/main.c: When run as jed-script, error messages were not always
-    written out.  
+    written out.
+55. lib/compress.sl: A reference argument may be used to get the
+    current compression mode.
+56. lib/popups.sl: Add support for compressed documentation files.
+57. doc/...: Some documentation tweaks (Jörg Sommer).
+58. src/menu.c: UTF-8 "hot keys" were not being written properly (Jörg
+    Sommer).
+59. lib/python.c: Do not use both tabs and spaces when indenting.
+    Also, avoid treating "passport" and "returning" as block delimiters.
+    Added python2 keywords.
+    Added support for prefix arguments to the region shift functions.
+    (Jörg Sommer).
+60. lib/help.sl: Enhanced version of describe_bindings (Jörg Sommer):
+      * It makes all key descriptions are aligned among each other,
+      * it splits the listing into two sections: one with the keys defined in
+        the global mode and one with the keys special to this mode
+      * it prints the description of the function bound to the key behind the
+        function
+
 
 {{{ Previous Versions 
 

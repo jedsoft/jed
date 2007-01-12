@@ -48,10 +48,10 @@ private define keyeqs (seq, key)
    variable n = strbytelen (key);
    if (strnbytecmp (seq, key, n))
      return 0;
-
+   
    return n;
 }
-	
+
 %!%+
 %\function{expand_keystring}
 %\synopsis{expand_keystring}
@@ -66,19 +66,19 @@ private define keyeqs (seq, key)
 define expand_keystring (seq)
 {
    seq = convert_keystring (seq);
-
+   
    if (assoc_key_exists (Key_Name_Table, seq))
      return Key_Name_Table[seq];
-
+   
    variable key_seqs = assoc_get_keys (Key_Name_Table);
    variable key_name, expanded_key = "";
-
+   
    forever 
      {
 	variable n = strbytelen (seq);
 	if (n == 0)
 	  break;
-
+	
 	variable dn = 0;
 	foreach (key_seqs)
 	  {
@@ -124,11 +124,11 @@ define expand_keystring (seq)
 public define showkey ()
 {
    variable f, type;
-
+   
    flush("Show Key: ");
-
+   
    (type, f) = get_key_binding ();
-
+   
    if (f == NULL)
      {
 	vmessage ("Key \"%s\" is undefined.",
@@ -137,7 +137,7 @@ public define showkey ()
      }
    
    variable ks = expand_keystring (LASTKEY);
-
+   
    switch (type)
      {
       case 0:
@@ -232,7 +232,7 @@ define help_for_function (f)
    variable doc_str, file;
    variable value;
    variable str = "";
-
+   
    % For variables such as TAB, whose value depends upon the buffer, 
    % evaluate the variable in the current buffer.
    if (is_defined (f) < 0)
@@ -249,7 +249,7 @@ define help_for_function (f)
    
    pop2buf (help); set_readonly (0); erase_buffer ();
    vinsert (str);
-
+   
    (file, doc_str) = help_get_doc_string (f);
    if (doc_str != NULL)
      vinsert ("%s[Obtained from file %s]", doc_str, file);     
@@ -275,7 +275,7 @@ define help_for_function (f)
 	     insert (" and unknown");
 	  }
      }
-
+   
    insert ("\n-----------------------------------\n");
    
    bob ();
@@ -288,7 +288,7 @@ define help_do_help_for_object (prompt, flags)
    variable n, objs;
    
    if (MINIBUFFER_ACTIVE) return;
-
+   
 #ifntrue
    n = _apropos ("", flags);
    
@@ -305,7 +305,7 @@ define help_do_help_for_object (prompt, flags)
    help_for_function (read_string_with_completion (prompt, "", objs));
 }
 
-   
+
 define describe_function ()
 {
    help_do_help_for_object ("Describe Function:", 0x3);
@@ -347,11 +347,97 @@ define describe_bindings ()
    pop2buf("*KeyBindings*");
    erase_buffer ();
    dump_bindings (map);
-   bob(); replace ("ESC [ A", "UP");
-   bob(); replace ("ESC [ B", "DOWN");
-   bob(); replace ("ESC [ C", "RIGHT");
-   bob(); replace ("ESC [ D", "LEFT");
-   bob(); replace ("ESC O P", "GOLD");
+   
+   if (map != "global")
+     {
+	insert("\nInherited from the global keymap:\n");
+	push_spot();
+	dump_bindings("global");
+	pop_spot();
+	
+	variable global_map = Assoc_Type[String_Type, ""];
+	while ( not eobp() )
+	  {
+	     push_mark();
+	     () = ffind("\t\t\t");
+	     variable key = bufsubstr();
+	     go_right (3);
+	     push_mark();
+	     eol();
+	     global_map[key] = bufsubstr();
+	     delete_line();
+	  }
+	
+	bob();
+	forever
+	  {
+	     push_mark();
+	     () = ffind("\t\t\t");
+	     key = bufsubstr();
+	     if (key == "")
+	       break;
+	     
+	     variable global_map_key = global_map[key];
+	     if (global_map_key != "")
+	       {
+		  go_right (3);
+		  push_mark();
+		  eol();
+		  if (bufsubstr() == global_map_key)
+		    {
+		       delete_line();
+		       push_spot();
+		       eob();
+		       vinsert ("%s\t\t\t%s\n", key, global_map_key);
+		       pop_spot();
+		    }
+		  else
+		    go_down_1 ();
+	       }
+	     else
+	       go_down_1 ();
+	  }
+     }
+   
+   bob(); 
+   replace ("ESC [ A", "UP");
+   replace ("ESC [ B", "DOWN");
+   replace ("ESC [ C", "RIGHT");
+   replace ("ESC [ D", "LEFT");
+   replace ("ESC O P", "GOLD");
+
+   while (fsearch ("\t\t\t"))
+     {
+	if (what_column () > TAB)
+	  {
+	     if ( what_column() <= TAB*3 )
+	       deln( (what_column()-1)/TAB );
+	     else
+	       deln(3);
+	  }
+	eol ();
+     }
+
+   bob();
+
+   while (fsearch ("\t\t\t"))
+     {
+	go_right (3);
+	push_mark();
+	!if ( ffind_char('(') )
+	  eol();
+	variable fun = bufsubstr();
+	variable dsc;
+	(,dsc) = help_get_doc_string(fun);
+	if (dsc != NULL)
+          {
+	     eol();
+	     dsc = substr(dsc, is_substr(dsc, "\n SYNOPSIS\n ")+12, strlen(dsc));
+	     whitespace( 48 - what_column() );
+	     insert(substr(dsc, 1, is_substr(dsc, "\n")-1) );
+          }
+	eol ();
+      }
    bob();
    CASE_SEARCH = cse;
    set_buffer_modified_flag(0);
@@ -359,5 +445,5 @@ define describe_bindings ()
    message ("done");
 }
 
-	    
-   
+
+

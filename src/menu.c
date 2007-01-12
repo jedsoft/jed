@@ -968,41 +968,41 @@ static void draw_down_arrow (int r, int c)
 
 static void draw_name (char *name, int color0, int color1, unsigned int field_width)
 {
-   char *s;
-   unsigned int n;
+   unsigned char *s, *smax;
+   unsigned int name_width;
 
-   s = name;
+   s = (unsigned char *) name;
+   smax = s + strlen (name);
+#if SLANG_VERSION >= 20000
+   name_width = SLsmg_strwidth (s, smax);
+#else
+   name_width = smax - s;
+#endif
 
-   while (*s && (*s != '&'))
+   while ((s < smax) && (*s != '&'))
      s++;
 
-   n = (unsigned int) (s - name);
-   if (n)
-     {
-	SLsmg_set_color (color0);
-	SLsmg_write_nchars (name, n);
-     }
+   SLsmg_set_color (color0);
+   SLsmg_write_chars ((unsigned char *) name, s);
 
-   if (*s != 0)
+   if (s < smax)
      {
-	unsigned int dn;
-
-	s++;
+	unsigned char *s1;
+	
+	name_width--;
+	s++;			       /* skip & */
 	SLsmg_set_color (color1);
-	SLsmg_write_nchars (s, 1);
-	n++;
+	s1 = jed_multibyte_chars_forward (s, smax, 1, NULL, 1);
+	SLsmg_write_chars (s, s1);
 	SLsmg_set_color (color0);
-	if (*s != 0)
-	  {
-	     s++;
-	     dn = strlen (s);
-	     SLsmg_write_nchars (s, dn);
-	     n += dn;
-	  }
+	s = s1;
+
+	if (s < smax)
+	  SLsmg_write_chars (s, smax);
      }
 
-   if (n < field_width)
-     SLsmg_write_nstring ("", field_width - n);
+   if (name_width < field_width)
+     SLsmg_write_nstring ("", field_width - name_width);
 }
 
 	  

@@ -72,6 +72,14 @@ definekey ("py_help_on_word", "^@;", $1);
 % Set the following to your favourite indentation level
 custom_variable("Py_Indent_Level", 4);
 
+private define py_whitespace(cnt)
+{
+   if ( get_blocal_var("py_use_tab") )
+     loop (cnt / TAB) insert_char('\t');
+   else
+     insert_spaces (cnt);
+}
+
 private define py_line_ends_with_colon()
 {
    eol();
@@ -87,13 +95,10 @@ private define py_line_ends_with_colon()
 private define py_endblock_cmd()
 {
    bol_skip_white();
-   if (looking_at("return") or
-       looking_at("raise")  or
-       looking_at("break")  or
-       looking_at("pass")  or
-       looking_at("continue"))
-     return 1;
-   return 0;
+   push_mark();
+   skip_chars("a-z");
+   return is_list_element("return,raise,break,pass,continue",
+                          bufsubstr(), ',') > 0;
 }
 
 private define py_line_starts_subblock()
@@ -139,10 +144,16 @@ private define py_indent_calculate()
     
    col = what_column() - 1;
     
+   variable indent;
+   if ( get_blocal_var("py_use_tab") )
+      indent = TAB;
+   else
+      indent = Py_Indent_Level;
+
    if (py_line_ends_with_colon())
-      col += Py_Indent_Level;
+      col += indent;
    if (py_endblock_cmd() or (subblock and not py_line_starts_block()))
-      col -= Py_Indent_Level;
+      col -= indent;
 }
 
 define py_indent_line()
@@ -151,7 +162,7 @@ define py_indent_line()
     
    col = py_indent_calculate();
    bol_trim ();
-   whitespace( col );
+   py_whitespace( col );
 }
 
 define py_comment_line() 
@@ -244,41 +255,53 @@ define py_backspace_key()
    col = what_column(); 
    push_spot(); 
    bskip_white(); 
-   if (bolp() and (col > 1)) { 
-      pop_spot();                                                     
-      bol_trim (); 
-      col--;                                                         
-      if (col mod Py_Indent_Level == 0) 
-        col--; 
-      whitespace ( (col / Py_Indent_Level) * Py_Indent_Level ); 
-   } 
-   else { 
-      pop_spot(); 
-      call("backward_delete_char_untabify"); 
-   } 
+   if (bolp() and (col > 1)) 
+     { 
+	pop_spot();                                                     
+	if ( blooking_at("\t") )
+	  {
+	     go_left (1);
+	     del();
+	  }
+	else
+	  {
+	     bol_trim (); 
+	     col--;                                                         
+	     if (col mod Py_Indent_Level == 0) 
+	       col--; 
+	     py_whitespace ( (col / Py_Indent_Level) * Py_Indent_Level );
+	  }
+     } 
+   else 
+     {
+	pop_spot(); 
+	call("backward_delete_char_untabify"); 
+     } 
 } 
 
 define py_shift_line_right()
 {
+   variable times = prefix_argument(1);
    bol_skip_white();
-   whitespace(Py_Indent_Level);
+   py_whitespace(Py_Indent_Level*times);
 }
 
 define py_shift_region_right()
 {
-   variable n;
+   variable times = prefix_argument(1);
    check_region (1);		       %  spot_pushed, now at end of region
-   n = what_line ();
+   variable n = what_line ();
    pop_mark_1 ();
    loop (n - what_line ())
      {
+	set_prefix_argument(times);
 	py_shift_line_right();
 	go_down_1 ();
      }
    pop_spot();
 }
 
-define py_shift_right() 
+define py_shift_right()
 {
    push_spot();
    if (markp()) {
@@ -291,23 +314,34 @@ define py_shift_right()
 
 define py_shift_line_left()
 {
+   variable times = prefix_argument(1);
    bol_skip_white();
-   if (what_column() > Py_Indent_Level) {
-      push_mark();
-      goto_column(what_column() - Py_Indent_Level);
-      del_region();
-   }
+   if (what_column() > Py_Indent_Level*times) 
+     {
+	if ( get_blocal_var("py_use_tab") )
+	  {
+	     go_left (times);
+	     deln(times);
+	  }
+	else
+	  {
+	     push_mark();
+	     goto_column(what_column() - Py_Indent_Level*times);
+	     del_region();
+	  }
+     }
 }
 
 define py_shift_region_left()
 {
-   variable n;
-   
+   variable times = prefix_argument(1);
+  
    check_region (1);
-   n = what_line ();
+   variable n = what_line ();
    pop_mark_1 ();
    loop (n - what_line ())
      {
+	set_prefix_argument (times);
 	py_shift_line_left();
 	go_down_1 ();
      }
@@ -440,12 +474,12 @@ define py_reindent() {
 	 % Indent is wrong.  Hopefully it's a continuation line.
 	 level = oldlevel;	% reset level
 	 bol_trim();
-	 whitespace(level * Py_Indent_Level + (col - current_indent));
+	 py_whitespace(level * Py_Indent_Level + (col - current_indent));
       } else {
 	 current_indent = col;
 	 indent_level[level] = col;
 	 bol_trim();
-	 whitespace(level * Py_Indent_Level);
+	 py_whitespace(level * Py_Indent_Level);
       }
    } while (down(1) == 1);
 }
@@ -492,26 +526,32 @@ set_syntax_flags ($1, 0);			% keywords ARE case-sensitive
 () = define_keywords ($1, "ifinisor", 2); % all keywords of length 2
 () = define_keywords ($1, "anddefdelfornottry", 3); % of length 3 ....
 () = define_keywords ($1, "elifelseexecfrompass", 4);
-() = define_keywords ($1, "breakclassprintraisewhile", 5);
+() = define_keywords ($1, "breakclassprintraisewhileyield", 5);
 () = define_keywords ($1, "assertexceptglobalimportlambdareturn", 6);
 () = define_keywords ($1, "finally", 7);
 () = define_keywords ($1, "continue", 8);
 
 % Type 1 keywords (actually these are what's in __builtins__)
 () = define_keywords_n ($1, "id", 2, 1);
-() = define_keywords_n ($1, "abschrcmpdirhexintlenmapmaxminoctordpowstr", 3, 1);
-() = define_keywords_n ($1, "Noneevalhashlongopenreprtypevars", 4, 1);
-() = define_keywords_n ($1, "applyfloatinputrangeroundtuple", 5, 1);
-() = define_keywords_n ($1, "coercedivmodfilterlocalsreducereloadxrange", 6, 1);
-() = define_keywords_n ($1, "IOError__doc__compiledelattrgetattrglobalshasattrsetattr", 7, 1);
-() = define_keywords_n ($1, "EOFErrorKeyError__name__callableexecfile", 8, 1);
-() = define_keywords_n ($1, "NameErrorTypeErrorraw_input", 9, 1);
-() = define_keywords_n ($1, "IndexErrorSystemExitValueError__import__", 10, 1);
-() = define_keywords_n ($1, "AccessErrorImportErrorMemoryErrorSyntaxErrorSystemError", 11, 1);
-() = define_keywords_n ($1, "RuntimeError", 12, 1);
-() = define_keywords_n ($1, "ConflictErrorOverflowError", 13, 1);
-() = define_keywords_n ($1, "AttributeError", 14, 1);
-() = define_keywords_n ($1, "KeyboardInterruptZeroDivisionError", 17, 1);
+() = define_keywords_n ($1, "setsumzipabschrcmpdirhexintlenmapmaxminoctordpowstr", 3, 1);
+() = define_keywords_n ($1, "TruebooldictexitfilehelpiterlistquitNoneevalhashlongopenreprtypevars", 4, 1);
+() = define_keywords_n ($1, "Falseslicesuperapplyfloatinputrangeroundtuple", 5, 1);
+() = define_keywords_n ($1, "bufferinternobjectsortedunichrcoercedivmodfilterlocalsreducereloadxrange", 6, 1);
+() = define_keywords_n ($1, "OSErrorWarningcomplexcreditslicenseunicodeIOError__doc__compiledelattrgetattrglobalshasattrsetattr", 7, 1);
+() = define_keywords_n ($1, "EllipsisTabErrorpropertyreversedEOFErrorKeyError__name__callableexecfile__call__", 8, 1);
+() = define_keywords_n ($1, "Exception__debug__copyrightenumeratefrozensetNameErrorTypeErrorraw_input", 9, 1);
+() = define_keywords_n ($1, "basestringisinstanceissubclassIndexErrorSystemExitValueError__import__", 10, 1);
+() = define_keywords_n ($1, "LookupErrorUserWarningclassmethodAccessErrorImportErrorMemoryErrorSyntaxErrorSystemError", 11, 1);
+() = define_keywords_n ($1, "UnicodeErrorstaticmethodRuntimeError", 12, 1);
+() = define_keywords_n ($1, "FutureWarningStandardErrorStopIterationSyntaxWarningConflictErrorOverflowError", 13, 1);
+() = define_keywords_n ($1, "AssertionErrorNotImplementedReferenceErrorRuntimeWarningAttributeErrorAssertionError", 14, 1);
+() = define_keywords_n ($1, "ArithmeticErrorOverflowWarning", 15, 1);
+() = define_keywords_n ($1, "EnvironmentErrorIndentationError", 16, 1);
+() = define_keywords_n ($1, "UnboundLocalErrorKeyboardInterruptZeroDivisionError", 17, 1);
+() = define_keywords_n ($1, "DeprecationWarningFloatingPointErrorUnicodeDecodeErrorUnicodeEncodeError", 18, 1);
+() = define_keywords_n ($1, "NotImplementedError", 19, 1);
+() = define_keywords_n ($1, "UnicodeTranslateError", 21, 1);
+() = define_keywords_n ($1, "PendingDeprecationWarning", 25, 1);
 
 #ifdef HAS_DFA_SYNTAX
 %%% DFA_CACHE_BEGIN %%%
@@ -578,12 +618,27 @@ define python_mode ()
 {
    variable python = "python";
    
-   % TAB is checked by whitespace(). If TAB=0 no tab character is used,
-   % which avoids mixing up whitespace and tab indention
-   if (Py_Indent_Level == 8)
-     TAB = 8;
-   else
-     TAB = 0;
+   create_blocal_var("py_use_tab");
+   set_blocal_var(Py_Indent_Level == TAB, "py_use_tab");
+   push_spot();
+   bob();
+   do
+     {
+	skip_white();
+	if ( looking_at("\"\"\"") )
+	  {
+	     go_right (1);
+	     () = fsearch("\"\"\"");
+	  }
+	else !if (looking_at_char('#') or eolp() or what_column() == 1)
+	  {
+             bol();
+             set_blocal_var(looking_at_char('\t'), "py_use_tab");
+             break;
+	  }
+     }
+   while (down(1));
+   pop_spot();
 
    set_mode (python, 0x4); % flag value of 4 is generic language mode
    use_keymap(python);

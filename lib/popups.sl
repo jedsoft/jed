@@ -23,7 +23,7 @@ private define add_files_popup_with_callback (parent, popup, dir, pattern, fun)
    foreach (files)
      {
 	variable file = ();
-	file = path_sans_extname (file);
+	file = path_sans_extname(path_sans_extname (file));   %  could have foo.txt.gz
 	menu_append_item (popup, file, fun, file);
      }
 }
@@ -31,7 +31,27 @@ private define add_files_popup_with_callback (parent, popup, dir, pattern, fun)
 private define browse_docs_callback (file)
 {
    file = dircat (JED_ROOT, "doc/txt/" + file + ".txt");
+   variable is_compressed = 0;
+
+   if (file_status (file) != 1)
+     {
+	foreach ([".gz", ".bz2", ".Z"])
+	  {
+	     variable ext = ();
+	     if (file_status (file + ext) != 1)
+	       continue;
+
+	     file = file + ext;
+	     is_compressed = 1;
+	     break;
+	  }
+     }
+   variable state;
+   if (is_compressed)
+     auto_compression_mode (1, &state);
    () = read_file (file);
+   if (is_compressed) 
+     auto_compression_mode (state);
    pop2buf (whatbuf ());
    most_mode ();
 }
@@ -251,7 +271,7 @@ menu_append_item ($1, "About &Jed", &about_jed, NULL);
 #ifndef VMS
 add_files_popup_with_callback ($1, "&Browse Docs",
 			       dircat (JED_ROOT, "doc/txt"),
-			       "\\C^.*\\.txt$",
+			       "\\C^.*\\.txt\\.?",
 			       &browse_docs_callback);
 #endif
 menu_append_separator ($1);
