@@ -378,7 +378,7 @@ define info_find_node(node)
    ERROR_BLOCK 
      {
 	if (bufferp ("*Info*"))
-	  info_mode ();
+	  info_reader_mode ();
      }
    
    len = strlen(node);
@@ -729,14 +729,17 @@ $2 = "Infomap";
 }
 
 
-define info_mode ()
+define info_reader_mode ()
 {
    variable ibuf; ibuf = "*Info*";
    if (Info_Stack_Depth) info_goto_last_position ();
    !if (bufferp(ibuf)) info_find_dir();
    pop2buf(ibuf);
    onewindow();
-   run_mode_hooks ("info_mode_hook");
+   if (0 == is_defined ("info_reader_mode_hook"))
+     run_mode_hooks ("info_mode_hook");
+   else 
+     run_mode_hooks ("info_reader_mode_hook");
 }
 
 
@@ -970,7 +973,7 @@ define info_reader (arg_num)
 {
    variable file, node;
    
-   info_mode ();
+   info_reader_mode ();
    variable f = "exit_jed";
    local_setkey (f,		"q");
    local_setkey (f,		"Q");

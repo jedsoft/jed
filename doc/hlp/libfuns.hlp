@@ -386,7 +386,7 @@ auto_compression_mode
   Toggle auto-compression-mode
 
  USAGE
-  auto_compression_mode ([Int_Type state])
+  auto_compression_mode ([Int_Type state [,&prev_state]])
 
  DESCRIPTION
  The `auto_compression_mode' function toggles the auto-compression-mode
@@ -1596,6 +1596,29 @@ most_mode
  t                Top of Buffer
  b                End of Buffer
 
+
+--------------------------------------------------------------
+
+Mouse_Selection_Word_Chars
+
+ SYNOPSIS
+  Characters that delimit double-click selections
+
+ USAGE
+  String_Type Mouse_Selection_Word_Chars
+
+ DESCRIPTION
+ The value of this variable represents a set of characters that serve
+ to delimit double-click selections.  The default value of this
+ variable is
+
+    Mouse_Selection_Word_Chars = "^ \n\"%&'()*,;<=>?@[]^`{|}";
+
+ If the value of this variable is NULL, the word characters
+ associated with the buffer will be used.
+
+ SEE ALSO
+  define_word
 
 --------------------------------------------------------------
 

@@ -3,6 +3,24 @@ setkey ("mouse_cmd", "\e^@");
 
 custom_variable ("Mouse_Wheel_Scroll_Lines", 3);
 
+
+%!%+
+%\variable{Mouse_Selection_Word_Chars}
+%\synopsis{Characters that delimit double-click selections}
+%\usage{String_Type Mouse_Selection_Word_Chars}
+%\description
+% The value of this variable represents a set of characters that serve
+% to delimit double-click selections.  The default value of this
+% variable is 
+%#v+
+%    Mouse_Selection_Word_Chars = "^ \n\"%&'()*,;<=>?@[]^`{|}";
+%#v-
+% If the value of this variable is NULL, the word characters
+% associated with the buffer will be used.
+%\seealso{define_word}
+%!%-
+custom_variable ("Mouse_Selection_Word_Chars","^ \n\"%&'()*,;<=>?@[]^`{|}");
+
 private variable Mouse_Drag_Mode = 0;
 private variable Mouse_Save_Point_Mark;
 private variable Mouse_Buffer = " *Mouse buffer*";
@@ -78,6 +96,13 @@ define mouse_down_hook (line, col, but, shift)
    
    if (shift == 0)
      {
+	if (but == 2)
+	  {
+	     mouse_set_current_window ();
+	     () = x_insert_selection ();
+	     return 0;
+	  }
+	
 	if (is_visible_mark ())
 	  {
 	     if (but == 1)
@@ -93,13 +118,6 @@ define mouse_down_hook (line, col, but, shift)
 	     return 0;
 	  }
 
-	if (but == 2)
-	  {
-	     mouse_set_current_window ();
-	     () = x_insert_selection ();
-	     return 0;
-	  }
-	
 	Mouse_Drag_Mode = 0;
 	Mouse_Save_Point_Mark = create_user_mark ();
 	mouse_goto_position (col, line);
@@ -233,15 +251,20 @@ define mouse_status_down_hook (line, col, but, shift)
    return -1;
 }
 
+
 define mouse_2click_hook (line, col, but, shift)
 {
+   variable word_chars = Mouse_Selection_Word_Chars;
+   if (word_chars == NULL)
+     word_chars = get_word_chars ();
+
    if (but == 1)
      {
 	mouse_goto_position (col, line);
 	push_spot ();
-	bskip_word_chars ();
+	bskip_chars (word_chars);
 	push_visible_mark ();
-	skip_word_chars();
+	skip_chars (word_chars);
 	update_sans_update_hook (1);
 	usleep (500);
 	

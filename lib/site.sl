@@ -672,7 +672,7 @@ _autoload("mode_get_mode_info",		"modeinfo",
 	  "trim_buffer",		"util",
 	  "occur",			"occur",
 	  "info_reader",		"info",
-	  "info_mode",			"info",
+	  "info_reader_mode",		"info",
 	  "info_find_node",		"info",
 	  "list_buffers",		"bufed",
 	  "append_region",		"buf",
@@ -2353,7 +2353,8 @@ define help_prefix()
    switch (c)
      { case  8 or case 'H': help (); }
      { case  'A' : apropos (); }
-     { case  'I' : info_mode (); }
+     { case  'B' : describe_bindings (); }
+     { case  'I' : info_reader_mode (); }
      { case  '?' : call ("select_menubar");}
      { case  'F' : describe_function ();}
      { case  'V' : describe_variable ();}

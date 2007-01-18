@@ -1244,7 +1244,12 @@ private define get_function_names (names)
 	       continue;
 
 	     c_bskip_over_comment (1);
-	     names[bextract_identifier ()] = what_line ();
+             % In SLang you can write statements at the same level like
+             % functions they look like functions but aren't it.
+             variable id = bextract_identifier ();
+	     if (0 == any (id == ["for", "_for", "loop", "foreach",
+				  "while", "if", "ifnot"]))
+	       names[id] = what_line ();
 	  }
      }
 }

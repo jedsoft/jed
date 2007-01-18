@@ -420,6 +420,8 @@ define describe_bindings ()
 
    bob();
 
+   variable synopsis = Assoc_Type[String_Type];
+   flush ("Looking up key descriptions...");
    while (fsearch ("\t\t\t"))
      {
 	go_right (3);
@@ -428,8 +430,16 @@ define describe_bindings ()
 	  eol();
 	variable fun = bufsubstr();
 	variable dsc;
-	(,dsc) = help_get_doc_string(fun);
-	if (dsc != NULL)
+	if (assoc_key_exists(synopsis, fun))
+	  dsc = synopsis[fun];
+	else
+	  {
+	     (,dsc) = help_get_doc_string(fun);
+	     if (dsc == NULL) dsc = "";
+	     synopsis[fun] = dsc;
+	  }
+
+	if (dsc != "")
           {
 	     eol();
 	     dsc = substr(dsc, is_substr(dsc, "\n SYNOPSIS\n ")+12, strlen(dsc));

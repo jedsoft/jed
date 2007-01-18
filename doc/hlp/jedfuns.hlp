@@ -3852,16 +3852,14 @@ BATCH
   Non-Zero if in Batch Mode
 
  USAGE
-  Int_Type BATCH
+  Int_Type BATCH (read-only)
 
  DESCRIPTION
- `BATCH' is a read-only variable will be zero if the editor is run
+ The value of `BATCH' will be 0 if the editor is run
  in interactive or full-screen mode.  It will be 1 if the editor is
  in batch mode (via the `-batch' comment line argument).  If the
  editor is in script mode (via `-script'), then the value of
  `BATCH' will be 2.
-
- SEE ALSO
 
 --------------------------------------------------------------
 
@@ -3900,7 +3898,7 @@ _exit
 
 --------------------------------------------------------------
 
-_jed_secure_mode
+_jed_secure_mode (read-only)
 
  SYNOPSIS
   Indicates if the editor is in secure mode
@@ -4131,7 +4129,7 @@ getpid
 is_internal
 
  SYNOPSIS
-  Tst if function "f" is defined as an internal function
+  Test if function "f" is defined as an internal function
 
  USAGE
   Integer is_internal(String f)

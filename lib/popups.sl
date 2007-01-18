@@ -284,7 +284,7 @@ menu_append_separator ($1);
 menu_append_item ($1, "Show &Key", "showkey");
 menu_append_item ($1, "&Where Is Command", "where_is");
 menu_append_separator ($1);
-menu_append_item ($1, "&Info Reader", "info_mode");
+menu_append_item ($1, "&Info Reader", "info_reader_mode");
 #ifdef UNIX
 menu_append_item ($1, "&Unix Man Page", "unix_man");
 #endif

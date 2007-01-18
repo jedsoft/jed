@@ -141,7 +141,18 @@ Changes since 0.99-18.0
         the global mode and one with the keys special to this mode
       * it prints the description of the function bound to the key behind the
         function
-
+61. lib/info.sl,site.sl,..: info_mode renamed to info_reader_mode.
+    This way files such as foo.info can be edited.
+62. lib/site.sl: ^Hb will run describe_bindings (Rafael Laboissiere).
+63. lib/cmode.sl: When building the function list avoid adding "if",
+    "while", etc, which can occur outside a function. (Jörg Sommer)
+64. lib/help.sl: Use an associative array to cache previous calls to
+    "help_get_doc_string". (Paul Boekholt)
+65. lib/mouse.sl: A new variable called Mouse_Selection_Word_Chars may
+    be used to define the set of characters that will be used for
+    "double-click" selections.
+66. lib/mouse.sl: Fixed a bug involving pasting via the middle mouse
+    button in the presence of a visible mark.
 
 {{{ Previous Versions 
 

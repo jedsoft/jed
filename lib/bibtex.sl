@@ -589,7 +589,7 @@ define bibtex_info_find_node ()
    
    node = read_mini ("Node:", Null_String, Null_String);
    !if (strlen (node)) return;
-   info_mode ();
+   info_reader_mode ();
    info_find_node ("(bibtex)top");
    info_find_node ("(bibtex)" + node);
 }
