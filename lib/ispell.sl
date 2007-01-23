@@ -13,7 +13,7 @@ define ispell()
 #else   
    file = make_tmp_file("/tmp/jed_ispell");
 #endif   
-   letters = "a-zA-Z";
+   letters = "\a"R;
    
    ibuf = " *ispell*";
    buf = whatbuf();
@@ -70,13 +70,12 @@ define ispell()
 	bol();
 	del_region();
      }
-   
+
    insert ("(0) ");
    n = 1;
-   while (ffind_char (' '))
+   while (ffind_char (','))
      {
-	go_left_1 ();
-	if (looking_at_char(',')) del(); else go_right_1 ();
+	del ();
 	trim(); newline();
 	vinsert ("(%d) ", n);
 	++n;

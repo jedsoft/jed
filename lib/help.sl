@@ -1,5 +1,23 @@
 %% help.sl
 require ("keydefs");
+autoload ("glob", "glob");
+
+
+%!%+
+%\variable{Help_Describe_Bindings_Show_Synopsis}
+%\synopsis{Used to control the searching of synopsis strings}
+%\usage{variable Help_Describe_Bindings_Show_Synopsis = 0;}
+%\description
+% If the value of this variable is non-zero, the
+% \sfun{describe_bindings} function will search through the
+% documentation for synopsis strings and display the resulting strings
+% along with the key bindings.  Since this can be a time consuming
+% process for slow computers or slow filesystems, this feature is
+% turned off by default.
+%\example
+%  variable Help_Describe_Bindings_Show_Synopsis = 1;
+%!%-
+custom_variable ("Help_Describe_Bindings_Show_Synopsis", 0);
 
 % Convert all controls chars in key and return ^ form.  (\e --> ^[)
 private define convert_keystring (key)
@@ -216,7 +234,19 @@ define help_get_doc_string (f)
 	if (file == NULL)
 	  break;
 	
-	str = get_doc_string_from_file (file, f);
+	if (2 == file_status (file))
+	  {
+	     foreach (glob (path_concat (file, "*.hlp")))
+	       {
+		  file = ();
+		  str = get_doc_string_from_file (file, f);
+		  if (str != NULL)
+		    break;
+	       }
+	  }
+	else
+	  str = get_doc_string_from_file (file, f);
+
 	n++;
      }
    while (str == NULL);
@@ -337,7 +367,6 @@ define describe_mode ()
    help_for_function (modstr);
 }
 
-
 define describe_bindings ()
 {
    flush("Building bindings..");
@@ -420,6 +449,18 @@ define describe_bindings ()
 
    bob();
 
+   EXIT_BLOCK
+     {
+	bob();
+	CASE_SEARCH = cse;
+	set_buffer_modified_flag(0);
+	pop2buf (buf);
+	message ("done");
+     }
+   
+   if (Help_Describe_Bindings_Show_Synopsis == 0)
+     return;
+
    variable synopsis = Assoc_Type[String_Type];
    flush ("Looking up key descriptions...");
    while (fsearch ("\t\t\t"))
@@ -447,12 +488,7 @@ define describe_bindings ()
 	     insert(substr(dsc, 1, is_substr(dsc, "\n")-1) );
           }
 	eol ();
-      }
-   bob();
-   CASE_SEARCH = cse;
-   set_buffer_modified_flag(0);
-   pop2buf (buf);
-   message ("done");
+     }
 }
 
 

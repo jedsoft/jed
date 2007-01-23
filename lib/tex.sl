@@ -81,7 +81,7 @@ define tex_info_find_node ()
    
    node = read_mini ("Node:", Null_String, Null_String);
    !if (strlen (node)) return;
-   info_reader_mode ();
+   info_reader ();
    info_find_node ("(latex)top");
    info_find_node ("(latex)" + node);
 }

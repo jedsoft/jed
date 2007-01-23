@@ -378,7 +378,7 @@ define info_find_node(node)
    ERROR_BLOCK 
      {
 	if (bufferp ("*Info*"))
-	  info_reader_mode ();
+	  info_reader ();
      }
    
    len = strlen(node);
@@ -729,20 +729,6 @@ $2 = "Infomap";
 }
 
 
-define info_reader_mode ()
-{
-   variable ibuf; ibuf = "*Info*";
-   if (Info_Stack_Depth) info_goto_last_position ();
-   !if (bufferp(ibuf)) info_find_dir();
-   pop2buf(ibuf);
-   onewindow();
-   if (0 == is_defined ("info_reader_mode_hook"))
-     run_mode_hooks ("info_mode_hook");
-   else 
-     run_mode_hooks ("info_reader_mode_hook");
-}
-
-
 define info_quit ()
 {
    info_record_position();
@@ -969,20 +955,43 @@ define info_tutorial()
    info_find_node("(info)help");
 }
 
-define info_reader (arg_num)
+private define start_info_reader ()
+{
+   variable ibuf; ibuf = "*Info*";
+   if (Info_Stack_Depth) info_goto_last_position ();
+   !if (bufferp(ibuf)) info_find_dir();
+   pop2buf(ibuf);
+   onewindow();
+   if (0 == is_defined ("info_reader_hook"))
+     run_mode_hooks ("info_mode_hook");
+   else 
+     run_mode_hooks ("info_reader_hook");
+}
+
+
+% Usage:
+%   info_reader ()
+%   info_reader (args);
+%     args[0] = file
+%     args[1] = node
+define info_reader ()
 {
    variable file, node;
    
-   info_reader_mode ();
-   variable f = "exit_jed";
-   local_setkey (f,		"q");
-   local_setkey (f,		"Q");
+   start_info_reader ();
+
+   if (_NARGS == 0)
+     return;
    
-   if (arg_num != __argc)
+   variable args = ();
+   variable nargs = length (args);
+
+   local_setkey ("exit_jed",		"q");
+   local_setkey ("exit_jed",		"Q");
+
+   if (nargs > 0)
      {
-	node = "top";
-	file = __argv[arg_num];
-	arg_num++;
+	file = args[0];
 
 #ifdef UNIX
 	if (path_basename (file) != file)
@@ -994,13 +1003,7 @@ define info_reader (arg_num)
 #endif
 	% Goto top incase the requested node does not exist.
 	info_find_node (sprintf ("(%s)top", file));
-
-	if (arg_num != __argc)
-	  {
-	     node = __argv[arg_num];
-	     arg_num++;
-	  }
-	
-	info_find_node (sprintf ("(%s)%s", file, node));
+	if (nargs > 1)
+	  info_find_node (sprintf ("(%s)%s", file, args[1]));
      }
 }

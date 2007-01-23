@@ -534,6 +534,12 @@ static void skip_chars_backward (char *range, int invert)
    int ignore_combining = 1;
    int no_newline;
 
+   if (*range == '^')
+     {
+	invert = !invert;
+	range++;
+     }
+
    if (NULL == (lut = SLwchar_strtolut ((SLuchar_Type *)range, 1, 1)))
      return;
 
@@ -573,6 +579,12 @@ static void skip_chars_forward (char *range, int invert)
 {
    SLwchar_Lut_Type *lut;
    int ignore_combining = 1;
+
+   if (*range == '^')
+     {
+	invert = !invert;
+	range++;
+     }
 
    if (NULL == (lut = SLwchar_strtolut ((SLuchar_Type *)range, 1, 1)))
      return;

@@ -43,6 +43,18 @@ public define text_indent_relative ()
    whitespace (c - c0);
 }
 
+define text_newline_and_indent_relative ()
+{
+   push_spot ();
+   bol_skip_white ();
+   variable skip_indent = bolp ();
+   pop_spot ();
+   newline ();
+   if (skip_indent)
+     return;
+   indent_line ();
+}
+
 $1 = "Text";
 !if (keymap_p ($1)) make_keymap ($1);
 definekey ("indent_line", "\t", $1);
@@ -72,5 +84,6 @@ public define text_mode()
    set_mode(mode, 1);
    use_keymap (mode);
    set_buffer_hook ("indent_hook", "text_indent_relative");
+   set_buffer_hook ("newline_indent_hook", "text_newline_and_indent_relative");
    run_mode_hooks ("text_mode_hook");
 }

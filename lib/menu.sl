@@ -159,7 +159,7 @@ define menu_files ()
 define menu_help ()
 {
    menu_select_cmd ("Pop up help,Browse Documentation,Show Key,Where is Command",
-		    "help,info_reader_mode,showkey,where_is");
+		    "help,info_reader,showkey,where_is");
 }
 
 

@@ -120,7 +120,7 @@ setkey("goto_line_cmd", 	"^G");   % Goto line
 setkey("apropos", 		"^HA");
 setkey("describe_function", 	"^HF");
 setkey("help",   		"^HH");
-setkey("info_reader_mode", 		"^HI");
+setkey("info_reader", 		"^HI");
 setkey("showkey", 		"^HK");
 setkey("describe_mode", 	"^HM");
 setkey ("unix_man",	      	"^HU");

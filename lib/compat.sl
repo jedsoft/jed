@@ -63,3 +63,8 @@ define strncat (n)
    _stk_roll (n + 1);
    create_delimited_string (n);
 }
+
+define info_mode ()
+{
+   info_reader ();
+}

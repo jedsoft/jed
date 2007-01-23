@@ -580,6 +580,15 @@ $1 = JED_ROOT;
 $1 = dircat (JED_ROOT, "doc/hlp");
 #endif
 
+define jed_append_doc_file (file)
+{
+   Jed_Doc_Files = strcat (Jed_Doc_Files, ",", file);
+}
+define jed_insert_doc_file (file)
+{
+   Jed_Doc_Files = strcat (file, ",", Jed_Doc_Files);
+}
+
 foreach (["jedfuns.hlp", "libfuns.hlp"])
 {
    $2 = ();
@@ -600,8 +609,7 @@ if (strlen(_slang_doc_dir) > 0)
 else
   $1 = path_concat ($1, "[doc.txt]");
 # endif
-Jed_Doc_Files = strcat (Jed_Doc_Files, ",",
-			path_concat ($1, "slangfun.txt"));
+jed_append_doc_file (path_concat ($1, "slangfun.txt"));
 #endif
 
 __uninitialize (&$1);
@@ -672,7 +680,6 @@ _autoload("mode_get_mode_info",		"modeinfo",
 	  "trim_buffer",		"util",
 	  "occur",			"occur",
 	  "info_reader",		"info",
-	  "info_reader_mode",		"info",
 	  "info_find_node",		"info",
 	  "list_buffers",		"bufed",
 	  "append_region",		"buf",
@@ -795,6 +802,7 @@ _autoload("mode_get_mode_info",		"modeinfo",
 	  % Compatibility functions
 	  "create_array",		"compat",
 	  "strncat",			"compat",
+	  "info_mode",			"compat",
 
 	  "tiasm_mode",		"tiasm",
 
@@ -2354,7 +2362,7 @@ define help_prefix()
      { case  8 or case 'H': help (); }
      { case  'A' : apropos (); }
      { case  'B' : describe_bindings (); }
-     { case  'I' : info_reader_mode (); }
+     { case  'I' : info_reader (); }
      { case  '?' : call ("select_menubar");}
      { case  'F' : describe_function ();}
      { case  'V' : describe_variable ();}
@@ -3171,7 +3179,7 @@ define command_line_hook () %{{{
 
    if (strchop (__argv[0], '/', 0)[-1] == "info")
      {
-	info_reader (1);
+	info_reader (__argv[[1:]]);
 	return;
      }
 #endif
@@ -3188,7 +3196,7 @@ define command_line_hook () %{{{
 
    if ("-info" == __argv[i])
      {
-	info_reader (i + 1);
+	info_reader (__argv[[i+1:]]);
 	return;
      }
 
@@ -3324,11 +3332,21 @@ if (is_defined ("import"))
 	     ])
      {
 	$1 = ();
-	$1 = path_concat ($1, "share/slsh/local-packages");
-	if (2 != file_status ($1))
+	$2 = path_concat ($1, "share/slsh/local-packages");
+	if (2 != file_status ($2))
 	  continue;
-	set_jed_library_path (strcat (get_jed_library_path (), ",", path_dirname ($1)));
-	set_jed_library_path (strcat (get_jed_library_path (), ",", $1));
+
+	set_jed_library_path (strcat (get_jed_library_path (), ",", $2));
+	$2 = path_concat ($2, "help");
+	if (2 == file_status ($2))
+	  jed_append_doc_file ($2);
+
+	$2 = path_concat ($1, "share/slsh");
+	set_jed_library_path (strcat (get_jed_library_path (), ",", $2));
+	$2 = path_concat ($2, "help");
+	if (2 == file_status ($2))
+	  jed_append_doc_file ($2);
+
 	break;
      }
 }

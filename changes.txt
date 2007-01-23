@@ -130,7 +130,7 @@ Changes since 0.99-18.0
 57. doc/...: Some documentation tweaks (Jörg Sommer).
 58. src/menu.c: UTF-8 "hot keys" were not being written properly (Jörg
     Sommer).
-59. lib/python.c: Do not use both tabs and spaces when indenting.
+59. lib/python.sl: Do not use both tabs and spaces when indenting.
     Also, avoid treating "passport" and "returning" as block delimiters.
     Added python2 keywords.
     Added support for prefix arguments to the region shift functions.
@@ -153,6 +153,31 @@ Changes since 0.99-18.0
     "double-click" selections.
 66. lib/mouse.sl: Fixed a bug involving pasting via the middle mouse
     button in the presence of a visible mark.
+67. src/text.c: skip_chars_forward/backward: Treat a the complement of
+    "^SET" as "SET".
+68. lib/text.sl: newline_indent_hook bound to
+    text_newline_and_indent_relative.
+69. lib/help.sl: If Help_Describe_Bindings_Show_Synopsis is non-zero,
+    key descriptions will be displayed by the describe_bindings
+    function.  The default setting is 0.
+70. lib/site.sl: The slsh help directories have been added to the
+    list of documentation files since it is possible for jed to
+    utilize those functions.
+71. lib/info.sl: merged info_reader_mode into info_reader, since
+    strictly speaking info_reader_mode is not an editing mode.  
+    I also added info_mode to compat.sl for backward compatibility.  
+    Please migrate to using info_reader instead of info_mode. (See #61
+    above).
+72. lib/site.sl: The slsh help directories were added to the list of
+    directories to search for documentation.  This was done because
+    jed can use slsh library files and modules.
+73. lib/help.sl: If a documentation file is specfied as a directory,
+    then all files with a .hlp extension will be searched in that
+    directory.
+74. lib/ispell.sl: The character range "a-zA-Z" was replaced by "\a"R,
+    which represents any alphabetic character.  Also ',' is assumed to
+    be the delimiter used by ispell instead of a space character (Jörg
+    Sommer).
 
 {{{ Previous Versions 
 
