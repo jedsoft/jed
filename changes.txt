@@ -178,6 +178,9 @@ Changes since 0.99-18.0
     which represents any alphabetic character.  Also ',' is assumed to
     be the delimiter used by ispell instead of a space character (Jörg
     Sommer).
+75. lib/php.sl: Fixed indentation problem on the second line of
+    scripts starting with <html>.  (Paul Boekholt).
+76. autoconf/aclocal.m4: Added rpath support for OpenBSD.
 
 {{{ Previous Versions 
 

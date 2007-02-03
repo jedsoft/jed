@@ -1,6 +1,6 @@
 %   file     : php.sl
 %   author   : Mikael hultgren <micke@yeah.nu>
-%   version  : 1.4
+%   version  : 1.4-1
 %
 %   $Id: php.sl,v 1.190 2001/10/03 13:27:08 child Exp $
 %
@@ -54,7 +54,7 @@
 
 % Set all variables to a default value so people who forget to add
 % them to their .jedrc doesnt get a error.
-
+%
 custom_variable( "PHP_INDENT", 4 );
 custom_variable( "PHP_BRACE", 0 );
 custom_variable( "PHP_BRA_NEWLINE", 0 );
@@ -734,17 +734,18 @@ define php_indent_line( ) %{{{
 		push_spot( );
 		php_indent_to( col );
 		pop_spot( );
-	} else {
-		% Not in PHP block
-		insert( "\t" );
 	}
-	
 }
 %}}}
 define php_indent_region_or_line( ) %{{{
 {
 	!if( is_visible_mark )
-	  php_indent_line( );
+        {	
+		if( php_in_block( ) )
+		  php_indent_line( );
+		else
+		  insert( "\t" );
+	}
 	else
 	{
 		variable now,start,stop;
