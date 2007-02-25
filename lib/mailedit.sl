@@ -316,14 +316,17 @@ private define format_paragraph_hook ()
    narrow_to_region ();
    bob ();
    if (nquotes)
-     while (nquotes == count_quotes ())
-       {
-	  push_mark ();
-	  bol ();
-	  del_region ();
-	  !if (down_1 ())
-	    break;
-       }
+     {
+	while (nquotes == count_quotes ())
+	  {
+	     push_mark ();
+	     bol ();
+	     del_region ();
+	     !if (down_1 ())
+	       break;
+	  }
+     }
+
    pop_spot ();
    unset_buffer_hook ("format_paragraph_hook");
    call ("format_paragraph");

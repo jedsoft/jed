@@ -83,7 +83,9 @@ public define text_mode()
    no_mode ();
    set_mode(mode, 1);
    use_keymap (mode);
-   set_buffer_hook ("indent_hook", "text_indent_relative");
-   set_buffer_hook ("newline_indent_hook", "text_newline_and_indent_relative");
+   %set_buffer_hook ("indent_hook", "text_indent_relative");
+   %set_buffer_hook ("newline_indent_hook", "text_newline_and_indent_relative");
+   unset_buffer_hook ("indent_hook");
+   unset_buffer_hook ("newline_indent_hook");
    run_mode_hooks ("text_mode_hook");
 }

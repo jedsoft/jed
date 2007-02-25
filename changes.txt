@@ -181,6 +181,11 @@ Changes since 0.99-18.0
 75. lib/php.sl: Fixed indentation problem on the second line of
     scripts starting with <html>.  (Paul Boekholt).
 76. autoconf/aclocal.m4: Added rpath support for OpenBSD.
+77. src/cmds.c: Changed quoted_insert to insert a byte instead of a
+    wchar, unless the value was specified via a prefix argument.
+78. lib/textmode.sl: Unset the indent and newline_and_indent hooks
+    because the "indent_text_relative" routines did not seem to useful
+    for ordinary text files.
 
 {{{ Previous Versions 
 

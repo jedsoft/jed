@@ -505,12 +505,15 @@ int ins_char_cmd (void)
 int quoted_insert()
 {
    SLwchar_Type ch;
+   int ins_byte = 1;
 
    CHECK_READ_ONLY
-     if (*Error_Buffer || SLKeyBoard_Quit) return(0);
+   if (*Error_Buffer || SLKeyBoard_Quit) return(0);
+
    if (Repeat_Factor != NULL)
      {
 	ch = *Repeat_Factor;
+	ins_byte = 0;
 	Repeat_Factor = NULL;
      }
    else
@@ -531,10 +534,19 @@ int quoted_insert()
      }
    
    SLKeyBoard_Quit = 0;
-   if (-1 == jed_insert_wchar_n_times(ch, 1))
-     return -1;
-   
-   
+
+   if (ins_byte == 0)
+     {
+	if (-1 == jed_insert_wchar_n_times(ch, 1))
+	  return -1;
+     }
+   else 
+     {
+	unsigned char byte = (unsigned char) ch;
+	if (-1 == jed_insert_nbytes (&byte, 1))
+	  return -1;
+     }
+
    if ((CBuf->syntax_table != NULL)
        && (CBuf->syntax_table->char_syntax[(unsigned char) ch] & CLOSE_DELIM_SYNTAX)
        && !input_pending(&Number_Zero)) blink_match (); /* (ch); */
