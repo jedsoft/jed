@@ -183,8 +183,19 @@ define history_local_save ()
 
 private define save_history_at_exit ()
 {
-   () = history_save ();
-   return 1;
+   variable e;
+   try (e)
+     {
+	() = history_save ();
+	return 1;
+     }
+   catch AnyError:
+     {
+	beep ();
+	flush (sprintf ("Unable to save history: %S", e.message));
+	sleep (2);
+	return 1;
+     }
 }
 
 add_to_hook ("_jed_exit_hooks", &save_history_at_exit);

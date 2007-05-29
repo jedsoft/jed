@@ -83,7 +83,8 @@ int Max_Subprocess_FD;
  * pseudo-pids used here.  See, e.g., jed_get_child_status for usage in this
  * fashion.
  */
-int Subprocess_Read_fds [MAX_PROCESSES][2];   /* 0 is actual fd, 1 is our rep */
+int Subprocess_Read_fds [MAX_PROCESSES][3];   
+/* 0 is actual fd, 1 is our rep, 2 will be set to 1 if an EIO is present */
 
 volatile int Child_Status_Changed_Flag;/* if this is non-zero, editor
 					* should call the appropriate
@@ -334,6 +335,7 @@ static void get_process_status (Process_Type *p) /*{{{*/
      {
 	Subprocess_Read_fds[i][0] = Subprocess_Read_fds[i + 1][0];
 	Subprocess_Read_fds[i][1] = Subprocess_Read_fds[i + 1][1];
+	Subprocess_Read_fds[i][2] = Subprocess_Read_fds[i + 1][2];
 	i++;
      }
    
@@ -664,6 +666,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
    
    Subprocess_Read_fds[Num_Subprocesses][0] = master_read;
    Subprocess_Read_fds[Num_Subprocesses][1] = pd;
+   Subprocess_Read_fds[Num_Subprocesses][2] = 0;
    if (master_read > Max_Subprocess_FD) Max_Subprocess_FD = master_read;
    Num_Subprocesses += 1;
    
@@ -901,6 +904,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
    
    Subprocess_Read_fds[Num_Subprocesses][0] = master_read;
    Subprocess_Read_fds[Num_Subprocesses][1] = pd;
+   Subprocess_Read_fds[Num_Subprocesses][2] = 0;
    if (master_read > Max_Subprocess_FD) Max_Subprocess_FD = master_read;
    Num_Subprocesses += 1;
    
@@ -923,6 +927,21 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 /*}}}*/
 #endif				       /* __os2__ */
 
+static int flag_fd_as_eio_error (int fd)
+{
+   unsigned int i, n;
+   
+   n = Num_Subprocesses;
+   for (i = 0; i < n; i++)
+     {
+	if (Subprocess_Read_fds[i][0] == fd)
+	  {
+	     Subprocess_Read_fds[i][2] = 1;
+	     return 0;
+	  }
+     }
+   return -1;
+}
 
 /* This function is only called when we are reading characters from the 
  * keyboard.  Keyboard input has the highest priority and this is called only
@@ -992,6 +1011,13 @@ void read_process_input (int fd) /*{{{*/
 	  }
      }
    
+   if (n == -1)
+     {
+#ifdef EIO
+	(void) flag_fd_as_eio_error (fd);
+#endif
+     }
+
    if (otype & PROCESS_SAVE_POINT) pop_spot ();
    else if (otype & PROCESS_USE_BUFFER) move_window_marks (0);
    

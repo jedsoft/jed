@@ -1,5 +1,8 @@
 % C-mode indentation routines
 %
+% 2007-03-21
+%   Fixed off-by-one on parenthesis indent.
+%   Promote "foam" to an indentation style
 % 2006-12-02
 %   Merged in Mark Olesen's patches dated 2006-11-21
 %
@@ -55,7 +58,7 @@ custom_variable ("C_Class_Offset", 3);
 %\description
 % This variable may be changed to adjust the indentation of parameters
 % in a funcion call that extends over multiple lines.
-% 
+%
 % If the value is less than 0, the feature is off, otherwise
 % it holds the max number of spaces to indent the parameters on
 % the continuation line(s).
@@ -154,17 +157,17 @@ private define skip_over_comment ()
 {
    variable is_slang = cmode_is_slang_mode ();
 
-   forever 
+   forever
      {
 	skip_all_whitespace ();
 	if (eobp ())
 	  return;
-	
+
 	if (is_slang)
 	  {
 	     !if (looking_at_char ('%'))
 	       return;
-	     
+
 	     eol ();
 	     continue;
 	  }
@@ -176,13 +179,13 @@ private define skip_over_comment ()
 	     go_right(2);
 	     continue;
 	  }
-	
+
 	if (looking_at ("//"))
 	  {
-	     eol (); 
+	     eol ();
 	     continue;
 	  }
-	    
+
 	return;
      }
 }
@@ -433,7 +436,7 @@ private define c_indent_continued_comment (col)
 %     == expr3
 %    ) ...
 %
-% returns the outdent value including the space (0, -2 or -3) 
+% returns the outdent value including the space (0, -2 or -3)
 %
 private define c_outdent_operator()
 {
@@ -461,7 +464,7 @@ private define c_outdent_operator()
 
    _get_point ();
    skip_white ();
-   
+
    if ((_get_point () - ()) or eolp())  { % isolated
       len--;	                           % include space-separator
       if ((len == -2) or (len == -3))
@@ -642,7 +645,7 @@ define c_indent_line ()
 	 { c_looking_at("protected") }
 	 { c_looking_at("private") }
 	 { c_looking_at("public") }
-       )
+      )
      {
 	if (ffind_char (':'))
 	  {
@@ -670,19 +673,19 @@ define c_indent_line ()
 		    { blooking_at ("},") }
 		    { blooking_at (":") }
 		    { bobp () }
-		  )
+		 )
 	       {
 		  if (skip_pp or is_continuation)
 		    {
 		       !if (indenting_solitary_left_parens)
-			 extra_indent = C_CONTINUED_OFFSET;
+			 extra_indent += C_CONTINUED_OFFSET;
 		    }
 		  else
 		    {
 		       push_spot ();
 		       bol_skip_white ();
 		       !if (looking_at_char ('#'))
-			 extra_indent = C_CONTINUED_OFFSET;
+			 extra_indent += C_CONTINUED_OFFSET;
 		       pop_spot ();
 		    }
 		  is_continuation++;
@@ -725,20 +728,16 @@ define c_indent_line ()
    col = what_column ();
 
    if ((val < 0) and looking_at ("/*")) val = -2;
-   else if (val == 1)
+   else if (val == 1)	   % within (...) grouping
      {
 	if (this_char != ')')
 	  {
 	     go_right_1 ();
 	     skip_white ();
-#ifnfalse
 	     if (eolp())   % ignore (invisible) trailing whitespace
 	       col++;
 	     else
 	       col = what_column ();
-#else
-	     !if (eolp ()) col++;
-#endif
 	  }
      }
 
@@ -784,7 +783,8 @@ define c_indent_line ()
 	  {
 	     push_spot ();
 	     goto_user_mark (match_mark);
-	     bskip_all_whitespace ();
+	     %bskip_all_whitespace ();
+	     c_bskip_over_comment (skip_pp);
 	     if (blooking_at (")"))  %  ... (expr) {...} block
 	       {
 		  variable same_line = (what_line == match_line);
@@ -808,7 +808,10 @@ define c_indent_line ()
 		  if (this_char == '{') % ... = {\n{...}...}
 		    extra_indent -= C_BRACE;   %  undone below
 	       }
-	     else if (blooking_at ("struct") and (this_char != '{'))
+	     else if ((blooking_at ("struct")
+		       or blooking_at("(")
+		       or blooking_at("["))
+		      and (this_char != '{'))
 	       {
 		  if (is_continuation)
 		    extra_indent -= C_CONTINUED_OFFSET;
@@ -816,14 +819,14 @@ define c_indent_line ()
 
 	     pop_spot ();
 	     col = match_indent;
-	      
+
 	     if (this_char == '}')
 	       col += C_INDENT;    % undone below
 	     else if (inside_class_or_namespace (match_mark, "class"))
 	       {
 		  col += C_Class_Offset;
 #iffalse
-		  if (this_char == '{') 
+		  if (this_char == '{')
 		    extra_indent -= C_BRACE;   %  undone below
 #endif
 	       }
@@ -863,8 +866,8 @@ define c_indent_line ()
      }
      {
       case 1:			       %  within a (...) grouping
-	 extra_indent = 0;	       %  match found
-	 prep_indent = 0;
+	extra_indent = 0;	       %  match found
+	prep_indent = 0;
 #iftrue
 	% starting brace was alone on its line -
 	% indent contents like a {...} block
@@ -872,10 +875,11 @@ define c_indent_line ()
 	  {
 	     if (col == match_indent + 1)
 	       {
-		  if (C_Bracket_Indent > C_INDENT) 
+		  if (C_Bracket_Indent > C_INDENT)
 		    extra_indent = C_Bracket_Indent;
 		  else
 		    extra_indent = C_INDENT;
+                  extra_indent--;  % col already incremented
 
 		  % outdent operators, logicals and comparisons
 		  if (extra_indent >= 3)
@@ -1490,8 +1494,9 @@ define c_mode ()
 %#v+
 %    "gnu"      Style advocated by GNU
 %    "k&r"      Style popularized by Kernighan and Ritchie
-%    "linux"    Linux kernel indentation style
 %    "bsd"      Berkeley style
+%    "foam"     Derivate bsd-style used in OpenFOAM
+%    "linux"    Linux kernel indentation style
 %    "jed"      Style used by the the author
 %#v-
 %\seealso{c_mode}
@@ -1511,13 +1516,11 @@ define c_set_style (name)
       case "bsd":
 	(4,0,0,4,0,4,4,4);
      }
-#iftrue   % added for quicker testing
      {
       case "foam":
 	(C_Switch_Offset, C_Param_Offset_Max) = (4, -1);
 	(4,0,0,4,0,4,0,4);
      }
-#endif
      {
       case "linux":
 	(8,0,0,8,0,8,8,8);
@@ -1532,8 +1535,8 @@ define c_set_style (name)
      }
 
    (C_INDENT, C_BRACE, C_BRA_NEWLINE, C_CONTINUED_OFFSET,
-    C_Colon_Offset, C_Class_Offset, C_Namespace_Offset,
-    C_Macro_Indent)
+       C_Colon_Offset, C_Class_Offset, C_Namespace_Offset,
+       C_Macro_Indent)
 	  =();
 
    _C_Indentation_Style = name;

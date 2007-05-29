@@ -11,15 +11,18 @@
 define man_clean_manpage ()
 {
    variable clean = "Cleaning man page...";
-
    push_spot_bob ();
 
    flush (clean);
-   % Convert unicode versions of - to ascii -.
+   % I do not know what man on debian etch is doing, but it is producing
+   % this combination: \xE2\x88\x{8722} for a -
+   replace ("\xE2\x88\x{2212}", "-");
+
+   % Convert other unicode versions of - to ascii -.
    replace ("\x{2212}", "-");
    replace ("\x{2010}", "-");
    replace ("\x{00AD}", "-");
-
+   
    replace ("_\010", Null_String);	% remove _^H underscores
    while ( fsearch ("\010") )
      {

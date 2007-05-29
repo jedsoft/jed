@@ -186,6 +186,31 @@ Changes since 0.99-18.0
 78. lib/textmode.sl: Unset the indent and newline_and_indent hooks
     because the "indent_text_relative" routines did not seem to useful
     for ordinary text files.
+79. lib/history.sl: Ignore errors in saving the history at exit (Paul
+    Boekholt).
+80. lib/cmode.sl: Don't indent the second, third, etc items of a list
+    that follows an open parenthesis.  Also Mark Oleson corrected an
+    off-by-1 error when indenting foam-style constructs.
+81. doc/txt/dfa.txt: Updated for slang-2 and some additional
+    clarifications (Guenter Milde).
+82. lib/site.sl: provide/require were removed and are now autoloaded
+    from require.sl, which itself was updated to the latest slsh
+    version.
+83. lib/xform.sl: Eliminated the use of narrow_to_region by these
+    functions.  This fixes a problem with capitalize_word when used in
+    the minibuffer.
+84. lib/site.sl: Documentation for `double_line` (Jörg Sommer).
+85. lib/site.sl: Handle a possible NULL return value by
+    guess_jed_install_prefix.
+86. lib/man.sl: Remove strange <E2><88> combinations that appeared in
+    man pages after upgrading to Debian Etch.
+87. src/jprocess.c: If a read/write operation on a descriptors returns
+    with errno=EIO, then flag it to not be used by the select system
+    call.
+88. src/xterm.c: The x_toggle_visibility function may be used to raise
+    or lower the window associated with Xjed.  (Jörg Sommer).
+89. src/*.c, *.h: Some of the files were missing the GPL copyright.
+    (Jörg Sommer).
 
 {{{ Previous Versions 
 

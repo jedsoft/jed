@@ -1,6 +1,8 @@
 %%
 %%  Initializes upper/lowercase lookup tables for ISO Latin 2
 %%
+if (_slang_utf8_ok == 0)
+{
 .   0  64 1 { dup define_case } _for
 .  65  90 1 { dup 32 + define_case } _for
 .  91  96 1 { dup define_case } _for
@@ -29,3 +31,4 @@
 define_word (strcat ("0-9a-zA-Z\d161\d163\d165-\d166\d169-\d172",
 		      "\d174\d175\d177\d179\d181\d182\d185-\d188",
 		      "\d190-\d214\d216-\d222\d224-\d246\d248-\d254"));
+}

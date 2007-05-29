@@ -16,6 +16,9 @@
 % 2006-11-11 JED
 % - Added provide statement.
 %
+% 2007-03-21 Mark Olesen
+% - save modified file before running perltidy/perl_exec
+%
 % ------------------------------------------------------------------------
 %{{{ default values for Perl custom variables
 % override these default values in ~/.jedrc
@@ -64,7 +67,7 @@ custom_variable("Perl_Indent", 4);
 static variable
   tmp_input    = "_tmp_jedperl_",
   shell_output = "*shell-output*",
-  help_buf     = "*help-perl*";		% interact with perldoc information
+  help_buf     = "*help-perl*";         % interact with perldoc information
 
 %-------------------------------------------------------------------------
 %!%+
@@ -81,88 +84,91 @@ static variable
 % The following style preferences settings in \var{~/.perltidyrc} seem to
 % give good results:
 %#v+
-%   -et=8	# standard tabs
-%   -nola	# no outdent labels
-%   -wba="."	# break after string concatenation
-%   -se		# errors to standard error output
-%   -sbt=2	# very tight square brackets
+%   -et=8       # standard tabs
+%   -nola       # no outdent labels
+%   -wba="."    # break after string concatenation
+%   -se         # errors to standard error output
+%   -sbt=2      # very tight square brackets
 %#v-
 %\seealso{perl_indent_region, perl_indent_buffer, perl_mode}
 %!%-
-define perltidy ()	% <AUTOLOAD> this function
+define perltidy ()      % <AUTOLOAD> this function
 {
-    variable cmd  = "perltidy -st -q";	% command plus invariant flags
-    variable line = what_line();	% we'll try to return here later
-    variable opts = "-nola";		% optional flags
+    variable cmd  = "perltidy -st -q";  % command plus invariant flags
+    variable line = what_line();        % we'll try to return here later
+    variable opts = "-nola";            % optional flags
 
-    variable file, dir, thisbuf;
-    (file,dir,thisbuf,) = getbuf_info();
+    variable file, dir, thisbuf, flags;
+    (file, dir, thisbuf, flags) = getbuf_info();
     if (change_default_dir(dir)) {
-	error("cd '" + dir + "' failed");
+        error("cd '" + dir + "' failed");
     }
 
     % with a prefix argument, we can add extra flags
     if ( -9999 != prefix_argument (-9999) ) {
-	opts = read_mini( "perltidy flags:", Null_String, opts );
-    }    
+        opts = read_mini( "perltidy flags:", Null_String, opts );
+    }
 
     % check if we want a tmp file
     % we need a tmp file for a processing
     % 1: a region
     % 2: a narrowed buffer
     % 3: when no file is attached
-    variable use_tmp = markp();	% a region
-    !if (use_tmp) {	% no region, but a narrowed buffer
-	use_tmp = count_narrows();
-	if (use_tmp) mark_buffer();
+    variable use_tmp = markp(); % a region
+    !if (use_tmp) {     % no region, but a narrowed buffer
+        use_tmp = count_narrows();
+        if (use_tmp) mark_buffer();
     }
-    
-    !if (use_tmp) {	% no file attached
-	!if (strlen(file)) use_tmp = 1;
-	mark_buffer();
+
+    !if (use_tmp) {     % check if a file is attached
+        !if (strlen(file)) use_tmp = 1;
+        mark_buffer();
     }
 
     narrow();
     if (use_tmp) {
-	file = tmp_input;	% we need to use a tmp file
-	mark_buffer();
-	() = write_region_to_file(file);
+        file = tmp_input;       % we need to use a tmp file
+        mark_buffer();
+        () = write_region_to_file(file);
 
-	% guess the start indentation level
-	bob();
-	do {
-	    skip_white();
-	    if (eolp()) continue;	% ignore blank lines
-	    % round column number up and use to estimate the indentation level
-	    cmd += sprintf(" -sil=%d", int((what_column() + 1) / Perl_Indent));
-	    break;
-	} while (down_1());
+        % guess the start indentation level
+        bob();
+        do {
+            skip_white();
+            if (eolp()) continue;       % ignore blank lines
+            % round column number up and use to estimate the indentation level
+            cmd += sprintf(" -sil=%d", int((what_column() + 1) / Perl_Indent));
+            break;
+        } while (down_1());
+    }
+    else if (flags & 0x01) {     % buffer modified - save the file first
+        () = write_buffer (dir + file);
     }
 
     sw2buf(shell_output);
     erase_buffer ();
-    
+
     % clean-up function
     % unfortunately run_shell_cmd doesn't always signal an error!!
     ERROR_BLOCK {
-	sw2buf(thisbuf);
-	delbuf(shell_output);
-	if (use_tmp) () = delete_file(file);
-	widen();
-	goto_line(line);
-	bol();
-	flush(Null_String);
+        sw2buf(thisbuf);
+        delbuf(shell_output);
+        if (use_tmp) () = delete_file(file);
+        widen();
+        goto_line(line);
+        bol();
+        flush(Null_String);
     }
 
     % add flags and the file name
-    if ( strlen(opts) ) 
+    if ( strlen(opts) )
       cmd = strjoin( [ cmd, opts, file ], " " );
     else
       cmd = strjoin( [ cmd, file ], " " );
 
     flush(cmd);
     variable rc = run_shell_cmd(cmd);
-    set_buffer_modified_flag(0);	% mark as unchanged
+    set_buffer_modified_flag(0);        % mark as unchanged
 
     % handle errors from 'run_shell_cmd'
     if (rc) error("error running perltidy");
@@ -171,10 +177,11 @@ define perltidy ()	% <AUTOLOAD> this function
     % switch back to our original buffer and update everything
     sw2buf(thisbuf);
     mark_buffer();
-    del_region();	% use del_region so that undo will work
+    del_region();       % use del_region so that undo will work
     insbuf(shell_output);
     EXECUTE_ERROR_BLOCK;
 }
+
 
 % Run perl with some flags on current region if one is defined, otherwise
 % on the whole buffer.
@@ -189,19 +196,19 @@ static define do_perl (opts, prompt)
 {
     variable cmd  = "perl -w";
     variable args = Null_String;
-    variable line = 0;			% line offset
+    variable line = 0;                  % line offset
 
-    if (strlen(Perl_Flags)) opts += " " + Perl_Flags;	% tack on our flags
+    variable file, dir, thisbuf, flags;
+    (file, dir, thisbuf, flags) = getbuf_info();
+    if (change_default_dir(dir)) {
+        error("cd '" + dir + "' failed");
+    }
+
+    if (strlen(Perl_Flags)) opts += " " + Perl_Flags;   % tack on our flags
 
     % with a prefix argument, we can edit perl flags
     if ( -9999 != prefix_argument (-9999) ) {
-	opts = read_mini( "Perl flags:", Null_String, opts );
-    }
-    
-    variable file, dir, thisbuf;
-    (file, dir, thisbuf,) = getbuf_info();
-    if (change_default_dir(dir)) {
-	error("cd '" + dir + "' failed");
+        opts = read_mini( "Perl flags:", Null_String, opts );
     }
 
     % check if we want a tmp file
@@ -209,49 +216,53 @@ static define do_perl (opts, prompt)
     % 1: a region
     % 2: a narrowed buffer
     % 3: when no file is attached
-    variable use_tmp = markp();	% a region
-    !if (use_tmp) {	% no region, but a narrowed buffer
-	use_tmp = count_narrows();
-	if (use_tmp) mark_buffer();
+    variable use_tmp = markp(); % a region
+    !if (use_tmp) {     % no region, but a narrowed buffer
+        use_tmp = count_narrows();
+        if (use_tmp) mark_buffer();
     }
 
-    !if (use_tmp) {
-	if (strlen(prompt)) 
-	  args = read_mini( prompt, Null_String, Null_String );
+    !if (use_tmp) {     % check if a file is attached
+        if (strlen(prompt))
+          args = read_mini( prompt, Null_String, Null_String );
 
-	!if (strlen(file)) {		% no file attached
-	    use_tmp = 1;
-	    mark_buffer();
-	}
+        !if (strlen(file)) {            % no file attached
+            use_tmp = 1;
+            mark_buffer();
+        }
     }
 
     if (use_tmp) {
-	file = tmp_input;		% we need to use a tmp file
-	check_region(1);		% canonical region & push_spot
-	exchange_point_and_mark();	% goto start
-	line = what_line();
+        file = tmp_input;               % we need to use a tmp file
+        check_region(1);                % canonical region & push_spot
+        exchange_point_and_mark();      % goto start
+        line = what_line();
 
-	% force 'strict';
-	% also introduces a line offset of 1 as a nice side-effect
-	() = write_string_to_file( "use strict;\n", file );
-	() = append_region_to_file(file);
-	pop_spot();
+        % force 'strict';
+        % also introduces a line offset of 1 as a nice side-effect
+        () = write_string_to_file( "use strict;\n", file );
+        () = append_region_to_file(file);
+        pop_spot();
     }
+    else if (flags & 0x01) {     % buffer modified - save the file first
+        () = write_buffer (dir + file);
+    }
+
 
     variable oldbuf = pop2buf_whatbuf(shell_output);
     erase_buffer ();
-    
+
     % in case our system command bombs out
-    ERROR_BLOCK { 
-	if (use_tmp) () = delete_file(file);
+    ERROR_BLOCK {
+        if (use_tmp) () = delete_file(file);
     }
 
 #ifdef OS2 UNIX
-    args += " 2>&1";	% re-direct stderr as well
+    args += " 2>&1";    % re-direct stderr as well
 #endif
 
     variable rc = run_shell_cmd(strjoin( [cmd, opts, file, args], " "));
-    set_buffer_modified_flag(0);	% mark output as unchanged
+    set_buffer_modified_flag(0);        % mark output as unchanged
 
     % report errors from 'run_shell_cmd'
     if (rc) flush("error running perl");
@@ -260,25 +271,32 @@ static define do_perl (opts, prompt)
 
     % try to restore any window that got replaced by the shell-output
     %%     if (strlen(oldbuf)
-    %% 	and (oldbuf != shell_output)
-    %% 	and (oldbuf != thisbuf) )
+    %%  and (oldbuf != shell_output)
+    %%  and (oldbuf != thisbuf) )
     %%       {
-    %% 	  splitwindow(); sw2buf(oldbuf); pop2buf(shell_output);
+    %%    splitwindow(); sw2buf(oldbuf); pop2buf(shell_output);
     %%       }
     eob();
 
-    % Move to the line in source that generated the error
-    if ( right( bsearch( " at " + file + " line " ) ) ) {
-	skip_white();	% for safety's sake
-	push_mark();
-	skip_chars ("0-9");
-	line += integer(bufsubstr());
-	%%	flush (sprintf ("goto line %d", line));		% Debug
-	pop2buf(thisbuf);
-	goto_line(line);
-	bol();
+    % No output - close the shell-window and display message
+    if (bobp()) {
+        pop2buf(thisbuf);
+        onewindow();
+        message("No output.");
+    }
+    else if ( right( bsearch( " at " + file + " line " ) ) ) {
+        % Move to the line in source that generated the error
+        skip_white();   % for safety's sake
+        push_mark();
+        skip_chars ("0-9");
+        line += integer(bufsubstr());
+        %%      flush (sprintf ("goto line %d", line));         % Debug
+        pop2buf(thisbuf);
+        goto_line(line);
+        bol();
     }
 }
+
 
 %!%+
 %\function{perl_exec}
@@ -290,7 +308,7 @@ static define do_perl (opts, prompt)
 % Display output in *shell-output* buffer window.
 %\seealso{perl_check, perl_mode}
 %!%-
-define perl_exec()  {	% <AUTOLOAD>
+define perl_exec()  {   % <AUTOLOAD>
     do_perl(Null_String, "perl @ARGV:");
 }
 
@@ -304,7 +322,7 @@ define perl_exec()  {	% <AUTOLOAD>
 %\seealso{perl_exec, perltidy, perl_mode}
 %!%-
 define perl_check() {
-    do_perl("-cT", Null_String);	% check with tainting on
+    do_perl("-cT", Null_String);        % check with tainting on
 }
 
 
@@ -316,18 +334,18 @@ define perl_check() {
 static define attach_keymap (name)
 {
     !if (keymap_p(name)) {
-	make_keymap(name);
-	definekey("perl_help",	 "?",   name);
-	definekey("perl_help",   "\r",  name);
-	definekey("perl_help",   "^C?", name);	% for consistency
-	definekey("perl_info",   "^Ci", name);
+        make_keymap(name);
+        definekey("perl_help",   "?",   name);
+        definekey("perl_help",   "\r",  name);
+        definekey("perl_help",   "^C?", name);  % for consistency
+        definekey("perl_info",   "^Ci", name);
     }
 
     if (bufferp(name)) {
-	variable cbuf = whatbuf();
-	setbuf(name);
-	use_keymap(name);		% attach keymap here
-	setbuf(cbuf);
+        variable cbuf = whatbuf();
+        setbuf(name);
+        use_keymap(name);               % attach keymap here
+        setbuf(cbuf);
     }
 }
 
@@ -370,13 +388,13 @@ static define help_for_perl (what)
 static define extract_word (chars)
 {
     !if (markp()) {
-	% skip leading non-word chars, including newline
-	do {
-	    skip_chars ("^" + chars);
-	    !if (eolp()) break;
-	} while (down (1));
-	bskip_chars (chars);	% in case we started in the middle of a word
-	push_mark(); skip_chars (chars);	% mark the word
+        % skip leading non-word chars, including newline
+        do {
+            skip_chars ("^" + chars);
+            !if (eolp()) break;
+        } while (down (1));
+        bskip_chars (chars);    % in case we started in the middle of a word
+        push_mark(); skip_chars (chars);        % mark the word
     }
     return bufsubstr();
 }
@@ -388,7 +406,7 @@ static define extract_word (chars)
 % displays the perl settings \var{perl -V} in the help buffer
 %!%-
 %\seealso{perldoc, perl_help}
-define perl_info () { perl_get_help("perl -V"); }	% <AUTOLOAD>
+define perl_info () { perl_get_help("perl -V"); }       % <AUTOLOAD>
 
 
 %!%+
@@ -399,20 +417,20 @@ define perl_info () { perl_get_help("perl -V"); }	% <AUTOLOAD>
 % via perldoc for it
 %!%-
 %\seealso{perldoc, perl_mode}
-define perl_help ()	% <AUTOLOAD>
+define perl_help ()     % <AUTOLOAD>
 {
     variable what = extract_word(":0-9A-Z_a-z");
     !if (strlen(what)) {
-	flush("Sorry no word extracted");
-	return;		% no string - no help
+        flush("Sorry no word extracted");
+        return;         % no string - no help
     }
 
-    % all lower-case words treated as a function names
+    % all lower-case words treated as function names
     % provided they don't start with 'perl' (mostly manpages)
     if (strncmp(what, "perl", 4)) {
-	if (string_match(what, "^[a-z][a-z0-9]+$", 1)) {
-	    what = strcat("-f ", what);
-	}
+        if (string_match(what, "^[a-z][a-z0-9]+$", 1)) {
+            what = strcat("-f ", what);
+        }
     }
     help_for_perl(what);
 }
@@ -434,7 +452,7 @@ define perl_help ()	% <AUTOLOAD>
 %  -q   Search the text of questions (not answers) in perlfaq[1-9]
 %\seealso{perl_help, perl_mode}
 %!%-
-define perldoc ()	% <AUTOLOAD> <COMPLETE>
+define perldoc ()       % <AUTOLOAD> <COMPLETE>
 {
     !if (MINIBUFFER_ACTIVE)
       help_for_perl(read_mini("perldoc:", Null_String, Null_String));
@@ -442,3 +460,4 @@ define perldoc ()	% <AUTOLOAD> <COMPLETE>
 
 provide ("perlxtra");
 % -------------------------------------------------------- [end of S-Lang]
+

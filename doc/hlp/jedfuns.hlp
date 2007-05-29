@@ -7693,6 +7693,31 @@ x_set_meta_keys
 
 --------------------------------------------------------------
 
+x_toggle_visibility
+
+ SYNOPSIS
+  Shows or hides the window
+
+ USAGE
+  x_toggle_visibility([Integer_Type hide])
+
+ DESCRIPTION
+ Makes the window visible or invisible. If the argument `hide' is
+ not given, the visility of the windows is toggled, e.g. if the window
+ is invisible it becomes visible and vice versa. If the optional
+ argument `hide' is given the state to the window becomes visible
+ if `hide' is non-zero or invisible if `hide' is zero,
+ independent of the current state.
+
+ NOTES
+ You can also hide the window by calling `suspend', but you can not show
+ it, if the window doesn't have the focus.
+
+ SEE ALSO
+  suspend
+
+--------------------------------------------------------------
+
 x_set_window_name
 
  SYNOPSIS
@@ -7700,10 +7725,6 @@ x_set_window_name
 
  USAGE
   x_set_window_name (String_Type name)
-
- DESCRIPTION
-
- SEE ALSO
 
 --------------------------------------------------------------
 
@@ -7715,7 +7736,5 @@ x_warp_pointer
  USAGE
 
  DESCRIPTION
-
- SEE ALSO
 
 --------------------------------------------------------------

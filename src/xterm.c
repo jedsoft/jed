@@ -1611,6 +1611,23 @@ static void xjed_suspend (void) /*{{{*/
 
 /*}}}*/
 
+static void x_toggle_visibility (void) /*{{{*/
+{
+   int hide_win = (XWin->visible == VisibilityUnobscured);
+
+   if ((SLang_Num_Function_Args == 1)
+       && (-1 == SLang_pop_integer (&hide_win)))
+     return;
+
+   if (hide_win)
+     /* XIconifyWindow (This_XDisplay, XWin->w, This_XScreen); */
+     XLowerWindow (This_XDisplay, This_XWindow);
+   else
+     XRaiseWindow (This_XDisplay, This_XWindow);
+}
+/*}}}*/
+
+
 static int get_font_width (XFontStruct *f, int *wp, int *is_dualp)
 {
    int w0, w1;
@@ -3055,6 +3072,7 @@ static SLang_Intrin_Fun_Type sl_x_table[] = /*{{{*/
 #if SLANG_VERSION < 10404
    MAKE_INTRINSIC_S("get_termcap_string", get_termcap_string, STRING_TYPE),
 #endif
+   MAKE_INTRINSIC_0("x_toggle_visibility", x_toggle_visibility, SLANG_VOID_TYPE),
    MAKE_INTRINSIC(NULL,NULL,0,0)
 };
 

@@ -6,11 +6,11 @@ Jed's original simple one. It's a lot more powerful, but it takes up
 more memory and makes the executable larger if it's compiled in.
 It's also more difficult to design new highlighting modes for.
 
-DFA highlighting works *alongside* Jed's old highlighting system: it
-doesn't prevent any language modes from using the old scheme. Any
-language modes that want to, however, can use the new scheme.
+DFA highlighting works *alongside* Jed's standard highlighting system in
+the sense that the user can choose which scheme is to be used on a
+mode-by-mode basis.
 
-Some examples of what DFA highlighting can do that the old scheme
+Some examples of what DFA highlighting can do that the standard scheme
 can't are:
 
 - Correct separation of numeric tokens in C. The text `2+3' would
@@ -20,8 +20,6 @@ can't are:
   character in _this_ instance, though, and correctly interpret it
   as an operator.
 
-- Highlighting of comments on preprocessor lines.
-
 - Enhanced HTML mode, in which tags containing mismatched quotes
   (such as `<a href="filename>') can be highlighted in a different
   colour from correctly formed tags.
@@ -30,6 +28,17 @@ can't are:
 
 - PostScript mode, in which up to two levels of nested parentheses
   can be detected inside a string constant.
+
+Limitations
+-----------
+
+- Jed's DFA highlight rules work only on a line-by-line basis. Using
+  the DFA scheme, it is impossible to highlight multiline comments or
+  string literals.
+  
+- DFA rules replace the "traditional" highlighting scheme, so you
+  cannot have both highlight of multiline tokens and
+  regualar-expression based highlight rules.
 
 Using DFA Highlighting
 ----------------------
@@ -150,10 +159,11 @@ might read
 
 	dfa_define_highlight_rule ("[a\\-e]", ...);
 
-with the backslash doubled. Also, the rules in C mode and S-Lang
-mode that match string constants have _way_ too many backslashes to
-be easily readable, and mostly look like line noise. I know that's a
-pain, but I couldn't help it.
+with the backslash doubled. SLang-2 introduced a suffix notation for literal
+strings, so now it is possible to avoid the doubling of backslashes by use
+of the do-not-expand 'R' suffix. The above example can be written as
+
+	dfa_define_highlight_rule ("[a\-e]"R, ...);
 
 Extra Magical Bits
 ------------------

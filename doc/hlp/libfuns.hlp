@@ -262,8 +262,9 @@ c_set_style
 
     "gnu"      Style advocated by GNU
     "k&r"      Style popularized by Kernighan and Ritchie
-    "linux"    Linux kernel indentation style
     "bsd"      Berkeley style
+    "foam"     Derivate bsd-style used in OpenFOAM
+    "linux"    Linux kernel indentation style
     "jed"      Style used by the the author
 
 
@@ -1032,6 +1033,27 @@ fortran_mode
      comment out a line.  The default string is "C ";
    Fortran_Indent_Amount   --- number of spaces to indent statements in
                                a block.  The default is 2.
+
+--------------------------------------------------------------
+
+Help_Describe_Bindings_Show_Synopsis
+
+ SYNOPSIS
+  Used to control the searching of synopsis strings
+
+ USAGE
+  variable Help_Describe_Bindings_Show_Synopsis = 0;
+
+ DESCRIPTION
+ If the value of this variable is non-zero, the
+ `describe_bindings' function will search through the
+ documentation for synopsis strings and display the resulting strings
+ along with the key bindings.  Since this can be a time consuming
+ process for slow computers or slow filesystems, this feature is
+ turned off by default.
+
+ EXAMPLE
+  variable Help_Describe_Bindings_Show_Synopsis = 1;
 
 --------------------------------------------------------------
 
@@ -1926,11 +1948,11 @@ perltidy
  The following style preferences settings in `~/.perltidyrc' seem to
  give good results:
 
-   -et=8	# standard tabs
-   -nola	# no outdent labels
-   -wba="."	# break after string concatenation
-   -se		# errors to standard error output
-   -sbt=2	# very tight square brackets
+   -et=8       # standard tabs
+   -nola       # no outdent labels
+   -wba="."    # break after string concatenation
+   -se         # errors to standard error output
+   -sbt=2      # very tight square brackets
 
 
  SEE ALSO
@@ -2803,75 +2825,6 @@ make_tmp_file
 
 --------------------------------------------------------------
 
-_featurep
-
- SYNOPSIS
-  Test whether or not a feature is present
-
- USAGE
-  Int_Type _featurep (String_Type feature)
-
- DESCRIPTION
-  The `_featurep' function returns a non-zero value if the specified
-  feature is present.  Otherwise, it returns 0 to indicate that the feature
-  has not been loaded.
-
- SEE ALSO
-  require, provide
-
---------------------------------------------------------------
-
-provide
-
- SYNOPSIS
-  Declare that a specified feature is available
-
- USAGE
-  provide (String_Type feature)
-
- DESCRIPTION
- The `provide' function may be used to declare that a "feature" has
- been loaded.  See the documentation for `require' for more information.
-
- SEE ALSO
-  require, _featurep
-
---------------------------------------------------------------
-
-require
-
- SYNOPSIS
-  Make sure a feature is present, and load it if not
-
- USAGE
-  require (String_Type feature [,String_Type file]
-
- DESCRIPTION
-  The `require' function ensures that a specified "feature" is present.
-  If the feature is not present, the `require' function will attempt to
-  load the feature from a file.  If called with two arguments, the feature
-  will be loaded from the file specified by the second argument.  Otherwise,
-  the feature will be loaded from a file given by the name of the feature,
-  with ".sl" appended.
-
-  If after loading the file, if the feature is not present,
-  a warning message will be issued.
-
- NOTES
-  "feature" is an abstract quantity that is undefined here.
-
-  A popular use of the `require' function is to ensure that a specified
-  file has already been loaded.  In this case, the feature is the
-  filename itself.  The advantage of using this mechanism over using
-  `evalfile' is that if the file has already been loaded, `require'
-  will not re-load it.  For this to work, the file must indicate that it
-  provides the feature via the `provide' function.
-
- SEE ALSO
-  provide, _featurep, evalfile
-
---------------------------------------------------------------
-
 pop_mark_0
 
  SYNOPSIS
@@ -3073,6 +3026,22 @@ line_as_string
 
  SEE ALSO
   bufsubstr
+
+--------------------------------------------------------------
+
+double_line
+
+ SYNOPSIS
+  Duplicate the current line
+
+ DESCRIPTION
+ This function inserts a line into the buffer at the position of the
+ current line that is a copy of the current line.  If the position of
+ the editing point was originally one line N column C, then the
+ editing point will be left on line (N+1) column C.
+
+ SEE ALSO
+  line_as_string
 
 --------------------------------------------------------------
 

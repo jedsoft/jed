@@ -1,4 +1,10 @@
 /* -*- C -*- */
+/* Copyright (c) 2007 John E. Davis
+ * This file is part of JED editor library source.
+ *
+ * You may distribute this file under the terms the GNU General Public
+ * License.  See the file COPYING for more information.
+ */
 
 /* Note: this is for unix only. */
 
@@ -58,6 +64,8 @@
 #undef HAVE_SYS_NDIR_H
 #undef HAVE_SYS_DIR_H
 #undef HAVE_NDIR_H
+
+#undef HAVE_PCRE_H
 
 #undef HAVE_DLOPEN
 

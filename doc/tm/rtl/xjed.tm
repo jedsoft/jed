@@ -103,17 +103,30 @@
 \seealso{x_set_keysym}
 \done
 
+\function{x_toggle_visibility}
+\synopsis{Shows or hides the window}
+\usage{x_toggle_visibility([Integer_Type hide])}
+\description
+ Makes the window visible or invisible. If the argument \exmp{hide} is
+ not given, the visility of the windows is toggled, e.g. if the window
+ is invisible it becomes visible and vice versa. If the optional
+ argument \exmp{hide} is given the state to the window becomes visible
+ if \exmp{hide} is non-zero or invisible if \exmp{hide} is zero,
+ independent of the current state.
+\notes
+ You can also hide the window by calling \ifun{suspend}, but you can not show
+ it, if the window doesn't have the focus.
+\seealso{suspend}
+\done
+
 \function{x_set_window_name}
 \synopsis{Set the title of the xjed window}
 \usage{x_set_window_name (String_Type name)}
-\description
-\seealso{}
 \done
 
 \function{x_warp_pointer}
 \synopsis{warp pointer}
 \usage{}
 \description
-\seealso{}
 \done
 

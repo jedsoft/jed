@@ -4,6 +4,8 @@
 %%  Made by Byrial Jensen <byrial@post3.tele.dk>
 %%
 
+if (_slang_utf8_ok == 0)
+{
 .   0  64 1 { dup define_case } _for
 .  65  90 1 { dup 32 + define_case } _for
 .  91  96 1 { dup define_case } _for
@@ -33,3 +35,4 @@ define_word (strcat ("-0-9A-Za-z", "\d161\d177", "\d166\d182",
 		      "-\d194", "\d196-\d207", "\d209-\d214",
 		      "\d216-\d226","\d228-\d239","\d241-\d246",
 		      "\d248-\d254"));
+}

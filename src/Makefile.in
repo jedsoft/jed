@@ -114,6 +114,7 @@ HFILES = @PROGRAM_HFILES@
 
 EXEC_LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) -lslang $(MISCLIBS)
 
+main_O_DEP = Makefile
 jprocess_O_DEP = $(SRCDIR)/pty.c
 version_O_DEP = $(SRCDIR)/version.h
 UPDATE_VERSION_SCRIPT = $(HOME)/bin/update_changes_version

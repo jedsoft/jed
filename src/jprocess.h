@@ -16,7 +16,7 @@
 /* extern CRITICAL_SECTION Critical_Section; */
 extern HANDLE Input_Events[];
 #else
-extern int Subprocess_Read_fds [MAX_PROCESSES][2];
+extern int Subprocess_Read_fds [MAX_PROCESSES][3];
 extern int Max_Subprocess_FD;
 #endif
 

@@ -68,6 +68,16 @@ dnl JD_FIND_SLANG
 JD_GCC_WARNINGS
 
 dnl #------------------------------------------------------------------------
+dnl JD_CHECK_FOR_LIBRARY(pcre)
+dnl if test $jd_with_pcre_library = yes
+dnl then 
+dnl   LINK_LIBPCRE="-lpcre"
+dnl   AC_DEFINE(HAVE_PCRE_H)
+dnl else
+dnl   LINK_LIBPCRE=""
+dnl fi
+dnl AC_SUBST(LINK_LIBPCRE)
+dnl #------------------------------------------------------------------------
 if test "x$prefix" != xNONE; then
   default_jed_root="$prefix/jed"
 else

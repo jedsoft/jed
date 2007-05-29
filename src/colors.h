@@ -1,3 +1,9 @@
+/* Copyright (c) 2007 John E. Davis
+ * This file is part of JED editor library source.
+ *
+ * You may distribute this file under the terms the GNU General Public
+ * License.  See the file COPYING for more information.
+ */
 #ifndef _JED_COLORS_H_
 #define _JED_COLORS_H_
 

@@ -524,7 +524,8 @@ int sys_input_pending(int *tsecs, int all) /*{{{*/
 	i = 0;
 	while (i < Num_Subprocesses)
 	  {
-	     FD_SET(Subprocess_Read_fds[i][0], &Read_FD_Set);
+	     if (Subprocess_Read_fds[i][2] == 0)   /* If non-0, fd has an EIO error */
+	       FD_SET(Subprocess_Read_fds[i][0], &Read_FD_Set);
 	     i++;
 	  }
 	if (Max_Subprocess_FD > maxfd) maxfd = Max_Subprocess_FD;

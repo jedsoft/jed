@@ -133,16 +133,16 @@ int main (int argc, char **argv)
    // This is a test of some of "foam" style indentation
    while
    (
-        x
-      + 10
-     == 3
+       x
+     + 10
+    == 3
    )
      {
         if
         (
-             x
-           + 10
-          != 3
+            x
+          + 10
+         != 3
         )
           problem ();
      }
@@ -163,4 +163,35 @@ int main (int argc, char **argv)
    else
      y = 3 + 4
      + 5 + 6;
+   
+   foo (
+        {
+           elem1,
+           elem2
+        });
+        
+   x = [
+        e1,
+        e2
+       ];
+
+   if (this_condition)
+     if (that_condition)
+       do_that ();
+   
+   switch (val)
+     {
+      case 0:
+        if (foo ())
+          {
+             bar ();
+          }
+        else if (baz ()) /* comment */
+          {
+             this ();
+             if (that != 3)
+               those ();
+          }
+     }
 }
+

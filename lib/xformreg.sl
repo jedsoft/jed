@@ -1,37 +1,50 @@
-_debug_info = 1;
+private define skip_chars_to_mark (chars, mark)
+{
+   skip_chars (chars);
+   if (create_user_mark () > mark)
+     goto_user_mark (mark);
+}
+
+private define skip_word_chars_to_mark (mark)
+{
+   skip_word_chars ();
+   if (create_user_mark () > mark)
+     goto_user_mark (mark);
+}
+
 private define chgcase_reg ()
 {
-   narrow_to_region ();
-   bob ();
-   while (not eobp ())
+   check_region (0);
+   variable end = create_user_mark ();
+   pop_mark_1 ();
+   while (create_user_mark () < end)
      {
 	push_mark ();
-	skip_chars ("^\\u");
+	skip_chars_to_mark ("^\\u", end);
 	insert (strup (bufsubstr_delete ()));
 	push_mark ();
-	skip_chars ("^\\l");
+	skip_chars_to_mark ("^\\l", end);
 	insert (strlow (bufsubstr_delete ()));
      }
-   widen_region ();
 }
 
 private define cap_region ()
 {
-   narrow_to_region ();
-   bob ();
-   forever 
+   check_region (0);
+   variable end = create_user_mark ();
+   pop_mark_1 ();
+   while (create_user_mark () < end)
      {
 	skip_non_word_chars ();
-	if (eobp ())
+	if (create_user_mark () >= end)
 	  break;
 	variable wch = what_char ();
 	del ();
 	insert (strup (char (wch)));
 	push_mark ();
-	skip_word_chars ();
+	skip_word_chars_to_mark (end);
 	insert (strlow (bufsubstr_delete ()));
      }
-   widen_region ();
 }
 
 public define xform_region (how)
@@ -61,5 +74,3 @@ public define xform_region (how)
    del_region ();
    insert (reg);
 }
-
-

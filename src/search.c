@@ -185,6 +185,7 @@ int search (char *str, int dir, int n) /*{{{*/
    close_search (st);
    return key_len;
 }
+/*}}}*/
 
 int search_forward(char *s) /*{{{*/
 {
@@ -508,9 +509,8 @@ static int re_search_dir(unsigned char *pat, int dir) /*{{{*/
      }
    return (0);
 }
-
+/*}}}*/
 #else
-
 static int re_search_dir(unsigned char *pat, int dir) /*{{{*/
 {
    char *match;
@@ -520,10 +520,10 @@ static int re_search_dir(unsigned char *pat, int dir) /*{{{*/
 
    if (Buffer_Local.case_search == 0)
      flags |= SLREGEXP_CASELESS;
-   
+#if 0
    if (Jed_UTF8_Mode)
      flags |= SLREGEXP_UTF8;
-
+#endif
    if (Regexp != NULL)
      SLregexp_free (Regexp);
 
@@ -604,9 +604,9 @@ static int re_search_dir(unsigned char *pat, int dir) /*{{{*/
      }
    return (0);
 }
+/*}}}*/
 #endif				       /* SLANG_VERSION < 20000 */
 
-/*}}}*/
 
 int re_search_forward(char *pat) /*{{{*/
 {
@@ -809,6 +809,7 @@ void regexp_nth_match (int *np) /*{{{*/
    b += Regexp.offset;
    (void) push_string((char *) CLine->data + b, n);
 }
+/*}}}*/
 #else
 void regexp_nth_match (int *np) /*{{{*/
 {
@@ -837,9 +838,8 @@ void regexp_nth_match (int *np) /*{{{*/
      }
    (void) push_string((char *) p, len);
 }
-#endif
-
 /*}}}*/
+#endif
 
 int search_file(char *file, char *pat, int *np) /*{{{*/
 {

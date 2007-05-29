@@ -1,3 +1,13 @@
+/* Copyright (c) Simon Tatham
+ *
+ * This file is part of JED editor library source.
+ *
+ * It was written by Simon Tatham for use in the JED editor.
+ *
+ * You may distribute this file under the terms the GNU General Public
+ * License.  See the file COPYING for more information.
+ */
+
 /*
  * DFA-based syntax highlighting for Jed.
  */
