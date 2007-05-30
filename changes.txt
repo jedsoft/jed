@@ -211,6 +211,8 @@ Changes since 0.99-18.0
     or lower the window associated with Xjed.  (Jörg Sommer).
 89. src/*.c, *.h: Some of the files were missing the GPL copyright.
     (Jörg Sommer).
+90. src/unix.c: The wrong value of max_fd was getting passed to select.
+91. src/jprocess.c: The test for errno==EIO was not being made.
 
 {{{ Previous Versions 
 
