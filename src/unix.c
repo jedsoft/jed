@@ -638,7 +638,8 @@ int sys_input_pending(int *tsecs, int all) /*{{{*/
    i = 0;
    while (i < Num_Subprocesses)
      {
-	if (FD_ISSET(Subprocess_Read_fds[i][0], &Read_FD_Set))
+	if ((Subprocess_Read_fds[i][2] == 0)   /* If non-0, fd has an EIO error */
+	    && FD_ISSET(Subprocess_Read_fds[i][0], &Read_FD_Set))
 	  read_process_input (Subprocess_Read_fds[i][1]);
 	i++;
      }
