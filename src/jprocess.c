@@ -1015,7 +1015,7 @@ void read_process_input (int fd) /*{{{*/
      {
 #ifdef EIO
 	if (errno == EIO)
-	  (void) flag_fd_as_eio_error (fd);
+	  (void) flag_fd_as_eio_error (p->rd);
 #endif
      }
 
