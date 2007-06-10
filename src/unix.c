@@ -528,7 +528,7 @@ int sys_input_pending(int *tsecs, int all) /*{{{*/
 	     if (Subprocess_Read_fds[i][2] == 0)   /* If non-0, fd has an EIO error */
 	       {
 		  int fd = Subprocess_Read_fds[i][0];
-		  FD_SET(Subprocess_Read_fds[i][0], &Read_FD_Set);
+		  FD_SET(fd, &Read_FD_Set);
 		  if (fd > maxfd) maxfd = fd;
 	       }
 	     i++;

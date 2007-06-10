@@ -10,8 +10,10 @@ define mime_parse_this_qp ()
    str = strcat (str, char (what_char ()));
    del ();
    if (Integer_Type == _slang_guess_type (str))
-     str = char (integer (str));
-   
+     {
+	insert_byte (integer(str));
+	return;
+     }
    insert (str);
 }
 

@@ -215,6 +215,11 @@ Changes since 0.99-18.0
 91. src/jprocess.c: The test for errno==EIO was not being made.
 92. src/unix.c: Testing subprocess descriptors via FD_ISSET was also
     testing those with EIO errors.
+93. src/xform.c: capitalize_region was not working with single
+    character regions.
+94. src/jprocess.c: fd was being passed to flag_fd_as_eio_error
+    instead of p->rd.  (Joerg Sommer).
+95. lib/mime.sl: Use byte-semantics for parsing quoted-printable.
 
 {{{ Previous Versions 
 

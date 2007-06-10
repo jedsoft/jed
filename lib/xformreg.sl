@@ -39,8 +39,12 @@ private define cap_region ()
 	if (create_user_mark () >= end)
 	  break;
 	variable wch = what_char ();
-	del ();
+	% The insertion must be done before the deletion to handle a single
+	% character word.  This is because the "end" mark follows the character
+	% and if the deletion took place first, the insertion would happen
+	% AFTER the mark, which is not what is wanted.
 	insert (strup (char (wch)));
+	del ();
 	push_mark ();
 	skip_word_chars_to_mark (end);
 	insert (strlow (bufsubstr_delete ()));
