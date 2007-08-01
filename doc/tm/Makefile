@@ -5,8 +5,7 @@
 #
 TMEXPAND = tmexpand
 TM2SGML = $(TMEXPAND)
-MACRODIR = /aluche/d1/web/tm-dist/macros
-TM2HLP = $(TMEXPAND) -I$(MACRODIR) -Mslhlp
+TM2HLP = $(TMEXPAND) -Mslhlp
 DOCBOOK2MAN = docbook2man
 
 FILES = jedfuns libfuns # quickref

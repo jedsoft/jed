@@ -475,23 +475,26 @@ int jed_quick_insert(register unsigned char *s, int n) /*{{{*/
    if (n) remake_line (CLine->len + n);
 #endif
 
-   /* shove n chars over to make space */
-   p = CLine->data + Point;
-   if (Point < CLine->len)   /* could be equal for last line of buffer */
+   if (n)
      {
-	p1 = CLine->data + CLine->len - 1;
-	while(p1 >= p)
+	/* shove n chars over to make space */
+	p = CLine->data + Point;
+	if (Point < CLine->len)   /* could be equal for last line of buffer */
 	  {
-	     *(p1 + n) = *p1;
-	     p1--;
+	     p1 = CLine->data + CLine->len - 1;
+	     while(p1 >= p)
+	       {
+		  *(p1 + n) = *p1;
+		  p1--;
+	       }
 	  }
-     }
-   CLine->len += n;
-   SLMEMCPY((char *) p, (char *) s, n);
+	CLine->len += n;
+	SLMEMCPY((char *) p, (char *) s, n);
    
-   jed_update_marks(CINSERT, n);
-   record_insertion(n);
-   Point += n;
+	jed_update_marks(CINSERT, n);
+	record_insertion(n);
+	Point += n;
+     }
 
    if (nl) 
      jed_down (1);

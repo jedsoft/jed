@@ -940,7 +940,9 @@ unsigned char *remake_line(unsigned int size) /*{{{*/
      {
 #if 1				       /* NOTE: This was #if 0.  Why??? */
 #ifndef KEEP_SPACE_INFO
-	if (((CLine->len + 3) & mask) == size) return d;
+	if ((((CLine->len + 3) & mask) == size)
+	    && (size + 8 < (unsigned) CLine->len))/* realloc if the new size is less than the old */
+	  return d;
 #endif
 #endif
 	d = (unsigned char *) SLrealloc ((char *) d, size);

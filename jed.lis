@@ -256,6 +256,7 @@
 @lib/ide.hlp
 @lib/matlab.sl 
 @lib/rcs.sl 
+@lib/require.sl
 #@lib/sgml.sl
 @lib/docbook.sl
 @lib/aprocess.sl

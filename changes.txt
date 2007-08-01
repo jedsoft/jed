@@ -220,6 +220,9 @@ Changes since 0.99-18.0
 94. src/jprocess.c: fd was being passed to flag_fd_as_eio_error
     instead of p->rd.  (Joerg Sommer).
 95. lib/mime.sl: Use byte-semantics for parsing quoted-printable.
+96. lib/perl.sl: When searching for a matching '{', ignore fold marks.
+97. src/buffer.c:remake_line: If the line is to be made shorter, then
+    reallocate the buffer associated with it.
 
 {{{ Previous Versions 
 

@@ -138,6 +138,10 @@
 % 
 % 2006-11-11 JED
 % - Use "require" instead of evalfile for loading perlxtra.
+% 
+% 2007-06-20 JED
+% - Added find_matching_brace_ignore_fold_marks to search for a
+%   matching delimiter ignoring fold marks.
 %
 % ------------------------------------------------------------------------
 % ------------------------------------------------------------------------
@@ -436,6 +440,22 @@ private define perl_blooking_at()
     return rc;
 }
 
+private define find_matching_brace_ignore_fold_marks (endch);
+private define find_matching_brace_ignore_fold_marks (endch)
+{
+   variable m = create_user_mark ();
+   if (1 != find_matching_delimiter (endch))
+     return 0;
+   !if (blooking_at ("#{{") or blooking_at ("# {{"))
+     return 1;
+   go_left(2);
+   if (1 == find_matching_brace_ignore_fold_marks (endch))
+     return 1;
+
+   goto_user_mark (m);
+   return 0;
+}
+
 %!%+
 %\function{perl_indent_line}
 %\synopsis{Void perl_indent_line (Void)}
@@ -530,10 +550,7 @@ public define perl_indent_line()
     % --------------------------------------------------------------------
     endch = '}';
     if (ch == '{') indent_ok++;
-    if (andelse
-        {find_matching_delimiter(endch) == 1}
-	{not( blooking_at("#{{") ) }	% don't match '#{{{' fold
-	)
+    if (find_matching_brace_ignore_fold_marks (endch))
     {	
 	extra_indent = Perl_Indent;
 
