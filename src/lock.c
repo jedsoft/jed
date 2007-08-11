@@ -289,6 +289,7 @@ static int perform_lock (char *lockfile, Lock_Info_Type *l, int force)
    unsigned int len;
    char *buf;
    int status;
+   int not_supported = 0;
 
    len = 32 + strlen (l->host) + strlen (l->user);
    if (NULL == (buf = SLmalloc (len)))
@@ -300,14 +301,24 @@ static int perform_lock (char *lockfile, Lock_Info_Type *l, int force)
 	SLfree (buf);
 	return 1;
      }
+
+   if (not_supported 
 # ifdef EPERM
-   if (errno == EPERM)		       /* filesystem does not support links */
+       || (errno == EPERM)
+# endif
+# ifdef EOPNOTSUPP
+       || (errno == EOPNOTSUPP)
+# endif
+# ifdef ENOSYS
+       || (errno == ENOSYS)
+# endif
+       )
      {
 	jed_vmessage (0, "File system does not support symbolic links: file not locked.");
 	SLfree (buf);
 	return 1;
      }
-# endif
+
 # ifdef EACCES
    if (errno == EACCES)
      {

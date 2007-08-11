@@ -223,6 +223,8 @@ Changes since 0.99-18.0
 96. lib/perl.sl: When searching for a matching '{', ignore fold marks.
 97. src/buffer.c:remake_line: If the line is to be made shorter, then
     reallocate the buffer associated with it.
+98. src/lock.c: Add support for errno = EOPNOTSUPP return value from
+    symlink.
 
 {{{ Previous Versions 
 
