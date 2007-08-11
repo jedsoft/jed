@@ -9,6 +9,7 @@
 #include "window.h"
 
 extern void exit_error(char *, int);
+extern void jed_error_hook (char *);
 extern void msg_error(char *);
 extern void jed_verror (char *, ...);
 extern void jed_vmessage (int, char *, ...);

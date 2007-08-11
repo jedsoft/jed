@@ -225,6 +225,9 @@ Changes since 0.99-18.0
     reallocate the buffer associated with it.
 98. src/lock.c: Add support for errno = EOPNOTSUPP return value from
     symlink.
+99. src/misc.c: msg_error changed to call SLang_verror instead of
+    SLang_set_error.  This allows, among other things, exceptions to
+    access jed error messages.
 
 {{{ Previous Versions 
 

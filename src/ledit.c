@@ -2211,7 +2211,7 @@ void init_minibuffer() /*{{{*/
      }
    
    /* use jed rouotines instead of default slang ones */
-   SLang_Error_Hook = msg_error;
+   SLang_Error_Hook = jed_error_hook;
    SLang_VMessage_Hook = vmsg_hook;
    SLang_User_Clear_Error = jed_clear_error;
 #if SLANG_VERSION < 10409

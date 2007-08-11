@@ -232,6 +232,17 @@ int jed_getkey (void) /*{{{*/
 
 /*}}}*/
 
+void jed_error_hook (char *msg)
+{
+   if ((JWindow == NULL) || Batch)
+     fprintf(stderr, "%s\r\n", msg);
+   else
+     JWindow->trashed = 1;
+
+   if (Error_Buffer[0] == 0) 
+     safe_strcpy(Error_Buffer, msg, sizeof (Error_Buffer));
+}
+
 void msg_error(char *msg) /*{{{*/
 {
 #if 0
@@ -240,15 +251,7 @@ void msg_error(char *msg) /*{{{*/
    Repeat_Factor = NULL;
    set_macro_state();
 #endif
-   if ((JWindow == NULL) || Batch)
-     fprintf(stderr, "%s\r\n", msg);
-   else
-     JWindow->trashed = 1;
-   
-   if (SLang_get_error () == 0)
-     SLang_set_error (SL_INTRINSIC_ERROR);
-
-   if (Error_Buffer[0] == 0) safe_strcpy(Error_Buffer, msg, sizeof (Error_Buffer));
+   SLang_verror (SL_INTRINSIC_ERROR, "%s", msg);
 }
 
 /*}}}*/
