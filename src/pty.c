@@ -37,7 +37,7 @@
 static int pty_setup_slave_term (int slave, int raw)
 {
    struct termios slave_termios;
-   
+
    while (-1 == tcgetattr (slave, &slave_termios))
      {
 #ifdef EINTR
@@ -46,7 +46,7 @@ static int pty_setup_slave_term (int slave, int raw)
 #endif
 	return -1;
      }
-   
+
    slave_termios.c_lflag = 0;
 
    if (raw == 0)
@@ -62,7 +62,7 @@ static int pty_setup_slave_term (int slave, int raw)
    slave_termios.c_cc[VEOF] = 4;
    slave_termios.c_cc[VMIN] = 1;
    slave_termios.c_cc[VTIME] = 0;
-    
+
    /* while (-1 == tcsetattr (slave, TCSANOW, &slave_termios)) */
    while (-1 == tcsetattr (slave, TCSADRAIN, &slave_termios))
      {
@@ -78,11 +78,11 @@ static int pty_setup_slave_term (int slave, int raw)
 
 #ifndef USE_SYSV_PTYS
 
-#include <grp.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+# include <grp.h>
+# include <sys/types.h>
+# include <sys/stat.h>
 
-#ifdef HAVE_OPENPTY
+# ifdef HAVE_OPENPTY
 
 static int pty_open_master_pty (int *master, char *slave_tty_name)
 {
@@ -91,7 +91,7 @@ static int pty_open_master_pty (int *master, char *slave_tty_name)
 
    if (-1 == openpty (master, &slave, NULL, NULL, NULL))
      return -1;
-   
+
    if (NULL == (s = ttyname (slave)))
      {
 	signal_safe_close (*master);
@@ -106,21 +106,19 @@ static int pty_open_master_pty (int *master, char *slave_tty_name)
    (void) pty_setup_slave_term (*master, 1);
    return 0;
 }
-
-#else
-
+# else				       /* NOT HAVE_OPENPTY */
 
 static int pty_open_master_pty (int *master, char *slave_tty_name)
 {
    char *a, *b;
-   
+
    strcpy (slave_tty_name, "/dev/ptyab");
-   
+
    a = "pqrstuvwxyz";
    while (*a != 0)
      {
 	slave_tty_name [8] = *a++;
-	
+
 	b = "0123456789abcdef";
 	while (*b != 0)
 	  {
@@ -129,7 +127,7 @@ static int pty_open_master_pty (int *master, char *slave_tty_name)
 	     slave_tty_name [9] = *b++;
 	     if (-1 == (*master = signal_safe_open (slave_tty_name, O_RDWR)))
 	       continue;
-	     
+
 	     /* Make sure the slave can be opened.   I attempt to set up
 	      * the master terminal also even though it is not a tty and will
 	      * probably fail.
@@ -142,7 +140,7 @@ static int pty_open_master_pty (int *master, char *slave_tty_name)
 		  (void) pty_setup_slave_term (*master, 1);
 		  return 0;
 	       }
-		  
+
 	     signal_safe_close (*master);
 	     slave_tty_name [5] = 'p';
 	  }
@@ -150,7 +148,7 @@ static int pty_open_master_pty (int *master, char *slave_tty_name)
    return -1;
 }
 
-#endif				       /* HAVE_OPENPTY */
+# endif				       /* HAVE_OPENPTY */
 
 static int pty_open_slave_pty (char *slave_name, int *slave)
 {
@@ -163,21 +161,21 @@ static int pty_open_slave_pty (char *slave_name, int *slave)
      {
 	int gid = g->gr_gid;
 	(void) chown (slave_name, getuid (), gid);
-#ifndef S_IRUSR
-# define S_IRUSR 0400
-#endif
-#ifndef S_IWUSR
-# define S_IWUSR 0200
-#endif
-#ifndef S_IWGRP
-# define S_IWGRP 0020
-#endif
+# ifndef S_IRUSR
+#  define S_IRUSR 0400
+# endif
+# ifndef S_IWUSR
+#  define S_IWUSR 0200
+# endif
+# ifndef S_IWGRP
+#  define S_IWGRP 0020
+# endif
 	(void) chmod (slave_name, S_IRUSR | S_IWUSR | S_IWGRP);
      }
 
    if (-1 == (fd = signal_safe_open (slave_name, O_RDWR)))
      return -1;
-   
+
 # if defined(TIOCSCTTY) && !defined(CIBAUD)
    /* Stevens says use CIBAUD to avoid doing this under SunOS.
     * This gives us a controlling terminal.
@@ -187,7 +185,7 @@ static int pty_open_slave_pty (char *slave_name, int *slave)
 # endif
 
    *slave = fd;
-   
+
    return 0;
 }
 #else
@@ -201,7 +199,7 @@ static int pty_open_master_pty (int *master, char *slave_tty_name)
 
    if (-1 == (fd = signal_safe_open ("/dev/ptmx", O_RDWR)))
      return -1;
-   
+
    /* According to the solaris man page, this could fail if jed catches
     * SIGCHLD.  So lets block it.
     */
@@ -236,13 +234,13 @@ static int pty_open_master_pty (int *master, char *slave_tty_name)
 static int pty_open_slave_pty (char *slave_name, int *slave)
 {
    int fd;
-   
+
    *slave = -1;
-   
+
    /* The open here will make this the controlling terminal */
    if (-1 == (fd = signal_safe_open (slave_name, O_RDWR)))
      return -1;
-   
+
    if ((-1 == ioctl (fd, I_PUSH, "ptem"))
        || (-1 == ioctl (fd, I_PUSH, "ldterm")))
      {
@@ -268,9 +266,4 @@ static int pty_open_slave_pty (char *slave_name, int *slave)
 }
 
 #endif
-   
-   
-   
-
-
 

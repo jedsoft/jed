@@ -730,8 +730,12 @@ static void wait_for_parent (void)
     */
    while (SigUsr_Flag == 0)
      sigsuspend (&Zero_Signal_Mask);
-   
+}
+
+static void tell_parent_to_go (pid_t pid)
+{
    SigUsr_Flag = 0;
+   kill (pid, SIGUSR1);
    
    while ((-1 == sigprocmask (SIG_SETMASK, &Old_Signal_Mask, NULL))
 	  && (errno == EINTR))
@@ -740,9 +744,13 @@ static void wait_for_parent (void)
 
 static void tell_child_to_go (pid_t pid)
 {   
+   SigUsr_Flag = 0;
    kill (pid, SIGUSR1);
 
-   SigUsr_Flag = 0;
+   /* Now wait for the child to setup the pty */
+   while (SigUsr_Flag == 0)
+     sigsuspend (&Zero_Signal_Mask);   
+
    while ((-1 == sigprocmask (SIG_SETMASK, &Old_Signal_Mask, NULL))
 	  && (errno == EINTR))
      ;
@@ -767,7 +775,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 {
    int pd;
    int slave_read, slave_write, master_read, master_write;
-   int pid, i;
+   int pid, jed_pid, i;
    Process_Type *p;
    SLang_MMT_Type *mmt;
    char slave_tty_name [MAX_TTY_SLAVE_NAME];
@@ -796,6 +804,8 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
      }
 
    SLsignal_intr (SIGCHLD, child_signal_handler);
+
+   jed_pid = getpid ();		       /* used by slave */
 
    if ((-1 == init_child_parent_sync ())
        || ((pid = fork ()) < 0))
@@ -845,6 +855,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 	
 	     if (-1 == pty_open_slave_pty (slave_tty_name, &slave_read))
 	       {
+		  tell_parent_to_go (jed_pid);
 		  fprintf (stderr, "child: failed to open slave.");
 		  _exit (1);
 	       }
@@ -853,6 +864,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 	     /* (void) pty_setup_slave_term (slave_read, 0); */
 	  }
 #endif	/* USE_PTY */
+	tell_parent_to_go (jed_pid);
 
 #ifdef USE_PTY
 	/* Put tty back into cbreak mode. */

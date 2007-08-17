@@ -228,6 +228,8 @@ Changes since 0.99-18.0
 99. src/misc.c: msg_error changed to call SLang_verror instead of
     SLang_set_error.  This allows, among other things, exceptions to
     access jed error messages.
+100. src/jprocess.c: Fixed a race condition in the master/slave pty
+     code.
 
 {{{ Previous Versions 
 
