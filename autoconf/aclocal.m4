@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.2.1:  Add .dll.a to list of extensions to when searching for libs (cygwin)
 dnl# 0.2.0:  Added install target name and more fixes for cygwin
 dnl# 0.1.12: Improved support for cygwin
 dnl# 0.1.11: Fixed elf linking on freebsd (Renato Botelho (garga at freebsd, org)
@@ -870,6 +871,9 @@ AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
        case "$host_os" in
          *darwin* )
 	   exts="dylib so a"
+	   ;;
+	 *cygwin* )
+	   exts="dll.a so a"
 	   ;;
 	 * )
 	   exts="so a"

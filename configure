@@ -6716,6 +6716,9 @@ echo "$as_me: error: --with-slanginc requres a value" >&2;}
          *darwin* )
 	   exts="dylib so a"
 	   ;;
+	 *cygwin* )
+	   exts="dll.a so a"
+	   ;;
 	 * )
 	   exts="so a"
        esac
