@@ -2,7 +2,7 @@
 
 # C compiler and C flags
 CC = @CC@
-CFLAGS = @CFLAGS@ @CPPFLAGS@ @X_CFLAGS@
+CFLAGS = @CFLAGS@ @CPPFLAGS@ @X_CFLAGS@ @SLANG_DLL_CFLAGS@
 LDFLAGS = @LDFLAGS@ @DYNAMIC_LINK_FLAGS@
 
 #---------------------------------------------------------------------------

@@ -230,6 +230,9 @@ Changes since 0.99-18.0
     access jed error messages.
 100. src/jprocess.c: Fixed a race condition in the master/slave pty
      code.
+101. lib/html.sl: If _Reserved_Key_Prefix is NULL, do not use if in
+     calls to un/definekey.
+102. Updated aclocal.m4 for better CYGWIN support
 
 {{{ Previous Versions 
 

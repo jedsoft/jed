@@ -472,8 +472,12 @@ define html_keymap ()
 
 $1 = "html";
 !if (keymap_p ($1)) make_keymap ($1);
-undefinekey (_Reserved_Key_Prefix, $1);
-definekey("html_keymap", _Reserved_Key_Prefix, $1);
+if (_Reserved_Key_Prefix != NULL)
+{
+   undefinekey (_Reserved_Key_Prefix, $1);
+   definekey("html_keymap", _Reserved_Key_Prefix, $1);
+}
+
 undefinekey ("\e;", $1);
 definekey ("html_comment",   "\e;",  $1);
 definekey ("html_quoted_insert",   "`",  $1);
