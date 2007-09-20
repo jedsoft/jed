@@ -97,7 +97,7 @@ SLANGINC = ../../slang/src
 SLANGLIB = $(SLANGINC)/$(OBJDIR)
 COMPILE_CMD = $(CC) -c $(CFLAGS) -I$(SLANGINC) -o #
 !   ifndef DJGPP_V1
-LINK_CMD = $(CC) -s -L$(SLANGLIB) -o $(TARGET) @$(RSPFILE) -lslang
+LINK_CMD = $(CC) -s -L$(SLANGLIB) -o $(TARGET) @$(RSPFILE) -lslang -lm
 !   else
 GO32 = G:/djgpp/bin/go32.exe
 !   endif

@@ -233,6 +233,10 @@ Changes since 0.99-18.0
 101. lib/html.sl: If _Reserved_Key_Prefix is NULL, do not use if in
      calls to un/definekey.
 102. Updated aclocal.m4 for better CYGWIN support
+103. src/pcmouse.c: Use jed_insert_nbytes instead of jed_insert_chars.
+     (Robert Riebisch).
+104. src/mkfiles/makefile.all: Add -lm to the LINK macro for DJGPP
+     (Robert Riebisch).
 
 {{{ Previous Versions 
 

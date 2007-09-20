@@ -437,7 +437,7 @@ static int x_insert_cutbuffer (void)
 
 	     dat[x] = 0;
 
-	     jed_insert_chars((unsigned char *) dat, nbytes);
+	     jed_insert_nbytes((unsigned char *) dat, nbytes);
 	     SLfree (dat);
 	  }
 	GlobalUnlock(hBuf);

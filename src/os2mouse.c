@@ -233,7 +233,7 @@ static int insert_cutbuffer (void)
 {
    CHECK_READ_ONLY
    if (CutBuffer == NULL) return 0;
-   if (CutBuffer_Len) jed_insert_chars ((unsigned char *) CutBuffer, CutBuffer_Len);
+   if (CutBuffer_Len) jed_insert_nbytes ((unsigned char *) CutBuffer, CutBuffer_Len);
    return CutBuffer_Len;
 }
 
