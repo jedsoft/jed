@@ -237,6 +237,9 @@ Changes since 0.99-18.0
      (Robert Riebisch).
 104. src/mkfiles/makefile.all: Add -lm to the LINK macro for DJGPP
      (Robert Riebisch).
+105. src/wterm.c: In enable_menu_item, changed MF_GRAYED to MF_DISABLED
+     (Joerg Sommer).
+106. lib/cmode.sl: Fixed enum indentation (Marc Butler)
 
 {{{ Previous Versions 
 

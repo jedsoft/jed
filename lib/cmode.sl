@@ -810,7 +810,8 @@ define c_indent_line ()
 	       }
 	     else if ((blooking_at ("struct")
 		       or blooking_at("(")
-		       or blooking_at("["))
+		       or blooking_at("[")
+		       or blooking_at ("enum"))
 		      and (this_char != '{'))
 	       {
 		  if (is_continuation)

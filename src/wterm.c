@@ -428,12 +428,12 @@ static SLang_Intrin_Fun_Type Jed_WinGUI_Table[] =
     * it checks menu item, otherwise it unchecks it
     */
    MAKE_INTRINSIC("w32_enable_menu_item", enable_menu_item, VOID_TYPE, 0),
-   /* Prototype: Void check_menu_item(Integer hmenu, Integer id, Integer flag);
+   /* Prototype: Void enable_menu_item(Integer hmenu, Integer id, Integer flag);
     * This functions enable or disable menu item. If flag is nonzero, the
     * menu item will be enabled, otherwise it'll be disabled.
     */
    MAKE_INTRINSIC("w32_enable_menu_item_pos", enable_menu_item_pos, VOID_TYPE, 0),
-   /* Prototype: Void check_menu_item(Integer hmenu, Integer pos, Integer flag);
+   /* Prototype: Void enable_menu_item(Integer hmenu, Integer pos, Integer flag);
     * This functions enable or disable menu item. If flag is nonzero, the
     * menu item will be enabled, otherwise it'll be disabled.
     */
@@ -2676,7 +2676,8 @@ void enable_menu_item()
        !SLang_pop_integer(&id) &&
        !pop_hmenu(&hmenu))
      {
-	if (-1 == EnableMenuItem(hmenu, id, MF_BYCOMMAND | (flag)?MF_ENABLED:MF_GRAYED))
+	if (-1 == EnableMenuItem(hmenu, id,
+				 MF_BYCOMMAND | ((flag)?MF_ENABLED:MF_DISABLED)))
 	  msg_error("Menu item does not exist");
      }
 }

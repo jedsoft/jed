@@ -83,6 +83,13 @@ int main (int argc, char **argv)
         baz
      };
 
+   typedef enum
+     {
+        X = 1,
+        Y,
+        Z
+     } Foo;
+
    if ((x == 3) ||
        (y == 2)
        || ((z == 1)
