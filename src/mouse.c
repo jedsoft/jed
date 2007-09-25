@@ -400,7 +400,7 @@ static void switch_to_window (Window_Type *w) /*{{{*/
 static int do_mouse_cmd (JMouse_Type *jmouse, unsigned int type) /*{{{*/
 {
    int button, shift;
-   int linenum, column, is_status;
+   int linenum = -1, column, is_status;
    int ret;
    SLang_Name_Type *fun, *default_fun;
    Jed_Buffer_Hook_Type *h = CBuf->buffer_hooks;

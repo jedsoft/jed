@@ -279,7 +279,7 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
      {
 	if (prompt != NULL)
 	  fputs (prompt, stdout);
-	if (deflt != NULL)
+	if ((deflt != NULL) && (*deflt != 0))
 	  fprintf (stdout, "(default %s)", deflt);
 	
 	fflush (stdout);

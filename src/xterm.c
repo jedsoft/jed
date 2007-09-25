@@ -1671,7 +1671,7 @@ static int load_font (char *font) /*{{{*/
 				    XFT_FAMILY, XftTypeString, font, 
 				    XFT_SIZE, XftTypeDouble, XWin->face_size,
 				    XFT_SPACING, XftTypeInteger, XFT_MONO,
-				    0);
+				    NULL);
 	if (XWin->xftfont == NULL) return -1;
 	XWin->font_name = font;
 	XWin->font_height = XWin->xftfont->ascent + XWin->xftfont->descent;

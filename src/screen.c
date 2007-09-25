@@ -298,7 +298,7 @@ static void display_line_numbers (void)
 {
    unsigned int i, imin, imax, linenum;
    Line *line_start, *line;
-   char buf[32], format[32];
+   char buf[32];
    unsigned int c;
 
    imin = JWindow->sy;
@@ -328,7 +328,6 @@ static void display_line_numbers (void)
 	line = line->prev;
      }
 
-   sprintf (format, "%%%dd ", CBuf->line_num_display_size-1);
    SLsmg_set_color (JLINENUM_COLOR);
    c = JWindow->sx;
 
@@ -348,7 +347,7 @@ static void display_line_numbers (void)
 	  }
 
 	SLsmg_gotorc (i, c);
-	sprintf (buf, format, linenum);
+	sprintf (buf, "%*d", CBuf->line_num_display_size-1, linenum);
 	SLsmg_write_string (buf);
 
 	line = line->next;

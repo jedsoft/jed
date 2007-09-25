@@ -130,7 +130,11 @@ define string_rectangle ()
    variable line = what_line ();
    exchange_point_and_mark ();
    variable nlines = what_line () - line + 1;
-   kill_rect ();
+   if (what_column == col)
+     pop_mark (0);
+   else
+     kill_rect ();
+
    goto_line (line);
    loop (nlines)
      {

@@ -142,7 +142,6 @@ if (is_defined ("menu_create_menu_bar") == 1)   %  intrinsic fun
 "mini.sl";
 "edt.sl";
 "emacs.sl";
-"require.sl";
 "site.sl";
 
 $0 = _stkdepth () - $0;

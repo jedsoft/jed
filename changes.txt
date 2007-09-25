@@ -240,6 +240,14 @@ Changes since 0.99-18.0
 105. src/wterm.c: In enable_menu_item, changed MF_GRAYED to MF_DISABLED
      (Joerg Sommer).
 106. lib/cmode.sl: Fixed enum indentation (Marc Butler)
+107. src/misc.c: In BATCH mode read_mini() should not print the
+     default string if it is the empty string (Joerg Sommer).
+108. lib/emacsmsc.sl:string_rectangle: If the rectangle has no width,
+     then do not delete it. (Joerg Sommer).
+109. lib/bytecomp.sl: Removed require.sl from the list of files to be
+     preparsed.
+110. src/xterm.c,screen.c,mouse.c: Small tweaks to avoid gcc warnings
+     (Joerg Sommer).
 
 {{{ Previous Versions 
 
