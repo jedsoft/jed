@@ -248,6 +248,9 @@ Changes since 0.99-18.0
      preparsed.
 110. src/xterm.c,screen.c,mouse.c: Small tweaks to avoid gcc warnings
      (Joerg Sommer).
+111. src/screen.c: A space character was omitted from the new sprintf
+     format string used in #110.  This affect the display of line
+     numbers.
 
 {{{ Previous Versions 
 

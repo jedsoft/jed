@@ -347,7 +347,7 @@ static void display_line_numbers (void)
 	  }
 
 	SLsmg_gotorc (i, c);
-	sprintf (buf, "%*d", CBuf->line_num_display_size-1, linenum);
+	sprintf (buf, "%*d ", CBuf->line_num_display_size-1, linenum);
 	SLsmg_write_string (buf);
 
 	line = line->next;
