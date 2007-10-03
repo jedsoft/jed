@@ -251,6 +251,8 @@ Changes since 0.99-18.0
 111. src/screen.c: A space character was omitted from the new sprintf
      format string used in #110.  This affect the display of line
      numbers.
+112. lib/cmode.sl: Added addtional C indentation variables:
+     C_Label_Offset, C_Label_Indents_Relative, C_Outer_Block_Offset.
 
 {{{ Previous Versions 
 

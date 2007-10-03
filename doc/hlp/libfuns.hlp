@@ -94,6 +94,47 @@ C_Autoinsert_CPP_Comments
 
 --------------------------------------------------------------
 
+C_Switch_Offset
+
+ SYNOPSIS
+  Additional indentation to switch blocks
+
+ USAGE
+  C_Switch_Offset = 0
+
+ DESCRIPTION
+ This function may be used to increase the indentation of code
+ within a `switch' block.  Since this also affects the
+ indentation of `case' statements, `C_Colon_Offset' may
+ need to be adjusted.
+
+ SEE ALSO
+  C_Colon_Offset
+
+--------------------------------------------------------------
+
+C_Outer_Block_Offset
+
+ SYNOPSIS
+  Indentation offset for code in an outer block
+
+ USAGE
+  C_Outer_Block_Offset = 0
+
+ DESCRIPTION
+ The value of this variable may be used to adjust the indentation of
+ code in an outer block.  An outer block is one that has its opening
+ brace at the start of a line.  The values of this variable does not
+ affect the indentation of C++ classes and namespaces.
+
+ EXAMPLE
+
+ NOTES
+
+ SEE ALSO
+
+--------------------------------------------------------------
+
 C_Namespace_Offset
 
  SYNOPSIS
@@ -202,6 +243,45 @@ C_Bracket_Indent
 
  SEE ALSO
   C_INDENT
+
+--------------------------------------------------------------
+
+C_Label_Indents_Relative
+
+ SYNOPSIS
+  Set labels to indent relative to block
+
+ USAGE
+  C_Label_Indents_Relative = 0;
+
+ DESCRIPTION
+ If the value of this variable is non-zero, then label statements
+ (goto targets) will get indented by the value of the
+ `C_Label_Offset' variable relative to the enclosing block.
+ Otherwise, `C_Label_Offset' will be interpreted as an absolute
+ offset from the beginning of the line.
+
+ SEE ALSO
+  C_Label_Offset, C_Colon_Offset
+
+--------------------------------------------------------------
+
+C_Label_Offset
+
+ SYNOPSIS
+  Controls the indentation of label statements
+
+ USAGE
+  C_Label_Offset = 0;
+
+ DESCRIPTION
+ The value of this variable controls the indentation of (goto) label
+ statements.  It is interpreted as an absolute or relative offset
+ according to the `C_Label_Indents_Relative' variable.  It does
+ not affect the indentation of `case' statements.
+
+ SEE ALSO
+  C_Label_Indents_Relative, C_Colon_Offset
 
 --------------------------------------------------------------
 
