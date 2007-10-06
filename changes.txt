@@ -253,6 +253,11 @@ Changes since 0.99-18.0
      numbers.
 112. lib/cmode.sl: Added addtional C indentation variables:
      C_Label_Offset, C_Label_Indents_Relative, C_Outer_Block_Offset.
+113. doc/tm/hooks.tm: Added documentation for _jed_run_hooks (Joerg
+     Sommer).
+114. src/wterm.c: Corrected a typo in the documentation for
+     w32_enable_menu_item_pos (Joerg Sommer).
+115. src/text.c: Modified the wrapping algorithm for better performance.
 
 {{{ Previous Versions 
 

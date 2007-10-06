@@ -433,7 +433,7 @@ static SLang_Intrin_Fun_Type Jed_WinGUI_Table[] =
     * menu item will be enabled, otherwise it'll be disabled.
     */
    MAKE_INTRINSIC("w32_enable_menu_item_pos", enable_menu_item_pos, VOID_TYPE, 0),
-   /* Prototype: Void enable_menu_item(Integer hmenu, Integer pos, Integer flag);
+   /* Prototype: Void enable_menu_item_pos(Integer hmenu, Integer pos, Integer flag);
     * This functions enable or disable menu item. If flag is nonzero, the
     * menu item will be enabled, otherwise it'll be disabled.
     */

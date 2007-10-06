@@ -101,7 +101,8 @@ static unsigned char *text_format_line(void) /*{{{*/
 
 /*}}}*/
 
-static int wrap_line1(int format) /*{{{*/
+/* returns 0 if to wrapped, 1 if wrapped, -1 if error */
+static int wrap_line1(int format, int trim) /*{{{*/
 {
    unsigned char *p, *pmin;
    int col;
@@ -118,12 +119,11 @@ static int wrap_line1(int format) /*{{{*/
    if (pmin == NULL)
      return -1;
 
-   eol();
-   col = calculate_column();
-   if (col < Jed_Wrap_Column)
-     return -1;
-
    point_column(Jed_Wrap_Column - 1);
+   col = calculate_column();
+   if ((col < Jed_Wrap_Column) && eolp ())
+     return 0;
+
    p = CLine->data + Point;
 
    while(p > pmin)
@@ -141,15 +141,16 @@ static int wrap_line1(int format) /*{{{*/
 	     if ((*pmin == ' ') || (*pmin == '\t')) break;
 	     pmin++;
 	  }
-	if (p == pmin) return -1;
+	if (p == pmin) return 0;
 	p = pmin;
      }
 
    jed_position_point (p);
-   (void)jed_trim_whitespace();
+   if (trim) 
+     (void)jed_trim_whitespace();
    (void) jed_insert_newline();
    jed_up(1);
-   return 0;
+   return 1;
 }
 
 /*}}}*/
@@ -158,7 +159,7 @@ int wrap_line (int format) /*{{{*/
 {
    int ret;
    push_spot();
-   ret = wrap_line1(format);
+   ret = wrap_line1(format, 1);
    pop_spot();
    return ret;
 }
@@ -325,6 +326,23 @@ int text_format_paragraph () /*{{{*/
      return 0;
 
    get_current_indent (&col);
+
+   bol ();
+   while (CLine != end)
+     {
+	if (-1 == wrap_line1 (0, 0))
+	  {
+	     pop_spot ();
+	     return -1;
+	  }
+	if (0 == jed_down (1))
+	  break;
+     }
+
+   while ((CLine != beg) 
+	  && (0 != jed_up (1)))
+     ;
+
    if (col + 1 >= Jed_Wrap_Column)
      indent_to (n);
 
@@ -333,15 +351,24 @@ int text_format_paragraph () /*{{{*/
    /* Now loop formatting as we go until the end is reached */
    while(CLine != end)
      {
+	int status;
+
 	eol();
 	if (CLine != beg) indent_to(n);
-	if (-1 != wrap_line1(1))
+	status = wrap_line1(1, 1);
+	if (status == -1)
+	  {
+	     pop_spot ();
+	     return -1;
+	  }
+	if (status == 1)
 	  {
 	     (void) jed_down(1);
 	     indent_to(n);
 	     continue;
 	  }
-	else if (CLine->next == end) break;
+	else if (CLine->next == end)
+	  break;
 
 	next = CLine->next;
 	if (next != end)

@@ -47,6 +47,27 @@
 \seealso{add_to_hook, append_to_hook}
 \done
 
+\function{_jed_run_hooks}
+\synopsis{Execute the functions in a hook chain}
+\usage{_jed_run_hooks (String_Type hook_name, Integer_Type mode [,Array_Type args])}
+\description
+ \ifun{_jed_run_hooks} executes the functions registered for \var{hook_name}.
+ The argument \exmp{mode} defines which functions are called:
+#v+
+  JED_HOOKS_RUN_ALL
+     all functions; no function should return a value.
+  JED_HOOKS_RUN_UNTIL_0
+     Run until a function returns the value 0; every function must return 
+     an integer value.
+  JED_HOOKS_RUN_UNTIL_NON_0
+     Run until a function returns a non-zero
+      value; every function must return an integer value.
+#v-
+ If the third argument is given, then it must be an array of strings
+ to be passed as arguments to the the hook-functions. 
+\seealso{append_to_hook, add_to_hook}
+\done
+
 \function{set_buffer_hook}
 \synopsis{Set current buffer hook "hook" to function "f"}
 \usage{set_buffer_hook (String_Type hook, String_Type f)}
