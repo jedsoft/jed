@@ -467,7 +467,7 @@ int ins_char_cmd (void)
 	    && (-1 == jed_insert_byte (ch)))
 	  return -1;
 
-	if (-1 == wrap_line(0))	       /* do not format--- just wrap */
+	if (1 != wrap_line(0))	       /* do not format--- just wrap */
 	  return -1;		       /* line isn't wrapable */
 
 	/* There is a bug involving wrapping a very long line containing
@@ -475,8 +475,8 @@ int ins_char_cmd (void)
 	 * arounds the bug.
 	 */
 	if ((this_line_num == LineNum)
-	    && (ch == ' ')
-	    && (calculate_column () > wrap))
+	    && (ch == ' '))
+	    /* && (calculate_column () > wrap)) */
 	  {
 	     if (0 == jed_right (1))
 	       newline ();
@@ -985,8 +985,8 @@ int indent_line ()
    
    /* CHECK_READ_ONLY */
      
-     if (CLine == CBuf->beg) return(0);
-   
+   if (CLine == CBuf->beg) return(0);
+
    push_spot();
    CLine = CLine->prev;
    get_current_indent (&n);

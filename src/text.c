@@ -113,8 +113,8 @@ static int wrap_line1(int format, int trim) /*{{{*/
      {
 	bol ();
 	/* Ignore leading whitespace */
-	/* pmin = jed_skip_whitespace (); */
-	pmin = CLine->data;
+	pmin = jed_skip_whitespace ();
+	/* pmin = CLine->data; */
      }
    if (pmin == NULL)
      return -1;
@@ -306,7 +306,7 @@ static int mark_paragraph (Line **begp, Line **endp)
 int text_format_paragraph () /*{{{*/
 {
    unsigned char *p;
-   int n, col;
+   int indent_col, col;
    Line *end, *beg, *next;
    Jed_Buffer_Hook_Type *h = CBuf->buffer_hooks;
 
@@ -318,14 +318,15 @@ int text_format_paragraph () /*{{{*/
 
    push_spot();
    
-   get_current_indent(&n);
-   if (n + 1 >= Jed_Wrap_Column)
-     n = 0;
+   get_current_indent(&indent_col);
+   if (indent_col + 1 >= Jed_Wrap_Column)
+     indent_col = 0;
 
    if (-1 == mark_paragraph (&beg, &end))
      return 0;
 
    get_current_indent (&col);
+   /* col is the indentation of the first line of the paragraph-- don't change it */
 
    bol ();
    while (CLine != end)
@@ -344,7 +345,7 @@ int text_format_paragraph () /*{{{*/
      ;
 
    if (col + 1 >= Jed_Wrap_Column)
-     indent_to (n);
+     indent_to (indent_col);
 
    bol ();
 
@@ -353,8 +354,8 @@ int text_format_paragraph () /*{{{*/
      {
 	int status;
 
-	eol();
-	if (CLine != beg) indent_to(n);
+	/* eol(); */
+	if (CLine != beg) indent_to(indent_col);
 	status = wrap_line1(1, 1);
 	if (status == -1)
 	  {
@@ -364,7 +365,7 @@ int text_format_paragraph () /*{{{*/
 	if (status == 1)
 	  {
 	     (void) jed_down(1);
-	     indent_to(n);
+	     /* indent_to(indent_col); */
 	     continue;
 	  }
 	else if (CLine->next == end)
