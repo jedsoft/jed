@@ -258,6 +258,12 @@ Changes since 0.99-18.0
 114. src/wterm.c: Corrected a typo in the documentation for
      w32_enable_menu_item_pos (Joerg Sommer).
 115. src/text.c: Modified the wrapping algorithm for better performance.
+116. src/text.c: Change #115 introduced a bug triggered when the
+     length of the "word" is larger than the value of the wrap column.
+     (Paul Boekholt).
+117. src/cmds.c: When inserting multiple spaces beyond the wrap
+     column, the editing point would always stay on the current line
+     instead of moving to the next line after the wrap.
 
 {{{ Previous Versions 
 
