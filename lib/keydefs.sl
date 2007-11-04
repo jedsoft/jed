@@ -216,6 +216,17 @@ variable Key_Shift_Right= setkey_via_terminfo ("%i", "\e[c");
 variable Key_Shift_Left	= setkey_via_terminfo ("#4", "\e[d");
 
 variable Key_Shift_Ins	= setkey_via_terminfo ("#3", "\e[2$");
+if (Key_Shift_Ins == "\e2$")
+{
+   % Work-around rxvt-terminfo bug
+   $1 = getenv ("TERM");
+   if ($1 != NULL)
+     {
+	if (is_substr ($1, "rxvt"))
+	  Key_Shift_Ins = "\e[2$";
+     }
+}
+
 variable Key_Shift_Del	= setkey_via_terminfo ("*4", "\e[3$");
 variable Key_Shift_Home	= setkey_via_terminfo ("#2", "\e[1$");
 variable Key_Shift_End	= setkey_via_terminfo ("*7", "\e[4$");

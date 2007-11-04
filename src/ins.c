@@ -259,7 +259,9 @@ int jed_prepare_for_modification (int check_line_readonly)
 	       }
 	  }
 
-	(void) jed_lock_buffer_file (CBuf);
+	if ((-1 == jed_lock_buffer_file (CBuf))
+	    && SLang_get_error ())
+	  return -1;
      }
 #if 0
    if (SLang_get_error ())

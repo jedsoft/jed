@@ -264,6 +264,12 @@ Changes since 0.99-18.0
 117. src/cmds.c: When inserting multiple spaces beyond the wrap
      column, the editing point would always stay on the current line
      instead of moving to the next line after the wrap.
+118. lib/keydefs.sl: Work around an incorrect rxvt terminfo entry for
+     Shift-Insert.
+119. src/ins.c: Handle return value from jed_lock_buffer_file to avoid
+     modifying a locked buffer.
+120. configure: Updated configure script using the latest aclocal.m4
+     file.
 
 {{{ Previous Versions 
 

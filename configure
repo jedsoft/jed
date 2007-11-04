@@ -701,6 +701,7 @@ X_EXTRA_LIBS
 SRCDIR
 OBJDIR
 ELFDIR
+nc5config
 TERMCAP
 MISC_TERMINFO_DIRS
 SLANG_LIB
@@ -6517,20 +6518,104 @@ OBJDIR=$SRCDIR/"$ARCH"objs
 ELFDIR=$SRCDIR/elf"$ARCH"objs
 
 
-{ echo "$as_me:$LINENO: checking for Terminfo" >&5
-echo $ECHO_N "checking for Terminfo... $ECHO_C" >&6; }
-MISC_TERMINFO_DIRS="$FINKPREFIX/share/terminfo"
-if test ! -d $MISC_TERMINFO_DIRS
-then
-   MISC_TERMINFO_DIRS=""
+# Extract the first word of "ncurses5-config", so it can be a program name with args.
+set dummy ncurses5-config; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_path_nc5config+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $nc5config in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_nc5config="$nc5config" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path_nc5config="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_path_nc5config" && ac_cv_path_nc5config="no"
+  ;;
+esac
+fi
+nc5config=$ac_cv_path_nc5config
+if test -n "$nc5config"; then
+  { echo "$as_me:$LINENO: result: $nc5config" >&5
+echo "${ECHO_T}$nc5config" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
 fi
 
-JD_Terminfo_Dirs="/usr/lib/terminfo \
-                 /usr/share/terminfo \
-                 /usr/share/lib/terminfo \
-		 /usr/local/lib/terminfo \
-		 $MISC_TERMINFO_DIRS"
 
+if test "$nc5config" = "no"
+then
+  # Extract the first word of "ncurses5w-config", so it can be a program name with args.
+set dummy ncurses5w-config; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_path_nc5config+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $nc5config in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_nc5config="$nc5config" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path_nc5config="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_path_nc5config" && ac_cv_path_nc5config="no"
+  ;;
+esac
+fi
+nc5config=$ac_cv_path_nc5config
+if test -n "$nc5config"; then
+  { echo "$as_me:$LINENO: result: $nc5config" >&5
+echo "${ECHO_T}$nc5config" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+fi
+{ echo "$as_me:$LINENO: checking for terminfo" >&5
+echo $ECHO_N "checking for terminfo... $ECHO_C" >&6; }
+if test "$nc5config" != "no"
+then
+   MISC_TERMINFO_DIRS=`$nc5config --terminfo`
+else
+   MISC_TERMINFO_DIRS=""
+fi
+JD_Terminfo_Dirs="$MISC_TERMINFO_DIRS \
+                  /usr/lib/terminfo \
+                  /usr/share/terminfo \
+                  /usr/share/lib/terminfo \
+		  /usr/local/lib/terminfo"
 TERMCAP=-ltermcap
 
 for terminfo_dir in $JD_Terminfo_Dirs
@@ -6578,14 +6663,15 @@ EOF
 
 
 
-    { echo "$as_me:$LINENO: checking for the slang library and header files " >&5
-echo $ECHO_N "checking for the slang library and header files ... $ECHO_C" >&6; }
 
 
 
  jd_slang_include_dir=""
  jd_slang_library_dir=""
- jd_with_slang_library=""
+ if test X"$jd_with_slang_library" = X
+ then
+   jd_with_slang_library=""
+ fi
 
 
 # Check whether --with-slang was given.
@@ -6601,15 +6687,15 @@ fi
      jd_with_slang_library="no"
     ;;
    x)
-    { { echo "$as_me:$LINENO: error: --with-slang requires a value-- try yes or no" >&5
-echo "$as_me: error: --with-slang requires a value-- try yes or no" >&2;}
-   { (exit 1); exit 1; }; }
+        jd_with_slang_library="yes"
     ;;
    xunspecified)
     ;;
    xyes)
+    jd_with_slang_library="yes"
     ;;
    *)
+    jd_with_slang_library="yes"
     jd_slang_include_dir="$jd_with_slang_arg"/include
     jd_slang_library_dir="$jd_with_slang_arg"/lib
     ;;
@@ -6634,6 +6720,7 @@ echo "$as_me: error: --with-slanglib requres a value" >&2;}
    { (exit 1); exit 1; }; }
     ;;
    *)
+    jd_with_slang_library="yes"
     jd_slang_library_dir="$jd_with_slanglib_arg"
     ;;
  esac
@@ -6657,14 +6744,16 @@ echo "$as_me: error: --with-slanginc requres a value" >&2;}
    xno)
      ;;
    *)
+    jd_with_slang_library="yes"
     jd_slang_include_dir="$jd_with_slanginc_arg"
    ;;
  esac
 
-  if test X"$jd_with_slang_library" = X
+  { echo "$as_me:$LINENO: checking for the slang library and header files " >&5
+echo $ECHO_N "checking for the slang library and header files ... $ECHO_C" >&6; }
+  if test X"$jd_with_slang_library" != Xno
   then
     jd_slang_inc_file=
-    jd_with_slang_library="yes"
 
     if test "X$jd_slang_inc_file" = "X"
     then
@@ -6747,10 +6836,11 @@ echo "$as_me: error: --with-slanginc requres a value" >&2;}
     fi
   fi
 
-  if test "$jd_with_slang_library" = "yes"
+  if test X"jd_slang_include_dir" != X -a "$jd_slang_library_dir" != X
   then
     { echo "$as_me:$LINENO: result: yes: $jd_slang_library_dir and $jd_slang_include_dir" >&5
 echo "${ECHO_T}yes: $jd_slang_library_dir and $jd_slang_include_dir" >&6; }
+    jd_with_slang_library="yes"
             SLANG_LIB=-L$jd_slang_library_dir
     if test "X$jd_slang_library_dir" = "X/usr/lib"
     then
@@ -6816,6 +6906,7 @@ fi
   else
     { echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
+    jd_with_slang_library="no"
     SLANG_INC=""
     SLANG_LIB=""
   fi
@@ -7607,6 +7698,7 @@ X_EXTRA_LIBS!$X_EXTRA_LIBS$ac_delim
 SRCDIR!$SRCDIR$ac_delim
 OBJDIR!$OBJDIR$ac_delim
 ELFDIR!$ELFDIR$ac_delim
+nc5config!$nc5config$ac_delim
 TERMCAP!$TERMCAP$ac_delim
 MISC_TERMINFO_DIRS!$MISC_TERMINFO_DIRS$ac_delim
 SLANG_LIB!$SLANG_LIB$ac_delim
@@ -7615,7 +7707,6 @@ JED_ROOT!$JED_ROOT$ac_delim
 PROGRAM_OFILES!$PROGRAM_OFILES$ac_delim
 PROGRAM_CFILES!$PROGRAM_CFILES$ac_delim
 PROGRAM_HFILES!$PROGRAM_HFILES$ac_delim
-PROGRAM_OBJECTS!$PROGRAM_OBJECTS$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -7657,12 +7748,13 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+PROGRAM_OBJECTS!$PROGRAM_OBJECTS$ac_delim
 PROGRAM_ELFOBJECTS!$PROGRAM_ELFOBJECTS$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 3; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 4; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

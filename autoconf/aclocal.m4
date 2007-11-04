@@ -1,4 +1,6 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.2.2-1: JD_WITH_LIBRARY bug-fix
+dnl# 0.2.2:  Use ncurses5-config to search for terminfo dirs.
 dnl# 0.2.1:  Add .dll.a to list of extensions to when searching for libs (cygwin)
 dnl# 0.2.0:  Added install target name and more fixes for cygwin
 dnl# 0.1.12: Improved support for cygwin
@@ -9,7 +11,6 @@ dnl# Version 0.1.8: Add rpath support for OpenBSD
 dnl# Version 0.1.7: removed "-K pic" from IRIX compiler lines
 dnl# Version 0.1.6: Added cygwin module support
 dnl# Version 0.1.5: Added gcc version-script support.
-dnl#
 
 AC_DEFUN(JD_INIT,     dnl#{{{
 [
@@ -458,19 +459,23 @@ dnl#}}}
 
 AC_DEFUN(JD_TERMCAP, dnl#{{{
 [
-AC_MSG_CHECKING(for Terminfo)
-MISC_TERMINFO_DIRS="$FINKPREFIX/share/terminfo"
-if test ! -d $MISC_TERMINFO_DIRS
+AC_PATH_PROG(nc5config, ncurses5-config, no)
+if test "$nc5config" = "no"
 then
+  AC_PATH_PROG(nc5config, ncurses5w-config, no)
+fi
+AC_MSG_CHECKING(for terminfo)
+if test "$nc5config" != "no"
+then
+   MISC_TERMINFO_DIRS=`$nc5config --terminfo`
+else
    MISC_TERMINFO_DIRS=""
 fi
-
-JD_Terminfo_Dirs="/usr/lib/terminfo \
-                 /usr/share/terminfo \
-                 /usr/share/lib/terminfo \
-		 /usr/local/lib/terminfo \
-		 $MISC_TERMINFO_DIRS"
-
+JD_Terminfo_Dirs="$MISC_TERMINFO_DIRS \
+                  /usr/lib/terminfo \
+                  /usr/share/terminfo \
+                  /usr/share/lib/terminfo \
+		  /usr/local/lib/terminfo"
 TERMCAP=-ltermcap
 
 for terminfo_dir in $JD_Terminfo_Dirs
@@ -747,7 +752,10 @@ AC_DEFUN(JD_WITH_LIBRARY_PATHS, dnl#{{{
  JD_UPPERCASE($1,JD_ARG1)
  jd_$1_include_dir=""
  jd_$1_library_dir=""
- jd_with_$1_library=""
+ if test X"$jd_with_$1_library" = X
+ then 
+   jd_with_$1_library=""
+ fi
 
  AC_ARG_WITH($1,
   [  --with-$1=DIR      Use DIR/lib and DIR/include for $1],
@@ -758,13 +766,16 @@ AC_DEFUN(JD_WITH_LIBRARY_PATHS, dnl#{{{
      jd_with_$1_library="no"
     ;;
    x)
-    AC_MSG_ERROR(--with-$1 requires a value-- try yes or no)
+    dnl# AC_MSG_ERROR(--with-$1 requires a value-- try yes or no)
+    jd_with_$1_library="yes"
     ;;
    xunspecified)
     ;;
    xyes)
+    jd_with_$1_library="yes"
     ;;
    *)
+    jd_with_$1_library="yes"
     jd_$1_include_dir="$jd_with_$1_arg"/include
     jd_$1_library_dir="$jd_with_$1_arg"/lib
     ;;
@@ -782,6 +793,7 @@ AC_DEFUN(JD_WITH_LIBRARY_PATHS, dnl#{{{
     AC_MSG_ERROR(--with-$1lib requres a value)
     ;;
    *)
+    jd_with_$1_library="yes"
     jd_$1_library_dir="$jd_with_$1lib_arg"
     ;;
  esac
@@ -798,6 +810,7 @@ AC_DEFUN(JD_WITH_LIBRARY_PATHS, dnl#{{{
    xno)
      ;;
    *)
+    jd_with_$1_library="yes"
     jd_$1_include_dir="$jd_with_$1inc_arg"
    ;;
  esac
@@ -814,13 +827,13 @@ dnl#  jd_$1_library_dir
 AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
 [
   AC_REQUIRE([JD_EXPAND_PREFIX])dnl
-  AC_MSG_CHECKING(for the $1 library and header files $2)
   dnl JD_UPPERCASE($1,JD_ARG1)
   JD_WITH_LIBRARY_PATHS($1)
-  if test X"$jd_with_$1_library" = X
+  AC_MSG_CHECKING(for the $1 library and header files $2)
+  if test X"$jd_with_$1_library" != Xno
   then
     jd_$1_inc_file=$2
-    jd_with_$1_library="yes"
+    dnl# jd_with_$1_library="yes"
 
     if test "X$jd_$1_inc_file" = "X"
     then
@@ -903,9 +916,10 @@ AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
     fi
   fi
 
-  if test "$jd_with_$1_library" = "yes"
+  if test X"jd_$1_include_dir" != X -a "$jd_$1_library_dir" != X
   then
     AC_MSG_RESULT(yes: $jd_$1_library_dir and $jd_$1_include_dir)
+    jd_with_$1_library="yes"
     dnl#  Avoid using /usr/lib and /usr/include because of problems with
     dnl#  gcc on some solaris systems.
     JD_ARG1[]_LIB=-L$jd_$1_library_dir
@@ -923,6 +937,7 @@ AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
     fi
   else
     AC_MSG_RESULT(no)
+    jd_with_$1_library="no"
     JD_ARG1[]_INC=""
     JD_ARG1[]_LIB=""
   fi
