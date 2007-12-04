@@ -1143,7 +1143,7 @@ static void dfa_syntax_highlight (register unsigned char *p,
 		       : d->accept);
 	     
 	     
-	     if (accept) 
+	     if (accept != NULL)
 	       {
 		/*
 		 * We have hit an accepting state: record it.
@@ -1153,10 +1153,15 @@ static void dfa_syntax_highlight (register unsigned char *p,
 		  if (last_accept->is_quick)
 		    break;
 	       }
-	     if (!d)
+	     if (d == NULL)
 	       {
 		  if (last_accept == NULL)
-		    q = p + 1;
+		    {
+		       if ((*p & 0x80) && Jed_UTF8_Mode)
+			 q = SLutf8_skip_chars (p, pmax, 1, NULL, 1);
+		       else
+			 q = p + 1;
+		    }
 		  break;		       /* error state */
 	       }
 	  }
