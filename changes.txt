@@ -270,6 +270,8 @@ Changes since 0.99-18.0
      modifying a locked buffer.
 120. configure: Updated configure script using the latest aclocal.m4
      file.
+121. src/dfasyntax.c: Tweaked the code to avoid writing single bytes
+     of a multi-byte character.
 
 {{{ Previous Versions 
 
