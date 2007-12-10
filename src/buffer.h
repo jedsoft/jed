@@ -393,6 +393,7 @@ extern void check_line(void);
 
 extern int jed_set_buffer_hook (Buffer *, char *, SLang_Name_Type *);
 extern int jed_unset_buffer_hook (Buffer *, char *);
+extern SLang_Name_Type *jed_get_buffer_hook (Buffer *, char *);
 
 extern void jed_set_buffer_flags (Buffer *, unsigned int);
 extern Buffer *MiniBuffer;

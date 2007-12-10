@@ -68,12 +68,40 @@
 \seealso{append_to_hook, add_to_hook}
 \done
 
-\function{set_buffer_hook}
-\synopsis{Set current buffer hook "hook" to function "f"}
-\usage{set_buffer_hook (String_Type hook, String_Type f)}
+
+\function{get_buffer_hook}
+\synopsis{Get the value of a specified buffer hook}
+\usage{Ref_Type get_buffer_hook (String_Type hook_name)}
 \description
-  Set current buffer hook \var{hook} to function \var{f}. \var{f} is a user
-  defined S-Lang function.  Currently supported hooks include:
+  The \ifun{get_buffer_hook} function returns the value of the
+  specified hook name as a function reference.  If no hook was defined
+  or the hook does not exist, then \NULL will be returned.  See the
+  documentation for \ifun{set_buffer_hook} for a list of hook-names.
+\example
+#v+
+   % temporarily unset the indent hook
+   fun = get_buffer_hook ("indent_hook");
+   unset_buffer_hook ("indent_hook");
+      .
+      .
+   % restore the indent hook
+   if (fun != NULL)
+     set_buffer_hook ("indent_hook", fun);
+#v-
+\seealso{set_buffer_hook, unset_buffer_hook}
+\done
+
+\function{set_buffer_hook}
+\synopsis{Set a specified buffer hook}
+\usage{set_buffer_hook (String_Type hook_name, Ref_Type func)}
+\description
+  This function sets the specified hook for the current buffer to the
+  function \exmp{func}.  The value of \exmp{func} may either be a
+  string or a function reference (e.g., \exmp{&my_hook}).  The use of
+  a function reference is preferred since that allows hooks to be
+  static or private functions.
+
+  Currently supported hooks include:
 #v+
          "par_sep"  -- returns zero if the current line does not
               constitute the beginning or end of a paragraph.
@@ -111,16 +139,17 @@
          "format_paragraph_hook"
 #v-
  See the file jed/doc/hooks.txt for more information and examples.
-\seealso{unset_buffer_hook, mouse_set_default_hook}
+\seealso{unset_buffer_hook, mouse_set_default_hook, get_buffer_hook}
 \done
 
 \function{unset_buffer_hook}
 \synopsis{Remove a buffer hook}
 \usage{unset_buffer_hook (String_Type name)}
 \description
-  The \var{unset_buffer_hook} function removes a specified buffer hook
-  from the current buffer.  If \var{name} is the empty string, then
-  all the buffer hooks of the current buffer will be unset.
-\seealso{set_buffer_hook}
+  The \ifun{unset_buffer_hook} function removes a specified buffer hook
+  from the current buffer.  If \exmp{name} is the empty string, then
+  all the buffer hooks of the current buffer will be unset.  See the
+  documentation for \ifun{set_buffer_hook} for a list of hook-names.
+\seealso{set_buffer_hook, get_buffer_hook}
 \done
 

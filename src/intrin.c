@@ -313,14 +313,25 @@ static void set_buffer_hook (void) /*{{{*/
      return;
 
    if (-1 == SLang_pop_slstring (&s))
-     return;
+     {
+	SLang_free_function (f);
+	return;
+     }
 
-   (void) jed_set_buffer_hook (CBuf, s, f);
+   if (-1 == jed_set_buffer_hook (CBuf, s, f))
+     SLang_free_function (f);
 
    SLang_free_slstring (s);
 }
 
 /*}}}*/
+
+static void get_buffer_hook (char *name)
+{
+   SLang_Name_Type *nt = jed_get_buffer_hook (CBuf, name);
+   (void) SLang_push_function (nt);
+   SLang_free_function (nt);
+}
 
 static void unset_buffer_hook (char *h) /*{{{*/
 {
@@ -820,6 +831,7 @@ static SLang_Intrin_Fun_Type Jed_Intrinsics [] = /*{{{*/
    MAKE_INTRINSIC_0("prefix_argument",  do_prefix_argument, VOID_TYPE),
    MAKE_INTRINSIC_I("set_prefix_argument", set_prefix_argument, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("set_buffer_hook", set_buffer_hook, VOID_TYPE),
+   MAKE_INTRINSIC_S("get_buffer_hook", get_buffer_hook, VOID_TYPE),
    MAKE_INTRINSIC_S("unset_buffer_hook", unset_buffer_hook, VOID_TYPE),
    MAKE_INTRINSIC_SSS("insert_file_region", insert_file_region, INT_TYPE),
    MAKE_INTRINSIC_SSI("search_file", search_file, INT_TYPE),

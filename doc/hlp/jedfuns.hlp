@@ -1474,17 +1474,82 @@ remove_from_hook
 
 --------------------------------------------------------------
 
+_jed_run_hooks
+
+ SYNOPSIS
+  Execute the functions in a hook chain
+
+ USAGE
+  _jed_run_hooks (String_Type hook_name, Integer_Type mode [,Array_Type args])
+
+ DESCRIPTION
+ `_jed_run_hooks' executes the functions registered for `hook_name'.
+ The argument `mode' defines which functions are called:
+
+  JED_HOOKS_RUN_ALL
+     all functions; no function should return a value.
+  JED_HOOKS_RUN_UNTIL_0
+     Run until a function returns the value 0; every function must return
+     an integer value.
+  JED_HOOKS_RUN_UNTIL_NON_0
+     Run until a function returns a non-zero
+      value; every function must return an integer value.
+
+ If the third argument is given, then it must be an array of strings
+ to be passed as arguments to the the hook-functions.
+
+ SEE ALSO
+  append_to_hook, add_to_hook
+
+--------------------------------------------------------------
+
+get_buffer_hook
+
+ SYNOPSIS
+  Get the value of a specified buffer hook
+
+ USAGE
+  Ref_Type get_buffer_hook (String_Type hook_name)
+
+ DESCRIPTION
+  The `get_buffer_hook' function returns the value of the
+  specified hook name as a function reference.  If no hook was defined
+  or the hook does not exist, then NULL will be returned.  See the
+  documentation for `set_buffer_hook' for a list of hook-names.
+
+ EXAMPLE
+
+   % temporarily unset the indent hook
+   fun = get_buffer_hook ("indent_hook");
+   unset_buffer_hook ("indent_hook");
+      .
+      .
+   % restore the indent hook
+   if (fun != NULL)
+     set_buffer_hook ("indent_hook", fun);
+
+
+ SEE ALSO
+  set_buffer_hook, unset_buffer_hook
+
+--------------------------------------------------------------
+
 set_buffer_hook
 
  SYNOPSIS
-  Set current buffer hook "hook" to function "f"
+  Set a specified buffer hook
 
  USAGE
-  set_buffer_hook (String_Type hook, String_Type f)
+  set_buffer_hook (String_Type hook_name, Ref_Type func)
 
  DESCRIPTION
-  Set current buffer hook `hook' to function `f'. `f' is a user
-  defined S-Lang function.  Currently supported hooks include:
+  This function sets the specified hook for the current buffer to the
+  function `func'.  The value of `func' may either be a
+  string or a function reference (e.g., `&my_hook').  The use of
+  a function reference is preferred since that allows hooks to be
+  static or private functions.
+
+  Currently supported hooks include:
 
          "par_sep"  -- returns zero if the current line does not
               constitute the beginning or end of a paragraph.
@@ -1524,7 +1589,7 @@ set_buffer_hook
  See the file jed/doc/hooks.txt for more information and examples.
 
  SEE ALSO
-  unset_buffer_hook, mouse_set_default_hook
+  unset_buffer_hook, mouse_set_default_hook, get_buffer_hook
 
 --------------------------------------------------------------
 
@@ -1539,10 +1604,11 @@ unset_buffer_hook
  DESCRIPTION
   The `unset_buffer_hook' function removes a specified buffer hook
   from the current buffer.  If `name' is the empty string, then
-  all the buffer hooks of the current buffer will be unset.
+  all the buffer hooks of the current buffer will be unset.  See the
+  documentation for `set_buffer_hook' for a list of hook-names.
 
  SEE ALSO
-  set_buffer_hook
+  set_buffer_hook, get_buffer_hook
 
 --------------------------------------------------------------
 

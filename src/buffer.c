@@ -1582,6 +1582,24 @@ int jed_set_buffer_hook (Buffer *buffer, char *name, SLang_Name_Type *nt)
    return 0;
 }
 
+SLang_Name_Type *jed_get_buffer_hook (Buffer *buffer, char *name)
+{
+   SLang_Name_Type **ntp;
+   Jed_Buffer_Hook_Type *b;
+
+   if (buffer == NULL)
+     return NULL;
+
+   b = buffer->buffer_hooks;
+
+   if ((b == NULL)
+       || (NULL == (ntp = find_buffer_hook (b, name)))
+       || (*ntp == NULL))
+     return NULL;
+
+   return SLang_copy_function (*ntp);
+}
+
 static void delete_buffer_hooks (Jed_Buffer_Hook_Type *h)
 {
    if (h == NULL)
