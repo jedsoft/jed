@@ -93,73 +93,70 @@ define tex_isolate_paragraph ()
 
 define tex_blink_dollar ()
 {
-   variable p, unmatched, p1, n, n1;
-   variable pnow = _get_point (), pmax;
-   
+   variable pdollar = create_user_mark ();
+
    insert_char ('$');
    if (blooking_at ("\\$")) return;
-   push_spot ();
+
+   push_spot ();   
+   EXIT_BLOCK
+     {
+	pop_spot ();
+     }
+
+   Tex_Ignore_Comment++;
+   backward_paragraph ();
+   Tex_Ignore_Comment--;
    
-   tex_isolate_paragraph ();	       %  spot pushed
-   pop_spot (); 
-   n = what_line ();
-   bob ();
-   
-   unmatched = 0;
+   variable pmatch = NULL;
    
    while (fsearch_char ('$'))
      {
-	p = _get_point ();
-	pmax = 0x7FFF;
+	variable tmp_match = create_user_mark ();
+	if (tmp_match >= pdollar)
+	  break;
+
 	if (tex_is_comment ())
 	  {
-	     pmax = _get_point ();
+	     % point left at comment start
+	     if (create_user_mark () < tmp_match)
+	       {
+		  % match in comment
+		  eol ();
+		  continue;
+	       }
 	  }
-	_set_point (p);
-	
-	if ((n == what_line ()) and (pnow < pmax)) pmax = pnow;
-	
-	if (p >= pmax)
-	  {
-	     if (n == what_line ()) break;
-	     eol ();
-	     continue;
-	  }
-	
+	goto_user_mark (tmp_match);
+
 	if (blooking_at("\\")) 
 	  {
 	     go_right_1 ();
 	     continue;
 	  }
 	
-	!if (unmatched) 
-	  {
-	     p1 = p;
-	     n1 = what_line ();
-	  }
-	
-	unmatched = not(unmatched);
+	if (pmatch == NULL)
+	  pmatch = tmp_match;
+	else
+	  pmatch = NULL;
+
 	go_right_1 ();
      }
-   
-   if (unmatched)
+
+   if (pmatch == NULL)
+     return;
+
+   variable line = what_line ();
+   goto_user_mark (pmatch);
+   variable match_line = what_line ();
+   if (line - match_line >= window_info ('r'))
      {
-	n = n - n1;
-	goto_line (n1);
-	_set_point (p1);
-	widen ();
-	if (n >= window_info ('r'))
-	  {
-	     message ("Matches " + line_as_string ());
-	  }
-	else
-	  {
-	     update_sans_update_hook(0);
-	     () = input_pending(10);
-	  }
+	message ("Matches " + line_as_string ());
      }
-   else widen ();
-   pop_spot ();
+   else
+     {
+	update_sans_update_hook(0);
+	() = input_pending(10);
+     }
 }
 
 define tex_insert_quote ()

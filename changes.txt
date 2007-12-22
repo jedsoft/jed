@@ -273,6 +273,8 @@ Changes since 0.99-18.0
 121. src/dfasyntax.c: Tweaked the code to avoid writing single bytes
      of a multi-byte character.
 122. src/buffer.c: Added get_buffer_hook function.
+123. lib/texcom.sl: rewrote tex_blink_dollar to not the use 
+     narrow_to_region.
 
 {{{ Previous Versions 
 
