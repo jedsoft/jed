@@ -1526,7 +1526,9 @@ define make_autosave_filename(dir, file)
 #ifdef VMS
    sprintf ("%s_$%s;1", dir, file);
 #elifdef UNIX
-   sprintf ("%s#%s#", dir, file);
+   file = expand_symlink (path_concat (dir, file));
+   return path_concat (path_dirname (file), 
+		       sprintf ("#%s#", path_basename (file)));
 #else
 # ifdef IBMPC_SYSTEM
    if (pc_system_support_long_filenames (dir))

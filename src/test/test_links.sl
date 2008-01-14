@@ -30,6 +30,25 @@ private define make_layout ()
    () = symlink (Tmp_A_dev, Tmp_B_dev2);
 }
 
+private define test_expand_link ()
+{
+   variable a = expand_symlink (Tmp_B_dev2);
+   variable b = Tmp_A_dev;
+   if (a != b)
+     {
+	vmessage ("expand_symlink returned %S, not %S", a, b);
+	Failed++;
+     }
+
+   a = expand_symlink (Tmp_A_filec);
+   b = Tmp_A_dev_foo;
+   if (a != b)
+     {
+	vmessage ("expand_symlink returned %S, not %S", a, b);
+	Failed++;
+     }   
+}
+
 % Tests read/write of /tmp/jedtest/A/file.c which is a
 % symlink to /tmp/jedtest/A/dev/foo.
 % Then it tries to read 
@@ -117,5 +136,6 @@ make_layout ();
 
 test_link_read_write_1 ();
 test_read_hard_link ();
+test_expand_link ();
 
 exit (Failed);
