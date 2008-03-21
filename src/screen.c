@@ -68,7 +68,7 @@ int Screen_Row = 1;
 int Screen_Col = 1;
 int Cursor_Motion;    /* indicates cursor movement only -1 ^ v +1 < > */
 int Jed_Dollar = '$';
-int Jed_Highlight_Trailing_WS = 0;
+int Jed_Highlight_WS = 0;
 int User_Prefers_Line_Numbers = 0;
 int Mode_Has_Syntax_Highlight;
 int Wants_Syntax_Highlight = 1;	       /* if non-zero, highlight the syntax.
@@ -215,7 +215,7 @@ static void display_line (Line *line, int sy, int sx)
 	  write_syntax_highlight (sy, line, len);
 	else
 	  {
-	     if (Jed_Highlight_Trailing_WS)
+	     if (Jed_Highlight_WS & HIGHLIGHT_WS_TRAILING)
 	       {
 		  unsigned char *pmin = line->data;
 		  unsigned char *pmax = pmin + len;

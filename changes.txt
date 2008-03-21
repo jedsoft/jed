@@ -279,6 +279,17 @@ Changes since 0.99-18.0
      name, expand any symbolic links that occur in the template name.
      This ensures that the autosave file will be created in the actual
      directory of the file and not in the directory of the symbolic link.
+125. lib/cmode.sl: Only indent as a label if the label name is present.
+126. src/syntax.c: Added support for syntax-coloring of tab
+     characters.  To this end, Highlight_Trailing_Whitespace variable
+     has been deprecated in favor of Highlight_Whitespace, which is a
+     new bitmapped variable:
+     
+         Highlight_Whitespace = 1;     % highlight trailing whitespace
+	 Highlight_Whitespace = 2;     % highlight tabs
+	 Highlight_Whitespace = 3;     % highlight tabs and trailing ws
+
+127. lib/digraph.sl: Added support for ä, ë, etc via a ':' prefix.
 
 {{{ Previous Versions 
 

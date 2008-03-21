@@ -56,7 +56,7 @@ define digraph_cmd ()
 	message (Null_String);
      }
 #endif
-   switch (get_mini_response ("Enter an accent character: [/`'^\"~,.]"))
+   switch (get_mini_response ("Enter an accent character: [/`'^\"~,.:]"))
      { case '/':
 #ifdef IBMPC_SYSTEM
 	"aAeEs#yc";
@@ -127,6 +127,15 @@ define digraph_cmd ()
 #else
 	"!?1/";
 	"\d161\d191\d161\d191";
+#endif
+     }
+     {
+      case ':':
+#ifdef IBMPC_SYSTEM
+	return;
+#else
+	"aAeEiIoOuU";
+	"\d228\d196\d235\d203\d239\d207\d246\d214\d252\d220";
 #endif
      }
      { return; }	% default

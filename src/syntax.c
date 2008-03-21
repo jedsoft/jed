@@ -26,6 +26,31 @@ static unsigned char *write_using_color (unsigned char *p,
 					 unsigned char *pmax,
 					 int color)
 {
+   if ((color == 0) && (Jed_Highlight_WS & HIGHLIGHT_WS_TAB))
+     {
+	unsigned char *p1 = p;
+	while (p1 < pmax)
+	  {
+	     if (*p1 != '\t')
+	       {
+		  p1++;
+		  continue;
+	       }
+	     
+	     if (p1 != p)
+	       {
+		  SLsmg_set_color (0);
+		  SLsmg_write_nchars ((char *)p, (unsigned int)(p1-p));
+		  p = p1;
+	       }
+	     while ((p1 < pmax) && (*p1 == '\t'))
+	       p1++;
+	     SLsmg_set_color (JTAB_COLOR);
+	     SLsmg_write_nchars ((char *)p, (unsigned int)(p1-p));
+	     p = p1;
+	  }
+     }
+   /* drop */
    SLsmg_set_color (color);
 #if SLANG_VERSION < 20000
    SLsmg_write_nchars ((char *)p, (unsigned int) (pmax - p));
@@ -273,7 +298,7 @@ static unsigned char *write_whitespace (unsigned char *p, unsigned char *pmax, i
    if (p1 == p)
      return p;
 
-   if ((p1 == pmax) && Jed_Highlight_Trailing_WS)
+   if ((p1 == pmax) && (Jed_Highlight_WS & HIGHLIGHT_WS_TRAILING))
      return write_using_color (p, pmax, trailing_color);
 
    return write_using_color (p, p1, 0);
@@ -431,7 +456,7 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 	     while ((p1 < pmax) && (Char_Syntax[*p1] == 0))
 	       p1++;
 	     if ((p1 != pmax)
-		 || (Jed_Highlight_Trailing_WS == 0))
+		 || ((Jed_Highlight_WS & HIGHLIGHT_WS_TRAILING) == 0))
 	       {
 		  p = write_using_color (p, p1, 0);
 		  continue;

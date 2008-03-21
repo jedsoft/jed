@@ -162,7 +162,7 @@ private define compile_find_next_error_fun (filep, linep, colp)
      }
 
    if (typeof (Error_Regexp) == Ref_Type)
-     return @Error_Regexp (1, filep, linep, colp);
+     return @(Error_Regexp) (1, filep, linep, colp);
 
    bol ();
    !if (re_fsearch (Error_Regexp))

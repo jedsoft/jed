@@ -604,15 +604,46 @@ private define inside_class_or_namespace (bra, name)
 }
 #endif
 
+% This function is called with the point at the end of a line that may
+% be continued onto the next (the one we want to indent).  It returns 1
+% if the next line ought to be indented as a continued one.
+private define is_continuation_line ()
+{
+   if (orelse
+       { blooking_at (";") }	       %  end of statement
+	 { blooking_at ("{") }	       %  start of block
+	 { blooking_at ("}") }	       %  end of block
+	 { blooking_at (":") }	       %  case or label
+	 { bobp () })
+     return 0;
+
+   if (0 == blooking_at (","))
+     return 1;
+
+   % This part is too naive and needs to be expanded -- for now deal
+   % with the common usages of ")," and "},"
+   if (blooking_at ("),")) return 1;
+
+   return not blooking_at ("},");
+}
+
 private define is_label_statement ()
 {
    push_spot ();
+   EXIT_BLOCK
+     {
+	pop_spot ();
+     }
+
    bol_skip_white ();
-   skip_identifier ();
+   variable label = extract_identifier ();
+
+   if ((label == "")
+       or ((label == "finally") and cmode_is_slang_mode ()))
+     return 0;
+
    skip_all_whitespace ();
-   variable is_label = looking_at_char (':');
-   pop_spot ();
-   return is_label;
+   return looking_at_char (':');
 }
 % overview of indentation tracking variables
 %
@@ -748,15 +779,7 @@ define c_indent_line ()
 	       }
 
 	     % Check to see if the line is a continuation
-	     !if (orelse
-		  { blooking_at (";") }
-		    { blooking_at ("{") }
-		    { blooking_at ("}") }
-		    { blooking_at ("),") }
-		    { blooking_at ("},") }
-		    { blooking_at (":") }
-		    { bobp () }
-		 )
+	     if (is_continuation_line ())
 	       {
 		  if (not_indenting_pp or is_continuation)
 		    {

@@ -75,7 +75,11 @@ extern char *Jed_Version_String;
 extern int Jed_Dollar;
 extern int Jed_Num_Screen_Rows;
 extern int Jed_Num_Screen_Cols;
-extern int Jed_Highlight_Trailing_WS;
+
+extern int Jed_Highlight_WS;	       /* bitmapped */
+#define HIGHLIGHT_WS_TRAILING	1
+#define HIGHLIGHT_WS_TAB	2
+
 extern char *MiniBuf_Get_Response_String;
 extern int Jed_Simulate_Graphic_Chars;
 
