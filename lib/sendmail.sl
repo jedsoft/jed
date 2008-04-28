@@ -204,8 +204,13 @@ add_completion ("mail_send");
 
 %}}}
 
-define mail_format_buffer (erase) %{{{
+define mail_format_buffer () %{{{
 {
+   variable erase, opt_headers=NULL;
+   if (_NARGS == 2)
+     opt_headers = ();
+   erase = ();
+
    variable km = "mail_map";
 
    text_mode ();
@@ -231,7 +236,12 @@ define mail_format_buffer (erase) %{{{
 	insert ("To: \nCc: \nBcc: \nSubject: \n");
 	if (strlen (Mail_Reply_To))
 	  vinsert ("Reply-To: %s\n", Mail_Reply_To);
-	
+
+	if (opt_headers != NULL)
+	  {
+	     insert (opt_headers);
+	  }
+
 	if (Mail_Extra_Headers != NULL)
 	  {
 	     insert (Mail_Extra_Headers);

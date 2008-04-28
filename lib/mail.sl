@@ -171,14 +171,23 @@ define send ()
    message ("This function is obsolete.  Use 'mail_send'.");
 }
 
-define mail_format_buffer (erase)
+define mail_format_buffer ()
 {
+   variable erase, opt_headers=NULL;
+   if (_NARGS == 2)
+     opt_headers = ();
+   erase = ();
+
    variable mail_map = "mail_map";
    text_mode();
    if (erase)
      {
 	erase_buffer();
-	insert("To: \nCc: \nSubject: \n---text follows this line---\n");
+	insert("To: \nCc: \nSubject: \n");
+	if (opt_headers != NULL)
+	  insert (opt_headers);
+
+	insert ("---text follows this line---\n");
 	bob(); eol();
 	set_buffer_modified_flag(0);
      }

@@ -290,6 +290,11 @@ Changes since 0.99-18.0
 	 Highlight_Whitespace = 3;     % highlight tabs and trailing ws
 
 127. lib/digraph.sl: Added support for ä, ë, etc via a ':' prefix.
+128. lib/mail.sl,sendmail.sl: The mail_format_buffer now allows a list
+     of optional headers to add to the buffer.
+129. lib/cmode.sl: The is_label_statement function is now a bit
+     smarter; previously it would sometimes interpret a ternary
+     statement as a label statement.
 
 {{{ Previous Versions 
 

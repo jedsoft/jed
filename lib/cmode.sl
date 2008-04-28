@@ -604,6 +604,18 @@ private define inside_class_or_namespace (bra, name)
 }
 #endif
 
+% Returns 0 if the point is in the middle of a statement, otherwise
+% returns non-zero.
+private define between_statements ()
+{
+   push_spot ();
+   c_bskip_over_comment (1);
+   variable ret = bobp() or blooking_at (";") or blooking_at ("}")
+     or blooking_at ("{");
+   pop_spot ();
+   return ret;
+}
+
 % This function is called with the point at the end of a line that may
 % be continued onto the next (the one we want to indent).  It returns 1
 % if the next line ought to be indented as a continued one.
@@ -636,6 +648,9 @@ private define is_label_statement ()
      }
 
    bol_skip_white ();
+   if (0 == between_statements ())
+     return 0;
+
    variable label = extract_identifier ();
 
    if ((label == "")
@@ -643,7 +658,11 @@ private define is_label_statement ()
      return 0;
 
    skip_all_whitespace ();
-   return looking_at_char (':');
+   if (0 == looking_at_char (':'))
+     return 0;
+   if (looking_at ("::"))
+     return 0;
+   return 1;
 }
 % overview of indentation tracking variables
 %

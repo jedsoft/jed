@@ -896,6 +896,10 @@ define rmail_scroll_backward()
 
 define rmail_format_mail_buffer ()
 {   
+   variable opt_headers = NULL;
+   if (_NARGS == 1)
+     opt_headers = ();
+
    pop2buf (Rmail_Folder_Buffer);
    mail();
    %onewindow();
@@ -905,7 +909,7 @@ define rmail_format_mail_buffer ()
 	!if (get_yes_no("Mail already being composed.  Erase it")) return 0;
      }
 
-   mail_format_buffer (1);
+   mail_format_buffer (1, opt_headers);
    1;
 }
 
@@ -1058,13 +1062,17 @@ define rmail_reply ()
 	return;
      }
    
-   variable subj, cc, to, replyto, from;
+   variable subj, cc, to, replyto, from, msgid=NULL;
    variable date = "";
 
    variable cbuf = whatbuf ();
    
    push_spot ();
+   variable headers_hidden = Rmail_Headers_Hidden;
+   rmail_unhide_headers ();
    rmail_narrow_to_headers ();
+   set_buffer_modified_flag(0);
+   set_readonly(1);
 
    replyto = rmail_get_header ("Reply-To: ", 1, 0);
    !if (strlen (replyto))
@@ -1075,6 +1083,8 @@ define rmail_reply ()
    subj = rmail_get_header ("Subject: ", 1, 0);
    !if (strlen (subj))
      subj = "(No Subject)";
+
+   msgid = rmail_get_header ("Message-ID: ", 1, 0);
 
    cc = rmail_get_header ("Cc:", 1, 1);
 
@@ -1102,9 +1112,21 @@ define rmail_reply ()
      date = regexp_nth_match (1);
 
    widen();
+
+   if (headers_hidden)
+     {
+	rmail_hide_headers ();
+	set_buffer_modified_flag(0);
+	set_readonly(1);
+     }
+
    pop_spot();
-   
-   !if (rmail_format_mail_buffer ())
+
+   variable opt_headers = NULL;
+   if (msgid != "")
+     opt_headers = sprintf ("In-Reply-To: %s\n", msgid);
+
+   !if (rmail_format_mail_buffer (opt_headers))
      return;
 
    bob();
@@ -1130,7 +1152,7 @@ define rmail_reply ()
 	  }
      }
    while (down_1 () and not (looking_at ("X-Mailer:")));
-   
+
    eob();
    
    if (bol_bsearch ("-- \n")) % find signature
