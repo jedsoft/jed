@@ -236,9 +236,9 @@ static int open_mouse (void)
     */
    term = getenv ("TERM");
    if ((term != NULL)
-       && !strncmp (term, "xterm", 5))
+       && (!strncmp (term, "xterm", 5) || !strncmp (term, "rxvt", 4)))
      return -1;
-   
+
    /* Another libgpm annoyance.  gpm installs a signal handler for SIGTSTP.
     * I am going to un-install it.
     */

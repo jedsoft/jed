@@ -12,6 +12,7 @@ LDFLAGS = @LDFLAGS@ @DYNAMIC_LINK_FLAGS@
 #---------------------------------------------------------------------------
 prefix = @prefix@
 exec_prefix = @exec_prefix@
+datarootdir = @datarootdir@
 #JED_ROOT = $(HOME)/src/jed# <--- make sure # is at end of file!!
 #JED_ROOT = $(prefix)/jed# <--- make sure # is at end of file!!
 JED_ROOT = @JED_ROOT@# <--- make sure # is at end of file!!
@@ -183,11 +184,9 @@ clean:
 distclean: clean
 	/bin/rm -rf $(OBJDIR) Makefile sysconf.h config.h
 
-install_directories:
-	$(MKINSDIR) $(DEST_BIN_DIR)
+install_data_directories:
 	$(MKINSDIR) $(DEST_MAN_DIR)
 	$(MKINSDIR) $(DEST_JED_ROOT)
-	$(MKINSDIR) $(DEST_JED_ROOT)/bin
 	$(MKINSDIR) $(DEST_JED_ROOT)/info
 	$(MKINSDIR) $(DEST_JED_ROOT)/doc
 	$(MKINSDIR) $(DEST_JED_ROOT)/doc/txt
@@ -196,12 +195,19 @@ install_directories:
 	$(MKINSDIR) $(DEST_JED_ROOT)/lib
 	$(MKINSDIR) $(DEST_JED_ROOT)/lib/colors
 	$(MKINSDIR) $(DEST_JED_ROOT)/lib/colors/Xjed
-
-install: all install_directories
+install_bin_directories:
+	$(MKINSDIR) $(DEST_BIN_DIR)
+#
+install_bin: install_bin_directories
 	$(INSTALL) $(OBJDIR)/jed $(DEST_BIN_DIR)/
 	-cd $(DEST_BIN_DIR); ln -s jed jed-script
 	-$(INSTALL) $(OBJDIR)/xjed $(DEST_BIN_DIR)/
-	-$(INSTALL) $(OBJDIR)/getmail $(DEST_JED_ROOT)/bin/
+	if test -e $(OBJDIR)/getmail; \
+	then \
+	  $(MKINSDIR) $(DEST_JED_ROOT)/bin; \
+	  $(INSTALL) $(OBJDIR)/getmail $(DEST_JED_ROOT)/bin/; \
+	fi
+install_data: install_data_directories
 	@for i in $(JED_LIB_FILES); \
 	do \
 		echo $(INSTALL_DATA) $$i $(DEST_JED_ROOT)/lib/; \
@@ -256,6 +262,7 @@ install: all install_directories
 		$(INSTALL_DATA) $$i $(DEST_JED_ROOT)/info/; \
 		echo $(INSTALL_DATA) $$i $(DEST_JED_ROOT)/info/; \
 	done
+install: all install_data install_bin
 #
 runtests: $(OBJDIR)/jed
 	./test/runtests.sh $(OBJDIR)/jed
@@ -265,6 +272,7 @@ symlinks:
 	-/bin/rm -f $(ARCH)objs
 	mkdir -p $(HOME)/sys/$(ARCH)/objs/jed/src
 	ln -s $(HOME)/sys/$(ARCH)/objs/jed/src $(ARCH)objs
+.PHONY: all install_bin install_data install_bin_directories install_data_directories
 #---------------------------------------------------------------------------
 # Rules (automatically generated)
 #---------------------------------------------------------------------------

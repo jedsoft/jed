@@ -295,6 +295,10 @@ Changes since 0.99-18.0
 129. lib/cmode.sl: The is_label_statement function is now a bit
      smarter; previously it would sometimes interpret a ternary
      statement as a label statement.
+130. src/Makefile.in: variation of a patch from Joerg Sommer to allow
+     debian to install bin files separately from data and lib files.
+131. src/gpmmouse.c: Do not use GPM if running in xterm or rxvt (Joerg
+     Sommer).
 
 {{{ Previous Versions 
 
