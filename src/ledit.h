@@ -67,7 +67,6 @@ extern char *what_buffer(void);
 extern void set_tab(int *);
 extern char *command_line_argv(int *);
 extern int MiniBuffer_Active;
-extern char *Jed_Library;
 extern FILE *jed_open_slang_file(char *, char *);
 extern char *Completion_Buffer;
 extern void set_expansion_hook (char *);

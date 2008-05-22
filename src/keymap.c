@@ -594,11 +594,15 @@ static int do_key (void) /*{{{*/
 
 #if JED_HAS_TTY_MENUS
    if (Jed_Menus_Active)
-     key = jed_menu_do_key ();
+     {
+	key = jed_menu_do_key ();
+	update_jed_keybuffer ();
+     }
    else
 #endif
      {
 	key = SLang_do_key (CBuf->keymap, jed_getkey);
+	update_jed_keybuffer ();
 	if ((IS_MINIBUFFER == 0)
 	    && (key != NULL)
 	    && jed_hook_exists ("_jed_before_key_hooks"))
@@ -607,8 +611,6 @@ static int do_key (void) /*{{{*/
 				      1, lookup_key_function_string (key));
 	  }
      }
-
-   update_jed_keybuffer ();
    
    if ((key != NULL) && (key->f.f != NULL))
      {

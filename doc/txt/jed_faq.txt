@@ -20,6 +20,18 @@ Frequently asked questions:
 12. How can I use edt.sl with jed386.exe?
 13. The TAB key is broken--- it does not insert TABs!
 14. How do I set custom tab stops in jed?
+15. When I paste text into Jed, it misaligns everything. How can I
+    prevent this?
+16. Why is copy/paste via the mouse not working on the console?
+17. Jed makes a difference between a single '/' and multiple '/' in
+    pathnames! Why?
+18. Why is jed linked against libncurses when it uses slang?
+19. When running Jed in an xterm, alt is not sending meta.  So, how do
+    I make alt-f skip word forwards?
+20. How do I cancel a command that prompts me with "y/n" choices,
+    without a "cancel" otpion?
+21. I define keybindings in my jed.rc file but they are not working.
+    What is wrong?
 
 ----------------------------------------------------------------------------
 Answers:
@@ -346,23 +358,112 @@ Answers:
 
    Put something like:
   
-   variable Tab_Stops;
-   Tab_Stops = create_array('i', 20, 1);
+   variable Tab_Stops = [0:19]*8 + 1;
    
-   %% The following defines the tab stops to be 8 column:
-   _for (0, 19, 1) 
-     { =$1; 
-	Tab_Stops[$1] = $1 * 8 + 1;
-     }
+   in your jed.rc file to define 8-column tab stops.  To individually
+   set them use
 
-  in your jed.rc.  To individually set them, do:
-  
      Tab_Stops[0] = 4;
      Tab_Stops[1] = 18;
      
-  etc...
+   etc...
 
-<14>
+<15> When I paste indented text into Jed, it misaligns everything
+  (i.e. every succeeding line is indented more than the previous,
+  yielding horizontally cascading text). How can I prevent this?
+
+  The reason, why this happens is: In Jed, carriage return is bound to
+  `newline_and_indent'. While this auto-indention is a great help in
+  normal editing, it stands in the way when text is pasted via the
+  mouse. Unfortunately, Jed cannot tell whether its input comes from a
+  keyboard, another program, or the mouse (XJed can).
+
+  There is more than one answer to how you can prevent it:
+  1: Use xjed.
+  2: Use the `paste' function
+      1. M-x paste  (or bind "paste" to a key)
+      2. Now paste your text...
+  3: Install txtutils [1] from jedmodes and use newline_indent().
+     See Help>Describe_Function newline_indent for details.
+     [1] http://jedmodes.sourceforge.net/mode/txtutils/
+  4: Temporarily change the keybinding by doing:
+      1. M-X local_setkey("newline","^M") (Alt-Shift-X: the S-Lang prompt)
+      3. Now paste your text...
+      4. M-X local setkey("newline_and_indent","^M")
+  5: Bind "newline_and_indent" to a different key.
+     In jed.rc do e.g.:
+
+        #ifndef XWINDOWS IBMPC_SYSTEM
+        % Fix staircase effect with mouse-pasting in an x-terminal
+        setkey("newline", "^M");
+        setkey("newline_and_indent", "\eM"); % Alt_Return
+        % Some modes overwrite the Key_Return binding. Restore it:
+        define global_mode_hook (hook)
+        {
+           if (wherefirst(what_keymap() == ["C", "DCL", "IDL", "perl", "PHP"])
+               != NULL)
+              local_setkey("newline", "^M");
+        }
+        #endif
+
+<16> Why is copy/paste via the mouse not working on the console?
+
+  First, be sure that the gpm package is installed and correctly
+  configured. Copying and pasting in a JED window on the console
+  should then work like in X-Windows (with a three button mouse, for
+  instance, select with the left button and paste with the middle
+  button).  However, for inserting text selected outside the JED
+  window, you should press down the Alt key when pasting with the
+  mouse.
+
+<17> Jed makes a difference between a single '/' and multiple '/'
+   in pathnames - e.g., '/usr//bin/' is *not* equal to '/usr/bin/'! Why?
+
+  This is also how Emacs behaves and is part of the emacs emulation.
+
+<18> Why is jed linked against libncurses when it uses slang?
+
+  Because it has GPM mouse support and the GPM librares use ncurses.
+
+<19> When running Jed in an xterm, alt is not sending meta (and meta is not
+   sending escape) so that alt-f and alt-b e.g., don't skip words forwards and
+   backwards respectively.
+
+  According to Thomas Dickey (do a google search to see that there is NO
+  arguing here :) this is normal for xterm.  To make alt "work", add
+  'xterm*metaSendsEscape: true' to your .Xresources (or equivalent) and
+  make sure 'xmodmap -e "keysym Alt_L = Meta_L Alt_L"' is executed
+  somewhere at X-startup (modify e.g., ~/.Xmodmap).
+
+<20> How do I cancel a command that prompts me with "y/n" choices, without a
+   "cancel" otpion?
+
+  In Jed, (almost all) actions can be aborted by pressing a configurable
+  "abort character" or calling the function kbd_quit().  The most used
+  default abort character is `Ctrl-G'. Some emulations use a different
+  default:
+    CUA:      `Ctrl-D' (and optional ESC, see cua_escape_cmd())
+    Wordstar: `Ctrl-^' (AKA Ctrl-6)
+
+<21> I define keybindings in my jed.rc file but they are not working.
+   What is wrong?
+
+  Jed will load a fallback keybinding-file if you do not specify an
+  emulation in your jed.rc overwriting your bindings.
+
+  Either select an emulation in your jed.rc (as in the example file),
+  or put your keybindings inside a keybindings_hook(), e.g.::
+
+    define keybindings_hook(emulation)
+    {
+       setkey("menu_select_menu(\"Global.&Help\")", Key_F1);
+       % ...
+    }
+
+  If you define all your keybindings without resorting to an emulation
+  mode, set the variable _Jed_Emulation (e.g. _Jed_Emulation = "cool") to
+  prevent loading the _Jed_Default_Emulation fallback.
+
 
 -------------------------------------------------------------------------------
 This is a useful function used to maintain numbers in this faq.

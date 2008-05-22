@@ -68,3 +68,21 @@ define info_mode ()
 {
    info_reader ();
 }
+
+% These are function to archive backward compatibiliy and give third
+% party mode time to migrate to slang load path.
+define get_jed_library_path()
+{
+   variable t = get_slang_load_path ();
+   
+   (t,) = strreplace(t, char(path_get_delimiter()), ",", strlen(t));
+   return t;
+}
+
+define set_jed_library_path(path)
+{
+   variable t;
+   (t,) = strreplace(path, ",", char(path_get_delimiter()), strlen(path));
+   set_slang_load_path(t);
+}
+

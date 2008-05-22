@@ -61,6 +61,20 @@ private define make_key_name_table ()
 private variable Key_Name_Table = make_key_name_table ();
 private define make_key_name_table (); %  nolonger needed
 
+% a definition for a lonely Alt character causes problems, because no
+% Alt-XY is recognized
+$1 = __get_reference ("ALT_CHAR");
+if ($1 != NULL)
+{
+   $1 = @$1;
+   if ($1 != 0)
+     assoc_delete_key (Key_Name_Table, convert_keystring(char($1)));
+}
+
+% the definition of Key_Space is missing, but it is useful
+!if (assoc_key_exists(Key_Name_Table, " "))
+  Key_Name_Table[" "] = "Space";
+
 private define keyeqs (seq, key)
 {
    variable n = strbytelen (key);
@@ -83,6 +97,11 @@ private define keyeqs (seq, key)
 %!%-
 define expand_keystring (seq)
 {
+   variable alt_char = 0;
+
+   if (is_defined ("ALT_CHAR"))
+     alt_char = @__get_reference ("ALT_CHAR");
+
    seq = convert_keystring (seq);
    
    if (assoc_key_exists (Key_Name_Table, seq))
@@ -108,6 +127,7 @@ define expand_keystring (seq)
 		  break;
 	       }
 	  }
+	variable append_space = 1;
 	if (dn == 0)
 	  {
 	     if ((seq[0] == '^') and (n > 1))
@@ -116,7 +136,15 @@ define expand_keystring (seq)
 		  switch (ch)
 		    { case 'I': "TAB";}
 		    { case 'M': "RET";}
-		    { case '[': "ESC";}
+		    { case '[':
+		       if ((alt_char == 27) and (seq[2] != '\0'))
+			 {
+			    append_space = 0;
+			    "Alt-";
+			 }
+		       else
+			 "ESC";
+		    }
 		    {
 		       % default
 		       "Ctrl-" + char (seq[1]);
@@ -130,11 +158,13 @@ define expand_keystring (seq)
 		  dn = strbytelen (key_name);
 	       }
 	  }
-	expanded_key = strcat (expanded_key, " ", key_name);
+	expanded_key = strcat (expanded_key, key_name);
+	if (append_space)
+	  expanded_key = strcat (expanded_key, " ");
 	seq = substrbytes (seq, dn+1, -1);
      }
    if (strlen (expanded_key))
-     return substr (expanded_key, 2, -1);
+     return substr (expanded_key, 1, strlen(expanded_key) - 1);
    return expanded_key;
 }
 
@@ -372,18 +402,19 @@ define describe_bindings ()
    flush("Building bindings..");
    variable map = what_keymap ();
    variable buf = whatbuf ();
-   variable cse = CASE_SEARCH;  CASE_SEARCH = 1;
    pop2buf("*KeyBindings*");
+   variable cse = CASE_SEARCH;  CASE_SEARCH = 1;
    erase_buffer ();
    dump_bindings (map);
    
    if (map != "global")
      {
+	variable dump_end_mark = create_user_mark();
 	insert("\nInherited from the global keymap:\n");
 	push_spot();
 	dump_bindings("global");
 	pop_spot();
-	
+
 	variable global_map = Assoc_Type[String_Type, ""];
 	while ( not eobp() )
 	  {
@@ -392,9 +423,13 @@ define describe_bindings ()
 	     variable key = bufsubstr();
 	     go_right (3);
 	     push_mark();
-	     eol();
+	     % Could have a newline here
+	     if (not fsearch("\t\t\t")) eob ();
+	     go_up_1();
+	     () = dupmark();
 	     global_map[key] = bufsubstr();
-	     delete_line();
+	     del_region ();
+	     delete_line ();
 	  }
 	
 	bob();
@@ -407,45 +442,86 @@ define describe_bindings ()
 	       break;
 	     
 	     variable global_map_key = global_map[key];
+	     go_right (3);
 	     if (global_map_key != "")
 	       {
-		  go_right (3);
 		  push_mark();
-		  eol();
+		  () = fsearch("\t\t\t");
+		  if (create_user_mark() > dump_end_mark)
+		    goto_user_mark(dump_end_mark);
+		  go_up_1();
+		  () = dupmark();
+
 		  if (bufsubstr() == global_map_key)
 		    {
-		       delete_line();
+		       del_region ();
+		       delete_line ();
 		       push_spot();
 		       eob();
+		       (global_map_key,) = strreplace (global_map_key, "\n", "\\n", strlen(global_map_key));
 		       vinsert ("%s\t\t\t%s\n", key, global_map_key);
 		       pop_spot();
 		    }
 		  else
-		    go_down_1 ();
+		    {
+		       pop_mark_0();
+		       go_down_1 ();
+		    }
 	       }
 	     else
-	       go_down_1 ();
+	       {
+		  () = fsearch ("\t\t\t");
+		  bol ();
+	       }
+	  }
+     }
+   else
+     {
+	bob();
+	while ( not eobp() )
+	  {
+	     if (not ffind("\t\t\t"))
+	       {
+		  go_up_1();
+		  insert("\\n");
+		  del();
+	       }
+	     if (0 == down_1()) break;
 	  }
      }
    
    bob(); 
-   replace ("ESC [ A", "UP");
-   replace ("ESC [ B", "DOWN");
-   replace ("ESC [ C", "RIGHT");
-   replace ("ESC [ D", "LEFT");
-   replace ("ESC O P", "GOLD");
 
-   while (fsearch ("\t\t\t"))
+   do
      {
-	if (what_column () > TAB)
+	push_mark ();
+	if (not (ffind("\t\t\t")))
 	  {
-	     if ( what_column() <= TAB*3 )
-	       deln( (what_column()-1)/TAB );
-	     else
-	       deln(3);
-	  }
-	eol ();
+            pop_mark(0);
+            continue;
+         }
+
+        key = bufsubstr();
+        variable old_len = strlen(key);
+        (key,) = strreplace(key, "ESC", "\e", strlen(key));
+        key = str_delete_chars(key, " ");
+        (key,) = strreplace(key, "SPACE", " ", strlen(key));
+        (key,) = strreplace(key, "DEL", "\x7F", strlen(key));
+        (key,) = strreplace(key, "TAB", "\t", strlen(key));
+        bol();
+        () = replace_chars(old_len, expand_keystring(key));
+
+        if (what_column () <= TAB)
+	  insert_char('\t');
+        else
+         {
+            if ( what_column() <= TAB*4 )
+              deln( (what_column()-1)/TAB - 1 );
+	    else
+	      deln(3);
+	 }
      }
+   while (down_1 ());
 
    bob();
 
@@ -466,6 +542,14 @@ define describe_bindings ()
    while (fsearch ("\t\t\t"))
      {
 	go_right (3);
+	if ( looking_at_char('@') or looking_at_char(' ') )
+	  continue;
+        if ( looking_at_char('.') )
+	  {
+             eol();
+             bskip_chars("a-zA-Z_");
+	  }
+
 	push_mark();
 	!if ( ffind_char('(') )
 	  eol();

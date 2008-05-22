@@ -71,7 +71,6 @@ variable Null_String = "";
 %!%-
 variable Info_Directory;
 variable Jed_Bin_Dir;
-variable Jed_Doc_Files;
 
 %!%+
 %\variable{Jed_Highlight_Cache_Path}
@@ -482,7 +481,7 @@ define file_type(file)
 %!%-
 define search_path_for_file ()
 {
-   variable path, f, delim = ',';
+   variable path, f, delim = path_get_delimiter ();
    if (_NARGS == 3)
      delim = ();
    (path, f) = ();
@@ -511,7 +510,7 @@ define search_path_for_file ()
 %!%-
 define expand_jedlib_file (f)
 {
-   f = search_path_for_file (get_jed_library_path (), f);
+   f = search_path_for_file (get_slang_load_path (), f);
    if (f == NULL)
      return "";
    f;
@@ -569,36 +568,79 @@ Info_Directory = dircat (JED_ROOT, "info");
 Jed_Bin_Dir = dircat (JED_ROOT, "bin");
 #endif
 
-Jed_Highlight_Cache_Path = get_jed_library_path ();
-Jed_Highlight_Cache_Dir = extract_element (Jed_Highlight_Cache_Path, 0, ',');
+Jed_Highlight_Cache_Path = get_slang_load_path ();
+Jed_Highlight_Cache_Dir = extract_element (Jed_Highlight_Cache_Path, 0, path_get_delimiter());
+
+private define dir_exists (dir)
+{
+   variable s = stat_file (dir);
+   if (s == NULL) return 0;
+   return stat_is ("dir", s.st_mode);
+}
+
+%!%+
+%\function{prepend_to_slang_load_path}
+%\synopsis{Prepend a directory to the load-path}
+%\usage{prepend_to_slang_load_path (String_Type dir)}
+%\description
+% This function adds a directory to the beginning of the interpreter's
+% load-path.
+%\seealso{append_to_slang_load_path, set_slang_load_path}
+%!%-
+public define prepend_to_slang_load_path (p)
+{
+   if (dir_exists (p))
+     set_slang_load_path (sprintf ("%s%c%s", p, path_get_delimiter (), get_slang_load_path ()));
+}
+
+%!%+
+%\function{append_to_slang_load_path}
+%\synopsis{Append a directory to the load-path}
+%\usage{append_to_slang_load_path (String_Type dir)}
+%\description
+% This function adds a directory to the end of the interpreter's
+% load-path.
+%\seealso{prepend_to_slang_load_path, set_slang_load_path}
+%!%-
+public define append_to_slang_load_path (p)
+{
+   if (dir_exists (p))
+     set_slang_load_path (sprintf ("%s%c%s", get_slang_load_path (), path_get_delimiter (), p));
+}
 
 variable Jed_Doc_Files = "";
+define jed_append_doc_file (file)
+{
+   if (Jed_Doc_Files == "")
+     Jed_Doc_Files = file;
+   else
+     Jed_Doc_Files = strcat (Jed_Doc_Files, ",", file);
+
+   variable cur_files = get_doc_files();
+   set_doc_files([ cur_files[where(cur_files != file)], file ]);
+}
+define jed_insert_doc_file (file)
+{
+   if (Jed_Doc_Files == "")
+     Jed_Doc_Files = file;
+   else
+     Jed_Doc_Files = strcat (file, ",", Jed_Doc_Files);
+   variable cur_files = get_doc_files();
+   set_doc_files( [file, cur_files[ where(cur_files != file) ]] );
+}
+
 #ifdef VMS
 $1 = JED_ROOT;
 #else
 $1 = dircat (JED_ROOT, "doc/hlp");
 #endif
-
-define jed_append_doc_file (file)
-{
-   Jed_Doc_Files = strcat (Jed_Doc_Files, ",", file);
-}
-define jed_insert_doc_file (file)
-{
-   Jed_Doc_Files = strcat (file, ",", Jed_Doc_Files);
-}
-
 foreach (["jedfuns.hlp", "libfuns.hlp"])
 {
    $2 = ();
 #ifdef VMS
    $2 = "[doc.hlp]" + $2;
 #endif
-   $2 = dircat ($1, $2);
-
-   if (strlen (Jed_Doc_Files))
-     Jed_Doc_Files += ",";
-   Jed_Doc_Files += $2;
+   jed_append_doc_file (dircat ($1, $2));
 }
 
 #ifexists _slang_doc_dir
@@ -802,6 +844,8 @@ _autoload("mode_get_mode_info",		"modeinfo",
 	  "create_array",		"compat",
 	  "strncat",			"compat",
 	  "info_mode",			"compat",
+	  "get_jed_library_path",	"compat",
+	  "set_jed_library_path",	"compat",
 
 	  "tiasm_mode",		"tiasm",
 
@@ -2136,7 +2180,7 @@ define set_color (){_set_color;}
 
 % Comma separated list of directories
 public variable Color_Scheme_Path = "";
-foreach (strtok (get_jed_library_path (), ","))
+foreach (strtok (get_slang_load_path (), char(path_get_delimiter())))
 {
    $1 = ();
    Color_Scheme_Path = dircat ($1, "colors");
@@ -2151,11 +2195,11 @@ define set_color_scheme (scheme)
      return;
    scheme = string (scheme);       %  for back-compatability, file may be an integer
 
-   file = search_path_for_file (Color_Scheme_Path, scheme + ".sl");
+   file = search_path_for_file (Color_Scheme_Path, scheme + ".sl", ',');
    if (file == NULL)
      {
 	% Try .slc file
-	file = search_path_for_file (Color_Scheme_Path, scheme + ".slc");
+	file = search_path_for_file (Color_Scheme_Path, scheme + ".slc", ',');
 	if (file == NULL)
 	  {
 	     vmessage ("Color scheme %S is not supported", scheme);
@@ -3271,14 +3315,15 @@ if (is_defined ("import"))
 	$2 = path_concat ($1, "share/slsh/local-packages");
 	if (2 != file_status ($2))
 	  continue;
+	append_to_slang_load_path ($2);
 
-	set_jed_library_path (strcat (get_jed_library_path (), ",", $2));
 	$2 = path_concat ($2, "help");
 	if (2 == file_status ($2))
 	  jed_append_doc_file ($2);
 
 	$2 = path_concat ($1, "share/slsh");
-	set_jed_library_path (strcat (get_jed_library_path (), ",", $2));
+	append_to_slang_load_path ($2);
+
 	$2 = path_concat ($2, "help");
 	if (2 == file_status ($2))
 	  jed_append_doc_file ($2);

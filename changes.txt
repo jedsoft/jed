@@ -299,6 +299,20 @@ Changes since 0.99-18.0
      debian to install bin files separately from data and lib files.
 131. src/gpmmouse.c: Do not use GPM if running in xterm or rxvt (Joerg
      Sommer).
+132. doc/tm/rtl/mini.sl: Documentation tweaks (Joerg Sommer)
+133. src/keymap.c: The LASTKEY variable was not being updated before
+     _jed_before_key_hooks. (Joerg Sommer)
+134. lib/help.sl: Handle keybindings to macros and bindings that
+     contain newlines. (Joerg Sommer)
+135. doc/manual/jed.1: Updates to the man page (Joerg Sommer)
+136. doc/txt/jed_faq.txt: Updates to the FAQ (Joerg Sommer)
+137. lib/site.sl: jed_append/insert_doc_file will update slang's
+     internal doc file list via set_doc_files.  Eventally
+     Jed_Doc_Files will go away in favor of get_doc_files. (Joerg Sommer).
+138. lib/site.sl, src/ledit.c, src/main.c: The
+     get/set_jed_library_path functions have been deprecated in favor
+     of get/set_slang_load_path and prepend/append_to_slang_load_path.
+     (Joerg Sommer)
 
 {{{ Previous Versions 
 

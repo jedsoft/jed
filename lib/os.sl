@@ -14,7 +14,7 @@ autoload ("_jed_run_program_hook", "runpgm");
 autoload ("_win32_get_helper_app_name", "runpgm");
 # ifexists set_import_module_path
 $1 = path_concat (JED_ROOT, "slsh");
-set_jed_library_path (strcat (get_jed_library_path (), ",", $1));
+set_slang_load_path (strcat (get_slang_load_path (), char(path_get_delimiter()), $1));
 % set the library path for modules.
 set_import_module_path(path_concat($1, "modules"));
 # endif

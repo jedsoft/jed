@@ -2596,6 +2596,40 @@ parse_filename
 
 --------------------------------------------------------------
 
+prepend_to_slang_load_path
+
+ SYNOPSIS
+  Prepend a directory to the load-path
+
+ USAGE
+  prepend_to_slang_load_path (String_Type dir)
+
+ DESCRIPTION
+ This function adds a directory to the beginning of the interpreter's
+ load-path.
+
+ SEE ALSO
+  append_to_slang_load_path, set_slang_load_path
+
+--------------------------------------------------------------
+
+append_to_slang_load_path
+
+ SYNOPSIS
+  Append a directory to the load-path
+
+ USAGE
+  append_to_slang_load_path (String_Type dir)
+
+ DESCRIPTION
+ This function adds a directory to the end of the interpreter's
+ load-path.
+
+ SEE ALSO
+  prepend_to_slang_load_path, set_slang_load_path
+
+--------------------------------------------------------------
+
 go_up
 
  SYNOPSIS

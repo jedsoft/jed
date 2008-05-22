@@ -87,8 +87,6 @@ static Buffer *Last_Buffer;
 int Ignore_Beep = 0;
 int MiniBuffer_Active = 0;
 
-char *Jed_Library;
-
 /* Do not change this value without changing file_findfirst/next. */
 #define JED_MAX_COMPLETION_LEN JED_MAX_PATH_LEN   
 
@@ -1377,9 +1375,12 @@ static VFILE *jed_open_lib_file (char *file, char **dirfile) /*{{{*/
    char *lib, *type, *libf;
    unsigned int n;
    VFILE *vp = NULL;
+   int free_lib;
+   int delimiter;
 
    libf = file;
-   lib = Jed_Library;
+   lib = NULL;
+   free_lib = 0;
 
    /* If file begins with ./,then read it from the current directory */
    if ((0 == strncmp (file, "./", 2))
@@ -1394,16 +1395,22 @@ static VFILE *jed_open_lib_file (char *file, char **dirfile) /*{{{*/
      }
    else if (SLpath_is_absolute_path (file))
      lib = "";
-   else if ((lib == NULL) || (*lib == 0))
-     exit_error("JED_ROOT environment variable needs set.", 0);
+   else
+     {
+	lib = SLpath_get_load_path ();      /* SLstring */
+	free_lib = 1;
+	if ((lib == NULL) || (*lib == 0))
+	  exit_error("The JED_ROOT environment variable needs set.", 0);
+     }
 
    if ((NULL != (type = file_type(file)))
        && ((*type == 0) 
 	   || ((0 != strcmp (type, "sl")) && (0 != strcmp (type, "slc")))))
      type = NULL;
 
+   delimiter = SLpath_get_delimiter ();
    n = 0;
-   while (0 == SLextract_list_element (lib, n, ',', libfsl, sizeof(libfsl)))
+   while (0 == SLextract_list_element (lib, n, delimiter, libfsl, sizeof(libfsl)))
      {
 	n++;
 
@@ -1443,6 +1450,9 @@ static VFILE *jed_open_lib_file (char *file, char **dirfile) /*{{{*/
 	  }
      }
    
+   if (free_lib)
+     SLang_free_slstring (lib);
+
    if (NULL == (*dirfile = SLang_create_slstring (libf)))
      {
 	vclose (vp);

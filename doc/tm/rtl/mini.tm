@@ -101,9 +101,10 @@
 #v-
   reads a string from the user and then searches forward for it and if
   not found, it resumes the search from the beginning of the buffer.
-  Note: If the user aborts the function \var{mini_read} by pressing the
+\notes
+  If the user aborts the function \var{mini_read} by pressing the
   keyboard quit character (e.g., Ctrl-G), an error is signaled.  This
-  error can be caught by an \var{ERROR_BLOCK} and the appropriate action
+  error can be caught by a \var{try}-\var{catch} statement and the appropriate action
   taken. Also if the mini-buffer is already in use, this function should
   not be called.  The variable \var{MINIBUFFER_ACTIVE} may be checked to
   determine if this is the case or not.

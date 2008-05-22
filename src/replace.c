@@ -304,22 +304,6 @@ static int is_visible_mark (void) /*{{{*/
 
 /*}}}*/
 
-static char *get_jed_library_path (void)
-{
-   return Jed_Library;
-}
-
-static void set_jed_library_path (void)
-{
-   char *s;
-   
-   if (SLang_pop_slstring (&s))
-     return;
-   
-   SLang_free_slstring (Jed_Library);
-   Jed_Library = s;
-}
-
 static int set_buffer_umask (int *cmask)
 {
    int u = CBuf->umask;
@@ -393,8 +377,6 @@ SLang_Intrin_Fun_Type Jed_Other_Intrinsics [] = /*{{{*/
 #endif
    MAKE_INTRINSIC("count_narrows", jed_count_narrows, INT_TYPE, 0),
    MAKE_INTRINSIC("widen_buffer", widen_this_buffer, VOID_TYPE, 0),
-   MAKE_INTRINSIC ("get_jed_library_path", get_jed_library_path, STRING_TYPE, 0),
-   MAKE_INTRINSIC ("set_jed_library_path", set_jed_library_path, VOID_TYPE, 0),
    MAKE_INTRINSIC(NULL, NULL, 0, 0)
 };
 

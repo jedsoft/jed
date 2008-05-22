@@ -192,8 +192,7 @@ static void set_jed_root (char *pgm)
      }
    else strcpy(jed_lib, jl);
    
-   Jed_Library = SLang_create_slstring (jed_lib);
-   if (Jed_Library == NULL)
+   if (-1 == SLpath_set_load_path (jed_lib))
      exit_error ("Out of memory", 0);
 }
 

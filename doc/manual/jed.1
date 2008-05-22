@@ -7,7 +7,21 @@
 .SH NAME
 Jed \- programmers editor
 .SH SYNOPSIS
-.B jed [options] 
+.B jed \-\-version
+.br
+.B jed\-script \-\-version
+.br
+.B xjed \-\-version
+.sp
+.B jed [\-\-secure] [\-\-batch|\-\-script|\-\-help] [options]
+.I file
+.B ...
+.br
+.B jed\-script [\-\-secure]
+.I script file
+.B [script options] ...
+.br
+.B xjed [\-\-secure] [X options] [\-\-batch|\-\-script|\-\-help] [options]
 .I file
 .B ...
 .SH DESCRIPTION
@@ -29,12 +43,39 @@ Folding support, and much more...
 For complete documentation, see GNU info files, this manual only
 provides brief tutorial.
 .SH OPTIONS
+.SS major options
 .LP
-.I \-batch
+.I \-\-version
+.RS
+prints the version and compiletime variables.
+.RE
+.I \-\-help
+.RS
+prints usage information.
+.RE
+.I \-\-secure
+.RS
+runs Jed in secure mode, e.g. you can't run any external commands with
+.I system()
+or
+.I run_shell_cmd().
+.RE
+.I \-\-batch
 .RS
 run Jed in batch mode.
 This is a non-interactive mode.
 .RE
+.I \-\-script
+.RS
+this is a mode like
+.I \-\-batch
+but jed does not eval the startup files. It behaves like
+.I slsh.
+You must give the file that should be evaluated as second argument. It's
+the same as calling
+.B jed\-script.
+.SS minor options
+.LP
 .I \-n             
 .RS
 do not load 
@@ -81,13 +122,55 @@ insert
 into current buffer.
 .RE
 .LP
+.SS X options
+.B xjed
+accapts the common options like
+.I \-display, \-name, \-fn and \-geometry.
+Additionaly it accepts
+.LP
+.I \-facesize SIZE, \-fs SIZE
+.RS
+if build with XRENDERFONT support, selects the font size
+.I SIZE.
+Use it with the option
+.I \-fn
+to select a scalable font.
+.RE
+.I \-foreground COLOR, \-fg COLOR
+.RS
+sets the foreground color.
+.RE
+.I \-background COLOR, \-bg COLOR
+.RS
+sets the background color.
+.RE
+.I \-fgMouse COLOR, \-mfg COLOR
+.RS
+sets the foreground color of the mouse pointer.
+.RE
+.I \-bgMouse COLOR, \-mbg COLOR
+.RS
+sets the background color of the mouse pointer.
+.RE
+.I \-Iconic, \-ic
+.RS
+start iconified.
+.RE
+.I \-title NAME
+.RS
+sets the window title to
+.I NAME.
+.RE
+.LP
+For more options look at
+.B xterm.c.
 .SH CONFIGURATION
 .RS
 .I Emulating Other Editors
 .RE
 .LP
 JED's ability to create new functions using the 
-.I S\--Lang 
+.I S\-Lang 
 programming language as well as allowing the user to choose key bindings,
 makes the emulation of other editors possible. Currently, JED provides
 reasonable emulation of the
