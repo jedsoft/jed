@@ -313,6 +313,9 @@ Changes since 0.99-18.0
      get/set_jed_library_path functions have been deprecated in favor
      of get/set_slang_load_path and prepend/append_to_slang_load_path.
      (Joerg Sommer)
+139. src/screen.c: Multibyte characters in the status line string were
+     not being processed (Paul Boekholt).
+140. autoconf/aclocal.m4: Reimplemented JD_CHECK_FOR_LIBRARY.
 
 {{{ Previous Versions 
 

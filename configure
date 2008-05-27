@@ -6759,49 +6759,22 @@ echo $ECHO_N "checking for the slang library and header files ... $ECHO_C" >&6; 
     then
        jd_slang_inc_file=slang.h
     fi
+
     if test X"$jd_slang_include_dir" = X
     then
-       lib_include_dirs="\
-            $jd_prefix_incdir \
-            /usr/local/slang/include \
-            /usr/local/include/slang \
-  	  /usr/local/include \
-  	  /usr/include/slang \
-  	  /usr/slang/include \
-  	  /usr/include \
-  	  /opt/include/slang \
-  	  /opt/slang/include \
-  	  /opt/include"
+      inc_and_lib_dirs="\
+         $jd_prefix_incdir,$jd_prefix_libdir \
+	 /usr/local/slang/include,/usr/local/slang/lib \
+	 /usr/local/include/slang,/usr/local/lib \
+	 /usr/local/include,/usr/local/lib \
+	 /usr/include/slang,/usr/lib \
+	 /usr/slang/include,/usr/slang/lib \
+	 /usr/include,/usr/lib \
+	 /opt/include/slang,/opt/lib \
+	 /opt/slang/include,/opt/slang/lib \
+	 /opt/include,/opt/lib"
 
-       for X in $lib_include_dirs
-       do
-          if test -r "$X/$jd_slang_inc_file"
-	  then
-  	  jd_slang_include_dir="$X"
-            break
-          fi
-       done
-       if test X"$jd_slang_include_dir" = X
-       then
-         jd_with_slang_library="no"
-       fi
-    fi
-
-    if test X"$jd_slang_library_dir" = X
-    then
-       lib_library_dirs="\
-            $jd_prefix_libdir \
-            /usr/local/lib \
-            /usr/local/lib/slang \
-            /usr/local/slang/lib \
-  	  /usr/lib \
-  	  /usr/lib/slang \
-  	  /usr/slang/lib \
-  	  /opt/lib \
-  	  /opt/lib/slang \
-  	  /opt/slang/lib"
-
-       case "$host_os" in
+      case "$host_os" in
          *darwin* )
 	   exts="dylib so a"
 	   ;;
@@ -6810,33 +6783,41 @@ echo $ECHO_N "checking for the slang library and header files ... $ECHO_C" >&6; 
 	   ;;
 	 * )
 	   exts="so a"
-       esac
+      esac
 
-       found=0
-       for X in $lib_library_dirs
-       do
-         for E in $exts
-	 do
-           if test -r "$X/libslang.$E"
-	   then
-  	     jd_slang_library_dir="$X"
-	     found=1
-	     break
-           fi
-         done
-	 if test $found -eq 1
-	 then
-	   break
-	 fi
-       done
-       if test X"$jd_slang_library_dir" = X
-       then
-         jd_with_slang_library="no"
-       fi
+      xincfile="$jd_slang_inc_file"
+      xlibfile="libslang"
+      jd_with_slang_library="no"
+
+      for include_and_lib in $inc_and_lib_dirs
+      do
+        # Yuk.  Is there a better way to set these variables??
+        xincdir=`echo $include_and_lib | tr ',' ' ' | awk '{print $1}'`
+	xlibdir=`echo $include_and_lib | tr ',' ' ' | awk '{print $2}'`
+	found=0
+	if test -r $xincdir/$xincfile
+	then
+	  for E in $exts
+	  do
+	    if test -r "$xlibdir/$xlibfile.$E"
+	    then
+	      jd_slang_include_dir="$xincdir"
+	      jd_slang_library_dir="$xlibdir"
+	      jd_with_slang_library="yes"
+	      found=1
+	      break
+	    fi
+	  done
+	fi
+	if test $found -eq 1
+	then
+	  break
+	fi
+      done
     fi
   fi
 
-  if test X"jd_slang_include_dir" != X -a "$jd_slang_library_dir" != X
+  if test X"$jd_slang_include_dir" != X -a "$jd_slang_library_dir" != X
   then
     { echo "$as_me:$LINENO: result: yes: $jd_slang_library_dir and $jd_slang_include_dir" >&5
 echo "${ECHO_T}yes: $jd_slang_library_dir and $jd_slang_include_dir" >&6; }

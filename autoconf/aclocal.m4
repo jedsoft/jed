@@ -1,4 +1,5 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.2.3: rewrote JD_CHECK_FOR_LIBRARY to loop over include/lib pairs
 dnl# 0.2.2-1: JD_WITH_LIBRARY bug-fix
 dnl# 0.2.2:  Use ncurses5-config to search for terminfo dirs.
 dnl# 0.2.1:  Add .dll.a to list of extensions to when searching for libs (cygwin)
@@ -839,49 +840,22 @@ AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
     then
        jd_$1_inc_file=$1.h
     fi
+
     if test X"$jd_$1_include_dir" = X
     then
-       lib_include_dirs="\
-            $jd_prefix_incdir \
-            /usr/local/$1/include \
-            /usr/local/include/$1 \
-  	  /usr/local/include \
-  	  /usr/include/$1 \
-  	  /usr/$1/include \
-  	  /usr/include \
-  	  /opt/include/$1 \
-  	  /opt/$1/include \
-  	  /opt/include"
+      inc_and_lib_dirs="\
+         $jd_prefix_incdir,$jd_prefix_libdir \
+	 /usr/local/$1/include,/usr/local/$1/lib \
+	 /usr/local/include/$1,/usr/local/lib \
+	 /usr/local/include,/usr/local/lib \
+	 /usr/include/$1,/usr/lib \
+	 /usr/$1/include,/usr/$1/lib \
+	 /usr/include,/usr/lib \
+	 /opt/include/$1,/opt/lib \
+	 /opt/$1/include,/opt/$1/lib \
+	 /opt/include,/opt/lib"
   
-       for X in $lib_include_dirs
-       do
-          if test -r "$X/$jd_$1_inc_file"
-	  then
-  	  jd_$1_include_dir="$X"
-            break
-          fi
-       done
-       if test X"$jd_$1_include_dir" = X
-       then
-         jd_with_$1_library="no"
-       fi
-    fi
-   
-    if test X"$jd_$1_library_dir" = X
-    then
-       lib_library_dirs="\
-            $jd_prefix_libdir \
-            /usr/local/lib \
-            /usr/local/lib/$1 \
-            /usr/local/$1/lib \
-  	  /usr/lib \
-  	  /usr/lib/$1 \
-  	  /usr/$1/lib \
-  	  /opt/lib \
-  	  /opt/lib/$1 \
-  	  /opt/$1/lib"
-
-       case "$host_os" in
+      case "$host_os" in
          *darwin* )
 	   exts="dylib so a"
 	   ;;
@@ -890,33 +864,41 @@ AC_DEFUN(JD_CHECK_FOR_LIBRARY, dnl#{{{
 	   ;;
 	 * )
 	   exts="so a"
-       esac
+      esac
    
-       found=0
-       for X in $lib_library_dirs
-       do
-         for E in $exts
-	 do
-           if test -r "$X/lib$1.$E"
-	   then
-  	     jd_$1_library_dir="$X"
-	     found=1
-	     break
-           fi
-         done
-	 if test $found -eq 1
-	 then
-	   break
-	 fi
-       done
-       if test X"$jd_$1_library_dir" = X
-       then
-         jd_with_$1_library="no"
-       fi
+      xincfile="$jd_$1_inc_file"
+      xlibfile="lib$1"
+      jd_with_$1_library="no"
+
+      for include_and_lib in $inc_and_lib_dirs
+      do
+        # Yuk.  Is there a better way to set these variables??
+        xincdir=`echo $include_and_lib | tr ',' ' ' | awk '{print [$]1}'`
+	xlibdir=`echo $include_and_lib | tr ',' ' ' | awk '{print [$]2}'`
+	found=0
+	if test -r $xincdir/$xincfile
+	then 
+	  for E in $exts
+	  do
+	    if test -r "$xlibdir/$xlibfile.$E"
+	    then
+	      jd_$1_include_dir="$xincdir"
+	      jd_$1_library_dir="$xlibdir"
+	      jd_with_$1_library="yes"
+	      found=1
+	      break
+	    fi
+	  done
+	fi
+	if test $found -eq 1
+	then
+	  break
+	fi	
+      done
     fi
   fi
 
-  if test X"jd_$1_include_dir" != X -a "$jd_$1_library_dir" != X
+  if test X"$jd_$1_include_dir" != X -a "$jd_$1_library_dir" != X
   then
     AC_MSG_RESULT(yes: $jd_$1_library_dir and $jd_$1_include_dir)
     jd_with_$1_library="yes"

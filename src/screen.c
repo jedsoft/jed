@@ -830,15 +830,25 @@ static void finish_status(int col_flag)
 
    while (1)
      {
+	char *v0 = v;
 	while (1)
 	  {
-	     ch = *v++;
-	     if (ch == 0) return;
+	     ch = *v;
+	     if (ch == 0)
+	       {
+		  SLsmg_write_nchars (v0, (unsigned int) (v-v0));
+		  return;
+	       }
 	     if (ch == '%')
-	       break;
-	     SLsmg_write_nchars (&ch, 1);
+	       {
+		  SLsmg_write_nchars (v0, (unsigned int) (v-v0));
+		  break;
+	       }
+	     v++;
 	  }
 
+	/* At this point *v == '%' */
+	v++;
 	ch = *v++;
 
 	switch (ch)
