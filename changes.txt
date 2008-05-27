@@ -316,6 +316,9 @@ Changes since 0.99-18.0
 139. src/screen.c: Multibyte characters in the status line string were
      not being processed (Paul Boekholt).
 140. autoconf/aclocal.m4: Reimplemented JD_CHECK_FOR_LIBRARY.
+141. lib/site.sl: Add the slsh library directory to the slang load
+     path even if it does not contain a local-packages sub-directory
+     (Joerg Sommer).
 
 {{{ Previous Versions 
 

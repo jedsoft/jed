@@ -3312,7 +3312,7 @@ if (is_defined ("import"))
 	$1 = ();
 	if ($1 == NULL)
 	  continue;
-	$2 = path_concat ($1, "share/slsh/local-packages");
+	$2 = path_concat ($1, "share/slsh");
 	if (2 != file_status ($2))
 	  continue;
 	append_to_slang_load_path ($2);
@@ -3321,12 +3321,15 @@ if (is_defined ("import"))
 	if (2 == file_status ($2))
 	  jed_append_doc_file ($2);
 
-	$2 = path_concat ($1, "share/slsh");
-	append_to_slang_load_path ($2);
-
-	$2 = path_concat ($2, "help");
+	$2 = path_concat ($1, "share/slsh/local-packages");
 	if (2 == file_status ($2))
-	  jed_append_doc_file ($2);
+	  {
+	     append_to_slang_load_path ($2);
+
+	     $2 = path_concat ($2, "help");
+	     if (2 == file_status ($2))
+	       jed_append_doc_file ($2);
+	  }
 
 	break;
      }
