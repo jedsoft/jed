@@ -319,6 +319,9 @@ Changes since 0.99-18.0
 141. lib/site.sl: Add the slsh library directory to the slang load
      path even if it does not contain a local-packages sub-directory
      (Joerg Sommer).
+142. src/ledit.c: Changed the error message generated when unable to
+     open a .sl to something less confusing (Suggested by Guenter
+     Milde).
 
 {{{ Previous Versions 
 

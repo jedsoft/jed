@@ -1453,6 +1453,12 @@ static VFILE *jed_open_lib_file (char *file, char **dirfile) /*{{{*/
    if (free_lib)
      SLang_free_slstring (lib);
 
+   if (vp == NULL)
+     {
+	*dirfile = NULL;
+	return NULL;
+     }
+
    if (NULL == (*dirfile = SLang_create_slstring (libf)))
      {
 	vclose (vp);
@@ -1487,15 +1493,16 @@ int jed_ns_load_file (char *file, char *ns)
    VFILE *vp;
    SLang_Load_Type *x;
    int ret;
+   char *dirfile;
 
-   if (NULL == (vp = jed_open_lib_file (file, &file)))
+   if (NULL == (vp = jed_open_lib_file (file, &dirfile)))
      {
-	SLang_verror (SL_OBJ_NOPEN, "Unable to load %s", file);
+	SLang_verror (SL_OBJ_NOPEN, "Unable to open %s.  Check the value of the S-Lang load path.", file);
 	return -1;
      }
 
 #if SLANG_VERSION >= 10409
-   x = SLns_allocate_load_type (file, ns);
+   x = SLns_allocate_load_type (dirfile, ns);
 #else
    if ((ns != NULL) 
        && (0 != strcmp (ns, "Global")))
@@ -1503,9 +1510,9 @@ int jed_ns_load_file (char *file, char *ns)
 	SLang_verror (SL_NOT_IMPLEMENTED, "loading a file into a namespace is not supported");
 	x = NULL;
      }
-   else x = SLallocate_load_type (file);
+   else x = SLallocate_load_type (dirfile);
 #endif
-   SLang_free_slstring (file);
+   SLang_free_slstring (dirfile);
    
    if (x == NULL)
      {
