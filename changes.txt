@@ -322,6 +322,9 @@ Changes since 0.99-18.0
 142. src/ledit.c: Changed the error message generated when unable to
      open a .sl to something less confusing (Suggested by Guenter
      Milde).
+143. lib/dabbrev.sl: Byte semantics instead of character semantics
+     were used during expansion causing problems with words that
+     contain multibyte characters.
 
 {{{ Previous Versions 
 

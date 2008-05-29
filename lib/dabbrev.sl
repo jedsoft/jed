@@ -356,7 +356,7 @@ private define dab_search (c, search_dir, match_method, pattern)
 	word = (@match_method) (pattern, word);
 
 	if (word != NULL)
-	  return word[[len:]];
+	  return substr (word, len+1, -1);
      }
 }
 
