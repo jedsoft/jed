@@ -137,7 +137,7 @@ define fold_mode ()
 #ifdef HAS_DFA_SYNTAX
 define dfa_enable_highlight_cache (file, name)
 {
-   variable dirfile = search_path_for_file (Jed_Highlight_Cache_Path, file);
+   variable dirfile = search_path_for_file (Jed_Highlight_Cache_Path, file, ',');
    if (dirfile == NULL)
      dirfile = dircat (Jed_Highlight_Cache_Dir, file);
    _dfa_enable_highlight_cache (dirfile, name);

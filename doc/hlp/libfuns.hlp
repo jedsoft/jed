@@ -2551,10 +2551,13 @@ search_path_for_file
   String_Type search_path_for_file (path, file [,delim])
 
  DESCRIPTION
- The `search_path_for_file' function searches the directories specified
- by the comma separated set of directories `path' for the filename `file'.
- If the file exists, it returns the expanded filename, otherwise it returns
- NULL.  The optional parameter may be used to specify the path delimiter.
+ The `search_path_for_file' function searches the directories
+ specified by the delimiter-separated set of directories `path'
+ for the filename `file'. If the file exists, it returns the
+ expanded filename, otherwise it returns NULL.  The optional
+ parameter may be used to specify the path delimiter.  The default
+ delimiter is system-dependent and is the same as that returned by
+ the `path_get_delimiter' function.
 
 --------------------------------------------------------------
 

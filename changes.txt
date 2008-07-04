@@ -325,6 +325,11 @@ Changes since 0.99-18.0
 143. lib/dabbrev.sl: Byte semantics instead of character semantics
      were used during expansion causing problems with words that
      contain multibyte characters.
+144. lib/site.sl: Updated doc for search_path_for_file
+145. lib/os.sl: In dfa_enable_highlight_cache Explicitly pass a comma
+     to search_path_for_file function.  A similar change was made in
+     preparse.sl.
+146. lib/ctags.sl: use atoi instead of integer.
 
 {{{ Previous Versions 
 

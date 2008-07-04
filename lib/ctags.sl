@@ -153,7 +153,7 @@ private define _ctags_find (tag, sinfo)
      {
 	push_mark ();
 	eol ();
-	sinfo.line = integer (bufsubstr ());
+	sinfo.line = atoi (bufsubstr ());
      }
    return sinfo;
 }

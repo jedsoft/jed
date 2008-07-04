@@ -474,10 +474,13 @@ define file_type(file)
 %\synopsis{search_path_for_file}
 %\usage{String_Type search_path_for_file (path, file [,delim])}
 %\description
-% The \var{search_path_for_file} function searches the directories specified
-% by the comma separated set of directories \var{path} for the filename \var{file}.
-% If the file exists, it returns the expanded filename, otherwise it returns
-% \NULL.  The optional parameter may be used to specify the path delimiter.
+% The \var{search_path_for_file} function searches the directories
+% specified by the delimiter-separated set of directories \var{path}
+% for the filename \var{file}. If the file exists, it returns the
+% expanded filename, otherwise it returns \NULL.  The optional
+% parameter may be used to specify the path delimiter.  The default
+% delimiter is system-dependent and is the same as that returned by
+% the \ifun{path_get_delimiter} function.
 %!%-
 define search_path_for_file ()
 {

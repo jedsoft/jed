@@ -9,7 +9,7 @@ define preparse_enable_highlight_cache (file, name)
    % Make sure existing cached files are removed
    forever
      {
-	variable dirfile = search_path_for_file (Jed_Highlight_Cache_Path, file);
+	variable dirfile = search_path_for_file (Jed_Highlight_Cache_Path, file, ',');
 	if (dirfile == NULL)
 	  break;
 	
