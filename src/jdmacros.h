@@ -58,4 +58,8 @@
 # include <unix.h>
 #endif
 
+#ifndef SLFUTURE_CONST
+# define SLFUTURE_CONST
+#endif
+
 #endif				       /* _JD_MACROS_H_ */

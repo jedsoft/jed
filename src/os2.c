@@ -356,7 +356,7 @@ int get_term_dimensions(int *w, int *h)
 #endif
 
 #if defined(_MSC_VER) || defined (__EMX__) || defined(__WATCOMC__)
-int sys_chmod(char *file, int what, mode_t *mode, uid_t *uid, gid_t *gid)
+int sys_chmod(SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *uid, gid_t *gid)
 {
    struct stat buf;
    int m;

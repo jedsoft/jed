@@ -28,7 +28,7 @@ extern int jed_insert_nbytes(unsigned char *, int);
 extern int jed_insert_wchar_n_times (SLwchar_Type, unsigned int);
 extern int jed_del_newline(void);
 extern int _jed_replace_wchar (SLwchar_Type);   /* \n not allowed */
-extern int jed_insert_string (char *s);
+extern int jed_insert_string (SLFUTURE_CONST char *s);
 extern int jed_insert_newline (void);
 extern int Suspend_Screen_Update;
 extern int jed_prepare_for_modification (int);

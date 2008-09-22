@@ -24,7 +24,7 @@ typedef struct
 } VFILE;
 
 extern char *vgets(VFILE *, unsigned int *);
-extern VFILE *vopen(char *, unsigned int, unsigned int);
+extern VFILE *vopen(SLFUTURE_CONST char *, unsigned int, unsigned int);
 extern void vclose(VFILE *);
 extern VFILE *vstream(int, unsigned int, unsigned int);
 

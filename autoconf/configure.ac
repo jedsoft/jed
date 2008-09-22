@@ -1,12 +1,12 @@
 dnl -*- autoconf -*-
 dnl
-dnl   This file requires m4 macros that I define in my acsite.m4 file.
-dnl   You can obtain this file from <ftp://space.mit.edu/pub/davis/acsite.m4>.
-dnl
-AC_INIT(src/ledit.c)
+AC_INIT([Jed],[0.99-19],[jed-users@jedsoft.org])
+AC_CONFIG_SRCDIR([src/ledit.c])
 JD_INIT
-
 AC_CONFIG_AUX_DIR(autoconf)
+
+dnl # infodir="\${JED_ROOT}/info"
+
 AC_CANONICAL_HOST
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
@@ -64,9 +64,31 @@ snprintf vsnprintf \
 JD_SET_OBJ_SRC_DIR
 JD_TERMCAP
 JD_WITH_LIBRARY(slang)
-dnl JD_FIND_SLANG
 JD_GCC_WARNINGS
 
+AC_ARG_ENABLE(xft,
+  AS_HELP_STRING([--disable-xft],
+     [disable X FreeType library support (antialiased fonts)]),
+  [enable_xft=$enableval], [enable_xft=default])
+if test X"$enable_xft" = Xno
+then
+  AC_MSG_NOTICE(checking for xft disabled)
+else
+  AC_CHECK_LIB(Xft, XftFontOpen,
+    [XRENDERFONTLIBS="-lXft"
+     AC_SUBST(XRENDERFONTLIBS)
+     AC_DEFINE(XJED_HAS_XRENDERFONT, 1)
+     AC_PATH_PROG(PKGCONFIG, pkg-config)
+     if test -n "$PKGCONFIG"
+     then
+       X_CFLAGS="$X_CFLAGS $($PKGCONFIG --cflags xft)"
+     fi],
+    [if test X"$enable_xft" = Xyes
+     then
+       AC_MSG_FAILURE([libXft not found])
+     fi])
+fi
+ 
 dnl #------------------------------------------------------------------------
 dnl JD_CHECK_FOR_LIBRARY(pcre)
 dnl if test $jd_with_pcre_library = yes
@@ -90,7 +112,8 @@ JD_GET_MODULES(src/modules.unx)
 JD_CREATE_MODULE_ORULES
 
 AC_CONFIG_HEADER(src/sysconf.h:src/config.hin)
-AC_OUTPUT(Makefile:autoconf/Makefile.in src/Makefile)
+AC_CONFIG_FILES([Makefile:autoconf/Makefile.in src/Makefile])
+AC_OUTPUT
 
 dnl JD_CREATE_ORULE(jprocess)
 dnl JD_CREATE_ORULE(chkslang)

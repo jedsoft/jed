@@ -9,7 +9,7 @@
 #include "window.h"
 
 extern void exit_error(char *, int);
-extern void jed_error_hook (char *);
+extern void jed_error_hook (SLFUTURE_CONST char *);
 extern void msg_error(char *);
 extern void jed_verror (char *, ...);
 extern void jed_vmessage (int, char *, ...);
@@ -51,8 +51,8 @@ extern int get_macro(void);
 extern int Exit_From_MiniBuffer;
 extern unsigned char *Macro_Buffer_Ptr;
 extern char *read_from_minibuffer(char *, char *, char *, int *);
-extern char *safe_strcat (char *, char *, unsigned int);
-extern char *safe_strcpy (char *, char *, unsigned int);
+extern char *safe_strcat (char *, SLFUTURE_CONST char *, unsigned int);
+extern char *safe_strcpy (char *, SLFUTURE_CONST char *, unsigned int);
 
 extern int jed_case_strncmp (char *, char *, unsigned int);
 extern int jed_case_strcmp (char *, char *);

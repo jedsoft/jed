@@ -616,29 +616,6 @@ private define between_statements ()
    return ret;
 }
 
-% This function is called with the point at the end of a line that may
-% be continued onto the next (the one we want to indent).  It returns 1
-% if the next line ought to be indented as a continued one.
-private define is_continuation_line ()
-{
-   if (orelse
-       { blooking_at (";") }	       %  end of statement
-	 { blooking_at ("{") }	       %  start of block
-	 { blooking_at ("}") }	       %  end of block
-	 { blooking_at (":") }	       %  case or label
-	 { bobp () })
-     return 0;
-
-   if (0 == blooking_at (","))
-     return 1;
-
-   % This part is too naive and needs to be expanded -- for now deal
-   % with the common usages of ")," and "},"
-   if (blooking_at ("),")) return 1;
-
-   return not blooking_at ("},");
-}
-
 private define is_label_statement ()
 {
    push_spot ();
@@ -664,6 +641,41 @@ private define is_label_statement ()
      return 0;
    return 1;
 }
+
+% This function is called with the point at the end of a line that may
+% be continued onto the next (the one we want to indent).  It returns 1
+% if the next line ought to be indented as a continued one.
+private define is_continuation_line ()
+{
+   if (orelse
+       { blooking_at (";") }	       %  end of statement
+	 { blooking_at ("{") }	       %  start of block
+	 { blooking_at ("}") }	       %  end of block
+	 { bobp () })
+     return 0;
+
+   if (blooking_at (":"))
+     {
+	push_spot ();
+	bol_skip_white ();
+	if (looking_at ("case") || is_label_statement ())
+	  {
+	     pop_spot ();
+	     return 0;
+	  }
+	pop_spot ();
+     }
+
+   if (0 == blooking_at (","))
+     return 1;
+
+   % This part is too naive and needs to be expanded -- for now deal
+   % with the common usages of ")," and "},"
+   if (blooking_at ("),")) return 1;
+
+   return not blooking_at ("},");
+}
+
 % overview of indentation tracking variables
 %
 % this_char:

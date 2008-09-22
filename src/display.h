@@ -18,10 +18,10 @@ extern void (*tt_get_terminfo)(void);
 
 /* These hooks should be set during run-time by the tt_get_terminfo hook */
 extern void (*tt_beep)(void);
-extern void (*tt_write_string)(char *);
+extern void (*tt_write_string)(SLFUTURE_CONST char *);
 extern void (*tt_get_screen_size)(int *, int *);
-extern JX_SETXXX_RETURN_TYPE (*tt_set_color)(int, char *, char *, char *);
-extern JX_SETXXX_RETURN_TYPE (*tt_set_mono) (int, char *, SLtt_Char_Type);
+extern JX_SETXXX_RETURN_TYPE (*tt_set_color)(int, SLFUTURE_CONST char *, SLFUTURE_CONST char *, SLFUTURE_CONST char *);
+extern JX_SETXXX_RETURN_TYPE (*tt_set_mono) (int, SLFUTURE_CONST char *, SLtt_Char_Type);
 
 #ifndef IBMPC_SYSTEM
 extern void (*tt_wide_width)(void);

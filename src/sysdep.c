@@ -22,6 +22,13 @@
 # include <unistd.h>
 #endif
 
+#ifdef __WIN32__
+/* windows.h must be included before slang.h */
+# include <windows.h>
+#endif
+
+#include <slang.h>
+
 #include "jdmacros.h"
 
 #ifdef POSIX
@@ -34,7 +41,6 @@
 # ifdef VOID 
 #  undef VOID
 # endif
-# include <windows.h>
 # if !defined(__CYGWIN32__)
 #  define sleep Sleep
 # endif
@@ -55,8 +61,6 @@ extern unsigned int sleep (unsigned int);
 #  endif
 # endif
 #endif
-
-#include <slang.h>
 
 #include "buffer.h"
 #include "sysdep.h"
@@ -164,7 +168,10 @@ int DEC_8Bit_Hack = 0;
 int my_getkey() /*{{{*/
 {
    char buf[10];
-   int i, imax;
+   int i;
+#if 0
+   int imax;
+#endif
    unsigned char ch;
    int eightbit_hack;
 
@@ -223,13 +230,14 @@ int my_getkey() /*{{{*/
 #ifdef USING_INPUT_BUFFER
    USING_INPUT_BUFFER
 #endif
-     
-     Input_Buffer_Len--;
-   imax = Input_Buffer_Len;
 
+   Input_Buffer_Len--;
+#if 1
+   memmove (Input_Buffer, Input_Buffer+1, Input_Buffer_Len);
+#else
    for (i = 0; i < imax; i++)
      Input_Buffer[i] = Input_Buffer[i+1];
-
+#endif
    /* SLMEMCPY ((char *) Input_Buffer, (char *) (Input_Buffer + 1), imax); */
    
 #ifdef DONE_WITH_INPUT_BUFFER
@@ -393,17 +401,17 @@ char *slash2slash(char *dir) /*{{{*/
  * Note: If the file ends in a slash as in a/b/c/, then a pointer to
  * the END of the string is returned.
  */
-char *extract_file(char *file) /*{{{*/
+char *extract_file(SLFUTURE_CONST char *file) /*{{{*/
 {
-   char *f;
+   SLFUTURE_CONST char *f;
    
    f = file + strlen(file);
    while (f > file)
      {
 	f--;
-	if (*f == SLASH_CHAR) return f + 1;
+	if (*f == SLASH_CHAR) return (char *)f + 1;
      }
-   return (file);
+   return (char *) file;
 }
 
 /*}}}*/
@@ -651,22 +659,23 @@ static char *skip_drive_specifier (char *file)
    return file;
 }
 
-static char *prep_filename (char *file)
+static char *prep_filename (SLFUTURE_CONST char *filename)
 {
    unsigned int len;
+   char *file;
 
-   len = strlen (file);
+   len = strlen (filename);
 
 #ifdef MSWINDOWS
    /* Strip quotes from around the filename, if any */
-   if ((len >= 2) && (file[0] == '"') && (file[len - 1] == '"'))
+   if ((len >= 2) && (filename[0] == '"') && (filename[len - 1] == '"'))
      {
 	len -= 2;
-	file++;
+	filename++;
      }
 #endif
 
-   if (NULL == (file = SLmake_nstring (file, len)))
+   if (NULL == (file = SLmake_nstring (filename, len)))
      return NULL;
 
 #ifndef __unix__
@@ -675,11 +684,11 @@ static char *prep_filename (char *file)
    return file;
 }
 
-char *jed_standardize_filename (char *file)
+char *jed_standardize_filename (SLFUTURE_CONST char *filename)
 {
-   char *file1;
+   char *file1, *file;
    
-   if (NULL == (file = prep_filename (file)))
+   if (NULL == (file = prep_filename (filename)))
      return NULL;
 
    if (NULL == (file = make_abs_filename (file)))

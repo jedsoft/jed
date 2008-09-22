@@ -1369,10 +1369,10 @@ int pipe_region(char *cmd) /*{{{*/
 #endif
 
 
-static VFILE *jed_open_lib_file (char *file, char **dirfile) /*{{{*/
+static VFILE *jed_open_lib_file (SLFUTURE_CONST char *file, char **dirfile) /*{{{*/
 {
    char libfsl[JED_MAX_PATH_LEN], libfslc[JED_MAX_PATH_LEN];
-   char *lib, *type, *libf;
+   SLFUTURE_CONST char *lib, *type, *libf;
    unsigned int n;
    VFILE *vp = NULL;
    int free_lib;
@@ -1451,7 +1451,7 @@ static VFILE *jed_open_lib_file (char *file, char **dirfile) /*{{{*/
      }
    
    if (free_lib)
-     SLang_free_slstring (lib);
+     SLang_free_slstring ((char *) lib);
 
    if (vp == NULL)
      {
@@ -1488,7 +1488,7 @@ static char *jed_read_from_file(SLang_Load_Type *x) /*{{{*/
 
 /*}}}*/
 
-int jed_ns_load_file (char *file, char *ns)
+int jed_ns_load_file (SLFUTURE_CONST char *file, SLFUTURE_CONST char *ns)
 {
    VFILE *vp;
    SLang_Load_Type *x;
@@ -1999,8 +1999,7 @@ void make_buffer_list(void) /*{{{*/
 
 /*}}}*/
 
-
-static void jed_traceback(char *s) /*{{{*/
+static void jed_traceback (SLFUTURE_CONST char *s) /*{{{*/
 {
    char *n;
 
@@ -2109,7 +2108,7 @@ static int run_init_slang_hooks (void)
    return 0;
 }
 
-static void slang_exit_error_handler (char *fmt, va_list ap)
+static void slang_exit_error_handler (SLFUTURE_CONST char *fmt, va_list ap)
 {
    char buf [2048];
    
@@ -2117,7 +2116,7 @@ static void slang_exit_error_handler (char *fmt, va_list ap)
    exit_error (buf, 0);
 }
 
-static void vmsg_hook (char *fmt, va_list ap)
+static void vmsg_hook (SLFUTURE_CONST char *fmt, va_list ap)
 {
    char buf [2048];
    SLvsnprintf (buf, sizeof (buf), fmt, ap);

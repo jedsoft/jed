@@ -18,10 +18,10 @@
 #include "hooks.h"
 
 void (*tt_beep)(void);
-void (*tt_write_string)(char *);
+void (*tt_write_string)(SLFUTURE_CONST char *);
 void (*tt_get_screen_size)(int *, int *);
-JX_SETXXX_RETURN_TYPE (*tt_set_color)(int, char *, char *, char *);
-JX_SETXXX_RETURN_TYPE (*tt_set_mono) (int, char *, SLtt_Char_Type);
+JX_SETXXX_RETURN_TYPE (*tt_set_color)(int, SLFUTURE_CONST char *, SLFUTURE_CONST char *, SLFUTURE_CONST char *);
+JX_SETXXX_RETURN_TYPE (*tt_set_mono) (int, SLFUTURE_CONST char *, SLtt_Char_Type);
 
 #ifndef IBMPC_SYSTEM
 # if SLANG_VERSION < 20000

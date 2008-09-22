@@ -28,6 +28,9 @@
 # include <X11/keysym.h>
 # include <X11/cursorfont.h>
 # include <X11/Intrinsic.h>
+#ifndef XJED_HAS_XRENDERFONT
+# define XJED_HAS_XRENDERFONT 0
+#endif
 # if XJED_HAS_XRENDERFONT
 #  include <X11/Xft/Xft.h>
 # endif

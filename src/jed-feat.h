@@ -78,9 +78,6 @@
  */
 #define XJED_SET_WM_COMMAND	0
 
-/* For antialiased fonts, set this to 1 and modify Makefile accordingly */
-#define XJED_HAS_XRENDERFONT	0
-  
 #if JED_HAS_EMACS_LOCKING && !defined(HAVE_SYMLINK)
 # undef JED_HAS_EMACS_LOCKING
 # define JED_HAS_EMACS_LOCKING 0
@@ -90,10 +87,6 @@
  * the slang import statement.  This assumes that slang was compiled with 
  * such support.
  */
-#ifdef HAVE_DLOPEN
-# define JED_HAS_IMPORT	1
-#else
-# define JED_HAS_IMPORT	0
-#endif
+#define JED_HAS_IMPORT	1
 
 #endif

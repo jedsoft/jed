@@ -38,7 +38,7 @@ extern void buffer_keystring (char *, int);
 extern void ungetkey(int *);
 extern void sys_resume(void);
 extern int sys_delete_file(char *);
-extern int sys_chmod(char *, int, mode_t *, uid_t *, gid_t *);
+extern int sys_chmod(SLFUTURE_CONST char *, int, mode_t *, uid_t *, gid_t *);
 extern unsigned long sys_file_mod_time(char *);
 
 /* expand the file in a canonical way and return a pointer to a 
@@ -48,7 +48,7 @@ extern char *jed_standardize_filename_static (char *);
 extern char *jed_expand_filename (char *);
 
 /* return pointer to place filename starts in path */
-extern char *extract_file(char *);
+extern char *extract_file(SLFUTURE_CONST char *);
 
 /* Like extract_file, except ignores the trailing slash */
 char *jed_extract_file_or_dir (char *);

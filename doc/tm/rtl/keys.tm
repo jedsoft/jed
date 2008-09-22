@@ -328,7 +328,7 @@
      if (arg == NULL)
        message ("No Prefix Argument");
      else
-       vmessage ("Prefix argument: %d", arg));
+       vmessage ("Prefix argument: %d", arg);
 #v-
 \notes
   The old semantics, which are still supported but deprecated allows
@@ -340,7 +340,7 @@
      if (arg == -9999)
        message ("No Prefix Argument");
      else
-       vmessage ("Prefix argument: %d", arg));
+       vmessage ("Prefix argument: %d", arg);
 #v-
 \seealso{set_prefix_argument}
 \done

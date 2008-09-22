@@ -213,9 +213,10 @@ struct _Buffer
    int hits;			       /* number of hits on buffer since 
 					* last autosave.  A hit is the number
 					* of times the buffer was hit on at top level  */
-   unsigned long c_time;	       /* time when buffer first created or
-					* when file visited
-					*/
+
+   /* 0 or time when buffer first associated with a file */
+   unsigned long c_time;
+
    Undo_Type *undo;		       /* pointer to undo ring */
    Buffer_Local_Type local_vars;
    
@@ -364,8 +365,8 @@ extern unsigned char *make_line(unsigned int);
 extern unsigned char *remake_line(unsigned int);
 
 extern Buffer *make_buffer(char *, char *, char *);
-extern void uniquely_name_buffer(Buffer *, char *);
-extern void buffer_filename(Buffer *, char *, char *);
+extern void uniquely_name_buffer(Buffer *, SLFUTURE_CONST char *);
+extern void buffer_filename(Buffer *, SLFUTURE_CONST char *, SLFUTURE_CONST char *);
 extern Buffer *find_file_buffer(char *);
 extern Buffer *find_buffer(char *);
 extern int delete_line(void);

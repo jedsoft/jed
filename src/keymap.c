@@ -550,7 +550,7 @@ static char *find_function_string (FVOID_STAR f) /*{{{*/
    fp = Jed_Functions;
    while ((fp != NULL) && (fp->name != NULL))
      {
-	if ((FVOID_STAR) fp->f == f) return fp->name;
+	if ((FVOID_STAR) fp->f == f) return (char *) fp->name;
 	fp++;
      }
    return NULL;
@@ -558,7 +558,7 @@ static char *find_function_string (FVOID_STAR f) /*{{{*/
 
 /*}}}*/
 
-static char *lookup_key_function_string (SLang_Key_Type *key)
+static SLFUTURE_CONST char *lookup_key_function_string (SLang_Key_Type *key)
 {
    if (key == NULL)
      return NULL;
@@ -717,8 +717,9 @@ static int run_switch_active_buffer_hooks (char **bnamep)
 
 void jed (void) /*{{{*/
 {
-   /* This routine is called from main.  So before actually strting, check
-      one more hook to just to make sure  all things are go. */
+   /* This routine is called from main.  It calls the startup-hooks before
+    * entering the main editing loop.
+    */
    char *buffer_name;
 
    if (SLang_get_error ())
@@ -894,7 +895,7 @@ static void dump_this_binding (SLang_Key_Type *key) /*{{{*/
 {
    unsigned char ch, *s;
    char *str,  ctrl[2];
-   char *fun;
+   SLFUTURE_CONST char *fun;
    int n, len;
    
    s = key->str;
@@ -992,7 +993,7 @@ static void use_keymap(char *name) /*{{{*/
 
 /*}}}*/
 
-static char *what_keymap (void) /*{{{*/
+static SLFUTURE_CONST char *what_keymap (void) /*{{{*/
 {
    return CBuf->keymap->name;
 }
@@ -1043,7 +1044,7 @@ static char **Slang_Flist_Context;
 
 int next_function_list(char *buf) /*{{{*/
 {
-   register char *name;
+   char *name;
    char **max;
    
    /* Convert '-' to '_' */
@@ -1058,12 +1059,12 @@ int next_function_list(char *buf) /*{{{*/
    while (1)
      {
 	SLKeymap_Function_Type *tthis = Flist_Context;
-	name = tthis->name;
-	if (name == NULL) break;
+	SLFUTURE_CONST char *tname = tthis->name;
+	if (tname == NULL) break;
 	Flist_Context++;
-	if (!Flist_Context_Len || !strncmp(buf, name, Flist_Context_Len))
+	if (!Flist_Context_Len || !strncmp(buf, tname, Flist_Context_Len))
 	  {
-	     strcpy(buf, name);
+	     strcpy(buf, tname);
 	     return(1);
 	  }
      }

@@ -1467,8 +1467,12 @@ void jed_create_line_mark (int *color) /*{{{*/
 
 /*}}}*/
 #endif
-   
-static int user_mark_sget (SLtype type, char *name)
+
+#ifndef SLFUTURE_CONST
+# define SLFUTURE_CONST
+#endif
+
+static int user_mark_sget (SLtype type, SLFUTURE_CONST char *name)
 {
    SLang_MMT_Type *mmt;
    User_Mark_Type *um;

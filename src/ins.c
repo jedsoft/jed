@@ -624,7 +624,7 @@ int _jed_replace_wchar (SLwchar_Type ch) /*{{{*/
 
 /*}}}*/
 
-int jed_insert_string (char *s)
+int jed_insert_string (SLFUTURE_CONST char *s)
 {
    return jed_insert_nbytes ((unsigned char *) s, strlen (s));
 }

@@ -330,6 +330,26 @@ Changes since 0.99-18.0
      to search_path_for_file function.  A similar change was made in
      preparse.sl.
 146. lib/ctags.sl: use atoi instead of integer.
+147. src/Makefile.in: Use `test -r` instead of `test -e` because some
+     versions of test do not support -e.
+148. src/Makefile.in: Minimum slang version set to 2.1.0.  Also
+     buffer.h added as a global dependency.
+148. lib/site.sl: Some code simplified by using "&&".
+149. lib/cmode.sl: Ternary statements with a colon at the end of the
+     line were being interpreted as label statements.
+150. src/Makefile.in: Added support for configure --infodir=value
+     (Joerg Sommer).
+151. src/sysdep.c: Use memmove instead of an explicit loop. (Joerg
+     Sommer).
+152. lib/site.sl: The goto_top/bottom_of_window functions were not accounting
+     for hidden lines (Joerg Sommer).
+153. lib/html.sl: Use "<!--" for the comment start syntax instead of
+     the "historical" or obsolete form "<!-". (Joerg Sommer).
+154. src/main.c: Updated the jed-script usage message (Variant of a
+     patch from Joerg Sommer).
+155. autoconf/configure.ac: Updated the usage of the AC_INIT and
+     AC_OUTPUT macros from the obsolete forms. (Joerg Sommer).
+156. autoconf/configure.ac: Added --disable-xft option (Joerg Sommer)
 
 {{{ Previous Versions 
 

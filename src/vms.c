@@ -1016,7 +1016,7 @@ int sys_findfirst(char *thefile) /*{{{*/
 #include <stat.h>
 
 /* returns 0 if file does not exist, 1 if it is not a dir, 2 if it is */
-int sys_chmod(char *file, int what, mode_t *mode, uid_t *uid, gid_t *gid) /*{{{*/
+int sys_chmod(SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *uid, gid_t *gid) /*{{{*/
 {
    struct stat buf;
    int m;

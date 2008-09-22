@@ -336,7 +336,7 @@ int sys_findnext(char *file)
 
 
 
-int sys_chmod(char *file, int what, mode_t *mode, uid_t *dum1, gid_t *dum2)
+int sys_chmod(SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *dum1, gid_t *dum2)
 {
    int flag, m = *mode;
    (void) dum1; (void) dum2;

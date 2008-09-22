@@ -137,7 +137,7 @@ int sys_input_pending(int *tsecs, int unused)
 
 
 /* returns 0 if file does not exist, 1 if it is not a dir, 2 if it is */
-int sys_chmod(char *file, int what, mode_t *mode, uid_t *dum1, gid_t *dum2)
+int sys_chmod(SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *dum1, gid_t *dum2)
 {
    struct stat buf;
    int m;

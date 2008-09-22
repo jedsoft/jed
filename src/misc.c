@@ -232,7 +232,7 @@ int jed_getkey (void) /*{{{*/
 
 /*}}}*/
 
-void jed_error_hook (char *msg)
+void jed_error_hook (SLFUTURE_CONST char *msg)
 {
    if ((JWindow == NULL) || Batch)
      fprintf(stderr, "%s\r\n", msg);
@@ -599,7 +599,7 @@ void get_last_macro () /*{{{*/
 
 /*}}}*/
 
-char *safe_strcpy (char *a, char *b, unsigned int n) /*{{{*/
+char *safe_strcpy (char *a, SLFUTURE_CONST char *b, unsigned int n) /*{{{*/
 {
    if (n != 0)
      {
@@ -612,7 +612,7 @@ char *safe_strcpy (char *a, char *b, unsigned int n) /*{{{*/
 
 /*}}}*/
 
-char *safe_strcat (char *a, char *b, unsigned int n) /*{{{*/
+char *safe_strcat (char *a, SLFUTURE_CONST char *b, unsigned int n) /*{{{*/
 {
    unsigned int len = strlen (a);
    unsigned int max;

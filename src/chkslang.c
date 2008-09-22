@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006, 2008 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -31,7 +31,7 @@
 
 static char *make_version (unsigned int v)
 {
-   static char v_string[16];
+   static char v_string[128];
    unsigned int a, b, c;
    
    a = v/10000;
@@ -93,13 +93,57 @@ Also try: make clean; make\n", (long)SLANG_VERSION, (long)SLang_Version);
 	fprintf (stderr, "Your slang version is %s.\n", make_version(sl_version));
 	fprintf (stderr, "To fully utilize this program, you should upgrade the slang library to\n");
 	fprintf (stderr, "  version %s\n", make_version(sug_version));
-	fprintf (stderr, "This library is available via anonymous ftp from\n\
-space.mit.edu in pub/davis/slang.\n");
+	fprintf (stderr, "This library is available from <http://jedsoft.org/slang/>.\n");
      }
-   
+
+#ifdef SIZEOF_SHORT
+   if (sizeof(short) != SIZEOF_SHORT)
+     {
+	fprintf (stderr, "SIZEOF_SHORT[%lu] is not equal to sizeof(short)[%lu]\n",
+		 (unsigned long) SIZEOF_SHORT, (unsigned long) sizeof(short));
+	ret = FAILURE;
+     }
+#endif
+#ifdef SIZEOF_INT
+   if (sizeof(int) != SIZEOF_INT)
+     {
+	fprintf (stderr, "SIZEOF_INT[%lu] is not equal to sizeof(int)[%lu]\n",
+		 (unsigned long) SIZEOF_INT, (unsigned long) sizeof(int));
+	ret = FAILURE;
+     }
+#endif
+#ifdef SIZEOF_LONG
+   if (sizeof(long) != SIZEOF_LONG)
+     {
+	fprintf (stderr, "SIZEOF_LONG[%lu] is not equal to sizeof(long)[%lu]\n",
+		 (unsigned long) SIZEOF_LONG, (unsigned long) sizeof(long));
+	ret = FAILURE;
+     }
+#endif
+#ifdef SIZEOF_LONG_LONG
+   if (sizeof(long long) != SIZEOF_LONG_LONG)
+     {
+	fprintf (stderr, "SIZEOF_LONG_LONG[%lu] is not equal to sizeof(long long)[%lu]\n",
+		 (unsigned long) SIZEOF_LONG_LONG, (unsigned long) sizeof(long long));
+	ret = FAILURE;
+     }
+#endif
+#ifdef SIZEOF_FLOAT
+   if (sizeof(float) != SIZEOF_FLOAT)
+     {
+	fprintf (stderr, "SIZEOF_FLOAT[%lu] is not equal to sizeof(float)[%lu]\n",
+		 (unsigned long) SIZEOF_FLOAT, (unsigned long) sizeof(float));
+	ret = FAILURE;
+     }
+#endif
+#ifdef SIZEOF_DOUBLE
+   if (sizeof(double) != SIZEOF_DOUBLE)
+     {
+	fprintf (stderr, "SIZEOF_DOUBLE[%lu] is not equal to sizeof(double)[%lu]\n",
+		 (unsigned long) SIZEOF_DOUBLE, (unsigned long) sizeof(double));
+	ret = FAILURE;
+     }
+#endif
+
    return ret;
 }
-
-
-
-

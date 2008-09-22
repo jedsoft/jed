@@ -488,7 +488,8 @@ definekey("html_par_insert", "\e^M", $1); % Neater paragraph insert (MDJ 04/06/9
 create_syntax_table ($1);
 define_syntax ("<", ">", '(', $1);     %  make these guys blink match
 define_syntax ("<>", '<', $1);
-define_syntax ("<!-", "-->", '%', $1);
+%define_syntax ("<!-", "-->", '%', $1);   % Some broken html files require this
+define_syntax ("<!--", "-->", '%', $1);
 define_syntax ("A-Za-z&", 'w', $1);
 define_syntax ('#', '#', $1);
 

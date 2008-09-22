@@ -276,7 +276,7 @@ static int sys_open (char *file, int acces) /*{{{*/
 
 /*}}}*/
 
-char *file_type(char *file) /*{{{*/
+char *file_type (SLFUTURE_CONST char *file) /*{{{*/
 {
    char *p, *psave;
    
@@ -285,11 +285,12 @@ char *file_type(char *file) /*{{{*/
      return NULL;
 
    file = extract_file(file);
-   p = file; while (*p != 0) p++;
+   p = (char *) file; while (*p != 0) p++;
    psave = p;
    while((p != file) && (*p != '.')) p--;
    if (*p == '.') p++;
-   if (p == file) return(psave); else return(p);
+   if (p == file) return psave;
+   return p;
 }
 
 /*}}}*/
@@ -1576,7 +1577,7 @@ void visit_file (char *dir, char *file) /*{{{*/
 
 /*}}}*/
 
-char *jed_dir_file_merge(char *dir, char *file) /*{{{*/
+char *jed_dir_file_merge(SLFUTURE_CONST char *dir, SLFUTURE_CONST char *file) /*{{{*/
 /* 
  * returns result of merging dir with file. If file is empty, dir is
  * considered to be whole file.
@@ -1597,13 +1598,13 @@ char *jed_dir_file_merge(char *dir, char *file) /*{{{*/
 	
    file = jed_standardize_filename (dirfile);
    SLfree (dirfile);
-   return file;
+   return (char *) file;
 }
 
 /*}}}*/
 
 
-int file_status(char *file) /*{{{*/
+int file_status(SLFUTURE_CONST char *file) /*{{{*/
 /*
  *  Returns a coded integer about file.  If the file does not exist, 0 is
  *  returned.  Meaning:
@@ -1647,7 +1648,9 @@ int file_changed_on_disk (Buffer *buf, char *dirfile) /*{{{*/
 {
    unsigned long t;
 
-   /* If we are saving this to a different file, then skip the test */
+   /* If we are saving this to a different file, then skip the test --
+    * unless dirfile is a link.
+    */
    if ((buf->canonical_dirfile != NULL) 
 #if JED_FILE_PRESERVE_CASE
        && (0 != strcmp (buf->canonical_dirfile, dirfile))
@@ -1655,7 +1658,17 @@ int file_changed_on_disk (Buffer *buf, char *dirfile) /*{{{*/
        && (0 != jed_case_strcmp (buf->canonical_dirfile, dirfile))
 #endif
        )
-     return 0;
+     {
+#ifdef REAL_UNIX_SYSTEM
+	struct stat s;
+
+	if ((-1 == lstat(dirfile, &s))
+	    || (0 == ((s.st_mode & S_IFMT) & S_IFLNK)))
+	  return 0;
+#else	
+	return 0;
+#endif
+     }
 
 #ifdef REAL_UNIX_SYSTEM
    /*
@@ -1692,9 +1705,14 @@ int file_changed_on_disk (Buffer *buf, char *dirfile) /*{{{*/
 
    if (t > buf->c_time)
      {
+#if 0  /* Commented out because if the file did not exists when the buffer was created
+	* then c_time will be 0.  But if t>0, then this would indcate that an
+	* external process created the file.
+	*/
+	
 	if (buf->c_time == 0)	       /* new buffer, writing to existing file */
 	  return 0;
-
+#endif
 	return 1;
      }
 

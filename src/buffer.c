@@ -965,7 +965,7 @@ unsigned char *remake_line(unsigned int size) /*{{{*/
 
 /*}}}*/
 
-void uniquely_name_buffer (Buffer *b, char *trry) /*{{{*/
+void uniquely_name_buffer (Buffer *b, SLFUTURE_CONST char *trry) /*{{{*/
 {
    Buffer *bnext;
    int version = 0, n;
@@ -1357,7 +1357,7 @@ Buffer *find_file_buffer(char *file) /*{{{*/
 /*}}}*/
 
 /* take a dir and a filename, expand them then put in buffer structure */
-void buffer_filename(Buffer *b, char *dir, char *file) /*{{{*/
+void buffer_filename(Buffer *b, SLFUTURE_CONST char *dir, SLFUTURE_CONST char *file) /*{{{*/
 {
    unsigned int dirlen;
    char *dirfile;

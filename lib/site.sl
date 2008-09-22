@@ -1698,13 +1698,15 @@ define whatpos ()
 
 define goto_top_of_window ()
 {
-   go_up (window_line () - 1);
+   loop (window_line()-1)
+     skip_hidden_lines_backward (1);
    bol ();
 }
 
 define goto_bottom_of_window ()
 {
-   go_down (window_info ('r') - window_line ());
+   loop (window_info ('r') - window_line ())
+     skip_hidden_lines_forward (1);
 }
 
 %!%+
@@ -3221,30 +3223,18 @@ define command_line_hook () %{{{
 	  {
 	     tmp = strtrans (substr (file, 3, -1), "-", "_");
 	     (not (strncmp (file, "--", 2))
-	      and is_defined (tmp))
+	      && is_defined (tmp))
 	       :
 	     eval (tmp);
 	     ++n; --i;
 	  }
 	  {
-	     depth = _stkdepth;
-	     % The integer call below could fail...
-	     ERROR_BLOCK
-	       {
-		  _pop_n (_stkdepth - depth);
-		  _clear_error ();
-		  0;
-	       }
+	     (n && (file[0] == '+') 
+	      && (Int_Type == _slang_guess_type (file))
+	      && (atoi (file) >= 0)) :
 
-	     (
-#if (_slang_version >= 20100)
-	      n and (file[0] == '+') && (integer(file) >= 0)
-#else
-	      andelse { n and (file[0] == '+')}{integer (file) >= 0}
-#endif
-	      ):
 	     () = find_file (next_file_arg);
-	     goto_line (integer (file));
+	     goto_line (atoi(file));
 	  }
 	  {
 	     flush ("Reading " + file);

@@ -7,7 +7,7 @@
 
 extern Buffer *The_MiniBuffer;
 
-extern int jed_ns_load_file (char *, char *);
+extern int jed_ns_load_file (SLFUTURE_CONST char *, SLFUTURE_CONST char *);
 extern int find_file_in_window(char *);
 extern int find_file(void);
 extern int get_buffer(void);

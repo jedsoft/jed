@@ -206,10 +206,19 @@ char **_Jed_Startup_Argv;
 
 static void script_usage (void)
 {
-   fprintf (stderr, "Running jed in script mode requires one of the following forms:\n");
-   fprintf (stderr, "Usage: jed-script SCRIPT_FILE [args...]\n");
-   fprintf (stderr, "Usage: jed --script SCRIPT_FILE [args...]\n");
+   (void) fputs ("\
+Usage: Running jed in script mode requires one of the following forms:\n\
+  jed-script SCRIPT_FILE [args...]\n\
+  jed --script SCRIPT_FILE [args...]\n\
+\n\
+If the script contains a public function called `jedscript_main`, then it\n\
+will be called after the script has been loaded.  The value of __argv[0] will\n\
+be the name of the script, and __argv[[1:]] will be set to the script\n\
+arguments.\n\
+", 
+		 stderr);
 }
+
 
 static int main_initialize (int argc, char **argv)
 {

@@ -80,7 +80,7 @@
 
 unsigned int VFile_Mode = VFILE_TEXT;
 
-VFILE *vopen(char *file, unsigned int size, unsigned int fmode) /*{{{*/
+VFILE *vopen(SLFUTURE_CONST char *file, unsigned int size, unsigned int fmode) /*{{{*/
 {
    int fd;
    unsigned int mode;

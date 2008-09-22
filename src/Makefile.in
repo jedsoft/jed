@@ -18,6 +18,7 @@ datarootdir = @datarootdir@
 JED_ROOT = @JED_ROOT@# <--- make sure # is at end of file!!
 BIN_DIR = @bindir@
 MAN_DIR = @mandir@/man1
+INFO_DIR = @infodir@
 INSTALL		= @INSTALL@
 INSTALL_DATA	= @INSTALL_DATA@
 MKINSDIR = ../autoconf/mkinsdir.sh
@@ -37,6 +38,7 @@ JED_INFO_FILES = ../info/*
 DESTDIR =
 DEST_BIN_DIR = $(DESTDIR)$(BIN_DIR)
 DEST_MAN_DIR = $(DESTDIR)$(MAN_DIR)
+DEST_INFO_DIR = $(DESTDIR)$(INFO_DIR)
 DEST_JED_ROOT = $(DESTDIR)$(JED_ROOT)
 
 #---------------------------------------------------------------------------
@@ -60,8 +62,8 @@ OBJDIR = @OBJDIR@
 
  
 # 2. XFree86 XRENDERFONT (Anti-aliased font) support for XJED
-#    Also modify "XJED_HAS_XRENDERFONT" in jed-feat.h
 #XRENDERFONTLIBS = -lXft -lXrender -lfreetype -lXext
+XRENDERFONTLIBS = @XRENDERFONTLIBS@
 
 #---------------------------------------------------------------------------
 # S-Lang library location
@@ -97,7 +99,7 @@ OTHERLIBS = @LIBS@ -lm
 # There should be no need to modify anything below here.
 #---------------------------------------------------------------------------
 
-MIN_SLANG_VERSION = 10311
+MIN_SLANG_VERSION = 20100
 MAX_SLANG_VERSION =
 XLIB = $(X_XTRA_LIBS) $(XLIBDIR) -lX11 $(TERMCAP_LIB) $(OTHERLIBS) $(DL_LIB)
 MISCLIBS = $(MOUSELIB) $(TERMCAP_LIB) $(X_XTRA_LIBS) $(OTHERLIBS) $(DL_LIB)
@@ -118,6 +120,8 @@ EXEC_LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) -lslang $(MISCLIBS)
 main_O_DEP = Makefile
 jprocess_O_DEP = $(SRCDIR)/pty.c
 version_O_DEP = $(SRCDIR)/version.h
+DOT_O_DEPS = $(SRCDIR)/buffer.h
+
 UPDATE_VERSION_SCRIPT = $(HOME)/bin/update_changes_version
 
 TAG_FILES = $(CFILES) $(HFILES)
@@ -186,8 +190,8 @@ distclean: clean
 
 install_data_directories:
 	$(MKINSDIR) $(DEST_MAN_DIR)
+	$(MKINSDIR) $(DEST_INFO_DIR)
 	$(MKINSDIR) $(DEST_JED_ROOT)
-	$(MKINSDIR) $(DEST_JED_ROOT)/info
 	$(MKINSDIR) $(DEST_JED_ROOT)/doc
 	$(MKINSDIR) $(DEST_JED_ROOT)/doc/txt
 	$(MKINSDIR) $(DEST_JED_ROOT)/doc/hlp
@@ -202,7 +206,7 @@ install_bin: install_bin_directories
 	$(INSTALL) $(OBJDIR)/jed $(DEST_BIN_DIR)/
 	-cd $(DEST_BIN_DIR); ln -s jed jed-script
 	-$(INSTALL) $(OBJDIR)/xjed $(DEST_BIN_DIR)/
-	if test -e $(OBJDIR)/getmail; \
+	if test -r $(OBJDIR)/getmail; \
 	then \
 	  $(MKINSDIR) $(DEST_JED_ROOT)/bin; \
 	  $(INSTALL) $(OBJDIR)/getmail $(DEST_JED_ROOT)/bin/; \
@@ -259,8 +263,8 @@ install_data: install_data_directories
 	done
 	@for i in $(JED_INFO_FILES); \
 	do \
-		$(INSTALL_DATA) $$i $(DEST_JED_ROOT)/info/; \
-		echo $(INSTALL_DATA) $$i $(DEST_JED_ROOT)/info/; \
+		$(INSTALL_DATA) $$i $(DEST_INFO_DIR); \
+		echo $(INSTALL_DATA) $$i $(DEST_INFO_DIR); \
 	done
 install: all install_data install_bin
 #
