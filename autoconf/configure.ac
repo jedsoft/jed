@@ -90,6 +90,31 @@ else
 fi
  
 dnl #------------------------------------------------------------------------
+AC_ARG_ENABLE(gpm,
+  AS_HELP_STRING([--disable-gpm], [disable gpm mouse support]),
+  [enable_gpm=$enableval], [enable_gpm=default])
+if test X"$enable_gpm" = Xno
+then
+  AC_MSG_NOTICE(checking for gpm disabled)
+  MOUSELIB=""
+  MOUSEDEFINES=""
+  MOUSE_O_FILE=""
+else
+  AC_CHECK_LIB(gpm, Gpm_Open,
+    [MOUSELIB="-lgpm"
+     MOUSEDEFINES="-DUSE_GPM_MOUSE"
+     MOUSE_O_FILE="\${OBJDIR}/gpmmouse.o"
+     ],
+    [if test X"$enable_gpm" = Xyes
+     then
+       AC_MSG_FAILURE([libgpm not found])
+     fi])
+fi
+AC_SUBST(MOUSELIB)
+AC_SUBST(MOUSEDEFINES)
+AC_SUBST(MOUSE_O_FILE)
+
+dnl #------------------------------------------------------------------------
 dnl JD_CHECK_FOR_LIBRARY(pcre)
 dnl if test $jd_with_pcre_library = yes
 dnl then 

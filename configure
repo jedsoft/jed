@@ -711,6 +711,9 @@ SLANG_LIB
 SLANG_INC
 XRENDERFONTLIBS
 PKGCONFIG
+MOUSELIB
+MOUSEDEFINES
+MOUSE_O_FILE
 JED_ROOT
 PROGRAM_OFILES
 PROGRAM_CFILES
@@ -1311,6 +1314,7 @@ Optional Features:
   --enable-warnings       turn on GCC compiler warnings
   --disable-xft           disable X FreeType library support (antialiased
                           fonts)
+  --disable-gpm           disable gpm mouse support
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -8009,6 +8013,103 @@ fi
 
 fi
 
+# Check whether --enable-gpm was given.
+if test "${enable_gpm+set}" = set; then
+  enableval=$enable_gpm; enable_gpm=$enableval
+else
+  enable_gpm=default
+fi
+
+if test X"$enable_gpm" = Xno
+then
+  { echo "$as_me:$LINENO: checking for gpm disabled" >&5
+echo "$as_me: checking for gpm disabled" >&6;}
+  MOUSELIB=""
+  MOUSEDEFINES=""
+  MOUSE_O_FILE=""
+else
+  { echo "$as_me:$LINENO: checking for Gpm_Open in -lgpm" >&5
+echo $ECHO_N "checking for Gpm_Open in -lgpm... $ECHO_C" >&6; }
+if test "${ac_cv_lib_gpm_Gpm_Open+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgpm  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char Gpm_Open ();
+int
+main ()
+{
+return Gpm_Open ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_gpm_Gpm_Open=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_gpm_Gpm_Open=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_gpm_Gpm_Open" >&5
+echo "${ECHO_T}$ac_cv_lib_gpm_Gpm_Open" >&6; }
+if test $ac_cv_lib_gpm_Gpm_Open = yes; then
+  MOUSELIB="-lgpm"
+     MOUSEDEFINES="-DUSE_GPM_MOUSE"
+     MOUSE_O_FILE="\${OBJDIR}/gpmmouse.o"
+
+else
+  if test X"$enable_gpm" = Xyes
+     then
+       { { echo "$as_me:$LINENO: error: libgpm not found
+See \`config.log' for more details." >&5
+echo "$as_me: error: libgpm not found
+See \`config.log' for more details." >&2;}
+   { (exit 1); exit 1; }; }
+     fi
+fi
+
+fi
+
+
+
+
 if test "x$prefix" != xNONE; then
   default_jed_root="$prefix/jed"
 else
@@ -8776,7 +8877,7 @@ SLANG_LIB!$SLANG_LIB$ac_delim
 SLANG_INC!$SLANG_INC$ac_delim
 XRENDERFONTLIBS!$XRENDERFONTLIBS$ac_delim
 PKGCONFIG!$PKGCONFIG$ac_delim
-JED_ROOT!$JED_ROOT$ac_delim
+MOUSELIB!$MOUSELIB$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -8818,6 +8919,9 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+MOUSEDEFINES!$MOUSEDEFINES$ac_delim
+MOUSE_O_FILE!$MOUSE_O_FILE$ac_delim
+JED_ROOT!$JED_ROOT$ac_delim
 PROGRAM_OFILES!$PROGRAM_OFILES$ac_delim
 PROGRAM_CFILES!$PROGRAM_CFILES$ac_delim
 PROGRAM_HFILES!$PROGRAM_HFILES$ac_delim
@@ -8827,7 +8931,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 7; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 10; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

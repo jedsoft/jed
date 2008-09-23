@@ -350,6 +350,7 @@ Changes since 0.99-18.0
 155. autoconf/configure.ac: Updated the usage of the AC_INIT and
      AC_OUTPUT macros from the obsolete forms. (Joerg Sommer).
 156. autoconf/configure.ac: Added --disable-xft option (Joerg Sommer)
+157. autoconf/configure.ac: Added --disable-gpm option (Joerg Sommer)
 
 {{{ Previous Versions 
 

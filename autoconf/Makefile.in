@@ -5,15 +5,24 @@
 
 @SET_MAKE@
 
-jed:
+jed: makefiles
 	cd src; $(MAKE) jed
 	@echo If you have X, try 'make xjed'
-all:
+all: makefiles
 	cd src; $(MAKE) all
-xjed:
+xjed: makefiles
 	cd src; $(MAKE) xjed
-rgrep:
+rgrep: makefiles
 	cd src; $(MAKE) rgrep
+Makefile: configure autoconf/Makefile.in
+	@echo "Makefile is older than the configure script".
+	@echo "Please re-run the configure script."
+	@exit 1
+src/Makefile: configure src/Makefile.in src/config.hin src/jed-feat.h
+	@echo "src/Makefile is older than its dependencies".
+	@echo "Please re-run the configure script."
+	@exit 1
+makefiles: Makefile src/Makefile
 clean:
 	/bin/rm -f *~
 	cd src; $(MAKE) clean
@@ -22,10 +31,10 @@ distclean:
 	/bin/rm -f *~ Makefile config.status config.log config.cache files.pck
 	cd src; $(MAKE) distclean
 #
-install:
+install: makefiles
 	cd src; $(MAKE) install
 #
-getmail:
+getmail: makefiles
 	cd src; $(MAKE) getmail
 	@echo getmail created.  Copy it to JED_ROOT/bin.
 
@@ -41,4 +50,4 @@ autoconf/config.guess: /usr/share/misc/config.guess
 autoconf/config.sub: /usr/share/misc/config.sub
 	/bin/cp -f /usr/share/misc/config.sub autoconf/config.sub
 
-.PHONY: jed all xjed rgrep clean distclean install getmail symlinks
+.PHONY: jed all xjed rgrep clean distclean install getmail symlinks makefiles

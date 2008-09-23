@@ -1,5 +1,5 @@
 /* This is the interface to the GPM mouse under Linux */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006, 2008 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -278,5 +278,3 @@ static int open_mouse (void)
    
 int (*X_Open_Mouse_Hook)(void) = open_mouse;
 void (*X_Close_Mouse_Hook)(void) = close_mouse;
-
-   

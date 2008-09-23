@@ -54,12 +54,9 @@ OBJDIR = @OBJDIR@
 # Special features (See also features.h)
 #---------------------------------------------------------------------------
 # 1. Linux GPM Mouse support
-#    Uncomment next FOUR lines for GPM mouse support
-#MOUSEFLAGS = -DUSE_GPM_MOUSE
-#MOUSELIB = -lgpm
-#GPMMOUSEO = gpmmouse.o
-#OBJGPMMOUSEO = $(OBJDIR)/$(GPMMOUSEO)
-
+MOUSEDEFINES = @MOUSEDEFINES@
+MOUSELIB = @MOUSELIB@
+MOUSE_O_FILE = @MOUSE_O_FILE@
  
 # 2. XFree86 XRENDERFONT (Anti-aliased font) support for XJED
 #XRENDERFONTLIBS = -lXft -lXrender -lfreetype -lXext
@@ -104,7 +101,7 @@ MAX_SLANG_VERSION =
 XLIB = $(X_XTRA_LIBS) $(XLIBDIR) -lX11 $(TERMCAP_LIB) $(OTHERLIBS) $(DL_LIB)
 MISCLIBS = $(MOUSELIB) $(TERMCAP_LIB) $(X_XTRA_LIBS) $(OTHERLIBS) $(DL_LIB)
 
-ALL_CFLAGS = $(CFLAGS) -Dunix -DJED $(MOUSEFLAGS) $(SLANG_INC)
+ALL_CFLAGS = $(CFLAGS) -Dunix -DJED $(MOUSEDEFINES) $(SLANG_INC)
 COMPILE_CMD = \
  $(CC) -c $(ALL_CFLAGS) $(XINCLUDE) -DJED_ROOT='"$(JED_ROOT)"'
 
@@ -120,7 +117,7 @@ EXEC_LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) -lslang $(MISCLIBS)
 main_O_DEP = Makefile
 jprocess_O_DEP = $(SRCDIR)/pty.c
 version_O_DEP = $(SRCDIR)/version.h
-DOT_O_DEPS = $(SRCDIR)/buffer.h
+DOT_O_DEPS = $(SRCDIR)/buffer.h $(SRCDIR)/jed-feat.h $(CONFIG_H)
 
 UPDATE_VERSION_SCRIPT = $(HOME)/bin/update_changes_version
 
@@ -133,8 +130,8 @@ all: jed
 
 jed: $(OBJDIR) $(CONFIG_H) slangversion $(OBJDIR)/jed
 	@echo jed created in $(OBJDIR)
-$(OBJDIR)/jed: $(OBJS) $(OBJDIR)/display.o $(OBJGPMMOUSEO)
-	cd $(OBJDIR); $(CC) $(OFILES) display.o $(GPMMOUSEO) \
+$(OBJDIR)/jed: $(OBJS) $(OBJDIR)/display.o $(MOUSE_O_FILE)
+	cd $(OBJDIR); $(CC) $(OFILES) display.o $(MOUSE_O_FILE) \
            -o jed $(EXEC_LIBS)
 
 slangversion: $(OBJDIR)/chkslang
@@ -150,6 +147,7 @@ $(OBJDIR):
 
 $(CONFIG_H) : $(SRCDIR)/sysconf.h
 	/bin/cp $(SRCDIR)/sysconf.h $(CONFIG_H)
+	touch $(CONFIG_H)
 
 $(SRCDIR)/sysdep.c: $(SRCDIR)/unix.c
 	touch $(SRCDIR)/sysdep.c
