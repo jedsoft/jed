@@ -192,6 +192,7 @@ $0 = _stkdepth ();
 "gpg.sl";
 "paste.sl";
 "syncproc.sl";
+"tmpfile.sl";
 
 $0 = _stkdepth () - $0;
 

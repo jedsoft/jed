@@ -2923,22 +2923,7 @@ Jed_Tmp_Directory
  temporary filenames.
 
  SEE ALSO
-  make_tmp_file, make_tmp_buffer_name
-
---------------------------------------------------------------
-
-make_tmp_file
-
- SYNOPSIS
-  make_tmp_file
-
- USAGE
-  String make_tmp_file (String base);
-
- DESCRIPTION
- This function returns a unique file name that begins with `base'.
- If `base' does not specify an absolute path, the value of
- `Jed_Tmp_Directory' will be used for the directory.
+  make_tmp_file, make_tmp_buffer_name, open_unique_filename
 
 --------------------------------------------------------------
 
@@ -4044,6 +4029,54 @@ text_mode
 
  SEE ALSO
   WRAP_INDENTS, WRAP, TAB, TAB_DEFAULT
+
+--------------------------------------------------------------
+
+make_tmp_file
+
+ SYNOPSIS
+  make_tmp_file
+
+ USAGE
+  String make_tmp_file (String base);
+
+ DESCRIPTION
+ This function returns a unique file name that begins with `base'.
+ If `base' does not specify an absolute path, the value of
+ `Jed_Tmp_Directory' will be used for the directory.
+
+--------------------------------------------------------------
+
+open_unique_filename
+
+ SYNOPSIS
+  Generate and unique filename and open the file
+
+ USAGE
+  structure = open_unique_filename (base, extname)
+
+ DESCRIPTION
+ This function generates a unique filename of the form
+ `baseXXXXXX.extname' and returns a structure with fields
+
+    filename     : The name of the file
+    fd           : The FD_Type file descriptor
+    fp           : The FP_Type file pointer
+
+ If `base' represents an absolute path, then the file
+ will be opened in the correspondind directory.  Otherwise the value
+ of the `Jed_Tmp_Directory' variable will be used.
+
+ If this function fails, an exception will be thrown.
+
+ NOTES
+ The value of the `fp' structure field is generated from the
+ value of the `fd' field using the `fdopen' function.  See the
+ documentation of the `fdopen' function for the relationship of
+ these two types and their semantics.
+
+ SEE ALSO
+  fdopen
 
 --------------------------------------------------------------
 

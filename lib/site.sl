@@ -796,6 +796,8 @@ _autoload("mode_get_mode_info",		"modeinfo",
 	  "append_string_to_file",	"misc",
 	  "write_string_to_file",	"misc",
 	  "make_tmp_buffer_name",	"misc",
+	  "open_unique_filename",	"tmpfile",
+	  "make_tmp_file",		"tmpfile",
 #ifnexists glob_to_regexp
 	  "glob_to_regexp",		"misc",
 #endif
@@ -1178,42 +1180,13 @@ add_to_hook ("_jed_exit_hooks", &run_user_exit_hook);
 %\description
 % This variable is used by the \sfun{make_tmp_file} function to create 
 % temporary filenames.
-%\seealso{make_tmp_file, make_tmp_buffer_name}
+%\seealso{make_tmp_file, make_tmp_buffer_name, open_unique_filename}
 %!%-
 variable Jed_Tmp_Directory = NULL;
 #ifdef UNIX
 Jed_Tmp_Directory = "/tmp";
 #endif
 
-%!%+
-%\function{make_tmp_file}
-%\synopsis{make_tmp_file}
-%\usage{String make_tmp_file (String base);}
-%\description
-% This function returns a unique file name that begins with \var{base}.
-% If \exmp{base} does not specify an absolute path, the value of
-% \svar{Jed_Tmp_Directory} will be used for the directory.
-%!%-
-define make_tmp_file(base)
-{
-   if ((Jed_Tmp_Directory != NULL)
-       and (path_is_absolute (base) == 0))
-     base = path_concat (Jed_Tmp_Directory, base);
-
-   base = path_sans_extname (base);
-
-   () = random (-1, 0);
-   variable pid = getpid ();
-
-   loop (1000)
-     {
-	variable file = sprintf ("%s%d.%d", base, random (0, 0x7FFF), pid);
-	!if (file_status(file)) return (file);
-     }
-   error ("Unable to create a tmp file!");
-}
-
-%}}}
 %{{{ More functions
 
 

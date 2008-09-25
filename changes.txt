@@ -351,6 +351,10 @@ Changes since 0.99-18.0
      AC_OUTPUT macros from the obsolete forms. (Joerg Sommer).
 156. autoconf/configure.ac: Added --disable-xft option (Joerg Sommer)
 157. autoconf/configure.ac: Added --disable-gpm option (Joerg Sommer)
+158. lib/site.sl: The make_tmp_file function is now autoloaded from a new
+     file called tmpfile.sl, which also contains a new function called
+     open_unique_filename.
+
 
 {{{ Previous Versions 
 

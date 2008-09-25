@@ -268,6 +268,7 @@
 @lib/paste.sl
 @lib/gpg.sl
 @lib/syncproc.sl
+@lib/tmpfile.sl
 
 @lib/colors/README
 @lib/colors/update-colors 0755

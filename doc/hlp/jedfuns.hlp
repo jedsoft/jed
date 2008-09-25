@@ -2650,7 +2650,7 @@ prefix_argument
      if (arg == NULL)
        message ("No Prefix Argument");
      else
-       vmessage ("Prefix argument: %d", arg));
+       vmessage ("Prefix argument: %d", arg);
 
 
  NOTES
@@ -2663,7 +2663,7 @@ prefix_argument
      if (arg == -9999)
        message ("No Prefix Argument");
      else
-       vmessage ("Prefix argument: %d", arg));
+       vmessage ("Prefix argument: %d", arg);
 
 
  SEE ALSO
