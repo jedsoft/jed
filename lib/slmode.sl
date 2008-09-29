@@ -7,6 +7,7 @@ create_syntax_table ($1);
 define_syntax ("%", "", '%', $1);
 define_syntax ("([{", ")]}", '(', $1);
 define_syntax ('"', '"', $1);
+define_syntax ('`', '"', $1);
 define_syntax ('\'', '\'', $1);
 define_syntax ('\\', '\\', $1);
 define_syntax ("0-9a-zA-Z_$", 'w', $1);        % words

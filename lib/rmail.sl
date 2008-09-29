@@ -299,7 +299,27 @@ define rmail_extract_headers ()
    widen();
    pop_spot();
    %                RAFE  (flags, the - means it has not been read.)
-   sprintf(" %6s       %25.25s  %s\n", date, from, subject);
+   % The 'from' string may have multibyte characters, which will not
+   % will not be handled properly via the printf width specifier.  So
+   % pad it outside the printf call.
+   variable width = 25;
+   variable len = strwidth (from);   
+   if (len > width)
+     {
+	variable ch, new_from = "";
+	foreach ch (from) using ("chars")
+	  {
+	     ch = char (ch);
+	     if (strwidth (new_from + ch) > width)
+	       break;
+	     new_from += ch;
+	  }
+	from = new_from;
+	len = strwidth (from);
+     }
+   loop (width-len) from += " ";
+
+   sprintf(" %6s       %s  %s\n", date, from, subject);
    % Note: The column widths may not be correct when UTF-8 characters are 
    % present.
 }
