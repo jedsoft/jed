@@ -346,7 +346,7 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
    context = 0;
 #endif
 
-   if (context == JED_LINE_IN_COMMENT)
+   if (context & JED_LINE_IN_COMMENT)
      {
 	/* I do not like the whitespace that preceeds the
 	 * '*' on the current line to be highlighted.  So...
@@ -363,15 +363,15 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 
 	p = highlight_comment (p, p, pmax, st);
      }
-   else if (context == JED_LINE_IN_STRING0)
+   else if (context & JED_LINE_IN_STRING0)
      {
 	p = highlight_string (p, pmax, st->quote_char, st->string_chars[0], 0);
      }
-   else if (context == JED_LINE_IN_STRING1)
+   else if (context & JED_LINE_IN_STRING1)
      {
 	p = highlight_string (p, pmax, st->quote_char, st->string_chars[1], 0);
      }
-   else if (context == JED_LINE_IN_HTML)
+   else if (context & JED_LINE_IN_HTML)
      {
 	p1 = p;
 	ch = st->sgml_stop_char;

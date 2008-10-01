@@ -356,7 +356,14 @@ Changes since 0.99-18.0
      open_unique_filename.
 159. lib/slmode.sl: Give ` the string delimiter syntax, which was
      added in slang-2.2 to support multi-line string literals.
-
+160. src/indent.c: Add support for double quote characters in a string
+     when searching for matching delimiters, e.g., `(foo ``bar)`
+161. src/syntax.c: Corrected the highlighting of code such as
+       /* the continuation of this comment on the next was not 
+        * properly highlighted */   // when a C++ comment was also present
+162. lib/cmode.sl: Do not indent subsequent lines of a multiline
+     string, because that is like adding or removing whitespace from within a
+     single line string.
 
 {{{ Previous Versions 
 

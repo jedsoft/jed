@@ -699,11 +699,13 @@ define c_indent_line ()
    variable match_mark;
    variable not_indenting_pp = 1;      %  pp: pre-processor statement
    variable is_continuation = 0;
+   variable context;
 
    push_spot ();
    bol_skip_white ();
    line_start_char = what_char ();
-   if (-2 == parse_to_point ())
+   context = parse_to_point ();
+   if (-2 == context)
      {
 	% In a comment.  Indent it at level of matching /* string
 	col = 0;
@@ -717,6 +719,14 @@ define c_indent_line ()
 	pop_spot ();
 	c_indent_continued_comment (col);
 	c_mode_if_bol_skip_white ();
+	return;
+     }
+
+   if (context == -1)
+     {
+	% First non-whitespace on the line is in the middle of a string.
+	% Do nothing.
+	pop_spot ();
 	return;
      }
 
@@ -890,7 +900,6 @@ define c_indent_line ()
 
    variable notCcomment;
 
-#iftrue
    % Added 04/06/98 MDJ to facilitate C++ style comments
    if (val == 0)
      {				       %  match not found for ')'
@@ -912,7 +921,6 @@ define c_indent_line ()
 	  }
 	pop_spot();
      }
-#endif
 
    switch (val)
      {
@@ -1034,14 +1042,13 @@ define c_indent_line ()
 	return;
      }
      {
-      case 2:			       %  inside string
+      case 2 or case -1:	       %  inside string or no info
 	push_spot_bol ();
 	trim ();
 	pop_spot ();
 	return;
      }
      {
-#iftrue
       case -3: 				%  inside C++ comment
 	!if ((looking_at(notCcomment)) or not(eolp()))
 	  {
@@ -1050,7 +1057,6 @@ define c_indent_line ()
 	  }
 	return;
      }
-#endif
 
    switch (line_start_char)
      {

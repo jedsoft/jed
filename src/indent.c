@@ -618,9 +618,6 @@ static int goto_string_end (Syntax_Table_Type *table, unsigned char ch)
  * count is the number of lines to go back
  */
 
-/* FIXME!!! Both the forward and backward got_match routines need to be
- * rewritten to take advantage of the parse_to_point function.
- */
 static int backward_goto_match (int count, unsigned char ch) /*{{{*/
 {
    unsigned char *p, *pmin, want_ch;
@@ -709,8 +706,15 @@ static int backward_goto_match (int count, unsigned char ch) /*{{{*/
 			    /* Match not found.  Leave point at beginning
 			     * of string and return -1.
 			     */
-			    jed_position_point (p + 1);
-			    return -1;
+			    /* Some syntaxes permit double quotes in a string
+			     * to represent a single quote.  Allow that here.
+			     */
+			    if ((p < pmin) || ((int)*p != in_string))
+			      {
+				 jed_position_point (p + 1);
+				 return -1;
+			      }
+			    p--;
 			 }
 		       continue;
 		    }
@@ -954,7 +958,15 @@ static int forward_goto_match (unsigned char ch) /*{{{*/
 		  if (in_string)
 		    {
 		       if ((int) ch == in_string)
-			 in_string = 0;
+			 {
+			    /* Some syntaxes permit double quotes in a string
+			     * to represent a single quote.  Allow that here.
+			     */
+			    if ((p >= pmax) || ((int)*p != in_string))
+			      in_string = 0;
+			    else 
+			      p++;     /* skip second quote */
+			 }
 		    }
 		  else
 		    {
