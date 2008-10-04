@@ -364,6 +364,9 @@ Changes since 0.99-18.0
 162. lib/cmode.sl: Do not indent subsequent lines of a multiline
      string, because that is like adding or removing whitespace from within a
      single line string.
+163. lib/cmode.sl: When indenting an outer scope object, indent to the
+     first column unless the statement appears be be continued and not
+     a function declaration.
 
 {{{ Previous Versions 
 

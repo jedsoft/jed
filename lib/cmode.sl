@@ -672,8 +672,21 @@ private define is_continuation_line ()
    % This part is too naive and needs to be expanded -- for now deal
    % with the common usages of ")," and "},"
    if (blooking_at ("),")) return 1;
+   if (blooking_at ("},")) return 0;
+   
+   return 1;
+}
 
-   return not blooking_at ("},");
+private define blooking_at_one_of (set)
+{
+   if (bobp ())
+     return 0;
+
+   go_left_1 ();
+   variable ch = char (what_char ());
+   go_right_1 ();
+
+   return is_substr (set, ch);
 }
 
 % overview of indentation tracking variables
@@ -995,14 +1008,36 @@ define c_indent_line ()
 	     pop_spot ();
 	     return;
 	  }
-	else
+	else			       %  outside all blocks
 	  {
 	     push_spot ();
 	     bol_skip_white ();
+	     % Set extra_indent=0 at function declarations:
+	     %    |static char *
+	     %    |foo
+	     % Currently, this results:
+	     %    |static char *
+	     %    |   foo
+	     % FIXME: This is a quick-n-dirty fix that does not work 
+	     % in all cases.
 	     if (looking_at_char ('{'))
 	       extra_indent = 0;
-	     extra_indent++;
-	     c_indent_to (extra_indent + prep_indent);
+
+	     if (is_continuation
+		 && extra_indent && (prep_indent == 0))
+	       {
+		  variable ops = "+-/,=&|%^<>!~?.!";
+		  ifnot (is_substr (ops + "*", char(what_char())))
+		    {
+		       push_spot ();
+		       c_bskip_over_comment (1);
+		       ifnot (blooking_at_one_of ("+-/,=&|%^<>!~?.!"))
+			 extra_indent = 0;
+		       pop_spot();
+		    }
+	       }
+
+	     c_indent_to (1 + extra_indent + prep_indent);
 	     pop_spot ();
 	     return;
 	  }

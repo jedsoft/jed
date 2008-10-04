@@ -37,6 +37,7 @@ define test_cmode (file)
 	     () = fprintf (stdout, " %d", line);
 	  }
 	() = fprintf (stdout, "\n");
+	() = remove (Log_File);
 	() = write_buffer (Log_File);
 	exit (1);
      }
