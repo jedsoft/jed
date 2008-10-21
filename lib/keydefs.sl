@@ -222,7 +222,7 @@ if (Key_Shift_Ins == "\e2$")
    $1 = getenv ("TERM");
    if ($1 != NULL)
      {
-	if (is_substr ($1, "rxvt"))
+	if (is_substr ($1, "rxvt") || is_substr ($1, "screen"))
 	  Key_Shift_Ins = "\e[2$";
      }
 }
