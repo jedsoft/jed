@@ -784,6 +784,7 @@ _autoload("mode_get_mode_info",		"modeinfo",
 	  "spice_mode",		"spicemod",
 	  "verilog_mode",		"verilog",
 	  "tcl_mode",			"tclmode",
+	  "lua_mode",			"lua",
 	  "hook_add_hook",		"hooks",   %  obsolete
 	  "changelog_add_change",	"chglog",
 

@@ -370,6 +370,7 @@ Changes since 0.99-18.0
 164. lib/keydefs.sl: The work-around for the bad rxvt terminfo
      Key_Shift_Ins value was also required for screen, which appears to
      inherit its key definitions from the underlying terminal.
+165. lib/site.sl: Autoload lua_mode from lua.sl.
 
 {{{ Previous Versions 
 
