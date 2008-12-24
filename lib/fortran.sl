@@ -7,21 +7,36 @@ custom_variable ("Fortran_Continue_Char", "&");
 custom_variable ("Fortran_Comment_String", "C");
 custom_variable ("Fortran_Indent_Amount", 2);
 
+% Skip past labels and continuation char
+private define bol_skip_to_code_start ()
+{
+   bol ();
+   skip_chars ("0-9 \t");
+   if (looking_at(Fortran_Continue_Char)) go_right_1 ();
+   skip_white ();
+}
+
+private define indent_line_to_col (col)
+{
+   bol_skip_white ();
+   skip_chars ("0-9");
+   trim ();
+   if (looking_at (Fortran_Continue_Char))
+     {
+	insert_spaces (6 - what_column());
+	go_right_1 (); trim();
+	col += Fortran_Indent_Amount;
+     }
+   insert_spaces (col - what_column());
+}
+
+
 % fortran indent routine
 define fortran_indent ()
 {
    variable goal = 7;		% at top of buffer it should be 7 n'est pas?
    variable cs = CASE_SEARCH;
    variable ch;
-
-   % goto beginning of line and skip past continuation char
-   USER_BLOCK0
-     {
-	bol ();
-	skip_chars ("0-9 \t");
-	if (looking_at(Fortran_Continue_Char)) go_right_1 ();
-	skip_white ();
-     }
 
    push_spot ();
    push_spot ();
@@ -30,7 +45,7 @@ define fortran_indent ()
      {
 	bol_skip_white();
 	if (eolp() or looking_at(Fortran_Continue_Char)) continue;
-	X_USER_BLOCK0 ();
+	bol_skip_to_code_start ();
 	goal = what_column ();
 
 	if (goal == 1) continue;
@@ -60,11 +75,14 @@ define fortran_indent ()
    % now check current line
    pop_spot ();
    push_spot ();
-   X_USER_BLOCK0 ();
+   bol_skip_to_code_start ();
 
-   if (looking_at("end") or
-       looking_at("continue") or
-       looking_at("else")) goal -= Fortran_Indent_Amount;
+   push_mark ();
+   skip_chars ("a-zA-Z");
+   variable word = strlow (bufsubstr ());
+   if ((word == "end") || (word == "endif") || (word == "enddo")
+       || (word == "continue") || (word == "else"))
+     goal -= Fortran_Indent_Amount;
 
    CASE_SEARCH = cs;		% done getting indent
    if (goal < 7) goal = 7;
@@ -73,18 +91,6 @@ define fortran_indent ()
    bol_skip_white ();
 
    % after the label or continuation char and indent the rest to goal
-   USER_BLOCK1
-     {
-	skip_chars ("0-9");
-	trim ();
-	if (looking_at (Fortran_Continue_Char))
-	  {
-	     insert_spaces (6 - what_column());
-	     go_right_1 (); trim();
-	     goal += Fortran_Indent_Amount;
-	  }
-	insert_spaces (goal - what_column());
-     }
 
    ch = char(what_char());
    switch (ch)
@@ -96,12 +102,12 @@ define fortran_indent ()
 	     bol_trim ();
 	     insert_single_space ();
 	  }
-	X_USER_BLOCK1 ();
+	indent_line_to_col (goal);
      }
      {
 	case Fortran_Continue_Char :	% continuation character
 	bol_trim (); insert_spaces (5);
-	X_USER_BLOCK1 ();
+	indent_line_to_col (goal);
      }
      {
 	not (bolp()) or eolp ():	% general case

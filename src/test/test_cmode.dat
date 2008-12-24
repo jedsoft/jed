@@ -200,5 +200,14 @@ int main (int argc, char **argv)
                those ();
           }
      }
+
+   // The following do not indent properly.
+   if (foo)
+     name += bar
+     + baz;
+   
+   if (bar)
+     name = foo
+     + bar;
 }
 

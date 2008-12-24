@@ -3247,6 +3247,9 @@ static void JX_get_terminfo (void) /*{{{*/
 {
    SLsmg_Term_Type tt;
 
+#ifdef REAL_UNIX_SYSTEM
+   SLtt_Force_Keypad_Init = 1;
+#endif
    if ((Batch) || !open_Xdisplay())
     {
        /* This function should match the corresponding function in display.c.

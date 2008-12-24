@@ -1,12 +1,11 @@
 #!/usr/bin/env jed-script
-_debug_info = 1;
 
-static variable Like_Color_Map = Assoc_Type[];
-static define set_like_color (obj, likeobj)
+private variable Like_Color_Map = Assoc_Type[];
+private define set_like_color (obj, likeobj)
 {
    Like_Color_Map[obj] = likeobj;
 }
-static define get_like_color (obj)
+private define get_like_color (obj)
 {
    if (assoc_key_exists (Like_Color_Map, obj))
      return Like_Color_Map[obj];
@@ -23,7 +22,7 @@ set_like_color ("underline", "keyword1");
 set_like_color ("italic", "keyword2");
 set_like_color ("url", "string");
 
-static define build_color_list ()
+private define build_color_list ()
 {
    variable color_list = Assoc_Type[Int_Type];
 
@@ -52,13 +51,13 @@ static define build_color_list ()
    return color_list[i];
 }
 
-static define find_set_color_line (color)
+private define find_set_color_line (color)
 {
    bob ();
    return re_fsearch ("^[ \t]*set_color[ \t]*(\"" + color + "\"");
 }
 
-static define get_fgbg_for_color (obj, fgp, bgp)
+private define get_fgbg_for_color (obj, fgp, bgp)
 {
    variable like_obj;
 
@@ -93,7 +92,7 @@ static define get_fgbg_for_color (obj, fgp, bgp)
 }
 
 
-static define process_file (file, color_list)
+private define process_file (file, color_list)
 {
    () = read_file (file);
    variable modified = 0;
@@ -129,15 +128,14 @@ static define process_file (file, color_list)
 	  }
      }
 
-   if (modified)
+   if (buffer_modified ())
      save_buffer ();
    delbuf (whatbuf ());
 
    return modified;
 }
 
-
-static define main ()
+define jedscript_main ()
 {
    variable color_list = build_color_list ();
 
@@ -148,6 +146,3 @@ static define main ()
 	  () = fprintf (stdout, "%s\n", file);
      }
 }
-
-main ();
-

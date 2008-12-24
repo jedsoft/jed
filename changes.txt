@@ -371,6 +371,11 @@ Changes since 0.99-18.0
      Key_Shift_Ins value was also required for screen, which appears to
      inherit its key definitions from the underlying terminal.
 165. lib/site.sl: Autoload lua_mode from lua.sl.
+166. src/display.c: On Unix systems, force slang to initialize the
+     keypad.
+167. lib/fortran.sl: Previously, lines that started with, e.g., ENDXXX
+     were regarded as a form of END block line (ENDDO) causing
+     indentation problems.
 
 {{{ Previous Versions 
 

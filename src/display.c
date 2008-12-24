@@ -82,6 +82,9 @@ static void get_terminfo (void)
    tt_Blink_Mode		= &SLtt_Blink_Mode;
 #endif
 
+#ifdef REAL_UNIX_SYSTEM
+   SLtt_Force_Keypad_Init = 1;
+#endif
    if (Batch == 0)
      SLtt_get_terminfo ();
 }

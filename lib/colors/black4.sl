@@ -1,4 +1,4 @@
-% Contributed by Mark Olesen 
+% Contributed by Mark Olesen
 $1 = "white";
 $2 = "black";
 $3 = "brightcyan";
@@ -33,12 +33,12 @@ set_color("menu_selection", $1, $2);
 set_color("menu_selection_char", "yellow", $2);
 #else
 % gray menu - ok except the shadow looks a bit odd
-set_color("menu", "lightgray", "gray");
-set_color("menu_char", "yellow", "gray");
-set_color("menu_popup", $1, "gray");
-set_color("menu_shadow", $4, "black");
-set_color("menu_selection", $1, $2);
-set_color("menu_selection_char", "yellow", $2);
+% set_color("menu", "lightgray", "gray");
+% set_color("menu_char", "yellow", "gray");
+% set_color("menu_popup", $1, "gray");
+% set_color("menu_shadow", $4, "black");
+% set_color("menu_selection", $1, $2);
+% set_color("menu_selection_char", "yellow", $2);
 #endif
 
 set_color("cursor",    "black", "yellow");
