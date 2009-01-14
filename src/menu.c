@@ -1,5 +1,5 @@
-/* Drop-down menus */
-/* Copyright (c) 1999, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Drop-down menus (tty) */
+/* Copyright (c) 1999, 2000, 2002-2009 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -9,7 +9,7 @@
 #include "jed-feat.h"
 
 #include <stdio.h>
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
 
 #include <slang.h>
 
@@ -1330,7 +1330,7 @@ static Menu_Bar_Type *get_active_menubar (void)
      {
 	Buffer *buf = CBuf;
 
-	if (IS_MINIBUFFER)
+	if (IN_MINI_WINDOW)
 	  {
 	     if (NULL == (buf = jed_get_mini_action_buffer ()))
 	       return NULL;
@@ -1902,7 +1902,7 @@ int jed_select_menu_bar (void)
    Menu_Popup_Type *p;
    Menu_Node_Type **l, **lmax;
 
-   if (IS_MINIBUFFER)
+   if (IN_MINI_WINDOW)
      {
 	/* For now do not allow access to menus from the minibuffer
 	 * since the minibuffer is not recursive
@@ -2604,4 +2604,4 @@ static int xterm_mouse_cmd (void)
 
 #endif 				       /* !IBMPC_SYSTEM */
 #endif				       /* HAS_MOUSE */
-#endif				       /* JED_HAS_TTY_MENUS */
+#endif				       /* JED_HAS_MENUS */

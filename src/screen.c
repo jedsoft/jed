@@ -557,7 +557,7 @@ Line *find_top (void)
 static void init_smg_for_buffer (int *rowp, int *colp)
 {
    SLsmg_Tab_Width = Buffer_Local.tab;
-   if (IS_MINIBUFFER)
+   if (IN_MINI_WINDOW)
      SLsmg_Newline_Behavior = SLSMG_NEWLINE_PRINTABLE;
    else
      SLsmg_Newline_Behavior = 0;
@@ -575,7 +575,7 @@ void point_column (int n)
 
    
    /* Compensate for the prompt */
-   if (IS_MINIBUFFER)
+   if (IN_MINI_WINDOW)
      n -= Mini_Info.effective_prompt_len;
 
    p = CLine->data;
@@ -635,7 +635,7 @@ void point_column (int n)
 
    FIX_CHAR_WIDTH;
 
-   if (IS_MINIBUFFER) n -= Mini_Info.effective_prompt_len;
+   if (IN_MINI_WINDOW) n -= Mini_Info.effective_prompt_len;
 
    p = CLine->data;
    pmax = p + CLine->len;
@@ -701,7 +701,7 @@ int calculate_column (void)
    c = 1 + jed_compute_effective_length (CLine->data, CLine->data + Point);
    Absolute_Column = c;
 
-   if (IS_MINIBUFFER) c += Mini_Info.effective_prompt_len;
+   if (IN_MINI_WINDOW) c += Mini_Info.effective_prompt_len;
    Screen_Col = c;
    return (c);
 }
@@ -974,7 +974,8 @@ static int update_status_line (int col_flag)
    char buf[32], *b;
    int num;
 
-   if (JWindow->sy + 1 == Jed_Num_Screen_Rows) return 0;   /* minibuffer ? */
+   if (IN_MINI_WINDOW)
+     return 0;
 
    SLsmg_gotorc (JWindow->rows + JWindow->sy, 0);
    SLsmg_set_color (JSTATUS_COLOR);
@@ -1271,7 +1272,7 @@ static void compute_line_display_size (void)
 static int update_1(Line *top, int force)
 {
    int i;
-   Window_Type *w;
+   Window_Type *start_win;
    int did_eob, time_has_expired = 0;
 
    if (Batch ||
@@ -1331,7 +1332,7 @@ static int update_1(Line *top, int force)
 	return 1;
      }
 
-   w = JWindow;
+   start_win = JWindow;
    do
      {
 	int imax;
@@ -1362,7 +1363,7 @@ static int update_1(Line *top, int force)
 	  top = NULL;
 	else
 #endif
-	  mark_window_attributes ((w == JWindow) || (w->buffer != CBuf));
+	  mark_window_attributes ((start_win == JWindow) || (start_win->buffer != CBuf));
 
 	did_eob = 0;
 
@@ -1415,7 +1416,7 @@ static int update_1(Line *top, int force)
 	Mode_Has_Syntax_Highlight = 0;
 	if (!force && screen_input_pending (0))
 	  {
-	     while(JWindow != w) other_window();
+	     while (JWindow != start_win) other_window();
 	     JWindow->trashed = 1;  /* since cursor not pointed */
 #if SLANG_VERSION >= 20000
 	     /* (void) SLsmg_utf8_enable (1); */  /* default state */
@@ -1423,7 +1424,7 @@ static int update_1(Line *top, int force)
 
 	     return(0);
 	  }
-	else update_status_line(w != JWindow);
+	else update_status_line (start_win != JWindow);
 
 #if JED_HAS_DISPLAY_LINE_NUMBERS
 	if (CBuf->line_num_display_size)
@@ -1436,7 +1437,7 @@ static int update_1(Line *top, int force)
 	/* if (!JWindow->trashed) top = JWindow->beg.line; else  top = NULL; */
 
      }
-   while (JWindow != w);
+   while (JWindow != start_win);
 #if SLANG_VERSION >= 20000
    /* SLsmg_utf8_enable (1); */	       /* default state */
 #endif
@@ -1541,7 +1542,7 @@ static void update_minibuffer(void)
    if (MiniBuffer != NULL)
      {
 	w = JWindow;
-	while (!IS_MINIBUFFER) other_window();
+	while (!IN_MINI_WINDOW) other_window();
 
 	JWindow->beg.line = CLine;
 	mark_window_attributes (1);
@@ -1646,7 +1647,7 @@ void define_top_screen_line (char *neew)
 
 static void update_top_screen_line (void)
 {
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    if (Jed_Menus_Active
        || (Top_Window_SY > 0))
      {
@@ -1774,7 +1775,7 @@ void update(Line *line, int force, int flag, int run_update_hook)
      }
    if (!flag) *Error_Buffer = *Message_Buffer = 0;
 
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    update_top_screen_line ();
 #else
    if ((Top_Window_SY > 0) && JScreen[0].is_modified)

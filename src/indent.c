@@ -1055,7 +1055,7 @@ int goto_match (void) /*{{{*/
 {
    if (1 != find_matching_delimiter_1 (0, LineNum))
      {
-	if (!IS_MINIBUFFER) msg_error("Mismatch!!");
+	if (!IN_MINI_WINDOW) msg_error("Mismatch!!");
 	return 0;
      }
    return 1;
@@ -1106,7 +1106,7 @@ void blink_match (void) /*{{{*/
 
    if (code == 0)
      {
-	if ((! (CBuf->modes == WRAP_MODE)) && (!IS_MINIBUFFER))
+	if ((! (CBuf->modes == WRAP_MODE)) && (!IN_MINI_WINDOW))
 	  message("Mismatch??");
      }
    else if ((code == 1) && is_line_visible (LineNum))

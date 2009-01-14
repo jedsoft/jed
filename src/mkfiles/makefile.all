@@ -308,6 +308,7 @@ OBJS = $(OBJDIR)$(P)buffer.$(O) \
        $(OBJDIR)$(P)file.$(O) \
        $(OBJDIR)$(P)main.$(O) \
        $(OBJDIR)$(P)menu.$(O) \
+       $(OBJDIR)$(P)jedwin.$(O) \
 !ifndef WIN16 WIN32
        $(OBJDIR)$(P)display.$(O) \
 !endif
@@ -428,6 +429,7 @@ $(RSPFILE) : makefile
 	@echo $(RSP_PREFIX)$(OBJDIR)$(P)file.$(O) $(RSP_POSTFIX) >> $(RSPFILE)
 	@echo $(RSP_PREFIX)$(OBJDIR)$(P)misc.$(O) $(RSP_POSTFIX) >> $(RSPFILE)
 	@echo $(RSP_PREFIX)$(OBJDIR)$(P)menu.$(O) $(RSP_POSTFIX) >> $(RSPFILE)
+	@echo $(RSP_PREFIX)$(OBJDIR)$(P)jedwin.$(O) $(RSP_POSTFIX) >> $(RSPFILE)
 ! ifndef WIN16 WIN32
 	@echo $(RSP_PREFIX)$(OBJDIR)$(P)display.$(O) $(RSP_POSTFIX) >> $(RSPFILE)
 ! endif
@@ -590,6 +592,8 @@ $(OBJDIR)$(P)display.$(O) : $(SRCDIR)$(P)display.c $(CONFIG_H) $(COMPILE_DEPS)
 !endif
 $(OBJDIR)$(P)menu.$(O) : $(SRCDIR)$(P)menu.c $(CONFIG_H) $(COMPILE_DEPS)
 	$(COMPILE_CMD)$(OBJDIR)$(P)menu.$(O) $(SRCDIR)$(P)menu.c
+$(OBJDIR)$(P)jedwin.$(O) : $(SRCDIR)$(P)jedwin.c $(CONFIG_H) $(COMPILE_DEPS)
+	$(COMPILE_CMD)$(OBJDIR)$(P)jedwin.$(O) $(SRCDIR)$(P)jedwin.c
 ! ifdef WIN32
 $(OBJDIR)$(P)w32cons.$(O) : $(SRCDIR)$(P)w32cons.c $(CONFIG_H) $(COMPILE_DEPS)
 	$(COMPILE_CMD)$(OBJDIR)$(P)w32cons.$(O) $(SRCDIR)$(P)w32cons.c

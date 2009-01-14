@@ -79,7 +79,6 @@
 
 Buffer *MiniBuffer;
 Buffer *The_MiniBuffer;     /* this never gets deleted since we may need it */
-Window_Type *The_MiniWindow;
 
 static Buffer *Last_Buffer;
 
@@ -807,9 +806,9 @@ static void create_minibuffer(void) /*{{{*/
    
    w = JWindow;
    do other_window(); while (JWindow->next != w);
-   JWindow->next = The_MiniWindow;
-   The_MiniWindow->next = w;
-   The_MiniWindow->hscroll_column = 1;
+   JWindow->next = JMiniWindow;
+   JMiniWindow->next = w;
+   JMiniWindow->hscroll_column = 1;
    Mini_Info.action_window = w;
    other_window();    /* now in minibuffer window */
    window_buffer(MiniBuffer);
@@ -817,7 +816,7 @@ static void create_minibuffer(void) /*{{{*/
    MiniBuffer_Active = 1;
    erase_buffer ();
 
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    jed_notify_menu_buffer_changed ();
 #endif
 
@@ -836,7 +835,7 @@ static int Last_Completion_Windows;
 /* evaluate command in minibuffer and leave */
 int exit_minibuffer() /*{{{*/
 {
-   if (IS_MINIBUFFER)
+   if (IN_MINI_WINDOW)
      {
 	if (Last_Completion_Buffer != NULL)
 	  {
@@ -857,7 +856,7 @@ int exit_minibuffer() /*{{{*/
 /*}}}*/
 
 /* return 1 if minibuffer already exists otherwise returns 0 */
-int select_minibuffer() /*{{{*/
+int select_minibuffer (void) /*{{{*/
 {
    Window_Type *w;
    
@@ -865,7 +864,7 @@ int select_minibuffer() /*{{{*/
    w = JWindow;
    while (MiniBuffer != NULL)
      {
-	if (JWindow->sy+1 == Jed_Num_Screen_Rows) return(1);
+	if (IN_MINI_WINDOW) return(1);
 	other_window();
 	if (w == JWindow) exit_error("Internal Error:  no window!", 1);
      }
@@ -1219,7 +1218,7 @@ char *pop_to_buffer(char *name) /*{{{*/
    /* find a window to use */
    do
      {
-	if (w->sy + 1 != Jed_Num_Screen_Rows)
+	if (0 == (w->flags & MINIBUFFER_WINDOW))
 	  {
 	     if (action != NULL)
 	       {
@@ -1806,7 +1805,7 @@ int mini_complete (void) /*{{{*/
 	bob ();
      }
    
-   while ((CBuf != MiniBuffer) || !IS_MINIBUFFER) other_window ();
+   while ((CBuf != MiniBuffer) || !IN_MINI_WINDOW) other_window ();
    
    if (n)
      {
@@ -2180,8 +2179,8 @@ void init_minibuffer() /*{{{*/
    /* do some initializing */
    switch_to_buffer(The_MiniBuffer);
    remake_line(132);
-   The_MiniWindow = create_window(Jed_Num_Screen_Rows-1, 0, 1, 1, Jed_Num_Screen_Cols);
-   The_MiniWindow->buffer = CBuf;
+   JMiniWindow = jed_create_minibuffer_window ();
+   JMiniWindow->buffer = CBuf;
    Buffer_Local.tab = 0;
    switch_to_buffer(tmp);
    SLang_Dump_Routine = jed_traceback;
@@ -2215,7 +2214,7 @@ void init_minibuffer() /*{{{*/
 #endif
        || (-1 == init_jed_intrinsics ())
        || (-1 == jed_init_userinfo ())
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
        || (-1 == jed_init_menus ())
 #endif
        || (-1 == jed_init_syntax ())

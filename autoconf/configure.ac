@@ -5,6 +5,8 @@ AC_CONFIG_SRCDIR([src/ledit.c])
 JD_INIT
 AC_CONFIG_AUX_DIR(autoconf)
 
+m4_include([./include/pkgcfg.m4])
+
 dnl # infodir="\${JED_ROOT}/info"
 
 AC_CANONICAL_HOST
@@ -14,6 +16,8 @@ AC_PROG_INSTALL
 
 JD_ANSI_CC
 JD_ELF_COMPILER
+
+PKG_PROG_PKG_CONFIG([0.14.0])
 
 # determine X include and libs for XJed
 AC_PATH_XTRA
@@ -61,6 +65,14 @@ openpty \
 snprintf vsnprintf \
 )
 
+AC_CHECK_SIZEOF(short, 2)
+AC_CHECK_SIZEOF(int, 4)
+AC_CHECK_SIZEOF(long, 4)
+AC_CHECK_SIZEOF(float, 4)
+AC_CHECK_SIZEOF(double, 8)
+JD_CHECK_LONG_LONG
+JD_LARGE_FILE_SUPPORT
+
 JD_SET_OBJ_SRC_DIR
 JD_TERMCAP
 JD_WITH_LIBRARY(slang)
@@ -103,7 +115,8 @@ else
   AC_CHECK_LIB(gpm, Gpm_Open,
     [MOUSELIB="-lgpm"
      MOUSEDEFINES="-DUSE_GPM_MOUSE"
-     MOUSE_O_FILE="\${OBJDIR}/gpmmouse.o"
+     MOUSE_O_FILE="gpmmouse.o"
+     MOUSE_OBJ_FILE="\${OBJDIR}/gpmmouse.o"
      ],
     [if test X"$enable_gpm" = Xyes
      then
@@ -113,6 +126,28 @@ fi
 AC_SUBST(MOUSELIB)
 AC_SUBST(MOUSEDEFINES)
 AC_SUBST(MOUSE_O_FILE)
+AC_SUBST(MOUSE_OBJ_FILE)
+
+#---------------------------------------------------------------------------
+# gtk
+#---------------------------------------------------------------------------
+AC_DEFUN([WITH_GTK],[
+  AC_ARG_WITH( [gtk],
+               AC_HELP_STRING([--with-gtk=PATH], [Directory where the pkg-config file gtk+-2.0.pc can be found. This is often /usr/lib/pkgconfig, /usr/lib64/pkgconfig or in a default garnome build of gnome $HOME/garnome/lib/pkgconfig]),
+	       GTK_DIR="$withval", GTK_DIR="" )
+  PKG_CONFIG_PATH="$GTK_DIR"
+  export PKG_CONFIG_PATH
+  PKG_CHECK_MODULES( GTK, [gtk+-2.0 >= 2.8.0], [jd_with_gtk="yes"], [jd_with_gtk="no"] )
+  echo "GTK dir: $GTK_DIR"
+  AC_MSG_CHECKING([for gtk+-2.0 version >= 2.8.0])
+  AC_MSG_RESULT([$jd_with_gtk])
+  AC_MSG_RESULT([CFlags: $GTK_CFLAGS])
+  AC_MSG_RESULT([Libraries: $GTK_LIBS])
+  BUILD_GTKJED=$jd_with_gtk
+  AC_SUBST(BUILD_GTKJED)
+])
+
+WITH_GTK
 
 dnl #------------------------------------------------------------------------
 dnl JD_CHECK_FOR_LIBRARY(pcre)
@@ -133,8 +168,8 @@ fi
 JED_ROOT="${JED_ROOT:-$default_jed_root}"
 AC_SUBST(JED_ROOT)dnl
 
-JD_GET_MODULES(src/modules.unx)
-JD_CREATE_MODULE_ORULES
+dnl JD_GET_MODULES(src/modules.unx)
+dnl JD_CREATE_MODULE_ORULES
 
 AC_CONFIG_HEADER(src/sysconf.h:src/config.hin)
 AC_CONFIG_FILES([Makefile:autoconf/Makefile.in src/Makefile])
@@ -142,14 +177,14 @@ AC_OUTPUT
 
 dnl JD_CREATE_ORULE(jprocess)
 dnl JD_CREATE_ORULE(chkslang)
-JD_CREATE_ORULE(display)
-JD_CREATE_ORULE(vterm)
-JD_CREATE_ORULE(xterm)
-JD_CREATE_ORULE(gpmmouse)
-JD_CREATE_ORULE(rgrep)
-JD_CREATE_ORULE(getmail)
+dnl JD_CREATE_ORULE(display)
+dnl JD_CREATE_ORULE(vterm)
+dnl JD_CREATE_ORULE(xterm)
+dnl JD_CREATE_ORULE(gpmmouse)
+dnl JD_CREATE_ORULE(rgrep)
+dnl JD_CREATE_ORULE(getmail)
 
-JD_APPEND_RULES(src/Makefile)
+dnl JD_APPEND_RULES(src/Makefile)
 
 echo ""
 echo "You will need to edit src/Makefile if any of the following are not correct:"

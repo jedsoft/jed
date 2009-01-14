@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992, 1998, 2000, 2002-2009 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -24,11 +24,12 @@
 
 /*}}}*/
 
-extern Window_Type *The_MiniWindow;
+Window_Type *JMiniWindow;
 Window_Type *JWindow;
+
 int Top_Window_SY = 1;
 
-Window_Type *create_window(int sy, int sx, int rows, int col, int width) /*{{{*/
+static Window_Type *alloc_window(int sy, int sx, int rows, int col, int width)
 {
     Window_Type *w;
 
@@ -47,11 +48,38 @@ Window_Type *create_window(int sy, int sx, int rows, int col, int width) /*{{{*/
    w->width = width;
    w->hscroll_column = col;
 
-   return(w);
+   return w;
 }
 
-/*}}}*/
+static Window_Type *new_window (int sy, int sx, int rows, int col, int width)
+{
+   Window_Type *w = alloc_window (sy, sx, rows, col, width);
 
+   if (w == NULL)
+     return w;
+
+   if ((jed_new_window_cb != NULL)
+       && (-1 == (*jed_new_window_cb)(w)))
+     exit_error ("The new_window callback function failed", 0);
+
+   return w;
+}
+
+Window_Type *jed_create_minibuffer_window (void)
+{
+   Window_Type *w;
+   w = alloc_window (Jed_Num_Screen_Rows-1, 0, 1, 1, Jed_Num_Screen_Cols);
+   if (w == NULL)
+     return NULL;
+   
+   w->flags |= MINIBUFFER_WINDOW;
+
+   if ((jed_create_mini_window_cb != NULL)
+       && (*jed_create_mini_window_cb)(w))
+     exit_error ("Unable to create a mini-buffer window", 0);
+
+   return w;
+}
 
 static void free_window (Window_Type *w)
 {
@@ -61,6 +89,9 @@ static void free_window (Window_Type *w)
    if (Mini_Info.action_window == w)
      Mini_Info.action_window = NULL;
 
+   if (jed_free_window_cb != NULL)
+     (*jed_free_window_cb)(w);
+
    SLfree ((char *) w);
 }
 
@@ -69,9 +100,9 @@ void window_buffer(Buffer *b) /*{{{*/
 {
    if (JWindow == NULL)
      {
-	JWindow = create_window(Top_Window_SY, 0,
-				Jed_Num_Screen_Rows - 2 - Top_Window_SY,
-				1, Jed_Num_Screen_Cols);
+	JWindow = new_window (Top_Window_SY, 0,
+			      Jed_Num_Screen_Rows - 2 - Top_Window_SY,
+			      1, Jed_Num_Screen_Cols);
 	JWindow->next = JWindow;
      }
 
@@ -106,14 +137,24 @@ void move_window_marks (int all) /*{{{*/
 /*}}}*/
 #endif
 
-int other_window() /*{{{*/
+int other_window (void) /*{{{*/
 {
    switch_to_buffer(JWindow->buffer);
    jed_init_mark (&JWindow->mark,0);
+   if (JWindow->next == JWindow)
+     return 1;
+
+   if (jed_leave_window_cb != NULL)
+     (void) (*jed_leave_window_cb)(JWindow);
+
    JWindow = JWindow->next;
    switch_to_buffer(JWindow->buffer);
    if (JWindow->mark.line != NULL)
      (void) jed_goto_mark (&JWindow->mark);
+   
+   if (jed_enter_window_cb != NULL)
+     (void) (*jed_enter_window_cb)(JWindow);
+
    return 1;
 }
 
@@ -138,22 +179,20 @@ int split_window (void) /*{{{*/
    n = JWindow->rows - n - 1;
    JWindow->rows = JWindow->rows / 2;
 
-#if 0
-   /* l = find_top (); */
-   l = jed_find_top_to_recenter (CLine);
-   if (l == NULL)
-     l = CLine;
-   (void) jed_init_mark_for_line (&JWindow->beg, l, 0);
-#else
    jed_init_mark (&JWindow->beg, 0);
-#endif
+
    w = JWindow->next;
-   JWindow->next = neew = create_window(sy, JWindow->sx, n, JWindow->hscroll_column, width);
-   
+   JWindow->next = neew = new_window (sy, JWindow->sx, n, JWindow->hscroll_column, width);
+
    neew->next = w;
    neew->buffer = CBuf;
    jed_init_mark (&neew->mark, 0);
    jed_copy_mark (&neew->beg, &JWindow->beg);
+
+   if (jed_split_window_cb != NULL)
+     {
+	(void) (*jed_split_window_cb)(JWindow, neew);
+     }
 
    n = JWindow->sy;
 
@@ -162,6 +201,11 @@ int split_window (void) /*{{{*/
 
    if (-1 != (row = jed_find_line_on_screen (CLine, n)))
      {
+	/* The screen row below (not above) the current window containing
+	 * the current line was found.  Switch to that buffer to avoid
+	 * the cursor jumping.  This is not necessary but it has a more 
+	 * appealing visual effect.
+	 */
 	row += 1;
 
 	w = JWindow;
@@ -177,18 +221,19 @@ int split_window (void) /*{{{*/
 }
 
 /*}}}*/
+
 int one_window (void) /*{{{*/
 {
    Window_Type *w, *next, *mini;
    Buffer *b;
    mini = NULL;
-   if (JWindow->sy + 1 == Jed_Num_Screen_Rows) return(0);  /* mini-buffer */
+   if (IN_MINI_WINDOW) return 0;
    w = JWindow->next;
    b = JWindow->buffer;
-   while(w != JWindow)
+   while (w != JWindow)
      {
 	next = w->next;
-	if (w != The_MiniWindow) 
+	if (w != JMiniWindow) 
 	  {
 	     if (w->buffer != b) touch_window_hard (w, 0);
 	     free_window (w);
@@ -206,15 +251,15 @@ int one_window (void) /*{{{*/
    touch_window();
    return(1);
 }
-
 /*}}}*/
-int enlarge_window() /*{{{*/
+
+int enlarge_window (void) /*{{{*/
 {
    Window_Type *w, *w1;
    int min = 2;
 
-   if (JWindow == The_MiniWindow) return(0);
-   /* if (IS_MINIBUFFER) return(0); */
+   if (IN_MINI_WINDOW) return 0;
+
    if (JWindow == JWindow->next) return(0);
    w = JWindow->next;
    while(w->rows <= min) w = w->next;
@@ -249,11 +294,16 @@ int enlarge_window() /*{{{*/
 	JWindow = JWindow->next;
      }
    while (w != JWindow);
-   return(1);
+   
+   if ((jed_window_geom_change_cb != NULL)
+       && (-1 == (*jed_window_geom_change_cb) ()))
+     exit_error ("window_geom_change callback failed", 0);
+
+   return 1;
 }
 
 /*}}}*/
-static void adjust_windows(int height) /*{{{*/
+static void adjust_windows (int height) /*{{{*/
 {
    Window_Type *w = JWindow;
    int rows;
@@ -270,7 +320,7 @@ static void adjust_windows(int height) /*{{{*/
 		  return;
 	       }
 
-	     while(JWindow->sy != Top_Window_SY) other_window();
+	     while (JWindow->sy != Top_Window_SY) other_window();
 
 	     one_window();
 	     JWindow->rows = height - 2 - Top_Window_SY;
@@ -307,11 +357,15 @@ void jed_update_window_sizes (int height, int width) /*{{{*/
      }
    while (w != JWindow);
 
-   if (The_MiniWindow != NULL)
+   if (JMiniWindow != NULL)
      {
-	The_MiniWindow->sy = height-1;
-	The_MiniWindow->width = width;
+	JMiniWindow->sy = height-1;
+	JMiniWindow->width = width;
      }
+
+   if ((jed_window_geom_change_cb != NULL)
+       && (-1 == (*jed_window_geom_change_cb) ()))
+     exit_error ("window_geom_change callback failed", 0);
 }
 
 /*}}}*/
@@ -334,8 +388,7 @@ int buffer_visible(Buffer *b) /*{{{*/
 }
 
 /*}}}*/
-   
-	     
+
 int delete_window (void) /*{{{*/
 {
    Window_Type *tthis, *prev, *next;
@@ -343,20 +396,24 @@ int delete_window (void) /*{{{*/
    
    tthis = JWindow;
    next = tthis->next;
-   if ((MiniBuffer_Active && ((tthis == The_MiniWindow) || (tthis == next->next)))
+   if ((MiniBuffer_Active && ((tthis == JMiniWindow) || (tthis == next->next)))
        || (tthis == next)) return(0);
 
    nr1 = tthis->sy + tthis->rows + 2;
    if (nr1 != Jed_Num_Screen_Rows)
      {
-	while (JWindow->sy + 1 != nr1) other_window();
+	/* Not the bottom window.  Move to the window below this one */
+	while (JWindow->sy + 1 != nr1) 
+	  other_window();
 	JWindow->sy = tthis->sy;
      }
    else
      {
-	while(JWindow->sy + JWindow->rows + 1 != tthis->sy) other_window();
+	/* The bottom window.  Move to the window above this one. */
+	while (JWindow->sy + JWindow->rows + 1 != tthis->sy)
+	  other_window();
      }
-   
+
    JWindow->rows += tthis->rows + 1;
    touch_window();
    

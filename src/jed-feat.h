@@ -23,7 +23,7 @@
 #define JED_HAS_DISPLAY_LINE_NUMBERS	1
 
 /* Drop down menu support. */
-#define JED_HAS_TTY_MENUS		1
+#define JED_HAS_MENUS		1
 
 /* See ../doc/filelock.txt --- requires symbolic links */
 #define JED_HAS_EMACS_LOCKING		1

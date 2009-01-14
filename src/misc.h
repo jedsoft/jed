@@ -57,8 +57,6 @@ extern char *safe_strcpy (char *, SLFUTURE_CONST char *, unsigned int);
 extern int jed_case_strncmp (char *, char *, unsigned int);
 extern int jed_case_strcmp (char *, char *);
 
-#define IS_MINIBUFFER (JWindow->sy + 1 == Jed_Num_Screen_Rows)
-
 extern char **_Jed_Startup_Argv;
 extern int _Jed_Startup_Argc;
 

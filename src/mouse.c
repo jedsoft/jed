@@ -92,7 +92,7 @@ void (*X_Close_Mouse_Hook)(void);
 #endif /* NOT USE_GPM_MOUSE */
 
 
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
 static int Hack_Hack = 1;
 static Window_Type *Non_Existent_Menu_Window = (Window_Type *)&Hack_Hack;
 #endif
@@ -240,7 +240,7 @@ static int switch_to_event_window (int x, int y, int *linep, int *colp, int *sta
    
    if (Use_This_Window != NULL)
      {
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
 	if (Use_This_Window == Non_Existent_Menu_Window)
 	  {
 	     *status = last_status = MENU_BAR_STATUS;
@@ -258,7 +258,7 @@ static int switch_to_event_window (int x, int y, int *linep, int *colp, int *sta
      }
    else
      {
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
 	if (Jed_Menus_Active
 	    || ((y == 1) && (Top_Window_SY != 0)))
 	  {
@@ -500,7 +500,7 @@ static int do_mouse_cmd (JMouse_Type *jmouse, unsigned int type) /*{{{*/
      shift = 2;
    else shift = 0;
 
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    if (is_status == MENU_BAR_STATUS)
      return jed_menu_handle_mouse (type, column, linenum, button, shift);
 #endif

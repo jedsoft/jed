@@ -57,7 +57,8 @@ OBJDIR = @OBJDIR@
 MOUSEDEFINES = @MOUSEDEFINES@
 MOUSELIB = @MOUSELIB@
 MOUSE_O_FILE = @MOUSE_O_FILE@
- 
+MOUSE_OBJ_FILE = @MOUSE_OBJ_FILE@
+
 # 2. XFree86 XRENDERFONT (Anti-aliased font) support for XJED
 #XRENDERFONTLIBS = -lXft -lXrender -lfreetype -lXext
 XRENDERFONTLIBS = @XRENDERFONTLIBS@
@@ -102,22 +103,44 @@ XLIB = $(X_XTRA_LIBS) $(XLIBDIR) -lX11 $(TERMCAP_LIB) $(OTHERLIBS) $(DL_LIB)
 MISCLIBS = $(MOUSELIB) $(TERMCAP_LIB) $(X_XTRA_LIBS) $(OTHERLIBS) $(DL_LIB)
 
 ALL_CFLAGS = $(CFLAGS) -Dunix -DJED $(MOUSEDEFINES) $(SLANG_INC)
-COMPILE_CMD = \
- $(CC) -c $(ALL_CFLAGS) $(XINCLUDE) -DJED_ROOT='"$(JED_ROOT)"'
+CONFIG_H = config.h  
+COMPILE_CMD = $(CC) -c $(ALL_CFLAGS)
 
-CONFIG_H = config.h
-
-OBJS = @PROGRAM_OBJECTS@
-OFILES = @PROGRAM_OFILES@
-CFILES = @PROGRAM_CFILES@
-HFILES = @PROGRAM_HFILES@
-
-EXEC_LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) -lslang $(MISCLIBS)
-
+COMMON_OFILES = buffer.o cmds.o misc.o file.o ins.o sig.o sysdep.o \
+  screen.o paste.o ledit.o line.o search.o text.o keymap.o replace.o \
+  window.o undo.o vfile.o intrin.o syntax.o abbrev.o indent.o \
+  jprocess.o lineattr.o blocal.o mouse.o userinfo.o lock.o \
+  version.o hooks.o colors.o main.o
+COMMON_OBJS = $(OBJDIR)/buffer.o $(OBJDIR)/cmds.o $(OBJDIR)/misc.o \
+  $(OBJDIR)/file.o $(OBJDIR)/ins.o $(OBJDIR)/sig.o $(OBJDIR)/sysdep.o \
+  $(OBJDIR)/screen.o $(OBJDIR)/paste.o $(OBJDIR)/ledit.o $(OBJDIR)/line.o \
+  $(OBJDIR)/search.o $(OBJDIR)/text.o $(OBJDIR)/keymap.o $(OBJDIR)/replace.o \
+  $(OBJDIR)/window.o $(OBJDIR)/undo.o $(OBJDIR)/vfile.o $(OBJDIR)/intrin.o \
+  $(OBJDIR)/syntax.o $(OBJDIR)/abbrev.o $(OBJDIR)/indent.o \
+  $(OBJDIR)/jprocess.o $(OBJDIR)/lineattr.o $(OBJDIR)/blocal.o \
+  $(OBJDIR)/mouse.o $(OBJDIR)/menu.o $(OBJDIR)/userinfo.o $(OBJDIR)/lock.o \
+  $(OBJDIR)/version.o $(OBJDIR)/hooks.o $(OBJDIR)/colors.o \
+  $(OBJDIR)/main.o
+main_C_FLAGS = -DJED_ROOT='"$(JED_ROOT)"'
 main_O_DEP = Makefile
 jprocess_O_DEP = $(SRCDIR)/pty.c
 version_O_DEP = $(SRCDIR)/version.h
 DOT_O_DEPS = $(SRCDIR)/buffer.h $(SRCDIR)/jed-feat.h $(CONFIG_H)
+COMMON_LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) -lslang $(MISCLIBS)
+
+JED_OFILES = jedwin.o display.o menu.o $(MOUSE_O_FILE) 
+JED_OBJS = $(OBJDIR)/jedwin.o $(OBJDIR)/display.o $(OBJDIR)/menu.o $(MOUSE_OBJ_FILE)
+
+XJED_OFILES = jedwin.o xterm.o vterm.o menu.o
+XJED_OBJS = $(OBJDIR)/jedwin.o $(OBJDIR)/xterm.o $(OBJDIR)/vterm.o $(OBJDIR)/menu.o
+xterm_C_FLAGS = $(XINCLUDE)
+XJED_LIBS = $(XLIB) $(XRENDERFONTLIBS)
+
+GTKJED_OFILES = vterm.o gtkmenu.o gtkwin.o gtkterm.o
+GTKJED_OBJS = $(OBJDIR)/vterm.o $(OBJDIR)/gtkmenu.o $(OBJDIR)/gtkwin.o $(OBJDIR)/gtkterm.o
+GTKJED_LIBS = @GTK_LIBS@ $(XRENDERFONTLIBS)
+GTKJED_CFLAGS = @GTK_CFLAGS@
+BUILD_GTKJED = @BUILD_GTKJED@
 
 UPDATE_VERSION_SCRIPT = $(HOME)/bin/update_changes_version
 
@@ -130,16 +153,15 @@ all: jed
 
 jed: $(OBJDIR) $(CONFIG_H) slangversion $(OBJDIR)/jed
 	@echo jed created in $(OBJDIR)
-$(OBJDIR)/jed: $(OBJS) $(OBJDIR)/display.o $(MOUSE_O_FILE)
-	cd $(OBJDIR); $(CC) $(OFILES) display.o $(MOUSE_O_FILE) \
-           -o jed $(EXEC_LIBS)
+$(OBJDIR)/jed: $(COMMON_OBJS) $(JED_OBJS)
+	cd $(OBJDIR); $(CC) $(COMMON_OFILES) $(JED_OFILES) -o jed $(COMMON_LIBS) $(JED_LIBS)
 
 slangversion: $(OBJDIR)/chkslang
 	if $(OBJDIR)/chkslang jed $(MIN_SLANG_VERSION) $(MAX_SLANG_VERSION);\
 	then exit 0; else $(RM) $(OBJDIR)/chkslang; exit 1; fi
 
 $(OBJDIR)/chkslang: config.h Makefile chkslang.c $(DOT_O_DEPS) $(chkslang_O_DEP)
-	$(CC) $(ALL_CFLAGS) $(LDFLAGS) $(SRCDIR)/chkslang.c -o $(OBJDIR)/chkslang $(EXEC_LIBS)
+	$(CC) $(ALL_CFLAGS) $(LDFLAGS) $(SRCDIR)/chkslang.c -o $(OBJDIR)/chkslang $(COMMON_LIBS)
 
 
 $(OBJDIR):
@@ -162,11 +184,27 @@ $(SRCDIR)/version.h: $(SRCDIR)/../changes.txt
 #
 xjed : $(OBJDIR) $(CONFIG_H) slangversion $(OBJDIR)/xjed
 	@echo xjed created in $(OBJDIR)
-$(OBJDIR)/xjed : $(OBJS) $(OBJDIR)/xterm.o $(OBJDIR)/vterm.o
+$(OBJDIR)/xjed : $(COMMON_OBJS) $(XJED_OBJS)
 	cd $(OBJDIR); \
-	$(CC) $(OFILES) xterm.o vterm.o -o xjed $(LDFLAGS) $(RPATH) \
-	   $(SLANG_LIB) -lslang  $(XLIB) $(XRENDERFONTLIBS)
+	$(CC) $(COMMON_OFILES) $(XJED_OFILES) -o xjed $(COMMON_LIBS) $(XJED_LIBS)
 #
+gtkversion:
+	@if test "z$(BUILD_GTKJED)" != "zyes"; \
+	then \
+	  echo "";                                                     \
+	  echo "      ----------------------------------------------"; \
+	  echo "      | 'gtkjed' requires GTK+-2.0. |"; \
+	  echo "      ----------------------------------------------"; \
+	  echo "";                                                     \
+	  exit 1;                                                      \
+	fi
+gtkjed : gtkversion $(OBJDIR) $(CONFIG_H) slangversion $(OBJDIR)/gtkjed
+	@echo gtkjed created in $(OBJDIR)
+$(OBJDIR)/gtkjed : $(COMMON_OBJS) $(GTKJED_OBJS)
+	cd $(OBJDIR); \
+	$(CC) $(COMMON_OFILES) $(GTKJED_OFILES) -o gtkjed $(COMMON_LIBS) $(GTKJED_LIBS)
+#
+
 rgrep: $(OBJDIR)/rgrep
 	@echo rgrep created in $(OBJDIR)
 $(OBJDIR)/rgrep: $(OBJDIR)/vfile.o $(OBJDIR)/rgrep.o
@@ -275,6 +313,138 @@ symlinks:
 	mkdir -p $(HOME)/sys/$(ARCH)/objs/jed/src
 	ln -s $(HOME)/sys/$(ARCH)/objs/jed/src $(ARCH)objs
 .PHONY: all install_bin install_data install_bin_directories install_data_directories
+
 #---------------------------------------------------------------------------
-# Rules (automatically generated)
+# Common object rules
 #---------------------------------------------------------------------------
+$(OBJDIR)/buffer.o : $(SRCDIR)/buffer.c $(DOT_O_DEPS) $(buffer_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(buffer_C_FLAGS) $(SRCDIR)/buffer.c
+
+$(OBJDIR)/cmds.o : $(SRCDIR)/cmds.c $(DOT_O_DEPS) $(cmds_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(cmds_C_FLAGS) $(SRCDIR)/cmds.c
+
+$(OBJDIR)/misc.o : $(SRCDIR)/misc.c $(DOT_O_DEPS) $(misc_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(misc_C_FLAGS) $(SRCDIR)/misc.c
+
+$(OBJDIR)/file.o : $(SRCDIR)/file.c $(DOT_O_DEPS) $(file_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(file_C_FLAGS) $(SRCDIR)/file.c
+
+$(OBJDIR)/main.o : $(SRCDIR)/main.c $(DOT_O_DEPS) $(main_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(main_C_FLAGS) $(SRCDIR)/main.c
+
+$(OBJDIR)/ins.o : $(SRCDIR)/ins.c $(DOT_O_DEPS) $(ins_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(ins_C_FLAGS) $(SRCDIR)/ins.c
+
+$(OBJDIR)/sig.o : $(SRCDIR)/sig.c $(DOT_O_DEPS) $(sig_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(sig_C_FLAGS) $(SRCDIR)/sig.c
+
+$(OBJDIR)/sysdep.o : $(SRCDIR)/sysdep.c $(DOT_O_DEPS) $(sysdep_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(sysdep_C_FLAGS) $(SRCDIR)/sysdep.c
+
+$(OBJDIR)/screen.o : $(SRCDIR)/screen.c $(DOT_O_DEPS) $(screen_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(screen_C_FLAGS) $(SRCDIR)/screen.c
+
+$(OBJDIR)/paste.o : $(SRCDIR)/paste.c $(DOT_O_DEPS) $(paste_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(paste_C_FLAGS) $(SRCDIR)/paste.c
+
+$(OBJDIR)/ledit.o : $(SRCDIR)/ledit.c $(DOT_O_DEPS) $(ledit_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(ledit_C_FLAGS) $(SRCDIR)/ledit.c
+
+$(OBJDIR)/line.o : $(SRCDIR)/line.c $(DOT_O_DEPS) $(line_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(line_C_FLAGS) $(SRCDIR)/line.c
+
+$(OBJDIR)/search.o : $(SRCDIR)/search.c $(DOT_O_DEPS) $(search_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(search_C_FLAGS) $(SRCDIR)/search.c
+
+$(OBJDIR)/text.o : $(SRCDIR)/text.c $(DOT_O_DEPS) $(text_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(text_C_FLAGS) $(SRCDIR)/text.c
+
+$(OBJDIR)/keymap.o : $(SRCDIR)/keymap.c $(DOT_O_DEPS) $(keymap_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(keymap_C_FLAGS) $(SRCDIR)/keymap.c
+
+$(OBJDIR)/replace.o : $(SRCDIR)/replace.c $(DOT_O_DEPS) $(replace_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(replace_C_FLAGS) $(SRCDIR)/replace.c
+
+$(OBJDIR)/window.o : $(SRCDIR)/window.c $(DOT_O_DEPS) $(window_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(window_C_FLAGS) $(SRCDIR)/window.c
+
+$(OBJDIR)/undo.o : $(SRCDIR)/undo.c $(DOT_O_DEPS) $(undo_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(undo_C_FLAGS) $(SRCDIR)/undo.c
+
+$(OBJDIR)/vfile.o : $(SRCDIR)/vfile.c $(DOT_O_DEPS) $(vfile_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(vfile_C_FLAGS) $(SRCDIR)/vfile.c
+
+$(OBJDIR)/intrin.o : $(SRCDIR)/intrin.c $(DOT_O_DEPS) $(intrin_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(intrin_C_FLAGS) $(SRCDIR)/intrin.c
+
+$(OBJDIR)/syntax.o : $(SRCDIR)/syntax.c $(DOT_O_DEPS) $(syntax_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(syntax_C_FLAGS) $(SRCDIR)/syntax.c
+
+$(OBJDIR)/abbrev.o : $(SRCDIR)/abbrev.c $(DOT_O_DEPS) $(abbrev_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(abbrev_C_FLAGS) $(SRCDIR)/abbrev.c
+
+$(OBJDIR)/indent.o : $(SRCDIR)/indent.c $(DOT_O_DEPS) $(indent_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(indent_C_FLAGS) $(SRCDIR)/indent.c
+
+$(OBJDIR)/jprocess.o : $(SRCDIR)/jprocess.c $(DOT_O_DEPS) $(jprocess_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(jprocess_C_FLAGS) $(SRCDIR)/jprocess.c
+
+$(OBJDIR)/lineattr.o : $(SRCDIR)/lineattr.c $(DOT_O_DEPS) $(lineattr_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(lineattr_C_FLAGS) $(SRCDIR)/lineattr.c
+
+$(OBJDIR)/blocal.o : $(SRCDIR)/blocal.c $(DOT_O_DEPS) $(blocal_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(blocal_C_FLAGS) $(SRCDIR)/blocal.c
+
+$(OBJDIR)/mouse.o : $(SRCDIR)/mouse.c $(DOT_O_DEPS) $(mouse_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(mouse_C_FLAGS) $(SRCDIR)/mouse.c
+
+$(OBJDIR)/menu.o : $(SRCDIR)/menu.c $(DOT_O_DEPS) $(menu_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(menu_C_FLAGS) $(SRCDIR)/menu.c
+
+$(OBJDIR)/userinfo.o : $(SRCDIR)/userinfo.c $(DOT_O_DEPS) $(userinfo_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(userinfo_C_FLAGS) $(SRCDIR)/userinfo.c
+
+$(OBJDIR)/lock.o : $(SRCDIR)/lock.c $(DOT_O_DEPS) $(lock_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(lock_C_FLAGS) $(SRCDIR)/lock.c
+
+$(OBJDIR)/version.o : $(SRCDIR)/version.c $(DOT_O_DEPS) $(version_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(version_C_FLAGS) $(SRCDIR)/version.c
+
+$(OBJDIR)/hooks.o : $(SRCDIR)/hooks.c $(DOT_O_DEPS) $(hooks_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(hooks_C_FLAGS) $(SRCDIR)/hooks.c
+
+$(OBJDIR)/colors.o : $(SRCDIR)/colors.c $(DOT_O_DEPS) $(colors_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(colors_C_FLAGS) $(SRCDIR)/colors.c
+
+$(OBJDIR)/display.o : $(SRCDIR)/display.c $(DOT_O_DEPS) $(display_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(display_C_FLAGS) $(SRCDIR)/display.c
+
+$(OBJDIR)/jedwin.o : $(SRCDIR)/jedwin.c $(DOT_O_DEPS) $(jedwin_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(jedwin_C_FLAGS) $(SRCDIR)/jedwin.c
+
+$(OBJDIR)/gpmmouse.o : $(SRCDIR)/gpmmouse.c $(DOT_O_DEPS) $(gpmmouse_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(gpmmouse_C_FLAGS) $(SRCDIR)/gpmmouse.c
+
+$(OBJDIR)/vterm.o : $(SRCDIR)/vterm.c $(DOT_O_DEPS) $(vterm_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(vterm_C_FLAGS) $(SRCDIR)/vterm.c
+
+$(OBJDIR)/xterm.o : $(SRCDIR)/xterm.c $(DOT_O_DEPS) $(xterm_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(xterm_C_FLAGS) $(SRCDIR)/xterm.c
+#---------------------------------------------------------------------------
+# GTK-jed rules
+#---------------------------------------------------------------------------
+$(OBJDIR)/gtkmenu.o : $(SRCDIR)/gtkmenu.c $(DOT_O_DEPS) $(gtkmenu_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(GTKJED_CFLAGS) $(gtkmenu_C_FLAGS) $(SRCDIR)/gtkmenu.c
+$(OBJDIR)/gtkwin.o : $(SRCDIR)/gtkwin.c $(DOT_O_DEPS) $(gtkwin_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(GTKJED_CFLAGS) $(gtkwin_C_FLAGS) $(SRCDIR)/gtkwin.c
+$(OBJDIR)/gtkterm.o : $(SRCDIR)/gtkterm.c $(DOT_O_DEPS) $(gtkterm_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(GTKJED_CFLAGS) $(gtkterm_C_FLAGS) $(SRCDIR)/gtkterm.c
+
+#---------------------------------------------------------------------------
+# MISC rules
+#---------------------------------------------------------------------------
+$(OBJDIR)/rgrep.o : $(SRCDIR)/rgrep.c $(DOT_O_DEPS) $(rgrep_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(rgrep_C_FLAGS) $(SRCDIR)/rgrep.c
+
+$(OBJDIR)/getmail.o : $(SRCDIR)/getmail.c $(DOT_O_DEPS) $(getmail_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(getmail_C_FLAGS) $(SRCDIR)/getmail.c

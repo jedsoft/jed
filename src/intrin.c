@@ -1014,7 +1014,7 @@ static SLang_Intrin_Var_Type Jed_Variables [] =
    MAKE_VARIABLE("KILL_ARRAY_SIZE", &Kill_Array_Size, INT_TYPE, 1),
 #endif
    MAKE_VARIABLE("_Backspace_Key", &_Jed_Backspace_Key, STRING_TYPE, 1),
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    MAKE_VARIABLE("Menus_Active", &Jed_Menus_Active, INT_TYPE, 1),
 #endif
    MAKE_VARIABLE(NULL, NULL, 0, 0)

@@ -40,7 +40,7 @@ typedef struct _Buffer Buffer;
 #include "keymap.h"
 #include "undo.h"
 #include "blocal.h"
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
 # include "menu.h"
 #endif
 
@@ -251,7 +251,7 @@ struct _Buffer
    unsigned int max_unparsed_line_num;
    unsigned int min_unparsed_line_num;
 #endif
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    Menu_Bar_Type *menubar;
 #endif
 #if JED_HAS_DISPLAY_LINE_NUMBERS

@@ -112,7 +112,7 @@ int macro_query() /*{{{*/
    Defining_Keyboard_Macro = 0;
    Executing_Keyboard_Macro = 0;
    
-   if (!IS_MINIBUFFER)
+   if (!IN_MINI_WINDOW)
      {
 	if (NULL == (s = read_from_minibuffer("Enter String:", (char *) NULL, NULL, &n))) return(0);
 	(void) jed_insert_nbytes ((unsigned char *) s, n);
@@ -177,7 +177,7 @@ int jed_getkey (void) /*{{{*/
      {
 	if (Macro_Buffer_Ptr < Macro_Ptr_Max) return (*Macro_Buffer_Ptr++);
 	Executing_Keyboard_Macro = 0;
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
 	/* This means that the macro was stopped from a menu */
 	if (Jed_Menus_Active)
 	  (void) jed_exit_menu_bar ();
@@ -299,7 +299,7 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
 	return ret;
      }
 
-   if (!IS_MINIBUFFER)
+   if (!IN_MINI_WINDOW)
      {
 	current_window = JWindow;
 	start_buffer = CBuf;
@@ -366,7 +366,7 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
 
 	err = SLang_get_error ();
 	if (((err == SL_USER_BREAK) || SLKeyBoard_Quit)
-	    && IS_MINIBUFFER)
+	    && IN_MINI_WINDOW)
 	  break;
 	    
 	update((Line *) NULL, 0, 0, 1);
@@ -437,7 +437,7 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
    /* delete_buffer(MiniBuffer); */
    MiniBuffer = NULL;
 
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    jed_notify_menu_buffer_changed ();
 #endif
    
@@ -549,7 +549,7 @@ int execute_keyboard_macro() /*{{{*/
    Repeat_Factor = repeat_ptr;
    if (repeat_ptr != NULL) *repeat_ptr = repeat;
    Executing_Keyboard_Macro = 0;
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    /* This means that the macro was stopped from a menu */
    if (Jed_Menus_Active)
      (void) jed_exit_menu_bar ();
@@ -711,7 +711,7 @@ Buffer *jed_get_mini_action_buffer (void)
 {
    Window_Type *w;
 
-   if (IS_MINIBUFFER == 0)
+   if (IN_MINI_WINDOW == 0)
      return NULL;
 
    w = Mini_Info.action_window;

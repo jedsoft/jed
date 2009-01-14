@@ -89,6 +89,21 @@
 #undef uid_t
 #undef gid_t
 
+#undef SIZEOF_SHORT
+#undef SIZEOF_INT
+#undef SIZEOF_LONG
+#undef SIZEOF_FLOAT
+#undef SIZEOF_DOUBLE
+#undef SIZEOF_LONG_LONG
+
+#undef HAVE_LONG_LONG
+
+/* The following set defines may be necessary to activate long file support */
+#undef _FILE_OFFSET_BITS
+#undef _LARGE_FILES
+#undef _LARGEFILE_SOURCE
+
+
 /* For antialiased fonts, set this to 1 */
 #undef XJED_HAS_XRENDERFONT
 

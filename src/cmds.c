@@ -712,13 +712,13 @@ static void scroll_completion (int dir)
      {
 	pop_to_buffer (Completion_Buffer);
    	if (dir > 0) pagedown_cmd (); else pageup_cmd ();
-	while (!IS_MINIBUFFER) other_window ();
+	while (!IN_MINI_WINDOW) other_window ();
      }
    else
      {
 	w = JWindow;
 	other_window();
-	if (!IS_MINIBUFFER)
+	if (!IN_MINI_WINDOW)
 	  {
 	     if (dir > 0) pagedown_cmd (); else pageup_cmd ();
 	  }
@@ -755,7 +755,7 @@ int pagedown_cmd()
    int n;
    
    Cursor_Motion = -1;
-   if (IS_MINIBUFFER)
+   if (IN_MINI_WINDOW)
      {
 	scroll_completion (1);
 	return 1;
@@ -815,7 +815,7 @@ int pageup_cmd (void)
    
    Cursor_Motion = -1;
    
-   if (IS_MINIBUFFER)
+   if (IN_MINI_WINDOW)
      {
 	scroll_completion (-1);
 	return 1;

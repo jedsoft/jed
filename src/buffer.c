@@ -1114,7 +1114,7 @@ void delete_buffer(Buffer *buf) /*{{{*/
    buf->prev->next = buf->next;
    buf->next->prev = buf->prev;
 
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    jed_delete_menu_bar (buf->menubar);
 #endif
 

@@ -344,9 +344,18 @@ void reset_tty (void) /*{{{*/
 
 /*}}}*/
 
+int Key_Wait_Time = 450;
+int jed_set_default_key_wait_time (const int *tsecs)
+{
+   int tmp = Key_Wait_Time;
+   if (*tsecs > 0)
+     Key_Wait_Time = *tsecs;
+   return tmp;
+}
+
 unsigned char sys_getkey (void) /*{{{*/
 {
-   int n = 450;
+   int n = Key_Wait_Time;
    unsigned char c;
 #if JED_HAS_SUBPROCESSES
    int all = Num_Subprocesses;

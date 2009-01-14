@@ -125,5 +125,6 @@ extern char Jed_Root_Dir [JED_MAX_PATH_LEN];
 
 extern void (*Jed_Sig_Exit_Fun) (void);
 
+extern int jed_set_default_key_wait_time (const int *tsecs);
 
 #endif /* __DAVIS_SYSDEP_H__ */

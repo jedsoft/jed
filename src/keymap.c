@@ -34,7 +34,7 @@
 #include "hooks.h"
 #include "replace.h"
 #include "indent.h"
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
 # include "menu.h"
 #endif
 
@@ -212,7 +212,7 @@ SLKeymap_Function_Type Jed_Functions[] = /*{{{*/
      {"widen_region", widen_region},
      {"write_buffer", jed_save_buffer_as_cmd},
      {"yank", yank},
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
      {"select_menubar", jed_select_menu_bar},
 #endif
      {(char *) NULL, NULL}
@@ -226,7 +226,7 @@ int kbd_quit(void) /*{{{*/
 {
    int sle = SLang_get_error ();
    SLKeyBoard_Quit = 1;
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    if (Jed_Menus_Active)
      jed_exit_menu_bar ();
 #endif
@@ -592,7 +592,7 @@ static int do_key (void) /*{{{*/
 	*Key_Bufferp = 0;
      }
 
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    if (Jed_Menus_Active)
      {
 	key = jed_menu_do_key ();
@@ -603,7 +603,7 @@ static int do_key (void) /*{{{*/
      {
 	key = SLang_do_key (CBuf->keymap, jed_getkey);
 	update_jed_keybuffer ();
-	if ((IS_MINIBUFFER == 0)
+	if ((IN_MINI_WINDOW == 0)
 	    && (key != NULL)
 	    && jed_hook_exists ("_jed_before_key_hooks"))
 	  {
@@ -684,7 +684,7 @@ void do_jed(void) /*{{{*/
 	switch_to_buffer_cmd(name);
      }
 
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    if ((tthis != CBuf) || (CBuf->mode_string != mode))
      jed_notify_menu_buffer_changed ();
 #endif
@@ -730,7 +730,7 @@ void jed (void) /*{{{*/
 	jed_sleep (2);
      }
 
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    jed_notify_menu_buffer_changed ();
 #endif
 
@@ -752,7 +752,7 @@ void jed (void) /*{{{*/
 	window_buffer(CBuf);
      }
 
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    jed_notify_menu_buffer_changed ();
 #endif
 
@@ -1504,6 +1504,9 @@ static SLang_Intrin_Fun_Type Keymap_Intrinsics [] =
    MAKE_INTRINSIC_I("_ungetkey", ungetkey, VOID_TYPE),
    MAKE_INTRINSIC_0("getkey", getkey_wchar_intrin, VOID_TYPE),
    MAKE_INTRINSIC_1("ungetkey", ungetkey_wchar_intrin, VOID_TYPE, SLANG_LONG_TYPE),
+#ifdef REAL_UNIX_SYSTEM
+   MAKE_INTRINSIC_1("set_default_key_wait_time", jed_set_default_key_wait_time, SLANG_INT_TYPE, SLANG_INT_TYPE),
+#endif
    SLANG_END_INTRIN_FUN_TABLE
 };
 

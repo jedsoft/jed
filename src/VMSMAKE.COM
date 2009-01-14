@@ -146,6 +146,7 @@ $ bfiles = bfiles -
 	+ "blocal," -
 	+ "mouse," -
 	+ "menu," -
+	+ "jedwin," -
 	+ "window"
 $ bfiles = bfiles -
 	+ ",colors" -

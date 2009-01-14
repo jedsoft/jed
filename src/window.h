@@ -19,13 +19,34 @@ typedef struct Window_Type
    Mark beg;			       /* buffer position of top corner */
    Mark mark;			       /* last cursor pos in window before switch */
    int trashed;			       /* true if one or more lines in window were changed */
+#define MINIBUFFER_WINDOW	0x01
    int flags;			       /* Note that trashed should be a bit here */
+   
+   void *private_data;		       /* used by the callback functions */
 }
 Window_Type;
 
+/* The mini window exists at all times.  When active, it is part of the 
+ * window list.  When inactive, it is not part of the list.
+ */
+extern Window_Type *JMiniWindow;
 extern Window_Type *JWindow;
 
-extern Window_Type *create_window(int, int, int, int, int);
+#define IN_MINI_WINDOW		(JWindow->flags & MINIBUFFER_WINDOW)
+
+extern Window_Type *jed_create_minibuffer_window (void);
+
+/* Window callbacks for GUIs.  If any of these return -1, it is regarded as
+ * a fatal error, and jed will exit.
+ */
+extern int (*jed_new_window_cb) (Window_Type *);
+extern void (*jed_free_window_cb) (Window_Type *);
+extern int (*jed_create_mini_window_cb) (Window_Type *);
+extern int (*jed_leave_window_cb) (Window_Type *);
+extern int (*jed_enter_window_cb) (Window_Type *);
+extern int (*jed_split_window_cb) (Window_Type *oldwin, Window_Type *newwin);
+extern int (*jed_window_geom_change_cb) (void);
+
 extern void touch_screen_for_buffer(Buffer *);
 extern void touch_window_hard(Window_Type *, int);
 

@@ -50,7 +50,7 @@ static Color_Object_Map_Type Color_Name_Map [JMAX_COLORS] =
 #if JED_HAS_LINE_ATTRIBUTES
    {"...",		JDOTS_COLOR, NULL, NULL},
 #endif   
-#if JED_HAS_TTY_MENUS
+#if JED_HAS_MENUS
    {"menu_char",	JMENU_CHAR_COLOR, NULL, NULL},
    {"menu_shadow",	JMENU_SHADOW_COLOR, NULL, NULL},
    {"menu_selection",	JMENU_SELECTION_COLOR, NULL, NULL},

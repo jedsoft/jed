@@ -61,6 +61,7 @@ OBJS =	ABBREV$(OBJ), -
 	VTERM$(OBJ), -
 	BLOCAL$(OBJ), -
 	MENU$(OBJ), -
+	JEDWIN$(OBJ), -
 	MOUSE$(OBJ), -
 	WINDOW$(OBJ), -
 	VERSION$(OBJ), -

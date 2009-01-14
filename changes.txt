@@ -376,6 +376,15 @@ Changes since 0.99-18.0
 167. lib/fortran.sl: Previously, lines that started with, e.g., ENDXXX
      were regarded as a form of END block line (ENDDO) causing
      indentation problems.
+168. src/window.c: A number of callback hooks were added to be used by
+     GUI versions of jed. 
+169. src/*: I renamed some global variables after making the above
+     changes to window.c.
+170. src/gtk*.c: New files provided by Siegfried Thoma for the gtk
+     port.  Note: gtkjed may be built but it will not run until the
+     gtk files are modified to use the hooks added in #168.
+171. autoconf/*: Modifications to check for the presence of gtk
+     (Siegfried Thoma).  I also added large-filesystem checks.
 
 {{{ Previous Versions 
 
