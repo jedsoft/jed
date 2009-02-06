@@ -184,14 +184,18 @@ private define etags_find (tag)
    goto_line (line);
 }
 
-private define goto_tag (s)
+private define goto_tag (s, tag)
 {
    () = read_file (s.file);
    variable line = s.line;
    if (String_Type == typeof (line))
      {
 	bob ();
-	() = bol_fsearch (line);
+	if (0 == bol_fsearch (line))
+	  {
+	     () = fsearch (tag);
+	     message ("Your tags file needs to be updated");
+	  }
      }
    else goto_line (line);
 }
@@ -341,7 +345,7 @@ define ctags_find ()
      find_method = &etags_find;
    
    variable s = tags_find (find_method, tag);
-   goto_tag (s[0]);
+   goto_tag (s[0], tag);
 
    save_position (cpos);
    variable tag_pos = create_position ();

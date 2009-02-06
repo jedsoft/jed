@@ -385,6 +385,12 @@ Changes since 0.99-18.0
      gtk files are modified to use the hooks added in #168.
 171. autoconf/*: Modifications to check for the presence of gtk
      (Siegfried Thoma).  I also added large-filesystem checks.
+172. src/dfasyntax.c: Buffer overflow fixed and the use of UCHAR_MAX
+     changed to EQUIV_TABLE_SIZE for additional clarity (Jörg Sommer).
+173. lib/ctags.sl: If a tags line cannot be found, then goto the first
+     occurance of the tag.
+174. src/unix.c: Change a int to mode_t in unix.c:sys_chmod.
+175. lib/krconv.sl: Removed a misplaced continue statement.
 
 {{{ Previous Versions 
 

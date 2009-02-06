@@ -705,7 +705,7 @@ void sys_suspend (void) /*{{{*/
 int sys_chmod(SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *uid, gid_t *gid) /*{{{*/
 {
    struct stat buf;
-   int m;
+   mode_t m;
 
    if (what)
      {

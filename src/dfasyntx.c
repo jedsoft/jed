@@ -23,6 +23,8 @@
  */
 #define SET_SIZE ((UCHAR_MAX+CHAR_BIT) / CHAR_BIT)
 
+#define EQUIV_TABLE_SIZE (UCHAR_MAX+1)
+
 typedef struct NFA NFA;
 typedef struct Accept Accept;
 typedef struct DFA DFA;
@@ -87,7 +89,7 @@ struct Highlight
 {
    int nfa_states, dfa_states;
    NFA *nfa;
-   unsigned char equiv[UCHAR_MAX+1];
+   unsigned char equiv[EQUIV_TABLE_SIZE];
    Accept *accept;
    DFA *dfa;
    char *filename;
@@ -464,7 +466,7 @@ static void add_nfa_trans (Highlight *h, int from, int to, Set set)
      */
    if (set != NULL) 
      {
-	for (i=0; i<=UCHAR_MAX; i++) 
+	for (i=0; i<EQUIV_TABLE_SIZE; i++) 
 	  {
 	     int j = h->equiv[i];
 	     if (j == i) 
@@ -601,7 +603,7 @@ static void make_dfa (Highlight *h)
 	 * transitions. Of course we need only consider transitions
 	 * on a representative member of each equivalence class.
 	 */
-	for (c = 0; c <= UCHAR_MAX; c++) 
+	for (c = 0; c < EQUIV_TABLE_SIZE; c++) 
 	  {
 	     if (h->equiv[c] == c) 
 	       {
@@ -745,7 +747,7 @@ static int load_dfa (Highlight *h, char *name)
 {
    FILE *fp;
    char buffer[2048], buf2[2048];
-   unsigned char equiv[UCHAR_MAX];
+   unsigned char equiv[EQUIV_TABLE_SIZE];
    int i, j;
    Accept *accept = NULL;
    int accepts;
@@ -778,7 +780,7 @@ static int load_dfa (Highlight *h, char *name)
      * Read in the equivalence classes.
      */
    i = 0;
-   while (i <= UCHAR_MAX) 
+   while (i < EQUIV_TABLE_SIZE)
      {
 	char *p, *q, *r;
 	unsigned int e;
@@ -786,7 +788,7 @@ static int load_dfa (Highlight *h, char *name)
 	get(buffer);
 	
 	p = q = buffer;
-	while (*p && i <= UCHAR_MAX) 
+	while (*p && i < EQUIV_TABLE_SIZE)
 	  {
 	     q = p + strcspn(p, " ");
 	     r = q + strspn(q, " ");
@@ -855,7 +857,7 @@ static int load_dfa (Highlight *h, char *name)
 	  goto error;
 	p++;
 	p += strspn(p, " ");
-	for (j=0; j<=UCHAR_MAX; j++) 
+	for (j=0; j<EQUIV_TABLE_SIZE; j++) 
 	  {
 	     if (equiv[j] == j) 
 	       {
@@ -961,7 +963,7 @@ static void save_dfa (Highlight *h, char *name)
    fprintf(fp, "DFA cache: %s\nequiv\n", name);
    
     /* write the equivalence classes */
-   for (i=0; i<=UCHAR_MAX; i++) 
+   for (i=0; i<EQUIV_TABLE_SIZE; i++) 
      {
 	fprintf(fp, "%02X%c", h->equiv[i], ((i+1) % 16 ? ' ' : '\n'));
      }
@@ -982,7 +984,7 @@ static void save_dfa (Highlight *h, char *name)
 	fprintf(fp, "%d %d %d:", d->number,
 		d->accept ? d->accept->state : -1,
 		d->accept_end ? d->accept_end->state : -1);
-	for (i=0; i<=UCHAR_MAX; i++)
+	for (i=0; i<EQUIV_TABLE_SIZE; i++)
 	  if (h->equiv[i] == i)
 	    fprintf(fp, " %d",
 		    d->where_to[i] ? d->where_to[i]->number : -1);
@@ -1002,7 +1004,7 @@ static void dump_it (Highlight *h)
    int c, d;
    
    printf("Equivalence classes:\n");
-   for (c=1; c<=UCHAR_MAX; c++) 
+   for (c=1; c<EQUIV_TABLE_SIZE; c++) 
      {
 	if (h->equiv[c] == c) 
 	  {
@@ -1012,7 +1014,7 @@ static void dump_it (Highlight *h)
 	     else
 	       printf("\\x%02X", c);
 	     printf(": ");
-	     for (d=c; d<=UCHAR_MAX; d++) 
+	     for (d=c; d<EQUIV_TABLE_SIZE; d++) 
 	       {
 		  if (h->equiv[d] == c) 
 		    {
@@ -1033,7 +1035,7 @@ static void dump_it (Highlight *h)
 	if (n->is_empty)
 	  printf("epsilon");
 	else
-	  for (c=0; c<=UCHAR_MAX; c++)
+	  for (c=0; c<EQUIV_TABLE_SIZE; c++)
 	    if (h->equiv[c] == c)
 	      if (is_in_set (n->set, c)) 
 	  {
@@ -1056,7 +1058,7 @@ static void dump_it (Highlight *h)
 	  if (is_in_set (df->nfa_set, c))
 	    printf(" %d", c);
 	printf(" ]");
-	for (c=0; c<=UCHAR_MAX; c++)
+	for (c=0; c<EQUIV_TABLE_SIZE; c++)
 	  if (h->equiv[c] == c) 
 	  {
 	     printf(", to %d on ",

@@ -20,7 +20,6 @@ private define fixup_line ()
 	     indent_line ();
 	     newline ();
 	  }
-	continue;
      }
    go_right_1 ();
 }
