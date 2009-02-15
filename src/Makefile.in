@@ -30,7 +30,7 @@ JED_DOC_MAN_FILES = ../doc/manual/jed.tex
 JED_MAN_FILES = ../doc/manual/rgrep.1 ../doc/manual/jed.1 
 JED_COLOR_FILES = ../lib/colors/*.sl ../lib/colors/README
 XJED_COLOR_FILES = ../lib/colors/Xjed/*.sl
-JED_INFO_FILES = ../info/*
+JED_INFO_FILES = # ../info/*
 
 #---------------------------------------------------------------------------
 # DESTDIR is designed to facilitate making packages.  Normally it is empty
@@ -226,7 +226,6 @@ distclean: clean
 
 install_data_directories:
 	$(MKINSDIR) $(DEST_MAN_DIR)
-	$(MKINSDIR) $(DEST_INFO_DIR)
 	$(MKINSDIR) $(DEST_JED_ROOT)
 	$(MKINSDIR) $(DEST_JED_ROOT)/doc
 	$(MKINSDIR) $(DEST_JED_ROOT)/doc/txt
@@ -235,6 +234,7 @@ install_data_directories:
 	$(MKINSDIR) $(DEST_JED_ROOT)/lib
 	$(MKINSDIR) $(DEST_JED_ROOT)/lib/colors
 	$(MKINSDIR) $(DEST_JED_ROOT)/lib/colors/Xjed
+#	$(MKINSDIR) $(DEST_INFO_DIR)
 install_bin_directories:
 	$(MKINSDIR) $(DEST_BIN_DIR)
 #
@@ -297,11 +297,11 @@ install_data: install_data_directories
 		$(INSTALL_DATA) $$i $(DEST_JED_ROOT)/doc/manual; \
 		echo $(INSTALL_DATA) $$i $(DEST_JED_ROOT)/doc/manual; \
 	done
-	@for i in $(JED_INFO_FILES); \
-	do \
-		$(INSTALL_DATA) $$i $(DEST_INFO_DIR); \
-		echo $(INSTALL_DATA) $$i $(DEST_INFO_DIR); \
-	done
+#	@for i in $(JED_INFO_FILES); \
+#	do \
+#		$(INSTALL_DATA) $$i $(DEST_INFO_DIR); \
+#		echo $(INSTALL_DATA) $$i $(DEST_INFO_DIR); \
+#	done
 install: all install_data install_bin
 #
 runtests: $(OBJDIR)/jed

@@ -391,6 +391,8 @@ Changes since 0.99-18.0
      occurance of the tag.
 174. src/unix.c: Change a int to mode_t in unix.c:sys_chmod.
 175. lib/krconv.sl: Removed a misplaced continue statement.
+176. src/Makefile.in: Do not install the info files.  They are
+     obsolete and may be misleading.
 
 {{{ Previous Versions 
 
