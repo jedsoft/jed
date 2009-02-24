@@ -2,8 +2,36 @@
 %%  Ispell interface
 %%
 
+%!%+
+%\variable{Ispell_Program_Name}
+%\synopsis{spell-check program name}
+%\usage{variable Ispell_Program_Name = ""}
+%\description
+% The spell check command used by the \sfun{ispell} function. It must
+% be ispell-compatible (one of "ispell", "aspell" or "hunspell").  If
+% unset, the ispell program will be auto-detected by searching the
+% path for one of the above programs.
+%\seealso{ispell, search_path_for_file}
+%!%-
+custom_variable("Ispell_Program_Name", NULL);
 
-define ispell()
+% Search for candidates:
+if ((Ispell_Program_Name == NULL) || (Ispell_Program_Name == ""))
+{
+   Ispell_Program_Name = "ispell";
+
+   foreach $1 (["aspell", "hunspell", "ispell"])
+     {
+	if (NULL != search_path_for_file(getenv("PATH"), $1))
+	  {
+	     Ispell_Program_Name = $1;
+	     break;
+	  }
+     }
+   Ispell_Program_Name += " -a";
+}
+
+define ispell ()
 {
    variable ibuf, buf, file, letters, num_win, old_buf;
    variable word, cmd, p, num, n, new_word;
@@ -30,10 +58,11 @@ define ispell()
    
    %word = bufsubstr();
 #ifdef MSDOS MSWINDOWS WIN32
-   () = system(sprintf("echo %s | ispell -a > %s", bufsubstr(), file));
+   () = system(sprintf("echo %s | %s > %s", 
+		       bufsubstr(), Ispell_Program_Name, file))
 #else
-   if (pipe_region(strcat("ispell -a > ", file)))
-     error ("ispell process returned a non-zero exit status.");
+   if (pipe_region(sprintf ("%s > '%s'", Ispell_Program_Name, file)))
+       error ("ispell process returned a non-zero exit status.");
 #endif
    
    setbuf(ibuf); erase_buffer();

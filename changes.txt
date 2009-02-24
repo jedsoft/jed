@@ -393,6 +393,11 @@ Changes since 0.99-18.0
 175. lib/krconv.sl: Removed a misplaced continue statement.
 176. src/Makefile.in: Do not install the info files.  They are
      obsolete and may be misleading.
+177. lib/ispell.sl: The name of the ispell-program may be set by the
+     user using a variable called Ispell_Program_Name (Guenter Milde).
+178. info/*: Removed lines indicating that the files were created
+     using `makeinfo` from the file jed.ti.  Otherwise, they cannot be
+     distributed with debian.
 
 {{{ Previous Versions 
 
