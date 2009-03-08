@@ -398,6 +398,20 @@ Changes since 0.99-18.0
 178. info/*: Removed lines indicating that the files were created
      using `makeinfo` from the file jed.ti.  Otherwise, they cannot be
      distributed with debian.
+179. src/ledit.c: When writing to a file not associated with the
+     buffer, jed will warn that the file exists and ask if it should
+     be over-written.
+180. src/buffer.c:buffer_filename: When associating a buffer with a
+     file, set the buffer's c_time field to that of the file's.
+181. src/misc.c: When reading user input from stdin, throw an
+     exception if the read fails.
+182. lib/cmode.sl: Ternary operators are recognized within the outdent
+     of parenthesis.  (Mark Oleson)
+183. src/unix.c: Put jed in its own process group and point the
+     controlling terminal to that group.  This avoids some SIGINT
+     problems when jed invoked by another process.
+184. lib/ashell.sl: Changes made to process control characters (BS,
+     CR, NL) when outputting to the buffer.
 
 {{{ Previous Versions 
 

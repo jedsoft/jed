@@ -1,5 +1,7 @@
 % C-mode indentation routines
 %
+% 2009-02-06
+%   recognize ternary operators within parenthesis outdent
 % 2007-03-21
 %   Fixed off-by-one on parenthesis indent.
 %   Promote "foam" to an indentation style
@@ -515,7 +517,7 @@ private define c_outdent_operator()
      return 0;
 
    len = _get_point ();
-   skip_chars("-+*/!&<=>|");	% assignment, comparison, logicals
+   skip_chars("-+*/!&<=>|?:");	% assignment, comparison, logicals, ternary
    len -= _get_point();
 
    _get_point ();

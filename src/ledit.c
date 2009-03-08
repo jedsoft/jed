@@ -319,13 +319,25 @@ int jed_save_buffer_to_file (char *dir, char *file)
 
    if (file_changed_on_disk (CBuf, dirfile) > 0)
      {
-	if (0 == jed_get_yes_no("File changed on disk.  Save anyway?"))
+	char *canonical_file = jed_get_canonical_pathname (dirfile);
+	char *prompt;
+
+	if (NULL == canonical_file)
+	  return -1;
+	
+	prompt = "File changed on disk.  Save anyway?";
+	if (0 != strcmp (canonical_file, CBuf->dirfile))
+	  prompt = "File already exists.  Overwrite?";
+	
+	SLfree (canonical_file);
+
+	if (1 != jed_get_yes_no(prompt))
 	  {
 	     SLfree (dirfile);
 	     return -1;
 	  }
      }
-
+   
    if (-1 == jed_va_run_hooks ("_jed_save_buffer_before_hooks",
 			       JED_HOOKS_RUN_ALL, 1, dirfile))
      {

@@ -44,7 +44,7 @@
 /* define if you have memcpy */
 #undef HAVE_MEMCPY
 
-/* define if you have this. */
+/* define if you have these. */
 #undef HAVE_SETENV
 #undef HAVE_UNSETENV
 #undef HAVE_SETSID
@@ -53,6 +53,10 @@
 #undef HAVE_TCGETATTR
 #undef HAVE_TCSETATTR
 #undef HAVE_CFGETOSPEED
+
+#undef HAVE_GETPGID
+#undef HAVE_SETPGID
+#undef HAVE_TCSETPGRP
 #undef HAVE_TCGETPGRP
 
 #undef HAVE_OPENPTY

@@ -1398,7 +1398,10 @@ void buffer_filename(Buffer *b, SLFUTURE_CONST char *dir, SLFUTURE_CONST char *f
 #endif
 
    if (*file)
-     uniquely_name_buffer (b, file);
+     {
+	uniquely_name_buffer (b, file);
+	jed_set_buffer_ctime (b);
+     }
 }
 
 /*}}}*/

@@ -1405,6 +1405,7 @@ static char *expand_link_2(char *f) /*{{{*/
    
    return (d);
 }
+/*}}}*/
 #endif				       /* REAL_UNIX_SYSTEM */
 
 #ifdef REAL_UNIX_SYSTEM
@@ -1705,9 +1706,9 @@ int file_changed_on_disk (Buffer *buf, char *dirfile) /*{{{*/
 
    if (t > buf->c_time)
      {
-#if 0  /* Commented out because if the file did not exists when the buffer was created
-	* then c_time will be 0.  But if t>0, then this would indcate that an
-	* external process created the file.
+#if 0  /* Commented out because if the file did not exist when the buffer was created
+	* then c_time will be 0.  But if t>0, then this would indicate that an
+	* external process created/modified the file.
 	*/
 	
 	if (buf->c_time == 0)	       /* new buffer, writing to existing file */

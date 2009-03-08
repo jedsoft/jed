@@ -314,13 +314,38 @@ define ashell_signal_handler (pid, flags, status)
 
 define ashell_insert_output (pid, str)
 {
-   eob ();
-   push_spot ();
-   insert (str);
-   pop_spot ();
-   bol ();
-   replace ("\r", Null_String);
-   eob ();
+   goto_user_mark (process_mark (pid));
+   variable use_overwrite = not eolp ();
+   foreach (str) using ("bytes")
+     {
+	variable ch = ();
+	if (ch == '\r')
+	  {
+	     bol ();
+	     use_overwrite = 1;
+	     continue;
+	  }
+	if (ch == 8)
+	  {
+	     ifnot (bolp ())
+	       go_left(1);
+	     use_overwrite = 1;
+	     continue;
+	  }
+	if (ch == '\n')
+	  {
+	     eol ();
+	     newline ();
+	     use_overwrite = 0;
+	     continue;
+	  }
+
+	if (use_overwrite) del ();
+	insert_byte (ch);
+     }
+   variable col = what_column ();
+   eol_trim ();
+   goto_column (col);
    move_user_mark (process_mark (pid));
 }
 

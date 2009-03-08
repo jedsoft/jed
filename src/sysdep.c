@@ -18,6 +18,7 @@
 # include <stdlib.h>
 #endif
 
+#define __USE_XOPEN_EXTENDED	       /* to get getpgid */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif

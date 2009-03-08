@@ -61,6 +61,9 @@ utime \
 symlink \
 gethostname \
 tcgetpgrp \
+tcsetpgrp \
+getpgid \
+setpgid \
 openpty \
 snprintf vsnprintf \
 )

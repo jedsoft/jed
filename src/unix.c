@@ -194,6 +194,40 @@ static int unix_set_abort_char (unsigned char ch)
    return 0;
 }
 
+#define HAS_GETSETPGID (defined(HAVE_GETPGID) && defined(HAVE_SETPGID))
+#define HAS_TCGETSETPGRP (defined(HAVE_TCSETPGRP) && defined(HAVE_TCGETPGRP))
+
+#if HAS_TCGETSETPGRP
+static pid_t Terminal_PGID = -1;
+#endif
+#if HAS_GETSETPGID
+static pid_t Startup_PGID = -1;
+#endif
+
+static void set_process_group (void)
+{
+#if HAS_GETSETPGID && HAS_TCGETSETPGRP
+   if (-1 != (Terminal_PGID = tcgetpgrp (Read_FD)))
+     {
+	pid_t pid = getpid ();
+	Startup_PGID = getpgid (pid);
+	(void) tcsetpgrp (Read_FD, pid);
+	(void) setpgid (pid, pid);
+     }
+#endif
+}
+
+static void reset_process_group (void)
+{
+#if HAS_GETSETPGID && HAS_TCGETSETPGRP
+   if (Terminal_PGID != -1)
+     {
+	(void) tcsetpgrp (Read_FD, Terminal_PGID);
+	setpgid (0, Startup_PGID);
+     }
+#endif
+}
+
 int init_tty (void) /*{{{*/
 {
    TTY_Termio_Type newtty;
@@ -309,6 +343,9 @@ int init_tty (void) /*{{{*/
    X_Update_Open_Hook = unix_update_open;
    X_Update_Close_Hook = unix_update_close;
    X_Set_Abort_Char_Hook = unix_set_abort_char;
+   
+   set_process_group ();
+
    return 0;
 }
 
@@ -329,6 +366,8 @@ void reset_tty (void) /*{{{*/
 	if (errno != EINTR)
 	  break;
      }
+   
+   reset_process_group ();
 
    /* This statement ensures init_tty will not try to change output_rate
       (when coming back from suspension) */

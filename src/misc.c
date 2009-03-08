@@ -285,10 +285,15 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
 	fflush (stdout);
 	
 	*n = 0;
-	if ((NULL == fgets (buf, sizeof(buf), stdin))
-	    || (NULL == (ret = SLmake_string (buf))))
+	if (NULL == fgets (buf, sizeof(buf), stdin))
+	  {
+	     SLang_verror (SL_Read_Error, "Read from stdin failed");
+	     return NULL;
+	  }
+
+	if (NULL == (ret = SLmake_string (buf)))
 	  return NULL;
-	
+
 	len = strlen (ret);
 	if (len && (ret[len-1] == '\n'))
 	  {
