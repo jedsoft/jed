@@ -523,22 +523,22 @@ static int get_top_window_row (void)
 
 static void exit_jed_intrin (void)
 {
-   (void) jed_exit_jed (0);
+   int status = 0;
+   if ((SLang_Num_Function_Args == 1)
+       && (-1 == SLang_pop_integer (&status)))
+     return;
+
+   (void) jed_exit_jed (status);
 }
 
 static void quit_jed_intrin (void)
 {
-   (void) jed_quit_jed (0);
-}
+   int status = 0;
+   if ((SLang_Num_Function_Args == 1)
+       && (-1 == SLang_pop_integer (&status)))
+     return;
 
-static void exit_intrin (int *status)
-{
-   (void) jed_exit_jed (*status);
-}
-
-static void _exit_intrin (int *status)
-{
-   (void) jed_quit_jed (*status);
+   (void) jed_quit_jed (status);
 }
 
 static int jed_system (char *s) /*{{{*/
@@ -720,7 +720,6 @@ static SLang_Intrin_Fun_Type Jed_Intrinsics [] = /*{{{*/
    MAKE_INTRINSIC("eobp", eobp,INT_TYPE, 0),
    MAKE_INTRINSIC_I("set_mode", intrin_set_mode, VOID_TYPE),
    MAKE_INTRINSIC_S("buffer_visible", jed_buffer_visible, INT_TYPE),
-   MAKE_INTRINSIC("exit_jed", exit_jed_intrin, VOID_TYPE, 0),
    MAKE_INTRINSIC_S("extract_filename", extract_file, STRING_TYPE),
    MAKE_INTRINSIC_0("trim", trim_intrinsic, VOID_TYPE),
    MAKE_INTRINSIC_S("pop2buf", pop_to_buffer, VOID_TYPE),
@@ -806,8 +805,8 @@ static SLang_Intrin_Fun_Type Jed_Intrinsics [] = /*{{{*/
    MAKE_INTRINSIC("narrow", narrow_to_lines, VOID_TYPE, 0),
    MAKE_INTRINSIC("open_rect", open_rectangle, VOID_TYPE, 0),
    MAKE_INTRINSIC("quit_jed", quit_jed_intrin, VOID_TYPE, 0),
-   MAKE_INTRINSIC_I("_exit", _exit_intrin, VOID_TYPE),
-   MAKE_INTRINSIC_I("exit", exit_intrin, VOID_TYPE),
+   MAKE_INTRINSIC("exit_jed", exit_jed_intrin, VOID_TYPE, 0),
+   MAKE_INTRINSIC_0("exit", exit_jed_intrin, VOID_TYPE),
    MAKE_INTRINSIC_S("read_file", find_file_cmd, INT_TYPE),
    MAKE_INTRINSIC_4("read_with_completion", read_object_with_completion, VOID_TYPE, STRING_TYPE, STRING_TYPE, STRING_TYPE, INT_TYPE),
    MAKE_INTRINSIC_I("set_abort_char", jed_set_abort_char, VOID_TYPE),

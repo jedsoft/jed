@@ -412,6 +412,10 @@ Changes since 0.99-18.0
      problems when jed invoked by another process.
 184. lib/ashell.sl: Changes made to process control characters (BS,
      CR, NL) when outputting to the buffer.
+185. src/intrin.c: The _exit intrinsic was removed.  Instead, the
+     quit_jed intrinsic was modified to take an optional integer
+     argument representing the exit status.  This change was made to
+     avoid a conflict with the slang-2.2 fork module.
 
 {{{ Previous Versions 
 

@@ -19,15 +19,6 @@
 \seealso{get_jed_library_path, set_jed_library_path, getenv}
 \done
 
-\function{_exit}
-\synopsis{Exit the editor with a status value}
-\usage{_exit (Int_Type status)}
-\description
-  This function performs the same actions as \var{quit_jed} except
-  that the status code returned to the shell may be specified.
-\seealso{quit_jed, exit, exit_jed}
-\done
-
 \variable{_jed_secure_mode (read-only)}
 \synopsis{Indicates if the editor is in secure mode}
 \usage{Int_Type _jed_secure_mode}
@@ -188,11 +179,15 @@
 
 \function{quit_jed}
 \synopsis{Quit the editor immediately: no autosave, no hooks}
-\usage{Void quit_jed ()}
+\usage{Void quit_jed ([ status ])}
 \description
-  This function quits the editor immediately.  No buffers are
-  auto-saved and no hooks are called.  The function \var{exit_jed} should be
-  called when it is desired to exit in a safe way.
+ This function quits the editor immediately without saving any buffers
+ and without any exit hooks called.  The function \ifun{exit_jed}
+ should be called when it is desired to exit in a safe way.
+ 
+ The exit status of the program may be specified via the optional
+ integer argument.  If called with no argument, a value of 0 will be
+ used as the exit status.
 \seealso{exit_jed}
 \done
 

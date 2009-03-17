@@ -3949,23 +3949,6 @@ JED_ROOT
 
 --------------------------------------------------------------
 
-_exit
-
- SYNOPSIS
-  Exit the editor with a status value
-
- USAGE
-  _exit (Int_Type status)
-
- DESCRIPTION
-  This function performs the same actions as `quit_jed' except
-  that the status code returned to the shell may be specified.
-
- SEE ALSO
-  quit_jed, exit, exit_jed
-
---------------------------------------------------------------
-
 _jed_secure_mode (read-only)
 
  SYNOPSIS
@@ -4220,12 +4203,16 @@ quit_jed
   Quit the editor immediately: no autosave, no hooks
 
  USAGE
-  Void quit_jed ()
+  Void quit_jed ([ status ])
 
  DESCRIPTION
-  This function quits the editor immediately.  No buffers are
-  auto-saved and no hooks are called.  The function `exit_jed' should be
-  called when it is desired to exit in a safe way.
+ This function quits the editor immediately without saving any buffers
+ and without any exit hooks called.  The function `exit_jed'
+ should be called when it is desired to exit in a safe way.
+
+ The exit status of the program may be specified via the optional
+ integer argument.  If called with no argument, a value of 0 will be
+ used as the exit status.
 
  SEE ALSO
   exit_jed
