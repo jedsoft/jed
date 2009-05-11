@@ -1020,7 +1020,7 @@ define rmail_parse_email_address (from)
    while (pos = string_match (from, "\\(([^()]*)\\)", 1), pos)
      {
 	(pos, len) = string_match_nth (1);
-	from = substr (from, 1, pos) + substr (from, pos + len + 1, -1);
+	from = substrbytes (from, 1, pos) + substrbytes (from, pos + len + 1, -1);
      }
    
    % Remove double quote type comments
@@ -1037,9 +1037,9 @@ define rmail_parse_email_address (from)
 	(pos, len) = string_match_nth (1);
 	(pos1, len1) = string_match_nth (2);
 	
-	from = substr (from, 1, pos)
-	  + substr (from, pos1 + 1, len1)
-	    + substr (from, pos + len + 1, -1);
+	from = substrbytes (from, 1, pos)
+	  + substrbytes (from, pos1 + 1, len1)
+	    + substrbytes (from, pos + len + 1, -1);
      }
    
    % Now replace all space, tab, and newline by commas

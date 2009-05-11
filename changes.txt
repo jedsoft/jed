@@ -416,6 +416,9 @@ Changes since 0.99-18.0
      quit_jed intrinsic was modified to take an optional integer
      argument representing the exit status.  This change was made to
      avoid a conflict with the slang-2.2 fork module.
+186. lib/jed.rc: typo in a commented corrected (Marc Herbert).
+187. src/file.c: If the write permission bits on a file are not set,
+     then mark the buffer as readonly even if root can write to it.
 
 {{{ Previous Versions 
 

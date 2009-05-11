@@ -11,7 +11,7 @@ define mime_parse_this_qp ()
    del ();
    if (Integer_Type == _slang_guess_type (str))
      {
-	insert_byte (integer(str));
+	insert_char (integer(str));
 	return;
      }
    insert (str);

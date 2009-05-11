@@ -328,11 +328,9 @@ void jed_set_buffer_ctime (Buffer *b)
 
 int jed_buffer_file_is_readonly (Buffer *b)
 {
-#ifndef W_OK
-   return 0;
-#else
-   char *file;
    int ro = 0;
+   char *file;
+   struct stat st;
 
    if ((b->file == NULL)
        || (b->file[0] == 0))
@@ -342,41 +340,53 @@ int jed_buffer_file_is_readonly (Buffer *b)
    if (file == NULL)
      return -1;
 
-   if (0 == access(file, F_OK))
-     {
-	if (-1 == access(file, W_OK))
-	  ro = 1;
-     }
-   else
-     {
-	/* file does not exist.  Can we write to the directory? */
-	/* knock of slash since some primitive systems cannot handle the 
-	 * final slash in a path name. 
-	 */
-	char *dir;
-#ifdef IBMPC_SYSTEM
-	dir = extract_file (file);
-	*dir = 0;
-	if (strlen (file) > 3)   /* allow C:/, but not C:/xx/ */
-	  *--dir = 0;
-	dir = file;
-#else
-	dir = b->dir;
+   /* Let's respect the file's permissions.  If any write permission bit is
+    * is set, then consider it a writable candidate.
+    */
+#if defined(S_IWGRP) && defined(S_IWOTH)
+   if (0 == stat (file, &st))
+     ro = (0 == (st.st_mode & (S_IWUSR|S_IWGRP|S_IWOTH)));
 #endif
-	if ((0 == access (dir, F_OK))
-#ifdef VMS
-	    && (-1 == access (dir, X_OK))
+
+#ifdef W_OK
+   if (ro == 0)
+     {
+	if (0 == access(file, F_OK))
+	  {
+	     if (-1 == access(file, W_OK))
+	       ro = 1;
+	  }
+	else
+	  {
+	     /* file does not exist.  Can we write to the directory? */
+	     /* knock of slash since some primitive systems cannot handle the 
+	      * final slash in a path name. 
+	      */
+	     char *dir;
+# ifdef IBMPC_SYSTEM
+	     dir = extract_file (file);
+	     *dir = 0;
+	     if (strlen (file) > 3)   /* allow C:/, but not C:/xx/ */
+	       *--dir = 0;
+	     dir = file;
+# else
+	     dir = b->dir;
+# endif
+	     if ((0 == access (dir, F_OK))
+# ifdef VMS
+		 && (-1 == access (dir, X_OK))
 #else
-	    && (-1 == access (dir, W_OK))
+		 && (-1 == access (dir, W_OK))
 #endif
-	    )
-	  ro = 1;
+		)
+	       ro = 1;
+	  }
      }
-   
+#endif				       /* W_OK */
+      
    SLfree (file);
    return ro;
-#endif				       /* W_OK */
-}	     
+}
 
 void set_file_modes (void) /*{{{*/
 {

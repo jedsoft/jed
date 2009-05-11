@@ -187,7 +187,7 @@ META_CHAR	= -1;	% All chars with hi bit set will self insert
 #endif
 
 % Color Settings
-% Look at jed/lib/color/README for a description of predefined color
+% Look at jed/lib/colors/README for a description of predefined color
 % schemes.
 %set_color_scheme ("black3");
 %set_color_scheme ("blue2");
