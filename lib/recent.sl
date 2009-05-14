@@ -176,7 +176,9 @@ public define append_recent_files (buf)
      {
 	_clear_error ();
      }
-   () = write_buffer (get_recent_file_list_name ());
+   file = get_recent_file_list_name ();
+   () = write_buffer (file);
+   () = chmod (file, 0600);
 }
 
 %add_to_hook ("_jed_find_file_after_hooks", &append_recent_files);

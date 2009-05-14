@@ -59,7 +59,7 @@ define ispell ()
    %word = bufsubstr();
 #ifdef MSDOS MSWINDOWS WIN32
    () = system(sprintf("echo %s | %s > %s", 
-		       bufsubstr(), Ispell_Program_Name, file))
+		       bufsubstr(), Ispell_Program_Name, file));
 #else
    if (pipe_region(sprintf ("%s > '%s'", Ispell_Program_Name, file)))
        error ("ispell process returned a non-zero exit status.");

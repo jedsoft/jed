@@ -419,6 +419,9 @@ Changes since 0.99-18.0
 186. lib/jed.rc: typo in a commented corrected (Marc Herbert).
 187. src/file.c: If the write permission bits on a file are not set,
      then mark the buffer as readonly even if root can write to it.
+188. lib/ispell.sl: A missing `;' was affecting non-Unix systems.
+189. lib/recent.sl: Deny read permission $HOME/.jedrecent to all but
+     the owner.
 
 {{{ Previous Versions 
 
