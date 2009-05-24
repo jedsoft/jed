@@ -208,7 +208,7 @@ $(OBJDIR)/gtkjed : $(COMMON_OBJS) $(GTKJED_OBJS)
 rgrep: $(OBJDIR)/rgrep
 	@echo rgrep created in $(OBJDIR)
 $(OBJDIR)/rgrep: $(OBJDIR)/vfile.o $(OBJDIR)/rgrep.o
-	cd $(OBJDIR); $(CC) vfile.o rgrep.o -o rgrep $(LDFLAGS) $(RPATH) $(SLANG_LIB) -lslang
+	cd $(OBJDIR); $(CC) vfile.o rgrep.o -o rgrep $(LDFLAGS) $(RPATH) $(SLANG_LIB) -lslang $(TERMCAP_LIB)
 #
 getmail: $(OBJDIR)/getmail
 	@echo getmail created in $(OBJDIR)

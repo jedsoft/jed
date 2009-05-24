@@ -437,26 +437,42 @@ void jed_count_chars (void) /*{{{*/
 	  sprintf (buf, "-<%0X>, ", (int) w);
         else
           {
-             SLuchar_Type *p, *pmax;
-             
+             SLuchar_Type *p, *p1, *pmax;
+             int skip_combining = 0;
+
              p = CLine->data + Point;
              if (*p == 0)
                {
                   p = (SLuchar_Type *) "^@";
                   pmax = p + 2;
+		  skip_combining = 1;
                }
              else
                pmax = jed_multibyte_chars_forward (p, CLine->data + CLine->len, 1, NULL, 1);
              
              buf[0] = '\'';
              strncpy (buf + 1, (char *)p, pmax - p);
-             p = (SLuchar_Type *) (buf + 1 + (pmax - p));
+             p1 = (SLuchar_Type *) (buf + 1 + (pmax - p));
 
-             sprintf ((char *)p, "'=%ld/0x%lX/%#lo, ", (long)w, (unsigned long)w, (unsigned long)w);
+             sprintf ((char *)p1, "'=%ld/0x%lX/%#lo", (long)w, (unsigned long)w, (unsigned long)w);
+	     /* Check for combining */
+	     if ((skip_combining == 0) && Jed_UTF8_Mode)
+	       {
+		  unsigned int dn;
+		  unsigned int count = 1;
+		  p = SLutf8_decode (p, pmax, &w, &dn);   /* skip first */
+		  while ((p != NULL) && (p < pmax) && (count < SLSMG_MAX_CHARS_PER_CELL))
+		    {
+		       p = SLutf8_decode (p, pmax, &w, &dn);
+		       if (p != NULL)
+			 sprintf (buf + strlen(buf), " + 0x%lX", (long)w);
+		       count++;
+		    }
+	       }
           }
      }
    
-   sprintf (buf + strlen (buf), "point %lu of %lu", m, n);
+   sprintf (buf + strlen (buf), ", point %lu of %lu", m, n);
    SLang_push_string(buf);
 }
 

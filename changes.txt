@@ -422,6 +422,7 @@ Changes since 0.99-18.0
 188. lib/ispell.sl: A missing `;' was affecting non-Unix systems.
 189. lib/recent.sl: Deny read permission $HOME/.jedrecent to all but
      the owner.
+190. src/buffer.c: whatpos will show hex values of combining characters.
 
 {{{ Previous Versions 
 
