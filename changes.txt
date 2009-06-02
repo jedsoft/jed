@@ -423,6 +423,10 @@ Changes since 0.99-18.0
 189. lib/recent.sl: Deny read permission $HOME/.jedrecent to all but
      the owner.
 190. src/buffer.c: whatpos will show hex values of combining characters.
+191. src/main.c, src/jprocess.c: The change in #183 solved one problem
+     but created another when jed is part of a pipeline.  The change
+     here is to fork a separate copy of jed whose sole purpose is to
+     preserve the process-group-id.
 
 {{{ Previous Versions 
 

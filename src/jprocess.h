@@ -45,7 +45,9 @@ extern int jed_get_process_flags (int *);
 
 #ifdef REAL_UNIX_SYSTEM
 extern void jed_block_child_signal (int);
+extern int jed_fork_monitor (void);
 #endif
 
 extern FILE *jed_popen (char *, char *);
 extern int jed_pclose (FILE *);
+

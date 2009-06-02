@@ -18,6 +18,7 @@ int Jed_Version_Number = JED_VERSION;
 char *Jed_Version_String = JED_VERSION_STR;
 
 #ifdef USE_GPM_MOUSE
+# undef USE_GPM_MOUSE
 # define USE_GPM_MOUSE 1
 #else
 # define USE_GPM_MOUSE 0

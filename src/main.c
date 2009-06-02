@@ -91,6 +91,7 @@ extern unsigned _stklen = 10000U;
 #include "version.h"
 #include "indent.h"
 #include "colors.h"
+#include "jprocess.h"
 
 #ifdef __WIN32__
 # include "win32.h"
@@ -225,6 +226,7 @@ static int main_initialize (int argc, char **argv)
    char *cmd_hook = ".()command_line_hook";
    int i, fd;
    char *script_file;
+   int read_stdin_to_buffer = 0;
 
    _Jed_Startup_Argv = argv;
    _Jed_Startup_Argc = argc;
@@ -385,6 +387,30 @@ static int main_initialize (int argc, char **argv)
      return -1;
 #endif
 
+   if (Stdin_Is_TTY == 0) Stdin_Is_TTY = isatty (0);
+   if ((Stdin_Is_TTY == 0) && (Batch != 2))
+     {
+	read_stdin_to_buffer = 1;
+#ifdef REAL_UNIX_SYSTEM
+	/* Since stdin is not a terminal, jed is being used in a pipe such
+	 * as `ls | jed`.  A problem occurs when when `ls` exits and
+	 * the user suspends `jed`.  To deal with signals such as
+	 * SIGINT generated at the controlling terminal, jed puts
+	 * itself into its own process group. This way pressing ^G
+	 * will cause SIGINT to get sent only to jed and not a
+	 * program that spawned it (e.g., `git`).  However, to play
+	 * nicely with the shell's job control, jed puts itself back
+	 * into the original process group prior to suspending.
+	 * However, that group will disappear if the other processes
+	 * in the pipe have exited.  The only way I know how to deal
+	 * with this is to fork another process.
+	 * 
+	 * Better ideas are welcome.
+	 */
+	(void) jed_fork_monitor (); 
+#endif 
+     }
+
    if (-1 == init_tty ())
      exit_error ("Unable to initialize tty.", 0);
 
@@ -426,16 +452,14 @@ static int main_initialize (int argc, char **argv)
     * jed script.
     */
    
-   if (Stdin_Is_TTY == 0) Stdin_Is_TTY = isatty (0);
-   if ((Stdin_Is_TTY == 0)
-       && (Batch != 2))
+   if (read_stdin_to_buffer)
      /* 1 if stdin is a terminal, 0 otherwise */
      {
 	set_buffer("*stdin*");
 	read_file_pointer(fileno(stdin));
 	bob();
 	fclose(stdin);
-	dup2(fd, 0);	
+	dup2(fd, 0);
      }
    
    if (CLine == NULL) make_line(25);

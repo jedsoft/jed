@@ -1518,4 +1518,48 @@ int jed_processes_ok_to_exit (void)
    return jed_get_y_n (buf);
 }
 
+int jed_fork_monitor (void)
+{
+   pid_t pid;
+   int i;
+
+   while (-1 == (pid = fork ()))
+     {
+	if (errno == EINTR)
+	  continue;
+
+	fprintf (stderr, "Unable to fork: errno=%d\n", errno);
+	return -1;
+     }
+   
+   if (pid != 0)
+     return 0;
+   
+   pid = getppid ();
+
+   for (i = 1; i < 32; i++)
+     (void) SLsignal (i, SIG_IGN);
+
+   SLsignal (SIGQUIT, SIG_DFL);
+   SLsignal (SIGTERM, SIG_DFL);
+   SLsignal (SIGCONT, SIG_DFL);
+   SLsignal (SIGTSTP, SIG_DFL);
+   
+   for (i = 0; i < 256; i++)
+     {
+	while ((-1 == close (i)) 
+	       && (errno == EINTR))
+	  ;
+     }
+
+   while (1)
+     {
+	if ((-1 == kill (pid, 0))
+	    && (errno == ESRCH))
+	  _exit (0);
+	
+	sleep (10);
+     }
+}
+
 #endif 				       /* JED_HAS_SUBPROCESSES */
