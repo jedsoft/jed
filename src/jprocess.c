@@ -431,59 +431,65 @@ void jed_get_child_status (void) /*{{{*/
 static void child_signal_handler (int sig) /*{{{*/
 {
    int status;
-   int return_status;
-   int pid;
-   Process_Type *p, *pmax;
+   int found;
    int save_errno = errno;
    
    (void) sig;
 
-   while (1)
+   do
      {
-	pid = (int) waitpid (-1, &status, WNOHANG | WUNTRACED);
-	if (pid == -1) 
-	  {
-	     if (errno == ECHILD) break;
-	     continue;
-	  }
-	
-	if (pid == 0) break;
-	
-	return_status = 0;
-	
-	if (WIFEXITED (status))
-	  {
-	     return_status = WEXITSTATUS (status);
-	     status = PROCESS_EXITED;
-	  }
-	else if (WIFSIGNALED (status))
-	  {
-	     return_status = WTERMSIG (status);
-	     status = PROCESS_SIGNALLED;
-	  }
-#ifdef WIFSTOPPED
-	else if (WIFSTOPPED (status))
-	  {
-	     return_status = WSTOPSIG(status);
-	     status = PROCESS_STOPPED;
-	  }
-#endif
-	/* What else?? */
-	
+	Process_Type *p, *pmax;
+
+	found = 0;
+
 	p = Processes;
 	pmax = p + MAX_PROCESSES;
 	while (p < pmax)
 	  {
+	     int pid;
+	     
+	     if ((pid = p->pid) <= 0)
+	       {
+		  p++;
+		  continue;
+	       }
+
+	     while ((-1 == (pid = (int) waitpid (p->pid, &status, WNOHANG | WUNTRACED)))
+		    && (errno == EINTR))
+	       ;
+
 	     if (p->pid == pid)
 	       {
+		  int return_status;
+
+		  found++;
+
+		  if (WIFEXITED (status))
+		    {
+		       return_status = WEXITSTATUS (status);
+		       status = PROCESS_EXITED;
+		    }
+		  else if (WIFSIGNALED (status))
+		    {
+		       return_status = WTERMSIG (status);
+		       status = PROCESS_SIGNALLED;
+		    }
+#ifdef WIFSTOPPED
+		  else if (WIFSTOPPED (status))
+		    {
+		       return_status = WSTOPSIG(status);
+		       status = PROCESS_STOPPED;
+		    }
+#endif
 		  p->flags = status;
 		  p->status_changed++;
 		  p->return_status = return_status;
-		  break;
 	       }
 	     p++;
 	  }
      }
+   while (found != 0);
+
    SLsignal_intr (SIGCHLD, child_signal_handler);
    errno = save_errno;
    Child_Status_Changed_Flag++;
@@ -1453,8 +1459,9 @@ int jed_pclose(FILE *fp) /*{{{*/
    int ret;
 
    fd = fileno(fp);
-   if ((fd >= OPEN_MAX) ||
-       (0 == (pid = Popen_Child_Pids[fd]))) 
+   if ((fd >= OPEN_MAX)
+       || (fd < 0)
+       || (0 == (pid = Popen_Child_Pids[fd])))
      return -1;
 
    Popen_Child_Pids [fd] = 0;
@@ -1462,10 +1469,12 @@ int jed_pclose(FILE *fp) /*{{{*/
    if (fclose(fp) == EOF) return(-1);
 
    /* This is the part that the SunOS pclose was apparantly screwing up. */
-   while (pid != (ret = waitpid(pid, &stat, 0)))
+   while (-1 == waitpid(pid, &stat, 0))
      {
-	if ((ret == -1) && (errno != EINTR))
+	if (errno != EINTR)
 	  return -1;
+
+	(void) SLang_handle_interrupt ();
      }
    
    ret = WEXITSTATUS(stat);

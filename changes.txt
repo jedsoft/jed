@@ -427,6 +427,8 @@ Changes since 0.99-18.0
      but created another when jed is part of a pipeline.  The change
      here is to fork a separate copy of jed whose sole purpose is to
      preserve the process-group-id.
+192. src/jprocess.c: Use waitpid to wait on a single specified child process
+     instead of any child process.
 
 {{{ Previous Versions 
 
