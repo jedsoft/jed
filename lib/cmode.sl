@@ -1,4 +1,5 @@
 % C-mode indentation routines
+% For the full list of changes, see the changes.txt file.
 %
 % 2009-02-06
 %   recognize ternary operators within parenthesis outdent
@@ -574,10 +575,20 @@ private define inside_class_or_namespace (bra, name)
 	pop_spot ();
      }
 
-   goto_user_mark (bra);
-
    % Assume that class/namespace is at the beginning of a line.
    % We may want to change this assumption later.
+
+   % This function can be expensive if the indent_line function is
+   % called in a loop.  Get out quickly if the buffer does not have
+   % a class or namespace block.
+   ifnot (bol_bsearch (name))
+     {
+	if ((name != "class") || (0 == bol_bsearch (name)))
+	  return 0;
+     }
+
+   goto_user_mark (bra);
+
    variable re = sprintf ("\\c\\<%s\\>", name);
    while (re_bsearch (re))
      {
@@ -1675,7 +1686,8 @@ define c_mode ()
 %    "bsd"      Berkeley style
 %    "foam"     Derivate bsd-style used in OpenFOAM
 %    "linux"    Linux kernel indentation style
-%    "jed"      Style used by the the author
+%    "jed"      Style used by the author
+%    "kw"       The Kitware style used in ITK, VTK, ParaView, ...
 %#v-
 %\seealso{c_mode}
 %!%-
@@ -1706,6 +1718,10 @@ define c_set_style (name)
      {
       case "jed":
 	(3,2,1,2,1,3,3,3,0,0,0);
+     }
+     {
+      case "kw":
+	(0,2,1,2,1,2,2,2,0,0,2);
      }
      {
 	if (is_defined ("c_set_style_hook") > 0)

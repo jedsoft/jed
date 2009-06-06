@@ -26,13 +26,8 @@
 
 /*}}}*/
 
-#if SLANG_VERSION < 20000
-static SLsearch_Type Search_Struct;
-static SLRegexp_Type Regexp;
-#else
 static SLRegexp_Type *Regexp;
 static unsigned int Regexp_Offset;
-#endif
 
 static int search_internal (SLsearch_Type *st, int dir, int n,
                             int key_len) /*{{{*/
@@ -50,11 +45,7 @@ static int search_internal (SLsearch_Type *st, int dir, int n,
 	end = line->data + line->len;
 	do
 	  {
-#if SLANG_VERSION >= 20000
              p = SLsearch_forward (st, beg, end);
-#else
-	     p = SLsearch (beg, end, st);
-#endif
 	     if (p != NULL)
 	       {
 		  CLine = line;
@@ -72,26 +63,12 @@ static int search_internal (SLsearch_Type *st, int dir, int n,
      }
    else if (dir == -1)
      {
-#if SLANG_VERSION < 20000
-	end = beg = line->data;
-	if (Point)
-	  {
-	     int tmp = Point - 1 + key_len;
-	     if (tmp > line->len) tmp = line->len;
-	     end += tmp;
-	  }
-#else
         beg = line->data;
         end = beg + line->len;
         p = beg + Point;
-#endif
 	do
 	  {
-#if SLANG_VERSION < 20000
-	     p = SLsearch (beg, end, st);
-#else
              p = SLsearch_backward (st, beg, p, end);
-#endif
 
 	     if (p != NULL)
 	       {
@@ -106,9 +83,7 @@ static int search_internal (SLsearch_Type *st, int dir, int n,
 	     if (line == NULL) return(0);
 	     beg = line->data;
 	     end = line->data + line->len;
-#if SLANG_VERSION >= 20000
              p = end;
-#endif
 	  }
 	while (--n);
      }
@@ -119,16 +94,11 @@ static int search_internal (SLsearch_Type *st, int dir, int n,
 
 static void close_search (SLsearch_Type *st)
 {
-#if SLANG_VERSION >= 20000
    SLsearch_delete (st);
-#else
-   (void) st;
-#endif
 }
 
 static SLsearch_Type *open_search (char *str, int dir, int cs, int *key_lenp)
 {
-#if SLANG_VERSION >= 20000
    unsigned int flags = 0;
    (void) key_lenp;
    (void) dir;
@@ -136,12 +106,6 @@ static SLsearch_Type *open_search (char *str, int dir, int cs, int *key_lenp)
    if (Jed_UTF8_Mode) flags |= SLSEARCH_UTF8;
    *key_lenp = strlen (str);
    return SLsearch_new ((SLuchar_Type *) str, flags);
-#else
-   *key_lenp = SLsearch_init (str, dir, cs, &Search_Struct);
-   if (*key_lenp <= 0)
-     return NULL;
-   return &Search_Struct;
-#endif
 }
 
 int search (char *str, int dir, int n) /*{{{*/
@@ -156,7 +120,6 @@ int search (char *str, int dir, int n) /*{{{*/
 
    status = search_internal (st, dir, n, key_len);
 
-#if SLANG_VERSION >= 20000
    if (status == 1)
      {
         key_len = SLsearch_match_len (st);
@@ -177,10 +140,6 @@ int search (char *str, int dir, int n) /*{{{*/
 
    else
      key_len = 0;
-#else
-   if (status != 1)
-     key_len = 0;
-#endif
 
    close_search (st);
    return key_len;
@@ -383,134 +342,6 @@ int bol_bsearch (char *str) /*{{{*/
 
 /*}}}*/
 
-#if SLANG_VERSION < 20000
-static int re_search_dir(unsigned char *pat, int dir) /*{{{*/
-{
-   int psave, skip, n, epos;
-   unsigned char rbuf[512], *match;
-   Line *l;
-
-   Regexp.case_sensitive = Buffer_Local.case_search;
-   Regexp.buf = rbuf;
-   Regexp.pat = pat;
-   Regexp.buf_len = 512;
-   Regexp.offset = 0;
-
-   if (SLang_regexp_compile(&Regexp))
-     {
-	msg_error("Unable to compile pattern.");
-	return(0);
-     }
-
-   if (Regexp.osearch)
-     {
-	if (Regexp.must_match_bol)
-	  {
-	     if (dir > 0)
-	       {
-		  if (0 == bol_fsearch ((char *) pat))
-		    return 0;
-	       }
-	     else if (0 == bol_bsearch ((char *) pat))
-	       return 0;
-	  }
-	else if (!search((char *) pat, dir, 0)) return (0);
-
-	Regexp.beg_matches[0] = Point;
-	n = strlen((char *) pat);
-	Regexp.end_matches[0] = n;
-	return n + 1;
-     }
-
-   if (Regexp.must_match_bol)
-     {
-	if (dir < 0)
-	  {
-	     if (bolp ())
-	       {
-		  if (0 == jed_left (1)) return 0;
-	       }
-	  }
-	else if (0 == bolp ())
-	  {
-	     if (0 == jed_down(1))
-	       return 0;
-	  }
-     }
-
-   if (Regexp.must_match && (0 != Regexp.must_match_str[1])) skip = 0; else skip = 1;
-
-   while (1)
-     {
-	psave = Point;
-	if (!skip)
-	  {
-	     l = CLine;
-	     if (!search((char *) Regexp.must_match_str, dir, 0)) return (0);
-
-	     if (l != CLine)
-	       {
-		  if (dir < 0) eol(); else bol ();
-		  /* if ((dir == -1) && (!Regexp.must_match_bol)) eol(); else Point = 0; */
-		  psave = Point;
-	       }
-	  }
-
-	Point = psave;
-	if (dir == 1)
-	  {
-	     match = SLang_regexp_match(CLine->data + Point, CLine->len - Point, &Regexp);
-	     if (match != NULL)
-	       {
-		  /* adjust offsets */
-		  Regexp.offset = Point;
-	       }
-	  }
-
-	else if (NULL != (match = SLang_regexp_match(CLine->data,
-						     Point, /* was CLine->len */
-						     &Regexp)))
-	  {
-	     if (Point && (Regexp.beg_matches[0] >= Point)) match = NULL;
-	     else if (Regexp.must_match_bol == 0)
-	       {
-		  epos = Point - 1;
-		  /* found a match on line now find one closest to current point */
-		  while (epos >= 0)
-		    {
-		       match = SLang_regexp_match(CLine->data + epos,
-						  Point - epos, /* was: CLine->len - epos, */
-						  &Regexp);
-		       if (match != NULL)
-			 {
-			    Regexp.offset = epos;
-			    break;
-			 }
-		       epos--;
-		    }
-	       }
-	  }
-	if (match != NULL)
-	  {
-	     jed_position_point (match);
-	     n = Regexp.end_matches[0];
-	     return (n + 1);
-	  }
-	if (dir > 0)
-	  {
-	     if (0 == jed_down (1))
-	       break;
-	  }
-	else
-	  {
-	     if (0 == jed_up(1))
-	       break;
-	  }
-     }
-   return (0);
-}
-/*}}}*/
-#else
 static int re_search_dir(unsigned char *pat, int dir) /*{{{*/
 {
    char *match;
@@ -605,7 +436,6 @@ static int re_search_dir(unsigned char *pat, int dir) /*{{{*/
    return (0);
 }
 /*}}}*/
-#endif				       /* SLANG_VERSION < 20000 */
 
 
 int re_search_forward(char *pat) /*{{{*/
@@ -644,22 +474,10 @@ int replace_match(char *s, int *literal) /*{{{*/
    unsigned int offset;
    unsigned int end_of_match_point;
    Line *match_line;
-#if SLANG_VERSION < 20000
-   int *beg_matches;
-   unsigned int *len_matches;
-#else
    unsigned int i;
    int beg_matches[10];
    unsigned int len_matches[10];
-#endif
    
-#if SLANG_VERSION < 20000
-   if (Regexp.pat == NULL)
-     return 0;
-   beg_matches = Regexp.beg_matches;
-   len_matches = Regexp.end_matches;
-   offset = Regexp.offset;
-#else
    if (Regexp == NULL)
      return 0;
    offset = Regexp_Offset;
@@ -676,7 +494,6 @@ int replace_match(char *s, int *literal) /*{{{*/
 	beg_matches[i] = (int) bm;
 	len_matches[i] = lm;
      }
-#endif
 
    end_of_match_point = beg_matches[0] + offset + len_matches[0];
    if ((beg_matches[0] == -1)
@@ -785,32 +602,6 @@ static int push_string(char *b, int n) /*{{{*/
 
 /*}}}*/
 
-#if SLANG_VERSION < 20000
-void regexp_nth_match (int *np) /*{{{*/
-{
-   int b = 0, n = *np;
-
-   if ((Regexp.pat == NULL) || (Regexp.beg_matches[0] == -1)
-       || (Regexp.beg_matches[0] + Regexp.offset + Regexp.end_matches[0] > (unsigned int) CLine->len))
-     {
-	SLang_set_error (SL_UNKNOWN_ERROR);
-	return;
-     }
-
-   if ((n < 0) || (n > 9)) n = 0;
-   else
-     {
-	if ((b = Regexp.beg_matches[n]) == -1) n = 0;
-	else
-	  {
-	     n = Regexp.end_matches[n];
-	  }
-     }
-   b += Regexp.offset;
-   (void) push_string((char *) CLine->data + b, n);
-}
-/*}}}*/
-#else
 void regexp_nth_match (int *np) /*{{{*/
 {
    unsigned int ofs, len;
@@ -839,39 +630,19 @@ void regexp_nth_match (int *np) /*{{{*/
    (void) push_string((char *) p, len);
 }
 /*}}}*/
-#endif
 
-int search_file(char *file, char *pat, int *np) /*{{{*/
+int search_file (char *file, char *pat, int *np) /*{{{*/
 {
    unsigned int n;
    VFILE *vp;
    int n_matches = 0, n_max = *np, key_len = 0;
    SLsearch_Type *st;
    unsigned char *buf;
-#if SLANG_VERSION < 20000
-   SLRegexp_Type regexp_buf;
-   unsigned char rbuf[512];
-#else
    unsigned int flags;
-#endif
    SLRegexp_Type *reg;
    int osearch;
+   int must_match;
 
-#if SLANG_VERSION < 20000
-   reg = &regexp_buf;
-   memset ((char *)reg, 0, sizeof (SLRegexp_Type));
-   reg->case_sensitive = Buffer_Local.case_search;
-   reg->buf = rbuf;
-   reg->pat = (unsigned char *) pat;
-   reg->buf_len = 512;
-
-   if (SLang_regexp_compile(reg))
-     {
-	msg_error("Unable to compile pattern.");
-	return(0);
-     }
-   osearch = Regexp.osearch;
-#else
    flags = 0;
    if (Buffer_Local.case_search == 0) flags |= SLREGEXP_CASELESS;
    if (Jed_UTF8_Mode) flags |= SLREGEXP_UTF8;
@@ -879,7 +650,7 @@ int search_file(char *file, char *pat, int *np) /*{{{*/
      return 0;
    (void) SLregexp_get_hints (reg, &flags);
    osearch = flags & SLREGEXP_HINT_OSEARCH;
-#endif
+   must_match = 0;
 
    st = NULL;
    if (osearch)
@@ -888,49 +659,30 @@ int search_file(char *file, char *pat, int *np) /*{{{*/
 	if (st == NULL)
 	  return 0;
      }
-#if SLANG_VERSION < 20000
-   else if (Regexp.must_match)
-     {
-	st = open_search ((char *) Regexp.must_match_str, 1, Buffer_Local.case_search, &key_len);
-	if (st == NULL)
-	  return 0;
-     }
-#endif
 
    if (NULL == (vp = vopen(file, 0, VFILE_TEXT)))
      {
         if (st != NULL) close_search (st);
-#if SLANG_VERSION >= 20000
 	SLregexp_free (reg);
-#endif
         return 0;
      }
 
    while (NULL != (buf = (unsigned char *) vgets(vp, &n)))
      {
-#if SLANG_VERSION < 20000
-	if (Regexp.must_match)
+	if (must_match)
 	  {
-# if SLANG_VERSION < 20000
-	     if ((unsigned int) key_len > n) continue;
-	     if (NULL == SLsearch (buf, buf + n, st))
-               continue;
-# else
              if (NULL == SLsearch_forward (st, buf, buf + n))
                continue;
-# endif
+
 	     if (osearch)
                goto match_found;
 	  }
-#endif
 
-#if SLANG_VERSION < 20000
-	if (!SLang_regexp_match(buf, (int) n, reg)) continue;
-	match_found:
-#else
 	if (NULL == SLregexp_match (reg, (char *)buf, n))
 	  continue;
-#endif
+
+match_found:
+
 	n_matches++;
 	
 	if (-1 == push_string ((char *) buf, n))
@@ -943,10 +695,8 @@ int search_file(char *file, char *pat, int *np) /*{{{*/
    vclose(vp);
    if (st != NULL)
      close_search (st);
-#if SLANG_VERSION >= 20000
    SLregexp_free (reg);
-#endif
-   return(n_matches);
+   return n_matches;
 }
 
 /*}}}*/
