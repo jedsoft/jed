@@ -433,6 +433,8 @@ Changes since 0.99-18.0
      function.  I also add Mark Oleson's "kw" Kitware indentation
      style patch.
 194. src/search.c: Removed support for slang-1.
+195. doc/manual/jed.1: Documented the +n commandline argument (Rafael
+     Laboissiere).
 
 {{{ Previous Versions 
 
