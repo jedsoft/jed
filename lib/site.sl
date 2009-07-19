@@ -3229,7 +3229,7 @@ if (getenv ("COLORTERM") == "rxvt")
 
 %---------------------------------------------------------------------------
 
-#ifdef UNIX
+#ifndef VMS			       %  FIXME for VMS
 define get_executable_path (pgm)
 {
    variable dir = path_dirname (pgm);
@@ -3237,7 +3237,7 @@ define get_executable_path (pgm)
      return dir;
    if (0 == is_substr (pgm, "/"))
      {
-	pgm = search_path_for_file (getenv ("PATH"), pgm, ':');
+	pgm = search_path_for_file (getenv ("PATH"), pgm);
 	if (pgm == NULL)
 	  return NULL;
 	dir = path_dirname (pgm);
@@ -3265,44 +3265,39 @@ private define guess_jed_install_prefix ()
      }
    return Jed_Install_Prefix;
 }
-#endif
 
-#ifdef UNIX
-if (is_defined ("import"))
-{
-   foreach ([
+foreach ([
 # ifexists _slang_install_prefix
-	     _slang_install_prefix,
+	  _slang_install_prefix,
 # endif
-	     guess_jed_install_prefix ()
-	     ])
+	  guess_jed_install_prefix ()
+	 ])
+{
+   $1 = ();
+   if ($1 == NULL)
+     continue;
+   $2 = path_concat ($1, "share/slsh");
+   if (2 != file_status ($2))
+     continue;
+   append_to_slang_load_path ($2);
+
+   $2 = path_concat ($2, "help");
+   if (2 == file_status ($2))
+     jed_append_doc_file ($2);
+
+   $2 = path_concat ($1, "share/slsh/local-packages");
+   if (2 == file_status ($2))
      {
-	$1 = ();
-	if ($1 == NULL)
-	  continue;
-	$2 = path_concat ($1, "share/slsh");
-	if (2 != file_status ($2))
-	  continue;
 	append_to_slang_load_path ($2);
 
 	$2 = path_concat ($2, "help");
 	if (2 == file_status ($2))
 	  jed_append_doc_file ($2);
-
-	$2 = path_concat ($1, "share/slsh/local-packages");
-	if (2 == file_status ($2))
-	  {
-	     append_to_slang_load_path ($2);
-
-	     $2 = path_concat ($2, "help");
-	     if (2 == file_status ($2))
-	       jed_append_doc_file ($2);
-	  }
-
-	break;
      }
+
+   break;
 }
-#endif
+#endif				       %  !VMS
 
 %
 %  This code fragment looks for the existence of "defaults.sl" and loads

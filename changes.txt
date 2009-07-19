@@ -435,6 +435,9 @@ Changes since 0.99-18.0
 194. src/search.c: Removed support for slang-1.
 195. doc/manual/jed.1: Documented the +n commandline argument (Rafael
      Laboissiere).
+196. lib/site.sl: Add the slsh path deduced from _slang_install_prefix
+     to the jed load path.  This has been the default for Unix for
+     some time.
 
 {{{ Previous Versions 
 
