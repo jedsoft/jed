@@ -34,6 +34,7 @@ set_color("url", "brightgreen", $2);
 set_color("italic", $1, $2);
 set_color("underline", "green", $2);
 set_color("bold", "brightred", $2);
+set_color("html", "brightred", $2);
 set_color("keyword2", $1, $2);
 set_color("keyword3", $1, $2);
 set_color("keyword4", $1, $2);

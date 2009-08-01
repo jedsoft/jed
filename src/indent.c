@@ -622,12 +622,13 @@ static int backward_goto_match (int count, unsigned char ch) /*{{{*/
 {
    unsigned char *p, *pmin, want_ch;
    unsigned short *syntax;
-   int in_string, in_comment, level;
+   int in_string, in_comment, in_html, level;
    int quote;
    Syntax_Table_Type *table;
    unsigned int this_syntax;
    unsigned char *pmax;
    unsigned char com_start_char, com_stop_char;
+   unsigned char sgml_start_char, sgml_stop_char;
 
    if (NULL == (table = setup_for_match (&p, &ch, &want_ch)))
      return 0;
@@ -652,6 +653,9 @@ static int backward_goto_match (int count, unsigned char ch) /*{{{*/
       case JED_LINE_IN_STRING1:
 	in_string = (int) table->string_chars[1];
 	break;
+      case JED_LINE_IN_HTML:
+	in_html = 1;
+	break;
      }
    Point--;
 
@@ -664,6 +668,10 @@ static int backward_goto_match (int count, unsigned char ch) /*{{{*/
      com_stop_char = (unsigned char) table->comment_stop[0];
    else com_stop_char = 0;
 
+   sgml_start_char = table->sgml_start_char;
+   sgml_stop_char = table->sgml_stop_char;
+
+   /* FIXME: handle sgml_start/stop_char */
    pmax = CLine->data + CLine->len;
    while (count)
      {

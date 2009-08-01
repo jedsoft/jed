@@ -92,6 +92,7 @@
    "preprocess"  Preprocessor lines
    "tab"
    "trailing_whitespace"
+   "html"        <html> and '<' syntax objects.
 #v-
  If line attributes are available, then you may also specifiy the color
  of the hidden line indicator:
@@ -111,7 +112,7 @@
    "mouse"                  Mouse cursor color
    "border"                 Window borde color
 #v-
-\seealso{set_color_esc, set_column_colors, set_color_object}
+\seealso{define_syntax, set_color_esc, set_column_colors, set_color_object}
 \seealso{WANT_SYNTAX_HIGHLIGHT, USE_ANSI_COLORS}
 \done
 

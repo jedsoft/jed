@@ -136,13 +136,10 @@
 #undef HAVE_VSNPRINTF
 #undef HAVE_SNPRINTF
 
-#if defined(__unix__) || defined(__DECC) || defined(__BORLAND_V5__)
-#else
-# define mode_t int
-# define pid_t int
-# define uid_t int
-# define gid_t int
-#endif
+/* #define mode_t int */
+/* #define pid_t int */
+typedef int uid_t;
+typedef int gid_t;
 
 #ifdef _MSC_VER
 # define HAVE_DLOPEN 1

@@ -377,7 +377,7 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 	ch = st->sgml_stop_char;
 	while ((p1 < pmax) && (*p1++ != ch))
 	  ;
-	p = write_using_color (p, p1, JKEY_COLOR);
+	p = write_using_color (p, p1, JHTML_KEY_COLOR);
      }
    else if ((flags & FORTRAN_TYPE)
 	    && st->fortran_comment_chars[*p])
@@ -512,14 +512,14 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 		    }
 		  p1++;
 	       }
-	     p = write_using_color (p, p1, JKEY_COLOR);
+	     p = write_using_color (p, p1, JHTML_KEY_COLOR);
 	     continue;
 	  }
 
 	if (syntax & HTML_END_SYNTAX)  /* missed start from previous line */
 	  {
 	     /* FIXME!!! Start from beginning */
-	     p = write_using_color (p, p + 1, JKEY_COLOR);
+	     p = write_using_color (p, p + 1, JHTML_KEY_COLOR);
 	     continue;
 	  }
 

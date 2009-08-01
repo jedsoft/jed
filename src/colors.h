@@ -35,7 +35,8 @@
 #define JITALIC_COLOR			25
 #define JUNDERLINE_COLOR		26
 #define JBOLD_COLOR			27
-#define JKEY_COLOR	 		28 /* JKEY_COLOR must be last */
+#define JHTML_KEY_COLOR			28
+#define JKEY_COLOR	 		29 /* JKEY_COLOR must be last */
 
 #if SLANG_VERSION < 20000
 # define JMAX_COLORS	128	       /* Do NOT increase this number */

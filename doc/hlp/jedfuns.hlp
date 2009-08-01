@@ -790,6 +790,7 @@ set_color
    "preprocess"  Preprocessor lines
    "tab"
    "trailing_whitespace"
+   "html"        <html> and '<' syntax objects.
 
  If line attributes are available, then you may also specifiy the color
  of the hidden line indicator:
@@ -811,7 +812,7 @@ set_color
 
 
  SEE ALSO
-  set_color_esc, set_column_colors, set_color_object
+  define_syntax, set_color_esc, set_column_colors, set_color_object
 
  SEE ALSO
   WANT_SYNTAX_HIGHLIGHT, USE_ANSI_COLORS

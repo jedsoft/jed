@@ -35,6 +35,7 @@ set_color("url", "#000000", "#E8DCE0");
 set_color("italic", "#005599", "#E0E0E0");
 set_color("underline", "#F00000", "#E0E0E0");
 set_color("bold", "#0000FF", "#E0E0E0");
+set_color("html", "#0000FF", "#E0E0E0");
 set_color("keyword3", "#000000", "#E0E0E0");
 set_color("keyword4", "#000000", "#E0E0E0");
 set_color("keyword5", "#000000", "#E0E0E0");

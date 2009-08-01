@@ -16,7 +16,7 @@ private define extract_major_mode (mode)
 
 %!%+
 %\function{get_comment_info}
-%\synopsis{Get comment information according to mode} }
+%\synopsis{Get comment information according to mode}
 %\usage{Struct_Type = get_comment_info ( [mode] ); }
 %\description
 % Retrieves the comment information according to the optional \exmp{mode}

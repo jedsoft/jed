@@ -44,7 +44,7 @@ custom_variable ("C_Switch_Offset", 0);
 
 
 %!%+
-%\function{C_Outer_Block_Offset}
+%\variable{C_Outer_Block_Offset}
 %\synopsis{Indentation offset for code in an outer block}
 %\usage{C_Outer_Block_Offset = 0}
 %\description

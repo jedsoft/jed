@@ -21,6 +21,7 @@ set_like_color ("bold", "keyword");
 set_like_color ("underline", "keyword1");
 set_like_color ("italic", "keyword2");
 set_like_color ("url", "string");
+set_like_color ("html", "keyword");
 
 private define build_color_list ()
 {

@@ -43,6 +43,7 @@ set_color("url", $6, $2);
 set_color("italic", $1, $2);
 set_color("underline", $7, $2);
 set_color("bold", $7, $2);
+set_color("html", $7, $2);
 set_color("keyword2", $1, $2);
 set_color("keyword3", $1, $2);
 set_color("keyword4", $1, $2);

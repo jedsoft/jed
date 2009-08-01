@@ -61,3 +61,7 @@ set_color("keyword6", $1, $2);
 set_color("keyword7", $1, $2);
 set_color("keyword8", $1, $2);
 set_color("keyword9", $1, $2);
+
+%% The following have been automatically generated:
+
+set_color("html", "yellow", $2);

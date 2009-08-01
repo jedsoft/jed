@@ -23,7 +23,7 @@ set_color("...",	$5, $2);
 set_color("message",	$3, $2);
 set_color("error",	$4, $2);
 
-% gray menu - 
+% gray menu -
 set_color("menu", $1, "gray50");
 set_color("menu_char",	"yellow",	"gray50");
 set_color("menu_popup", $1, "gray50");
@@ -52,3 +52,7 @@ set_color("keyword7", $1, $2);
 set_color("keyword8", $1, $2);
 set_color("keyword9", $1, $2);
 
+
+%% The following have been automatically generated:
+
+set_color("html", "yellow", $2);

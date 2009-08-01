@@ -236,7 +236,7 @@ int sys_findnext(char *file)
 
 
 /* returns 0 if file does not exist, 1 if it is not a dir, 2 if it is */
-int sys_chmod(SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *uid, gid_t *gid)
+int sys_chmod (SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *uid, gid_t *gid)
 {
 #ifdef _MSC_VER
    struct _stat buf;

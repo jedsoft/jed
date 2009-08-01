@@ -107,12 +107,13 @@ void jed_show_version (FILE *fp)
    fprintf (fp, " (DJGPP v%d.%d)", __DJGPP, __DJGPP_MINOR);
 # endif 
 # ifdef __MINGW32__
-   fprintf (fp, " (MINGW32 v%g)",
-#  ifdef __MINGW32_VERSION
-	    __MINGW32_VERSION
-#  else
-	    __MINGW32__
+#  ifndef __MINGW32_PATCHLEVEL
+#   define __MINGW32_PATCHLEVEL 0
 #  endif
+   fprintf (fp, " (MINGW32 v%d.%d-%d)",
+	    __MINGW32_MAJOR_VERSION,
+	    __MINGW32_MAJOR_VERSION,
+	    __MINGW32_PATCHLEVEL
 	    );
 # endif
    fprintf (fp, "\n");

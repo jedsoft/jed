@@ -2091,7 +2091,7 @@ LRESULT CALLBACK JEDWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		  int i, buflen = 10;
 		  int dbcsl;
 		  
-		  // Here I get ANSI characters, but _putkey() wants UTF-16.
+		  /* Here I get ANSI characters, but _putkey() wants UTF-16. */
 		  if (!dbcsbuf[0] && IsDBCSLeadByte((unsigned char)wParam)) {
 		     dbcsbuf[0] = (char)wParam;
 		     break;

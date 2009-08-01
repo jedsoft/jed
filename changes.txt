@@ -438,6 +438,12 @@ Changes since 0.99-18.0
 196. lib/site.sl: Add the slsh path deduced from _slang_install_prefix
      to the jed load path.  This has been the default for Unix for
      some time.
+197. lib/site.sl: For DOS/Windows, when searching the path for an
+     executable, append ".exe" to the name if not already present.
+198. src/jedconf.h: Non-Unix systems: Remove defines for mode_t, etc.
+199. src/colors.c: When highlighting '<' syntax objects, use the color
+     associated with the "html" object.
+
 
 {{{ Previous Versions 
 

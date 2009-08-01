@@ -48,6 +48,7 @@ set_color("url", "cyan", $7);
 set_color("italic", $3, $8);
 set_color("underline", "cyan", $8);
 set_color("bold", "white", $8);
+set_color("html", "white", $8);
 set_color("keyword3", $1, $2);
 set_color("keyword4", $1, $2);
 set_color("keyword5", $1, $2);

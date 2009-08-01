@@ -66,6 +66,7 @@ static Color_Object_Map_Type Color_Name_Map [JMAX_COLORS] =
    {"italic",		JITALIC_COLOR, NULL, NULL},
    {"underline",	JUNDERLINE_COLOR, NULL, NULL},
    {"bold",		JBOLD_COLOR, NULL, NULL},
+   {"html",		JHTML_KEY_COLOR, NULL, NULL},
    {"keyword",		JKEY_COLOR, NULL, NULL},
    {"keyword1",		JKEY_COLOR+1, NULL, NULL},
    {"keyword2",		JKEY_COLOR+2, NULL, NULL},

@@ -7,9 +7,7 @@
 #ifndef __DAVIS_SYSDEP_H__
 #define __DAVIS_SYSDEP_H__
 
-#ifndef uid_t
-# include <sys/types.h>
-#endif
+#include <sys/types.h>
 
 extern int Ignore_User_Abort;
 extern char *_Jed_Backspace_Key;

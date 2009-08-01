@@ -3235,7 +3235,17 @@ define get_executable_path (pgm)
    variable dir = path_dirname (pgm);
    if (path_is_absolute (dir))
      return dir;
-   if (0 == is_substr (pgm, "/"))
+
+# ifdef IBMPC_SYSTEM
+   if (path_extname (pgm) == "")
+     pgm += ".exe";
+# endif
+
+   if ((0 == is_substr (pgm, "/"))
+# ifdef IBMPC_SYSTEM
+       && (0 == is_substr (pgm, "\\"))
+# endif
+      )
      {
 	pgm = search_path_for_file (getenv ("PATH"), pgm);
 	if (pgm == NULL)
