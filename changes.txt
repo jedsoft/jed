@@ -443,7 +443,8 @@ Changes since 0.99-18.0
 198. src/jedconf.h: Non-Unix systems: Remove defines for mode_t, etc.
 199. src/colors.c: When highlighting '<' syntax objects, use the color
      associated with the "html" object.
-
+200. lib/popups.sl: #ifdef UNIX added to prevent auto_compression_mode
+     from loading on non-supported systems.
 
 {{{ Previous Versions 
 

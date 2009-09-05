@@ -47,11 +47,15 @@ private define browse_docs_callback (file)
 	  }
      }
    variable state;
+#ifdef UNIX
    if (is_compressed)
      auto_compression_mode (1, &state);
+#endif
    () = read_file (file);
+#ifdef UNIX
    if (is_compressed) 
      auto_compression_mode (state);
+#endif
    pop2buf (whatbuf ());
    most_mode ();
 }
