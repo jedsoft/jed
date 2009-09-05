@@ -37,6 +37,7 @@
 
 #include <fcntl.h>
 
+#include "jedlimit.h"
 #include "display.h"
 #include "sysdep.h"
 #include "screen.h"
@@ -239,41 +240,49 @@ int sys_findnext(char *file)
 int sys_chmod (SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *uid, gid_t *gid)
 {
 #ifdef _MSC_VER
-   struct _stat buf;
+   struct _stat st;
 #else
-   struct stat buf;
+   struct stat st;
 #endif
-   char ourname[256];
-   int len;
+   char filebuf[JED_MAX_PATH_LEN+1];
+   unsigned int len;
 
    if (what)
      {
 #ifdef _MSC_VER
 	_chmod(file, *mode);
 #else
-	chmod(file, *mode);
+	(void) chmod(file, *mode);
 #endif
-	return(0);
+	return 0;
      }
 
    /* strip the trailing backslash if necessary */
-   strcpy(ourname, file);
-   len = strlen(ourname);
-   if (len>1 && ourname[len-1] == SLASH_CHAR && ourname[len-2] != ':')
-     ourname[strlen(ourname)-1] = '\0';
+   len = strlen (file);
+   if ((len > 1) && (file[len-1] == SLASH_CHAR) && (file[len-2] != ':'))
+     {
+	if (len + 1 > sizeof(filebuf))
+	  {
+	     jed_verror ("Path too long: %s", file);
+	     return -1;
+	  }
+	strcpy (filebuf, file);
+	file = filebuf;
+	len--;
+	file[len] = 0;
+     }
 
    if (
 #ifdef _MSC_VER
-       _stat(ourname, &buf) < 0
+       _stat(file, &st) < 0
 #else
-       stat(ourname, &buf) < 0
+       stat(file, &st) < 0
 #endif
        )
      {
-	if (ourname[0] == SLASH_CHAR && ourname[1] == SLASH_CHAR)
+	if ((file[0] == SLASH_CHAR) && (file[1] == SLASH_CHAR))
 	  {
-	     int at = GetFileAttributes(ourname);
-
+	     int at = GetFileAttributes(file);
 	     if (at >= 0)
 	       {
 		  if (at & FILE_ATTRIBUTE_DIRECTORY)
@@ -285,11 +294,9 @@ int sys_chmod (SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *uid, gi
 	return 0;
      }
 
-
-   *mode = buf.st_mode & 0777;
-
-   if (buf.st_mode & S_IFDIR) return (2);
-   return(1);
+   *mode = st.st_mode & 0777;
+   if (st.st_mode & S_IFDIR) return 2;
+   return 1;
 }
 
 static void x_warp_pointer (void)

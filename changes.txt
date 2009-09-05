@@ -445,6 +445,7 @@ Changes since 0.99-18.0
      associated with the "html" object.
 200. lib/popups.sl: #ifdef UNIX added to prevent auto_compression_mode
      from loading on non-supported systems.
+201. src/win32.c: rewrote sys_chmod to avoid a possible buffer overflow.
 
 {{{ Previous Versions 
 
