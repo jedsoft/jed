@@ -157,11 +157,18 @@ static void display_line (Line *line, int sy, int sx)
 
    num_columns = JWindow->width;
 
-   if (hscroll_col || sx || (CBuf->line_num_display_size))
+   if (hscroll_col || sx
+#if JED_HAS_DISPLAY_LINE_NUMBERS
+       || (CBuf->line_num_display_size)
+#endif
+      )
      {
-	int tmp = hscroll_col - (sx + CBuf->line_num_display_size);
-	SLsmg_set_screen_start (NULL, &tmp);
+	int tmp = hscroll_col - sx;
+#if JED_HAS_DISPLAY_LINE_NUMBERS
+	tmp -= CBuf->line_num_display_size;
 	num_columns -= CBuf->line_num_display_size;
+#endif
+	SLsmg_set_screen_start (NULL, &tmp);
 	sx = 0;
      }
 
@@ -752,7 +759,10 @@ void point_cursor (int c)
    if (cline == HScroll_Line) c -= HScroll;
    if (c < 1) c = 1; else if (c > JWindow->width) c = JWindow->width;
 
-   c += JWindow->sx + CBuf->line_num_display_size;
+   c += JWindow->sx;
+#if JED_HAS_DISPLAY_LINE_NUMBERS
+   c += CBuf->line_num_display_size;
+#endif
 
    SLsmg_gotorc (r - 1, c - 1);
    Screen_Row = r;
@@ -1565,10 +1575,13 @@ static void update_minibuffer(void)
 static void set_hscroll(int col)
 {
    int hdiff, whs = abs(Wants_HScroll), wc = JWindow->hscroll_column - 1;
-   int sw = Jed_Num_Screen_Cols - CBuf->line_num_display_size - 1;
+   int sw = Jed_Num_Screen_Cols - 1;
    static Line *last;
    Line *tmp;
 
+#if JED_HAS_DISPLAY_LINE_NUMBERS
+   sw -= CBuf->line_num_display_size;
+#endif
    if (sw < 1)
      sw = 1;
 

@@ -631,11 +631,15 @@ static void skip_white_intrin (void)
 
 static void set_line_number_mode (int *statusp)
 {
+#if JED_HAS_DISPLAY_LINE_NUMBERS
    int status = *statusp;
    if (status < 0)
      status = (CBuf->line_num_display_size == 0);
 
    CBuf->line_num_display_size = (status > 0);
+#else
+   (void) statusp;
+#endif
 }
 
 static void what_char_intrin (void)
