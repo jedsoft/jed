@@ -68,7 +68,7 @@ Buffer *CBuf;
 Line *CLine;
 Buffer_Local_Type Buffer_Local = /*{{{*/
 {
-   8, 0, 0
+   8, 0, 0, 72
 };
 
 /*}}}*/
@@ -1039,6 +1039,7 @@ Buffer *make_buffer (char *name, char *dir, char *file) /*{{{*/
    jed_set_buffer_ctime (newB);
    newB->local_vars.tab = Jed_Tab_Default;
    newB->local_vars.case_search = Jed_Case_Search_Default;
+   newB->local_vars.wrap_column = Jed_Wrap_Default;
 
    if (CBuf == NULL)
      {

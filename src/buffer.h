@@ -150,6 +150,7 @@ typedef struct
    int tab;			       /* tab width */
    int case_search;
    int is_utf8;
+   int wrap_column;
 } Buffer_Local_Type;
 
 extern Buffer_Local_Type Buffer_Local;

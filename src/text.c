@@ -119,9 +119,9 @@ static int wrap_line1(int format, int trim) /*{{{*/
    if (pmin == NULL)
      return -1;
 
-   point_column(Jed_Wrap_Column - 1);
+   point_column(Buffer_Local.wrap_column - 1);
    col = calculate_column();
-   if ((col < Jed_Wrap_Column) && eolp ())
+   if ((col < Buffer_Local.wrap_column) && eolp ())
      return 0;
 
    p = CLine->data + Point;
@@ -319,7 +319,7 @@ int text_format_paragraph () /*{{{*/
    push_spot();
    
    get_current_indent(&indent_col);
-   if (indent_col + 1 >= Jed_Wrap_Column)
+   if (indent_col + 1 >= Buffer_Local.wrap_column)
      indent_col = 0;
 
    if (-1 == mark_paragraph (&beg, &end))
@@ -344,7 +344,7 @@ int text_format_paragraph () /*{{{*/
 	  && (0 != jed_up (1)))
      ;
 
-   if (col + 1 >= Jed_Wrap_Column)
+   if (col + 1 >= Buffer_Local.wrap_column)
      indent_to (indent_col);
 
    bol ();
@@ -391,7 +391,7 @@ int text_format_paragraph () /*{{{*/
 	     col = calculate_column();
 
 	     /* FIXME for multibyte */
-	     if ((p - next->data) + col < Jed_Wrap_Column - 1)
+	     if ((p - next->data) + col < Buffer_Local.wrap_column - 1)
 	       {
 		  if (-1 == _jed_replace_wchar (' '))
 		    return -1;
@@ -420,11 +420,11 @@ int narrow_paragraph(void) /*{{{*/
    CHECK_READ_ONLY
    /* if (CBuf->modes != WRAP_MODE) return(0); */
    get_current_indent(&n);
-   wrap = Jed_Wrap_Column;
+   wrap = Buffer_Local.wrap_column;
    if (wrap - n <= wrap/2) return(0);
-   Jed_Wrap_Column -= n;
+   Buffer_Local.wrap_column -= n;
    text_format_paragraph();
-   Jed_Wrap_Column = wrap;
+   Buffer_Local.wrap_column = wrap;
    return(1);
 }
 
@@ -447,7 +447,7 @@ int center_line(void) /*{{{*/
 	p++;
      }
    if ((len = (int)(pmax - p)) < 0) len = 0;
-   if ((len = (Jed_Wrap_Column - len) / 2) < 0) len = 0;
+   if ((len = (Buffer_Local.wrap_column - len) / 2) < 0) len = 0;
    indent_to(len);
    pop_spot();
    return(1);

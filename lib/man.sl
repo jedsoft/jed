@@ -14,16 +14,19 @@ define man_clean_manpage ()
    push_spot_bob ();
 
    flush (clean);
-   % I do not know what man on debian etch is doing, but it is producing
-   % this combination: \xE2\x88\x{8722} for a -
+   % I do not know what man on debian etch or lenny is doing, but it
+   % is producing this combination: \xE2\x88\x{2212} for a -.  Note that
+   % \xE2\x88 are the leading bytes of \u{2212}.  For some reason,
+   % these are getting doubled.  So replace the entire combination
    replace ("\xE2\x88\x{2212}", "-");
+   replace ("\xE2\x80\x{2010}", "-");
 
    % Convert other unicode versions of - to ascii -.
    replace ("\x{2212}", "-");
    replace ("\x{2010}", "-");
    replace ("\x{00AD}", "-");
-   
-   replace ("_\010", Null_String);	% remove _^H underscores
+
+   replace ("_\010", "");	% remove _^H underscores
    while ( fsearch ("\010") )
      {
 	del ();

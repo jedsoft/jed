@@ -59,8 +59,8 @@ int Blink_Flag = 1;
 int Indented_Text_Mode = 0;	       /* if non zero, intent line after wrap */
 int Kill_Line_Feature = 1;	       /* non-zero means kill through eol if bolp  */
 int Jed_Tab_Default = 8;
+int Jed_Wrap_Default = 72;
 int Jed_Case_Search_Default = 0;
-int Jed_Wrap_Column = 72;
 int Jed_Suspension_Not_Allowed = 0;
 int Jed_Use_Tabs = 1;
 
@@ -407,7 +407,7 @@ static int execute_is_ok_hook (SLang_Name_Type *hook)
 int ins_char_cmd (void)
 {
    unsigned char ch;
-   int wrap = Jed_Wrap_Column;
+   int wrap = Buffer_Local.wrap_column;
    int do_blink;
    int did_abbrev = 0;
    SLang_Name_Type *wrapok_hook;

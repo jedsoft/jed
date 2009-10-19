@@ -448,6 +448,13 @@ Changes since 0.99-18.0
 201. src/win32.c: rewrote sys_chmod to avoid a possible buffer overflow.
 202. src/screen.c: Fixed compilation errors if compiled without line
      number display support.
+203. lib/man.sl: Convert another form of Unicode hyphen to a '-'
+     character.
+204. src/*.c: Make WRAP a buffer-local variable.  A new intrinsic variable
+     called WRAP_DEFAULT was added for newly created buffers.  Note:
+     This is backwards-incompatible change.  If you have WRAP=value in
+     your .jedrc file, change it to WRAP_DEFAULT=value.  The default
+     value is 72.
 
 {{{ Previous Versions 
 

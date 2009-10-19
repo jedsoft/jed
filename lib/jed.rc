@@ -134,7 +134,7 @@ USE_TABS	= 1;	% Use tabs when generating whitespace.
 Tab_Always_Inserts_Tab = 0; % Set this to 1 if you want the tab key to insert
                             % tabs.
 
-WRAP		= 78;	% wrap column
+WRAP_DEFAULT	= 72;	% wrap column
 ADD_NEWLINE	= 1;	% add newline to file when writing if one not present
 IGNORE_BEEP	= 3;	% Beep terminal during error messages---
                         %  1 == sound only, 2 = visible bell only, 3 = both

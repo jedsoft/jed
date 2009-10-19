@@ -53,8 +53,8 @@ extern int Kill_Line_Feature;
 extern int Jed_Secure_Mode;
 extern int Goal_Column;
 extern int Jed_Tab_Default;
+extern int Jed_Wrap_Default;
 extern int Jed_Case_Search_Default;
-extern int Jed_Wrap_Column;
 extern int Jed_Suspension_Not_Allowed;
 extern int Jed_Use_Tabs;
 #if 0

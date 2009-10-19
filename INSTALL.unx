@@ -3,8 +3,24 @@
 UNIX installation specific functions.  Please read this file.  
 
 0. Building and installing JED requires that you also have the S-Lang library
-   to installed.  See http://www.s-lang.org/download.html for
+   to installed.  See http://www.jedsoft.org/slang/download.html for
    information about obtaining the library.
+
+  * NOTE: Many Unix distributions distribute a version of the library
+    that that may be used to compile against.  For example, on Debian
+    Linux the library is in the "libslang2-dev" package, which may be
+    installed using:
+
+      apt-get install libslang2-dev
+
+  * NOTE: Since the jed editor is a conforming slang application, it
+    makes use of the slsh library files, which are part of the slang
+    distribution.  If you install slang from source, then these files
+    will also get installed.  However, on Debian Linux and its derivatives,
+    these files have been placed into a separate "slsh" package you
+    will need to install:
+
+      apt-get install slsh
 
 1. Choose an installation location for JED. JED is distributed in a
    TREE structure:
@@ -101,7 +117,7 @@ UNIX installation specific functions.  Please read this file.
    as the newsgroups comp.editors and alt.lang.s-lang.  See
    <http://www.jedsoft.org/jed/> for more information about
    the mailing lists.  Additional information may be found at
-   <http://www.s-lang.org>.
+   <http://www.jedsoft.org/slang/>.
 
 7. That's it.  Enjoy.
 
