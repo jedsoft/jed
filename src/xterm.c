@@ -1493,31 +1493,28 @@ static int X_read_key (void) /*{{{*/
 static int X_input_pending (void) /*{{{*/
 {
    XEvent ev;
-#if 0
+
    int n;
 
    if (No_XEvents) return 0;
+#if 1
+   /* XCheckMaskEvent searches the queue and removes the specified event. */
+   if (0 != XCheckMaskEvent(This_XDisplay, KeyPressMask, &ev))
+     {
+	/* XPutBackEvent pushes the event to the head of the event queue-- no return value */
+	XPutBackEvent(This_XDisplay, &ev);
+	return 1;
+     }
+#endif
    n = XPending (This_XDisplay);
-   if (!n) return (0);
-
-   /* I need some way of getting only kbd events. */
-   while (n--)
+   while (n > 0)
      {
 	XPeekEvent(This_XDisplay, &ev);
 	if (0 == x_handle_harmless_events (&ev)) return 1;
 	XNextEvent(This_XDisplay, &ev);
+	n--;
      }
    return 0;
-#else
-   if (No_XEvents) return 0;
-   /* XCheckMaskEvent searches the queue and removes the specified event. */
-   if (0 == XCheckMaskEvent(This_XDisplay, KeyPressMask, &ev))
-     return 0;
-
-   /* XPutBackEvent pushes the event to the head of the event queue-- no return value */
-   XPutBackEvent(This_XDisplay, &ev);
-   return 1;
-#endif
 }
 
 /*}}}*/

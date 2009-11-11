@@ -460,6 +460,7 @@ Changes since 0.99-18.0
      (Jörg Sommer)
 207. src/screen.c: rewrote the set_hscroll function so that automatic
      horizontal scrolling works better in wrap mode.
+208. src/xterm.c: Tweaked the patch in #205 to handle harmless events.
 
 {{{ Previous Versions 
 
