@@ -455,6 +455,11 @@ Changes since 0.99-18.0
      This is backwards-incompatible change.  If you have WRAP=value in
      your .jedrc file, change it to WRAP_DEFAULT=value.  The default
      value is 72.
+205. src/xterm.c: Added multikey patch (Jörg Sommer)
+206. lib/*.sl: Replace obsolete ERROR_BLOCKS by try-catch statements
+     (Jörg Sommer)
+207. src/screen.c: rewrote the set_hscroll function so that automatic
+     horizontal scrolling works better in wrap mode.
 
 {{{ Previous Versions 
 

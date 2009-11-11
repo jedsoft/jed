@@ -209,5 +209,10 @@ int main (int argc, char **argv)
    if (bar)
      name = foo
      + bar;
+
+   (foo) 
+     = bar;
+   (bar)
+     = foo;
 }
 

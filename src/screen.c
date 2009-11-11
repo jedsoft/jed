@@ -1572,6 +1572,7 @@ static void update_minibuffer(void)
      display_line(NULL, Jed_Num_Screen_Rows-1, 0);
 }
 
+#if 0
 static void set_hscroll(int col)
 {
    int hdiff, whs = abs(Wants_HScroll), wc = JWindow->hscroll_column - 1;
@@ -1644,6 +1645,94 @@ static void set_hscroll(int col)
 	     register_change(0);
 	     last = HScroll_Line = CLine;
 	  }
+     }
+}
+#endif
+/* Let "|" denote the window edges, 
+ *   "." denote text, "*" denotes the current location
+ * 
+ *  .........|....*..........|....
+ *  <---- col --->
+ *  <-- wc -><-------sw------>
+ * The contraints are: wc >= 0, col >= 0, sw > 0.
+ * Let whs be the value of abs(Wants_HScroll).  We want to wc to satisfy
+ *   wc+1 <= col <= wc + sw - 1
+ * ==> col-sw+1 <= wc <= col-1
+ * However, if wc does not satisfy this, then set wc such that:
+ *
+ *   wc + whs <= col <= wc + sw - whs
+ *   col+whs-sw <= wc <= col-whs
+ * Evidently, this requires:
+ *    col+whs-sw < col-whs
+ *    whs-sw < -whs
+ *    2whs < sw ==> whs < sw/2
+ * 
+ * As a special case, if col < sw, then set wc=0.
+ */
+static void set_hscroll(int col)
+{
+   int whs = abs(Wants_HScroll), wc = JWindow->hscroll_column - 1;
+   int sw = Jed_Num_Screen_Cols-1;
+   static Line *last;
+   Line *tmp;
+   int wc_min, wc_max;
+
+#if JED_HAS_DISPLAY_LINE_NUMBERS
+   sw -= CBuf->line_num_display_size;
+#endif
+   if (sw < 2)
+     sw = 2;
+
+   if (Wants_HScroll > 0)
+     wc += HScroll;		       /* only this line scrolled */
+
+   /* take care of last effect of horizontal scroll */
+   if (last != NULL)
+     {
+	tmp = CLine;
+	CLine = last;
+	register_change(0);
+	CLine = tmp;
+	if (last != CLine)
+	  HScroll = 0;
+
+	last = NULL;
+     }
+   col--;			       /* use 0 origin */
+   if (2*whs > sw)
+     whs = sw/2;
+     
+   wc_min = col - sw + 1;
+   if (wc_min < 0) wc_min = 0;
+   wc_max = col - 1;
+   if (wc < wc_min)
+     wc = wc_min + whs;
+   if (wc > wc_max)
+     wc = wc_max - whs;
+
+   if (col < sw)
+     {
+	if ((CBuf->modes & WRAP_MODE)
+	    || (col <= sw - whs))
+	  wc = 0;
+     }
+
+   if (Wants_HScroll < 0)
+     {
+	/* Scroll whole window */
+	if (wc + 1 != JWindow->hscroll_column)
+	  {
+	     JWindow->hscroll_column = wc + 1;
+	     touch_window();
+	  }
+	HScroll = 0;
+     }
+   else
+     {
+	/* Scroll just this line -- do not change hscroll_column */
+	register_change(0);
+	last = HScroll_Line = CLine;
+	HScroll = wc - (JWindow->hscroll_column-1);
      }
 }
 

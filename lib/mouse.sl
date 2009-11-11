@@ -236,15 +236,14 @@ define mouse_status_down_hook (line, col, but, shift)
    
    if (shift == 1)
      {
-	ERROR_BLOCK
+	try
 	  {
-	     _clear_error ();
+	     if (but == 1)
+	       call ("page_down");
+	     else if (but == 4)
+	       call ("page_up");
 	  }
-	if (but == 1)
-	  call ("page_down");
-	else if (but == 4)
-	  call ("page_up");
-	
+	catch AnyError;
 	return 0;
      }
       

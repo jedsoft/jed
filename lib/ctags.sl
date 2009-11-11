@@ -59,19 +59,6 @@ private define goto_position ()
 	sw2buf (buf);
      }
 
-#ifnexists AnyError
-   variable error_happened = 0;
-   ERROR_BLOCK
-     {
-	_clear_error ();
-	error_happened = 1;
-     }
-   buf = user_mark_buffer (s.mark);
-   if (error_happened == 0)
-     goto_user_mark (s.mark);
-   if (error_happened == 0)
-     return;
-#else
    try
      {
 	buf = user_mark_buffer (s.mark);
@@ -79,7 +66,6 @@ private define goto_position ()
 	return;
      }
    catch AnyError;
-#endif
 
    () = read_file (s.file);
    goto_line (s.line);

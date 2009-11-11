@@ -5,13 +5,12 @@ define find_binary_file ()
    variable file, bytes, len, pos;
    
    file = read_file_from_mini ("Find Binary File:");
-   ERROR_BLOCK
+   try
      {
-	set_file_translation (0);
+	set_file_translation (1);
+	() = find_file (file);
      }
-   set_file_translation (1);
-   () = find_file (file);
-   EXECUTE_ERROR_BLOCK;
+   finally set_file_translation (0);
    no_mode();
    set_overwrite(1);
    %

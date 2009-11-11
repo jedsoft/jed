@@ -25,15 +25,7 @@ define replace_across_buffer_files ()
    if (-1 != prefix_argument (-1))
      REPLACE_PRESERVE_CASE_INTERNAL = not (REPLACE_PRESERVE_CASE_INTERNAL);
    
-   ERROR_BLOCK 
-     {
-	sw2buf (cbuf);
-	pop_spot ();
-	_pop_n (n);               %  remove buffers from stack
-	REPLACE_PRESERVE_CASE_INTERNAL = 0;
-     }
-
-   while (n)
+   try while (n)
      {
 	buf = ();  n--;
 	
@@ -58,6 +50,13 @@ define replace_across_buffer_files ()
 	replace_with_query (&search_search_function, pat, rep, 1, 
 			    &replace_do_replace);
 	pop_spot ();
+     }
+   finally
+     {
+	sw2buf (cbuf);
+	pop_spot ();
+	_pop_n (n);               %  remove buffers from stack
+	REPLACE_PRESERVE_CASE_INTERNAL = 0;
      }
    
    EXECUTE_ERROR_BLOCK;

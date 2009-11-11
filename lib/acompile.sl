@@ -85,11 +85,8 @@ public define compile ()
      {
 	if (bufferp (Compile_Output_Buffer))
 	  error ("A compile process is already running.");
-	ERROR_BLOCK
-	  {
-	     _clear_error ();
-	  }
-	kill_process (Compile_Process_Id);
+	try kill_process (Compile_Process_Id); 
+	catch RunTimeError;
 	Compile_Process_Id = -1;
      }
 	

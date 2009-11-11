@@ -180,16 +180,13 @@ define menu_main_cmds ()
 {
    variable n, key, len, next, nlen;
    
-   ERROR_BLOCK 
+   try
      {
-	set_top_status_line (Global_Top_Status_Line);
-	pop ();
+	menu_select_cmd ("File,Edit,Buffers,Windows,Help,Misc,Exit",
+			 "menu_files,menu_basics,menu_buffers,menu_window_cmds,menu_help,menu_misc,@exit_jed");
      }
-   
-   menu_select_cmd ("File,Edit,Buffers,Windows,Help,Misc,Exit",
-		    "menu_files,menu_basics,menu_buffers,menu_window_cmds,menu_help,menu_misc,@exit_jed");
-
-   EXECUTE_ERROR_BLOCK ();
+   finally
+     () = set_top_status_line (Global_Top_Status_Line);
    
      %
      %  Show user keybinding of the function.

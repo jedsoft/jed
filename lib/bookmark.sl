@@ -59,13 +59,13 @@ define bkmrk_goto_mark ()
      {
 #ifdef HAS_BLOCAL_VAR
 	variable fun;
-	ERROR_BLOCK
+	try
 	  {
-	     _clear_error ();
-	     error ("Mark lies outside visible part of buffer.");
+	     fun = get_blocal_var ("bookmark_narrow_hook");
+	     mrk; eval (fun);
 	  }
-	fun = get_blocal_var ("bookmark_narrow_hook");
-	mrk; eval (fun);
+	catch AnyError:
+	  throw UsageError, "Mark lies outside visible part of buffer.";
 #else
 	error ("Mark lies outside visible part of buffer.");
 #endif

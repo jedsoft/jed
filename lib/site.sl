@@ -244,14 +244,8 @@ public define custom_variable (name, value)
 %!%-
 define str_replace_all (str, old, new)
 {
-#ifexists strreplace
    (str,) = strreplace (str, old, new, strlen (str));
-   str;
-#else
-   while (str_replace (str, old, new))
-     str = ();
-   str;
-#endif
+   return str;
 }
 
 %}}}
@@ -260,9 +254,6 @@ define str_replace_all (str, old, new)
 
 
 %{{{ Compatibility functions
-
-if (_slang_version < 10308)
-  () = evalfile ("emul.sl");
 
 #ifnexists strbytelen
 define strbytelen (s)
@@ -1695,13 +1686,12 @@ define goto_bottom_of_window ()
 %!%-
 public define redo ()
 {
-   ERROR_BLOCK 
+   try call("kbd_quit");
+   catch UserBreakError:
      {
 	call("undo");
-	_clear_error ();
 	message ("Undo will now perform the action of redo");
      };
-   call("kbd_quit");
 }
 
 %}}}
@@ -2418,46 +2408,45 @@ define jed_startup_hook()
 
    runhooks ("startup_hook");
 
-   ERROR_BLOCK
+   try
      {
-	eval (".()jed_startup_hook");
-     }
-
-   !if (strcmp(whatbuf(), scratch) or buffer_modified())
-     {
-	ERROR_BLOCK
+	ifnot ((whatbuf != scratch) || buffer_modified())
 	  {
-	     setbuf (scratch);
-	     erase_buffer ();
-	     set_buffer_modified_flag (0);
-	  }
-
-	() = insert_file (expand_jedlib_file("cpright.hlp"));
-	set_buffer_modified_flag (0);
-	bob();
-	file = Null_String;
-	message (Null_String);
-	if (Startup_With_File > 0)
-	  {
-	     forever
+	     try
 	       {
-		  file = read_file_from_mini ("Enter Filename:");
-		  if (strlen(extract_filename(file))) break;
+		  () = insert_file (expand_jedlib_file("cpright.hlp"));
+		  set_buffer_modified_flag (0);
+		  bob();
+		  file = "";
+		  message ("");
+		  if (Startup_With_File > 0)
+		    {
+		       forever
+			 {
+			    file = read_file_from_mini ("Enter Filename:");
+			    if (strlen(extract_filename(file))) break;
+			 }
+		    }
+		  else ifnot (Startup_With_File)
+		    {
+		       do
+			 {
+			    update_sans_update_hook (1);
+			 }
+		       while (not (input_pending(600)));   %  1 minute
+		    }
 	       }
-	  }
-	else !if (Startup_With_File)
-	  {
-	     do
+	     finally
 	       {
-		  update_sans_update_hook (1);
+		  setbuf (scratch);
+		  erase_buffer ();
+		  set_buffer_modified_flag (0);
 	       }
-	     while (not (input_pending(600)));   %  1 minute
-
+	     if (file != "") () = find_file(file);
 	  }
-	EXECUTE_ERROR_BLOCK;
-	if (strlen (file)) () = find_file(file);
      }
-   EXECUTE_ERROR_BLOCK;
+   finally
+     eval (".()jed_startup_hook");
 }
 
 add_to_hook ("_jed_startup_hooks", &jed_startup_hook);
@@ -2582,11 +2571,12 @@ add_completion("save_buffer");
 %{{{ insert_buffer()
 define insert_buffer()
 {
-   read_with_completion("Insert Buffer:", Null_String, Null_String, 'b');
+   variable buf = read_with_completion("Insert Buffer:", "", "", 'b');
    push_spot();
-   ERROR_BLOCK {pop_spot();}
-   insbuf(());
-   EXECUTE_ERROR_BLOCK;
+   try
+     insbuf(buf);
+   finally
+     pop_spot ();
 }
 add_completion("insert_buffer");
 
