@@ -457,10 +457,15 @@ Changes since 0.99-18.0
      value is 72.
 205. src/xterm.c: Added multikey patch (Jörg Sommer)
 206. lib/*.sl: Replace obsolete ERROR_BLOCKS by try-catch statements
-     (Jörg Sommer)
+     (Joerg Sommer)
 207. src/screen.c: rewrote the set_hscroll function so that automatic
      horizontal scrolling works better in wrap mode.
 208. src/xterm.c: Tweaked the patch in #205 to handle harmless events.
+209. lib/latex.sl: Fixed a typo in the menu entry for
+     uncomment_region. lib/site.sl: Removed redundant perl mode
+     mappings. (Manfred Hanke).
+210. lib/cmode.sl: Tweaked to fix the indentation of a continued
+     multi-assign statement.
 
 {{{ Previous Versions 
 

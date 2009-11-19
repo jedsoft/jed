@@ -865,6 +865,8 @@ define c_indent_line ()
 	       }
 
 	     !if (blooking_at (")")) break;
+	     % If the line is continued, then we are at the end of a line
+	     % with a closing ')',
 	     push_mark ();
 	     go_left_1 ();
 	     if (1 != find_matching_delimiter (')'))
@@ -873,6 +875,12 @@ define c_indent_line ()
 		  break;
 	       }
 	     c_bskip_over_comment (not_indenting_pp);
+	     % If we are at the end of a statement, stop here
+	     if (blooking_at (";"))
+	       {
+		  pop_mark_1 ();
+		  break;
+	       }
 	     push_spot ();
 	     if ((1 == find_matching_delimiter (')')), pop_spot ())
 	       {

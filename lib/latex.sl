@@ -918,7 +918,7 @@ private define init_menu (menu)
    menu_append_item (menu, "Environment", "latex_environment");
    menu_append_item (menu, "Section", "latex_section");
    menu_append_item (menu, "Comment Region", "tex_comment_region");
-   menu_append_item (menu, "Uncomment Region", "tex_ucomment_region");
+   menu_append_item (menu, "Uncomment Region", "tex_uncomment_region");
    menu_append_item (menu, "Comment Paragraph", "tex_comment_paragraph");
    menu_append_item (menu, "Mark Environment", "tex_mark_environment");
    menu_append_item (menu, "Mark Section", "tex_mark_section");

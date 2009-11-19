@@ -1817,9 +1817,6 @@ define modeline_hook()
 variable Mode_List_Exts = "h,cc,cpp,hpp,hh,sl,txt,doc,f,for,pro,1,pl,pm,v,verilog,vhd,vhdl,vt,sp,cir,py,cxx,m,bib";
 variable Mode_List_Modes = "c,c,c,c,c,slang,text,text,fortran,fortran,idl,nroff,perl,perl,verilog,verilog,vhdl,vhdl,vhdl,spice,spice,python,c,matlab,bibtex";
 
-Mode_List_Exts += ",pm";
-Mode_List_Modes += ",perl";
-
 #ifdef MSDOS OS2 IBMPC_SYSTEM
 Mode_List_Exts += ",rc,bat,htm";     %  resource file
 Mode_List_Modes += ",c,no,html";
