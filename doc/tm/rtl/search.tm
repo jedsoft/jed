@@ -108,8 +108,8 @@
 \done
 
 \function{bsearch_char}
-\synopsis{Search backward for a character "ch"}
-\usage{Integer fsearch_char (Integer ch)}
+\synopsis{Search backward for a character}
+\usage{Integer bsearch_char (Integer ch)}
 \description
   This function searches backward for a character \var{ch}.  If it is
   found, \var{1} is returned; otherwise \exmp{0} is returned.
@@ -133,10 +133,11 @@
 
 \function{ffind_char}
 \synopsis{Search forward on the current line for character "ch"}
-\usage{Integer fsearch_char (Integer ch)}
+\usage{Integer ffind_char (Integer ch)}
 \description
-  This function searches forwardward on the current line for a character
-  \var{ch}.  If it is found, \var{1} is returned; otherwise \exmp{0} is returned.
+  This function searches forward on the current line for the character
+  \var{ch}.  If it is found, \var{1} is returned; otherwise \exmp{0}
+  is returned.
 \seealso{fsearch_char, bfind_char, fsearch}
 \seealso{CASE_SEARCH}
 \done
@@ -184,10 +185,10 @@
 \done
 
 \function{fsearch_char}
-\synopsis{Search forward for a character "ch"}
+\synopsis{Search forward for a character}
 \usage{Integer fsearch_char (Integer ch)}
 \description
-  This function searches forward for a character \var{ch}.  If it is
+  This function searches forward for the character \var{ch}.  If it is
   found, \var{1} is returned; otherwise \exmp{0} is returned.
 \seealso{fsearch, ffind_char, bsearch_char}
 \seealso{CASE_SEARCH}

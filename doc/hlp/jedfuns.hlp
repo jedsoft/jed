@@ -5095,13 +5095,19 @@ run_shell_cmd
 send_process
 
  SYNOPSIS
-  Send a signal to the process "id"
+  Send a string to the specified subprocess
 
  USAGE
   Void send_process (Int_Type id, String s)
 
  DESCRIPTION
-  Undocumented
+ This function sends the string `s' to the standard input of the
+ process with the ID `id'.  With this function and
+ `set_process' with the argument `output'' you can establish a
+ bi-directional communication with the process.
+
+ SEE ALSO
+  open_process, set_process, send_process_eof
 
 --------------------------------------------------------------
 
@@ -5921,10 +5927,10 @@ bsearch
 bsearch_char
 
  SYNOPSIS
-  Search backward for a character "ch"
+  Search backward for a character
 
  USAGE
-  Integer fsearch_char (Integer ch)
+  Integer bsearch_char (Integer ch)
 
  DESCRIPTION
   This function searches backward for a character `ch'.  If it is
@@ -5966,11 +5972,12 @@ ffind_char
   Search forward on the current line for character "ch"
 
  USAGE
-  Integer fsearch_char (Integer ch)
+  Integer ffind_char (Integer ch)
 
  DESCRIPTION
-  This function searches forwardward on the current line for a character
-  `ch'.  If it is found, `1' is returned; otherwise `0' is returned.
+  This function searches forward on the current line for the character
+  `ch'.  If it is found, `1' is returned; otherwise `0'
+  is returned.
 
  SEE ALSO
   fsearch_char, bfind_char, fsearch
@@ -6043,13 +6050,13 @@ fsearch
 fsearch_char
 
  SYNOPSIS
-  Search forward for a character "ch"
+  Search forward for a character
 
  USAGE
   Integer fsearch_char (Integer ch)
 
  DESCRIPTION
-  This function searches forward for a character `ch'.  If it is
+  This function searches forward for the character `ch'.  If it is
   found, `1' is returned; otherwise `0' is returned.
 
  SEE ALSO

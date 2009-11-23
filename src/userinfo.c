@@ -319,7 +319,7 @@ static int get_username_info (void)
        && ((name = getenv("LOGNAME")) == NULL))
      name = "unknown";
    
-   if (-1 == set_user_info (&User_Info.username, name))
+   if (-1 == set_username (name))
      return -1;
    
    name = getenv ("NAME");
@@ -332,7 +332,7 @@ static int get_username_info (void)
    if (name == NULL)
      name = "";
    
-   if (-1 == set_user_info (&User_Info.realname, name))
+   if (-1 == set_realname (name))
      return -1;
    
    return 0;

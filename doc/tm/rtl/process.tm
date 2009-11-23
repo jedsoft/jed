@@ -91,10 +91,14 @@
 \done
 
 \function{send_process}
-\synopsis{Send a signal to the process "id"}
+\synopsis{Send a string to the specified subprocess}
 \usage{Void send_process (Int_Type id, String s)}
 \description
-  Undocumented
+ This function sends the string \exmp{s} to the standard input of the
+ process with the ID \var{id}.  With this function and
+ \ifun{set_process} with the argument `output'' you can establish a
+ bi-directional communication with the process.
+\seealso{open_process, set_process, send_process_eof}
 \done
 
 \function{send_process_eof}

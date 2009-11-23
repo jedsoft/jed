@@ -222,7 +222,7 @@ $(TAGS_FILE_NAME): $(TAG_FILES)
 clean:
 	/bin/rm -f $(OBJDIR)/* *~ \#*
 distclean: clean
-	/bin/rm -rf $(OBJDIR) Makefile sysconf.h config.h
+	/bin/rm -rf $(OBJDIR) Makefile sysconf.h config.h test/*.log
 
 install_data_directories:
 	$(MKINSDIR) $(DEST_MAN_DIR)

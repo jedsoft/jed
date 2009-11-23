@@ -466,6 +466,15 @@ Changes since 0.99-18.0
      mappings. (Manfred Hanke).
 210. lib/cmode.sl: Tweaked to fix the indentation of a continued
      multi-assign statement.
+211. src/Makefile.in: Added the removal of log files to the distclean
+     target.
+212. doc/tm/rtl/search.tm: Corrected typos in the ffind_char function
+     (Manfred Hanke).
+213. doc/tm/rtl/process.tm: Documented the send_process function
+     (Joerg Sommer).
+214. src/userinfo.c:  Use the set_* functions for setting the username
+     and realname values instead of directly manipulating the User_Info
+     structure (Joerg Sommer).
 
 {{{ Previous Versions 
 
