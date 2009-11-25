@@ -4,6 +4,8 @@
  * You may distribute this file under the terms the GNU General Public
  * License.  See the file COPYING for more information.
  */
+#ifndef _JED_FILE_H_
+#define _JED_FILE_H_
 #include <stdio.h>
 #ifdef VMS
 # include <fcntl.h>
@@ -57,3 +59,5 @@ extern char *jed_standardize_filename (SLFUTURE_CONST char *file);
 extern char *jed_dir_file_merge (SLFUTURE_CONST char *dir, SLFUTURE_CONST char *file);
 extern char *jed_get_canonical_pathname (char *);
 extern int jed_buffer_file_is_readonly (Buffer *);
+extern int jed_file_is_readonly (char *file, int respect_perms);
+#endif				       /* _JED_FILE_H_ */

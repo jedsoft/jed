@@ -301,8 +301,8 @@ int kill_buffer_cmd(char *name) /*{{{*/
 
 int jed_save_buffer_to_file (char *dir, char *file)
 {
-   int status;
-   char *dirfile;
+   int status, state;
+   char *dirfile, *canonical_file;
 
    if ((file == NULL) || (*file == 0))
      {
@@ -317,27 +317,69 @@ int jed_save_buffer_to_file (char *dir, char *file)
    if (NULL == (dirfile = jed_dir_file_merge (dir, file)))
      return -1;
 
-   if (file_changed_on_disk (CBuf, dirfile) > 0)
+   state = 0;
+
+   canonical_file = jed_get_canonical_pathname (dirfile);
+   if (canonical_file == NULL)
      {
-	char *canonical_file = jed_get_canonical_pathname (dirfile);
-	char *prompt;
+	SLfree (dirfile);
+	return -1;
+     }
 
-	if (NULL == canonical_file)
-	  return -1;
-	
-	prompt = "File changed on disk.  Save anyway?";
-	if (0 != strcmp (canonical_file, CBuf->dirfile))
-	  prompt = "File already exists.  Overwrite?";
-	
-	SLfree (canonical_file);
+   if (file_changed_on_disk (CBuf, dirfile) > 0)
+     state |= BUFFER_MODIFIED;
+   if (jed_file_is_readonly (canonical_file, 0))
+     state |= READ_ONLY;
+   if (0 != strcmp (canonical_file, CBuf->dirfile))
+     state |= OVERWRITE_MODE;
 
-	if (1 != jed_get_yes_no(prompt))
+   if (state)
+     {
+	char *prompt = NULL;
+
+	switch (state)
 	  {
+	   default:
+	   case OVERWRITE_MODE:
+	     prompt = NULL;
+	     break;
+
+	   case BUFFER_MODIFIED:
+	     prompt = "File changed on disk.  Save anyway?";
+	     break;
+	     
+	   case READ_ONLY:
+	     prompt = "No permission to write to file.  Try to save anyway?";
+	     break;
+	     
+	   case BUFFER_MODIFIED|READ_ONLY:
+	     prompt = "File changed on disk and no permission to write.  Save anyway?";
+	     break;
+	     
+	   case BUFFER_MODIFIED|OVERWRITE_MODE:
+	     prompt = "File exists and changed on disk.  Overwrite?";
+	     break;
+	     
+	   case READ_ONLY|OVERWRITE_MODE:
+	     prompt = "File exists and no permission to write.  Try to overwrite anyway?";
+	     break;
+	     
+	   case READ_ONLY|OVERWRITE_MODE|BUFFER_MODIFIED:
+	     prompt = "File changed on disk and no permission to write.  Overwrite anyway?";
+	     break;
+	  }
+	
+	if ((prompt != NULL) 
+	    && (1 != jed_get_yes_no(prompt)))
+	  {
+	     SLfree (canonical_file);
 	     SLfree (dirfile);
 	     return -1;
 	  }
      }
-   
+
+   SLfree (canonical_file);
+
    if (-1 == jed_va_run_hooks ("_jed_save_buffer_before_hooks",
 			       JED_HOOKS_RUN_ALL, 1, dirfile))
      {

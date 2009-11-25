@@ -3,7 +3,7 @@
 %   Put the line: () = evalfile ("ide.sl");
 %   in your jed.rc startup file.
 %
-%   Written by Guido Gonzato <ggonza@tin.it>;
+%   Written by Guido Gonzato <guido.gonzato@univr.it>;
 %   based on John E. Davis' original wordstar.sl.
 %   Contributions by J\o ergen Larsen <jl@dirac.ruc.dk>,
 %   and John Fattaruso <johnf@ti.com>
@@ -15,8 +15,10 @@
 %
 %   Please send me requests and bug reports, should you find any.
 %
-%   Version 1.3.3; for jed B0.99.13 upwards.
-%   Last modified: 3 October 2002
+%   Version 1.3.4; for jed B0.99.13 upwards.
+%   Last modified: 2 April 2003
+%   Version 1.3.4a: Changed static declarations to private ones for
+%    0.99.19 release (JED)
 
 Help_File = "ide.hlp";
 
@@ -616,9 +618,9 @@ define ide_open_file_at_cursor ()       % Alt-Return, J.L.
    skip_chars  ("-0-9a-zA-Z_!%+~./"); % right limit
 #else % DOS is supposed here:
    % DOS path names have backslashes and may contain a drive spec.
-   bskip_chars ("-0-9a-zA-Z_!%+~./:\\"); % left limit
+   bskip_chars ("-0-9a-zA-Z_!%+~./\\:"); % left limit
    push_mark ();
-   skip_chars  ("-0-9a-zA-Z_!%+~./:\\"); % right limit
+   skip_chars  ("-0-9a-zA-Z_!%+~./\\:"); % right limit
 #endif
    variable fn = bufsubstr (); % the file name
    pop_mark_0 ();
@@ -812,7 +814,7 @@ private define ide_load_popups_hook ()
    menu_append_item (m, "Search &Match", "goto_match");
    
    m = "Global.&Buffers";
-   menu_append_separator (m);
+   % menu_append_separator (m);
    menu_append_item (m, "C&ompile", "compile");
    menu_append_item (m, "&Next Error", "compile_parse_errors");
    menu_append_item (m, "&Previous Error", "compile_previous_error");
@@ -820,7 +822,7 @@ private define ide_load_popups_hook ()
      menu_append_item (m, "Debug with &gdb", "gdb_mode");
    
    m = "Global.&Help";
-   menu_append_separator (m);
+   % menu_append_separator (m);
    menu_append_item (m, "Describe ID&E Mode", "ide_better_help");
 }
 

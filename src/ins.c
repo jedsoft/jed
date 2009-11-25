@@ -250,6 +250,9 @@ int jed_prepare_for_modification (int check_line_readonly)
 	     if (1 != jed_get_y_n ("File changed on disk.  Do you really want to edit this buffer"))
 	       return -1;
 	  }
+#if 0  /* If the buffer has had the read_only flag unset, then assume the user
+	* knows what he/she is doing.
+	*/
 	if (1 == jed_buffer_file_is_readonly (CBuf))
 	  {
 	     if (1 != jed_get_y_n ("Disk file is read-only.  Do you really want to edit this buffer"))
@@ -258,6 +261,7 @@ int jed_prepare_for_modification (int check_line_readonly)
 		  return -1;
 	       }
 	  }
+#endif
 
 	if ((-1 == jed_lock_buffer_file (CBuf))
 	    && SLang_get_error ())

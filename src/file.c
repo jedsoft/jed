@@ -326,27 +326,21 @@ void jed_set_buffer_ctime (Buffer *b)
 # define access i386_access
 #endif
 
-int jed_buffer_file_is_readonly (Buffer *b)
+int jed_file_is_readonly (char *file, int respect_perms)
 {
    int ro = 0;
-   char *file;
    struct stat st;
 
-   if ((b->file == NULL)
-       || (b->file[0] == 0))
-     return 0;
-
-   file = jed_dir_file_merge (b->dir, b->file);
-   if (file == NULL)
-     return -1;
-
-   /* Let's respect the file's permissions.  If any write permission bit is
-    * is set, then consider it a writable candidate.
-    */
+   if (respect_perms)
+     {
+	/* respect the file's permissions.  If any write permission bit is
+	 * is set, then consider it a writable candidate.
+	 */
 #if defined(S_IWGRP) && defined(S_IWOTH)
-   if (0 == stat (file, &st))
-     ro = (0 == (st.st_mode & (S_IWUSR|S_IWGRP|S_IWOTH)));
+	if (0 == stat (file, &st))
+	  ro = (0 == (st.st_mode & (S_IWUSR|S_IWGRP|S_IWOTH)));
 #endif
+     }
 
 #ifdef W_OK
    if (ro == 0)
@@ -359,18 +353,20 @@ int jed_buffer_file_is_readonly (Buffer *b)
 	else
 	  {
 	     /* file does not exist.  Can we write to the directory? */
+	     char *dir;
+	     
+	     if (-1 == jed_dirfile_to_dir_file (file, &dir, NULL))
+	       return -1;
+
+# if defined(IBMPC_SYSTEM)
 	     /* knock of slash since some primitive systems cannot handle the 
 	      * final slash in a path name. 
 	      */
-	     char *dir;
-# ifdef IBMPC_SYSTEM
-	     dir = extract_file (file);
-	     *dir = 0;
-	     if (strlen (file) > 3)   /* allow C:/, but not C:/xx/ */
-	       *--dir = 0;
-	     dir = file;
-# else
-	     dir = b->dir;
+	       {
+		  unsigned int len = strlen (dir);
+		  if (len > 3)   /* allow C:/, but not C:/xx/ */
+		    dir[len-1] = 0;
+	       }
 # endif
 	     if ((0 == access (dir, F_OK))
 # ifdef VMS
@@ -380,10 +376,29 @@ int jed_buffer_file_is_readonly (Buffer *b)
 #endif
 		)
 	       ro = 1;
+	     
+	     SLfree (dir);
 	  }
      }
 #endif				       /* W_OK */
-      
+   return ro;
+}
+
+int jed_buffer_file_is_readonly (Buffer *b)
+{
+   char *file;
+   int ro;
+
+   if ((b->file == NULL)
+       || (b->file[0] == 0))
+     return 0;
+
+   file = jed_dir_file_merge (b->dir, b->file);
+   if (file == NULL)
+     return -1;
+
+   ro = jed_file_is_readonly (file, 1);
+
    SLfree (file);
    return ro;
 }

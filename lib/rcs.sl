@@ -79,9 +79,9 @@ define rcs_open_file ()         % Emacs uses ^X-v-f
 
   file = read_file_from_mini ("RCS open file:");
   
-  file = file [[0:strlen(file)-3]]; % remove ",v"
+  file = file [[:-3]]; % remove ",v"
   (dir, file) = parse_filename (file);
-  file = dircat (dir [[0:strlen(dir)-5]], file); % remove "RCS/"
+  file = dircat (dir [[:-5]], file); % remove "RCS/"
   checkout (file);
   () = find_file (file);
 }
@@ -134,10 +134,10 @@ define rcs_read_log ()
   variable rlog_map= "rlog_map";
 
   file = read_file_from_mini ("rlog of RCS file:");
-  file = file [[0:strlen(file)-3]]; % remove ",v"
+  file = file [[:-3]]; % remove ",v"
   (dir, file) = parse_filename (file);
-  file = dircat (dir [[0:strlen(dir)-5]], file); % remove "RCS/"
-  
+  file = dircat (dir [[:-5]], file); % remove "RCS/"
+
   tmp_file = make_tmp_file ("/tmp/jedrlog");
   cmd = sprintf ("rlog %s > %s", file, tmp_file); % exec rlog
   if (0 != system (cmd)) 

@@ -475,6 +475,15 @@ Changes since 0.99-18.0
 214. src/userinfo.c:  Use the set_* functions for setting the username
      and realname values instead of directly manipulating the User_Info
      structure (Joerg Sommer).
+215. lib/ide.sl: Updated to Guido Gonzato's 1.3.4 version, but changed
+     static declarations to private ones.
+216. lib/rcs.sl: Avoid the use of strlen in array index expressions,
+     since strlen uses character semantics, whereas arrays use byte
+     semantics.
+217. src/ins.c: If the buffer is not marked read-only, then do not
+     warn the user if the file associated with it is read-only.
+218. src/ledit.c: Use a variety of prompts to inform the user when
+     saving a buffer to a readonly file, one changed on disk, etc.
 
 {{{ Previous Versions 
 
