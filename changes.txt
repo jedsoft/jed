@@ -484,6 +484,9 @@ Changes since 0.99-18.0
      warn the user if the file associated with it is read-only.
 218. src/ledit.c: Use a variety of prompts to inform the user when
      saving a buffer to a readonly file, one changed on disk, etc.
+219. src/screen.c: Do not highlight trailing whitespace in the
+     minibuffer.  Also fixed a bug where for buffers with no syntax
+     defined, the highlighting extended to the end of the display.
 
 {{{ Previous Versions 
 

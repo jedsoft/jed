@@ -222,7 +222,8 @@ static void display_line (Line *line, int sy, int sx)
 	  write_syntax_highlight (sy, line, len);
 	else
 	  {
-	     if (Jed_Highlight_WS & HIGHLIGHT_WS_TRAILING)
+	     if ((is_mini == 0) 
+		 && Jed_Highlight_WS & HIGHLIGHT_WS_TRAILING)
 	       {
 		  unsigned char *pmin = line->data;
 		  unsigned char *pmax = pmin + len;
@@ -241,6 +242,7 @@ static void display_line (Line *line, int sy, int sx)
 		    {
 		       SLsmg_set_color (JTWS_COLOR);
 		       SLsmg_write_nchars ((char *)p, pmax - p);
+		       SLsmg_set_color (0);
 		    }
 	       }
 	     else SLsmg_write_nchars ((char *)line->data, len);
