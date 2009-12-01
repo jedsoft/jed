@@ -7,6 +7,9 @@
 #ifndef _JED_COLORS_H_
 #define _JED_COLORS_H_
 
+/* These numbers should not be changed.  They are hard-coded in the
+ * dfa cache files.
+ */
 #define JNORMAL_COLOR	 		0
 #define JCURSOR_COLOR			1
 #define JSTATUS_COLOR	 		2
@@ -36,7 +39,18 @@
 #define JUNDERLINE_COLOR		26
 #define JBOLD_COLOR			27
 #define JHTML_KEY_COLOR			28
-#define JKEY_COLOR	 		29 /* JKEY_COLOR must be last */
+#define JKEY_COLOR	 		29
+#define JKEY1_COLOR	 		(JKEY_COLOR+1)
+#define JKEY2_COLOR	 		(JKEY_COLOR+2)
+#define JKEY3_COLOR	 		(JKEY_COLOR+3)
+#define JKEY4_COLOR	 		(JKEY_COLOR+4)
+#define JKEY5_COLOR	 		(JKEY_COLOR+5)
+#define JKEY6_COLOR	 		(JKEY_COLOR+6)
+#define JKEY7_COLOR	 		(JKEY_COLOR+7)
+#define JKEY8_COLOR	 		(JKEY_COLOR+8)
+#define JKEY9_COLOR	 		(JKEY_COLOR+9)   /* 38 */
+
+#define FIRST_USER_COLOR		64
 
 #if SLANG_VERSION < 20000
 # define JMAX_COLORS	128	       /* Do NOT increase this number */

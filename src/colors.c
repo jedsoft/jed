@@ -68,16 +68,15 @@ static Color_Object_Map_Type Color_Name_Map [JMAX_COLORS] =
    {"bold",		JBOLD_COLOR, NULL, NULL},
    {"html",		JHTML_KEY_COLOR, NULL, NULL},
    {"keyword",		JKEY_COLOR, NULL, NULL},
-   {"keyword1",		JKEY_COLOR+1, NULL, NULL},
-   {"keyword2",		JKEY_COLOR+2, NULL, NULL},
-   {"keyword3",		JKEY_COLOR+3, NULL, NULL},
-   {"keyword4",		JKEY_COLOR+4, NULL, NULL},
-   {"keyword5",		JKEY_COLOR+5, NULL, NULL},
-   {"keyword6",		JKEY_COLOR+6, NULL, NULL},
-   {"keyword7",		JKEY_COLOR+7, NULL, NULL},
-   {"keyword8",		JKEY_COLOR+8, NULL, NULL},
-   {"keyword9",		JKEY_COLOR+9, NULL, NULL},
-#define FIRST_AVAILABLE_COLOR	(JKEY_COLOR+10)
+   {"keyword1",		JKEY1_COLOR, NULL, NULL},
+   {"keyword2",		JKEY2_COLOR, NULL, NULL},
+   {"keyword3",		JKEY3_COLOR, NULL, NULL},
+   {"keyword4",		JKEY4_COLOR, NULL, NULL},
+   {"keyword5",		JKEY5_COLOR, NULL, NULL},
+   {"keyword6",		JKEY6_COLOR, NULL, NULL},
+   {"keyword7",		JKEY7_COLOR, NULL, NULL},
+   {"keyword8",		JKEY8_COLOR, NULL, NULL},
+   {"keyword9",		JKEY9_COLOR, NULL, NULL},
    /* The rest of the colors are user-defined, and the strings are slstrings */
    /* %%% COLOR-TABLE-STOP %%% */
    {NULL, -1, NULL, NULL}
@@ -118,7 +117,7 @@ static int add_color_object (char *name)
    if (obj != -1)
      return obj;
    
-   map = Color_Name_Map + FIRST_AVAILABLE_COLOR;
+   map = Color_Name_Map + FIRST_USER_COLOR;
    map_max = Color_Name_Map + JMAX_COLORS;
    while (map < map_max)
      {

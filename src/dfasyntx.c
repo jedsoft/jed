@@ -15,6 +15,7 @@
 /* This file is included by syntax.c */
 
 #include "dfasyntx.h"
+#include "version.h"
 
 #define USE_DFA_CACHE	1
 /*
@@ -768,6 +769,11 @@ static int load_dfa (Highlight *h, char *name)
    (void) SLsnprintf (buf2, sizeof (buf2), "DFA cache: %s", name);
    if (strcmp(buffer, buf2))
      goto error;		       /* not the right syntax table */
+
+   get(buffer);
+   (void) SLsnprintf (buf2, sizeof (buf2), "Version: %s", JED_VERSION_STR);
+   if (strcmp(buffer, buf2))
+     goto error;		       /* Not built with this executable */
    
     /*
      * Check the next line: "equiv".
@@ -960,7 +966,7 @@ static void save_dfa (Highlight *h, char *name)
    /* FIXME!!! Check the return values from the fprintf functions.  Upon
     * failure, remove the file.
     */
-   fprintf(fp, "DFA cache: %s\nequiv\n", name);
+   fprintf(fp, "DFA cache: %s\nVersion: %s\nequiv\n", name, JED_VERSION_STR);
    
     /* write the equivalence classes */
    for (i=0; i<EQUIV_TABLE_SIZE; i++) 
@@ -1309,7 +1315,7 @@ static void build_highlight_table (char *name)
 {
    Highlight *hilite;
 
-   if (-1 == SLang_run_hooks ("dfa_build_highlight_table_hook", 1, "name"))
+   if (-1 == SLang_run_hooks ("dfa_build_highlight_table_hook", 1, name))
      return;
 
    if (NULL == (hilite = find_highlight_table (name, 0)))

@@ -487,6 +487,17 @@ Changes since 0.99-18.0
 219. src/screen.c: Do not highlight trailing whitespace in the
      minibuffer.  Also fixed a bug where for buffers with no syntax
      defined, the highlighting extended to the end of the display.
+220. src/colors.[ch]: Fixed the values of the keyword color numbers so
+     that they won't change from version to version.
+221. src/dfasyntax.c: dfa_build_highlight_table_hook was being called
+     with "name" instead of char* name.  I also added a version
+     keyword to DFA cache files such that they are not loaded if the
+     version does not match that of the executable.  Suggested by
+     Joerg Sommer.
+222. src/preparse.sl: Avoid potential infinite loop if the removal of
+     an old dfa cache file failed.
+223. lib/pscript.sl, ide.sl: The return value of the define_keyword
+     function was not being handled.
 
 {{{ Previous Versions 
 

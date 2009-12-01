@@ -12,8 +12,9 @@ define preparse_enable_highlight_cache (file, name)
 	variable dirfile = search_path_for_file (Jed_Highlight_Cache_Path, file, ',');
 	if (dirfile == NULL)
 	  break;
-	
-	() = remove (dirfile);
+
+	if (-1 == remove (dirfile))
+	  break;
      }
    dirfile = dircat (Jed_Highlight_Cache_Dir, file);
    () = remove (dirfile);

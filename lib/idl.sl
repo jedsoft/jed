@@ -29,15 +29,15 @@ set_syntax_flags ($1, 1);	       %  case insensitive
 () = define_keywords ($1, "endrepeat", 9);
 () = define_keywords ($1, "on_ioerror", 10);
 
-define_keywords_n ($1,"abscoseofexpfixhdrmaxminsintan", 3, 1);
-define_keywords_n ($1,"alogplotsavesizesortsqrtstopuniqwset", 4, 1);
-define_keywords_n ($1,"closefloatflooropenropenwplotsprintranksreadfreadsreadurebinspawntotalwherewshow", 5, 1);
-define_keywords_n ($1,"alog10dblarrdoublefinitefltarrindgenintarrlonarrprintfstrarrstringstrlenstrmidstrposstrputwriteuwindow", 6, 1);
-define_keywords_n ($1,"defsysvdindgenexecutefindgenget_lunintegerrandomnrandomustr_sepstretchstrtrim", 7, 1);
-define_keywords_n ($1,"findfilefree_lunn_params", 8, 1);
-define_keywords_n ($1,"histogramimaginaryreplicatestrupcasetranspose", 9, 1);
-define_keywords_n ($1,"n_elementsstrlowcasestrmessage", 10, 1);
-define_keywords_n ($1,"keyword_setstrcompress", 11, 1);
+()=define_keywords_n ($1,"abscoseofexpfixhdrmaxminsintan", 3, 1);
+()=define_keywords_n ($1,"alogplotsavesizesortsqrtstopuniqwset", 4, 1);
+()=define_keywords_n ($1,"closefloatflooropenropenwplotsprintranksreadfreadsreadurebinspawntotalwherewshow", 5, 1);
+()=define_keywords_n ($1,"alog10dblarrdoublefinitefltarrindgenintarrlonarrprintfstrarrstringstrlenstrmidstrposstrputwriteuwindow", 6, 1);
+()=define_keywords_n ($1,"defsysvdindgenexecutefindgenget_lunintegerrandomnrandomustr_sepstretchstrtrim", 7, 1);
+()=define_keywords_n ($1,"findfilefree_lunn_params", 8, 1);
+()=define_keywords_n ($1,"histogramimaginaryreplicatestrupcasetranspose", 9, 1);
+()=define_keywords_n ($1,"n_elementsstrlowcasestrmessage", 10, 1);
+()=define_keywords_n ($1,"keyword_setstrcompress", 11, 1);
 
 % idl indentation routines
 

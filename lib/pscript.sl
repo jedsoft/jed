@@ -67,41 +67,41 @@ dfa_set_init_callback (&setup_dfa_callback, "PostScript");
 % All words in PostScript are of course redefinable. So we will simply
 % define as keywords the *really* basic ones. These are basic language
 % operators.
-define_keywords ($1, "=", 1);
-define_keywords ($1, "==eqgegtiflelnltneor", 2);
-define_keywords ($1, strcat("absaddandcoscvicvncvrcvscvxdefdivdupendexpfor",
+()=define_keywords ($1, "=", 1);
+()=define_keywords ($1, "==eqgegtiflelnltneor", 2);
+()=define_keywords ($1, strcat("absaddandcoscvicvncvrcvscvxdefdivdupendexpfor",
 			    "getlogmodmulnegnotpopputrunsinsrtsubxor"), 3);
-define_keywords ($1, strcat("atancopycopycvrsdictexchexecexitfileidivload",
+()=define_keywords ($1, strcat("atancopycopycvrsdictexchexecexitfileidivload",
 			    "loopmarkquitrandreadrollsavestoptruetype"), 4);
-define_keywords ($1, strcat("aloadarraybeginclearcountcvlitfalsefloorindex",
+()=define_keywords ($1, strcat("aloadarraybeginclearcountcvlitfalsefloorindex",
 			    "knownroundrrandsrandstackstoreundefwherewrite"),
 		 5);
-define_keywords ($1, "astoreforallgstateifelselengthpstackrepeatstring", 6);
-define_keywords ($1, "ceilingrestore", 7);
-define_keywords ($1, "truncate", 8);
-define_keywords ($1, strcat("counttomarkcurrentfilegetintervalpackedarray",
+()=define_keywords ($1, "astoreforallgstateifelselengthpstackrepeatstring", 6);
+()=define_keywords ($1, "ceilingrestore", 7);
+()=define_keywords ($1, "truncate", 8);
+()=define_keywords ($1, strcat("counttomarkcurrentfilegetintervalpackedarray",
 			    "putinterval"), 11);
 
 % And these are basic graphical operators.
-define_keywords_n ($1, "arc", 3, 1);
-define_keywords_n ($1, "arcnarctclipfillshow", 4, 1);
-define_keywords_n ($1, "arctogsaveimagescale", 5, 1);
-define_keywords_n ($1, "concateoclipeofilllinetomatrixmovetorotatestroke",
+()=define_keywords_n ($1, "arc", 3, 1);
+()=define_keywords_n ($1, "arcnarctclipfillshow", 4, 1);
+()=define_keywords_n ($1, "arctogsaveimagescale", 5, 1);
+()=define_keywords_n ($1, "concateoclipeofilllinetomatrixmovetorotatestroke",
 		   6, 1);
-define_keywords_n ($1, "curvetonewpathrlinetormovetosetdashsetfontsetgray",
+()=define_keywords_n ($1, "curvetonewpathrlinetormovetosetdashsetfontsetgray",
 		   7, 1);
-define_keywords_n ($1, "findfontgrestoremakefontrcurvetosetcolorshowpage",
+()=define_keywords_n ($1, "findfontgrestoremakefontrcurvetosetcolorshowpage",
 		   8, 1);
-define_keywords_n ($1, "closepathscalefontsetmatrixtransformtranslate", 9, 1);
-define_keywords_n ($1, "definefontsetlinecapsetpattern", 10, 1);
-define_keywords_n ($1, strcat("currentdashcurrentfontcurrentgraysethsbcolor",
+()=define_keywords_n ($1, "closepathscalefontsetmatrixtransformtranslate", 9, 1);
+()=define_keywords_n ($1, "definefontsetlinecapsetpattern", 10, 1);
+()=define_keywords_n ($1, strcat("currentdashcurrentfontcurrentgraysethsbcolor",
 			    "setlinejoinsetrgbcolor"), 11, 1);
-define_keywords_n ($1, "currentcolorsetcmykcolorsetlinewidth", 12, 1);
-define_keywords_n ($1, "currentmatrix", 13, 1);
-define_keywords_n ($1, "currentlinecapcurrentpattern", 14, 1);
-define_keywords_n ($1, "currenthsbcolorcurrentlinejoincurrentrgbcolor",
+()=define_keywords_n ($1, "currentcolorsetcmykcolorsetlinewidth", 12, 1);
+()=define_keywords_n ($1, "currentmatrix", 13, 1);
+()=define_keywords_n ($1, "currentlinecapcurrentpattern", 14, 1);
+()=define_keywords_n ($1, "currenthsbcolorcurrentlinejoincurrentrgbcolor",
 		   15, 1);
-define_keywords_n ($1, "currentcmykcolorcurrentlinewidth", 16, 1);
+()=define_keywords_n ($1, "currentcmykcolorcurrentlinewidth", 16, 1);
 
 define ps_mode ()
 {

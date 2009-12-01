@@ -59,7 +59,9 @@ typedef struct Syntax_Table_Type
    unsigned short char_syntax[256];     /* syntax type for characters */
    unsigned char matching_delim[256];  /* matching pairs */
 #define MAX_KEYWORD_LEN 48
-#define MAX_KEYWORD_TABLES 3
+#define MAX_KEYWORD_TABLES 3	       /* must be less than 10 for a 
+					* 1-1 correspondence with keyword colors 
+					*/
    char *keywords[MAX_KEYWORD_TABLES][MAX_KEYWORD_LEN];
    struct Syntax_Table_Type *next;     /* pointer to next table */
 #if JED_HAS_DFA_SYNTAX
