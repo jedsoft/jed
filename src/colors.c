@@ -91,18 +91,27 @@ int jed_get_color_obj (char *name) /*{{{*/
    map = Color_Name_Map;
    map_max = Color_Name_Map + JMAX_COLORS;
    ch = *name;
-   while ((map < map_max) && (map->name != NULL))
+   while (map < map_max)
      {
+	if (map->name == NULL)
+	  {
+	     if (map < Color_Name_Map + FIRST_USER_COLOR)
+	       {
+		  map = Color_Name_Map + FIRST_USER_COLOR;
+		  continue;
+	       }
+	     break;
+	  }
 	if ((ch == map->name[0])
 	    && (0 == strcmp (map->name, name)))
 	  return map->color;
 
 	map++;
      }
-   
+
    if (0 == strcmp (name, "keyword0"))
      return JKEY_COLOR;
-
+	
    return -1;
 }
 

@@ -498,6 +498,7 @@ Changes since 0.99-18.0
      an old dfa cache file failed.
 223. lib/pscript.sl, ide.sl: The return value of the define_keyword
      function was not being handled.
+224. lib/colors.c: fixed a bug that #220 introduced.
 
 {{{ Previous Versions 
 
