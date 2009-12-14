@@ -18,12 +18,14 @@
 
 \function{evalbuffer}
 \synopsis{Eval the current buffer as S-Lang script}
-\usage{Void evalbuffer ()}
+\usage{Void evalbuffer ([String_Type namespace])}
 \description
-  This function causes the current buffer to be sent to the S-Lang
-  interpreter for evaluation.  If an error is encountered while parsing
-  the buffer, the cursor will be placed at the location of the error.
-\seealso{evalfile}
+ This function causes the current buffer to be sent to the S-Lang
+ interpreter for evaluation.  If the optional namespace argument is
+ given, the buffer will be evaluated in the specified namespace.  If an
+ error is encountered while parsing the buffer, the cursor will be
+ placed at the location of the error.
+\seealso{evalfile, require}
 \done
 
 \function{get_jed_library_path}

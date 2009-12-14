@@ -408,6 +408,18 @@ static void set_buffer_info(char *file, char *dir, char *name, int *flagsp) /*{{
 
 /*}}}*/
 
+static void intrin_load_buffer (void)
+{
+   char *ns = NULL;
+
+   if ((SLang_Num_Function_Args == 1)
+       && (-1 == SLang_pop_slstring (&ns)))
+     return;
+	
+   jed_load_buffer (ns);
+   SLang_free_slstring (ns);	       /* NULL ok */
+}
+
 static int intrin_what_mode(void) /*{{{*/
 {
    Buffer *b;
@@ -796,7 +808,7 @@ static SLang_Intrin_Fun_Type Jed_Intrinsics [] = /*{{{*/
    MAKE_INTRINSIC_S("delbuf", kill_buffer_cmd, VOID_TYPE),
    MAKE_INTRINSIC_S("delete_file",  sys_delete_file, INT_TYPE),
    /* MAKE_INTRINSIC_S("directory", expand_wildcards, INT_TYPE), */
-   MAKE_INTRINSIC("evalbuffer", load_buffer, VOID_TYPE ,0),
+   MAKE_INTRINSIC("evalbuffer", intrin_load_buffer, VOID_TYPE ,0),
    MAKE_INTRINSIC_S("expand_filename", expand_filename_cmd, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_0("check_buffers", check_buffers, SLANG_VOID_TYPE),
    MAKE_INTRINSIC_S("file_changed_on_disk", file_changed_on_disk_cmd, INT_TYPE),

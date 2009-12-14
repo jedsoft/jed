@@ -499,6 +499,11 @@ Changes since 0.99-18.0
 223. lib/pscript.sl, ide.sl: The return value of the define_keyword
      function was not being handled.
 224. lib/colors.c: fixed a bug that #220 introduced.
+225. src/intrin.c, ledit.c: evalbuffer may be given an optional
+     namespace argument.
+226. lib/comments.sl: comment information added for idl (Felix Fuerst).
+227. src/wterm.c: "==" was used instead of "=" in the call to
+     CreateFont.
 
 {{{ Previous Versions 
 

@@ -1626,7 +1626,7 @@ static char *jed_read_from_buffer (SLang_Load_Type *x) /*{{{*/
 }
 /*}}}*/
 
-void load_buffer (void) /*{{{*/
+void jed_load_buffer (char *ns) /*{{{*/
 {
    SLang_Load_Type *x;
    Buffer_Client_Type client_data;
@@ -1644,7 +1644,7 @@ void load_buffer (void) /*{{{*/
    if (file == NULL)
      return;
 	
-   x = SLallocate_load_type (file);
+   x = SLns_allocate_load_type (file, ns);
    SLfree (file);
    
    if (x == NULL)

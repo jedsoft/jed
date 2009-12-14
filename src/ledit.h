@@ -35,7 +35,7 @@ extern int shell_command(char *);
 extern int pipe_region(char *);
 #endif
 
-extern void load_buffer(void);
+extern void jed_load_buffer(char *ns);
 extern void update_cmd(int *);
 extern void update_sans_update_hook_cmd (int *);
 extern void copy_region_cmd(char *);

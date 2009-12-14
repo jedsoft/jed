@@ -375,6 +375,7 @@ set_comment_info ("PHP", "// ", "", 0);
 set_comment_info ("java", "/* ", " */", 0);
 set_comment_info ("tm", "#% ", "", 0);
 set_comment_info ("python", "# ", "", 0);
+set_comment_info ("idl", "; ", "", 0);
 
 provide ("comments");
 

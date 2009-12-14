@@ -670,10 +670,10 @@ static int select_font(char *fontname, int fontheight, int fontbold)
 
    if (font == NULL)
      {
-	font == CreateFont(height, 0, 0, 0,
-			   weight, 0, 0, 0,
-			   DEFAULT_CHARSET, 0, 0, 0, FIXED_PITCH,
-			   fontname);
+	font = CreateFont(height, 0, 0, 0,
+			  weight, 0, 0, 0,
+			  DEFAULT_CHARSET, 0, 0, 0, FIXED_PITCH,
+			  fontname);
      }
 
    if (font == NULL)
