@@ -136,10 +136,13 @@
 #undef HAVE_VSNPRINTF
 #undef HAVE_SNPRINTF
 
-/* #define mode_t int */
-/* #define pid_t int */
-typedef int uid_t;
-typedef int gid_t;
+/* If you have missing typedefs for any of these, uncomment and modify 
+ * accordingly 
+ */
+/* typedef int mode_t; */
+/* typedef int pid_t; */
+/* typedef int uid_t; */
+/* typedef int gid_t; */
 
 #ifdef _MSC_VER
 # define HAVE_DLOPEN 1

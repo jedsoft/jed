@@ -1,5 +1,16 @@
 -*- mode: text; mode: fold -*-
-Changes since 0.99-18.0
+Changes since 0.99-19
+1. Added Jouk Jansen's vms_x_fix.h required for OpenVMS.  Also
+   commented out the pid_t and gid_t definitions in src/jedconf.h,
+   which is used for non-Unix systems since many compilers now appear
+   to define these symbols (Pepito Grillo).
+2. src/unix.c: Fixed a problem on *BSD systems that arises when jed is
+   invoked via "sh -c jed".  In this case, jed does not have access to
+   the controlling terminal causing tcsetpgrp to fail.
+
+{{{ Previous Versions 
+
+Changes since 0.99-18.0 {{{
 1. src/syntax.c: If a multibyte character was prefixed by a character
    with a "quote" character syntax, then the multibyte character was
    not being properly displayed.
@@ -504,8 +515,7 @@ Changes since 0.99-18.0
 226. lib/comments.sl: comment information added for idl (Felix Fuerst).
 227. src/wterm.c: "==" was used instead of "=" in the call to
      CreateFont.
-
-{{{ Previous Versions 
+}}}
 
 Changes since B0.99-16 {{{
 0. Many internal organizational changes and cleanups to provide UTF-8
