@@ -7,6 +7,13 @@ Changes since 0.99-19
 2. src/unix.c: Fixed a problem on *BSD systems that arises when jed is
    invoked via "sh -c jed".  In this case, jed does not have access to
    the controlling terminal causing tcsetpgrp to fail.
+3. src/intrin.c: The "what_char" intrinsic was modified to accept an
+   optional integer argument.  If (N>=0), return the value of the
+   character N characters forward, otherwise if (N<0), return the
+   value of the |N|th previous character.  NULL is returned if the
+   beginning or the end of the buffer is reached.
+4. src/cmode.sl: insert_bra(): do not indent if the previous character
+   is one of: ',', '=', '['.
 
 {{{ Previous Versions 
 

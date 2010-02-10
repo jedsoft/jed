@@ -1219,38 +1219,41 @@ private define c_parse_to_point ()
 define c_insert_bra ()
 {
    if (c_parse_to_point ())
-     insert_char ('{');
+     {
+	insert_char ('{');
+	return;
+     }
+
+   push_spot ();
+   c_bskip_over_comment (0);
+   variable ch = what_char (-1);
+   pop_spot ();
+   
+   if (any (ch == [',', '[', '=', '+', '-', '*', '/', '(']))
+     {
+	insert_char ('{');
+	return;
+     }
+   
+   push_spot ();
+   skip_white ();
+   if (eolp ())
+     {
+	bskip_white ();
+	if (not (bolp ()) and C_BRA_NEWLINE, pop_spot ()) newline ();
+	push_spot ();
+	bskip_white ();
+	bolp ();	       %  on stack
+	pop_spot ();
+	insert_char ('{');
+	if ( () ) indent_line ();   %  off stack
+	eol ();
+	if (C_BRA_NEWLINE) c_newline_and_indent ();
+     }
    else
      {
-	push_spot ();
-	c_bskip_over_comment (0);
-	if (blooking_at (","), pop_spot ())
-	  {
-	     insert_char ('{');
-	  }
-	else
-	  {
-	     push_spot ();
-	     skip_white ();
-	     if (eolp ())
-	       {
-		  bskip_white ();
-		  if (not (bolp ()) and C_BRA_NEWLINE, pop_spot ()) newline ();
-		  push_spot ();
-		  bskip_white ();
-		  bolp ();	       %  on stack
-		  pop_spot ();
-		  insert_char ('{');
-		  if ( () ) indent_line ();   %  off stack
-		  eol ();
-		  if (C_BRA_NEWLINE) c_newline_and_indent ();
-	       }
-	     else
-	       {
-		  pop_spot ();
-		  insert_char ('{');
-	       }
-	  }
+	pop_spot ();
+	insert_char ('{');
      }
 }
 

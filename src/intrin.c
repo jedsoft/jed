@@ -654,13 +654,44 @@ static void set_line_number_mode (int *statusp)
 #endif
 }
 
-static void what_char_intrin (void)
+static int do_what_char(void)
 {
    SLwchar_Type ch;
-   if (-1 == jed_what_char (&ch))
-     (void) SLang_push_integer (-(int)ch);
+
+   if (eobp ())
+     ch = 0;
+   else if (-1 == jed_what_char (&ch))
+     return SLang_push_integer (-(int)ch);
+
+   return SLclass_push_long_obj (SLANG_ULONG_TYPE, ch);
+}
+
+static void what_char_intrin (void)
+{
+   int n, m;
+
+   if (SLang_Num_Function_Args != 1)
+     {
+	(void) do_what_char ();
+	return;
+     }
+
+   if (-1 == SLang_pop_integer (&n))
+     return;
+	
+   push_spot ();
+   if (n < 0)
+     {
+	n = -n;
+	m = jed_left (n);
+     }
    else
-     (void) SLclass_push_long_obj (SLANG_ULONG_TYPE, ch);
+     m = jed_right (n);
+   if (m == n)
+     (void) do_what_char ();
+   else
+     (void) SLang_push_integer (0);
+   pop_spot ();
 }
 
 static int intrin_strwidth (char *s)

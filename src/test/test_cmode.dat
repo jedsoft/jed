@@ -71,6 +71,12 @@ int main (int argc, char **argv)
         {foo, bar},
         {baz,bam},
      };
+   Arrays = 
+     {
+        [0, 1],
+        [2, 3],
+     };
+
    /*
     * Unbalanced {
     */
@@ -201,11 +207,19 @@ int main (int argc, char **argv)
           }
      }
 
+   // I will need to review the following
+   x = foo (
+            {
+               [a,b,c],
+               [d, e, f]
+            }
+           );
+
    // The following do not indent properly.
    if (foo)
      name += bar
      + baz;
-   
+
    if (bar)
      name = foo
      + bar;
