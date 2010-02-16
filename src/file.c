@@ -809,8 +809,31 @@ int write_region_to_fp (int fp) /*{{{*/
 
 /*}}}*/
 
-static int jed_close (int fp) /*{{{*/
+static int jed_close (int fp, int use_fsync) /*{{{*/
 {
+#ifdef HAVE_FSYNC
+   if (use_fsync) while (-1 == fsync (fp))
+     {
+# ifdef EINTR
+	if (errno == EINTR)
+	  {
+	     (void) jed_handle_interrupt ();
+	     errno = 0;
+	     jed_sleep (1);
+	     continue;
+	  }
+# endif
+# ifdef EIO
+	if (errno == EIO)
+	  {
+	     msg_error ("Error fsyncing file.  File system may be full.");
+	     return -1;
+	  }
+# endif
+	break;
+     }
+#endif
+
    while (-1 == close(fp))
      {
 #ifdef EINTR
@@ -834,7 +857,7 @@ static int jed_close (int fp) /*{{{*/
 
 /*}}}*/
 
-static int write_region_internal (char *file, int omode) /*{{{*/
+static int write_region_internal (char *file, int omode, int use_fsync) /*{{{*/
 {
    int fd;
    int n;
@@ -877,8 +900,8 @@ static int write_region_internal (char *file, int omode) /*{{{*/
 
 	n = write_region_to_fp (fd);
 	if (n == -1)
-	  (void) jed_close (fd);
-	else if (-1 == jed_close (fd))
+	  (void) jed_close (fd, 0);
+	else if (-1 == jed_close (fd, use_fsync))
 	  n = -1;
      }
    
@@ -892,12 +915,12 @@ static int write_region_internal (char *file, int omode) /*{{{*/
 
 int write_region (char *file)
 {
-   return write_region_internal (file, _JED_OPEN_WRITE);
+   return write_region_internal (file, _JED_OPEN_WRITE, 1);
 }
 
 
 /* returns -1 on failure and number of lines on success */
-static int write_file_internal (char *file, int omode) /*{{{*/
+static int write_file_internal (char *file, int omode, int use_fsync) /*{{{*/
 {
    Mark *m;
    int n;
@@ -941,7 +964,7 @@ static int write_file_internal (char *file, int omode) /*{{{*/
      }
 
 
-   n = write_region_internal (file, omode);
+   n = write_region_internal (file, omode, use_fsync);
 
    Require_Final_Newline = fnl;
    VFile_Mode = VFILE_TEXT;
@@ -961,7 +984,7 @@ int append_to_file(char *file) /*{{{*/
 {
    int status;
    
-   status = write_region_internal (file, _JED_OPEN_APPEND);
+   status = write_region_internal (file, _JED_OPEN_APPEND, 1);
    check_buffers();
    return status;
 }
@@ -1207,7 +1230,7 @@ int write_file_with_backup(char *dirfile) /*{{{*/
      }
 #endif				       /* NOT VMS */
 
-   n = write_file_internal (dirfile, _JED_OPEN_WRITE);
+   n = write_file_internal (dirfile, _JED_OPEN_WRITE, 1);
    /* This is for NFS time problems.  Even if the write failed, modify the 
     * buffer's ctime because otherwise what is on the disk (a partial file) 
     * will appear newer than the buffer.
@@ -1291,7 +1314,7 @@ void auto_save_buffer(Buffer *b) /*{{{*/
 	  {
 	     flush_message("autosaving..."); 
 	     (void) sys_delete_file(tmp);
-	     (void) write_file_internal (tmp, _JED_OPEN_CREATE_EXCL);
+	     (void) write_file_internal (tmp, _JED_OPEN_CREATE_EXCL, 0);
 	     message("autosaving...done");
 	  }
       }

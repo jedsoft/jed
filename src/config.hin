@@ -81,6 +81,7 @@
 
 #undef HAVE_SYMLINK
 #undef HAVE_GETHOSTNAME
+#undef HAVE_FSYNC
 
 /* Define if you have the vsnprintf, snprintf functions and they return
  * EOF upon failure.

@@ -14,6 +14,7 @@ Changes since 0.99-19
    beginning or the end of the buffer is reached.
 4. src/cmode.sl: insert_bra(): do not indent if the previous character
    is one of: ',', '=', '['.
+5. src/file.c: Call fsync before closing a file.
 
 {{{ Previous Versions 
 

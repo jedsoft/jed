@@ -7529,6 +7529,7 @@ fi
 
 
 
+
 for ac_func in \
 memset \
 memcpy \
@@ -7548,6 +7549,7 @@ tcsetpgrp \
 getpgid \
 setpgid \
 openpty \
+fsync \
 snprintf vsnprintf \
 
 do

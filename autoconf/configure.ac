@@ -65,6 +65,7 @@ tcsetpgrp \
 getpgid \
 setpgid \
 openpty \
+fsync \
 snprintf vsnprintf \
 )
 
