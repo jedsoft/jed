@@ -357,7 +357,7 @@ define c_bskip_over_comment (skip_pp)
 	  {
 	     push_mark ();
 	     variable ptp = -2;
-	     while (andelse{ptp == -2}{bfind ("//")})
+	     while ((ptp == -2) && bfind ("//"))
 	       ptp = parse_to_point ();
 
 	     if (ptp == 0)
@@ -660,18 +660,17 @@ private define is_label_statement ()
 % if the next line ought to be indented as a continued one.
 private define is_continuation_line ()
 {
-   if (orelse
-       { blooking_at (";") }	       %  end of statement
-	 { blooking_at ("{") }	       %  start of block
-	 { blooking_at ("}") }	       %  end of block
-	 { bobp () })
+   if (blooking_at (";")	       %  end of statement
+       || blooking_at ("{")	       %  start of block
+       || blooking_at ("}") 	       %  end of block
+       || bobp ())
      return 0;
 
    if (blooking_at (":"))
      {
 	push_spot ();
 	bol_skip_white ();
-	if (looking_at ("case") || is_label_statement ())
+	if (c_looking_at ("case") || c_looking_at ("default") || is_label_statement ())
 	  {
 	     pop_spot ();
 	     return 0;
@@ -805,13 +804,11 @@ define c_indent_line ()
      }
 
    % colon statement
-   if (orelse
-       { c_looking_at("case") }
-	 { c_looking_at("default") }
-	 { c_looking_at("protected") }
-	 { c_looking_at("private") }
-	 { c_looking_at("public") }
-      )
+   if (c_looking_at("case") 
+       || c_looking_at("default")
+       || c_looking_at("protected")
+       || c_looking_at("private")
+       || c_looking_at("public"))
      {
 	if (ffind_char (':'))
 	  {

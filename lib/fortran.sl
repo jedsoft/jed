@@ -396,7 +396,7 @@ set_fortran_comment_chars ($1, "^0-9 \t\n");
 () = define_keywords ($1, "end", 3);
 () = define_keywords ($1, "calldataelseexitgotoopenreadrealsavestopthen", 4);
 () = define_keywords ($1, "blockcloseenddoendifentrypauseprintwhilewrite", 5);
-() = define_keywords ($1, "commondoubleformatrecordreturnrewind", 6);
+() = define_keywords ($1, "commondoubleelseifformatrecordreturnrewind", 6);
 () = define_keywords ($1, "complexendfileincludeinquireintegerlogicalprogram", 7);
 () = define_keywords ($1, "continueexternalfunctionimplicit", 8);
 () = define_keywords ($1, "backspacecharacterdimensionintrinsicparameterprecisionstructure", 9);

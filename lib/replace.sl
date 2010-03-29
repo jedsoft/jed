@@ -59,7 +59,6 @@ define replace_across_buffer_files ()
 	REPLACE_PRESERVE_CASE_INTERNAL = 0;
      }
    
-   EXECUTE_ERROR_BLOCK;
    message ("Done.");
 }
 

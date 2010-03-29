@@ -15,6 +15,10 @@ Changes since 0.99-19
 4. src/cmode.sl: insert_bra(): do not indent if the previous character
    is one of: ',', '=', '['.
 5. src/file.c: Call fsync before closing a file.
+6. lib/cmode.sl: The statement following a switch default label was
+   not always getting properly indented.  The deprecated
+   andelse/orelse statements were updated to use || and &&.
+7. lib/fortran.sl: ELSEIF added as a keyword.
 
 {{{ Previous Versions 
 
