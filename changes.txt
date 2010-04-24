@@ -19,6 +19,10 @@ Changes since 0.99-19
    not always getting properly indented.  The deprecated
    andelse/orelse statements were updated to use || and &&.
 7. lib/fortran.sl: ELSEIF added as a keyword.
+8. src/unix.c: In addition to updating the status line time during
+   periods of not keyboard activity, also call check_buffers.
+9. src/file.c: In check_buffer, a NULL return value from
+   jed_dir_file_merge was not being checked.
 
 {{{ Previous Versions 
 

@@ -394,7 +394,7 @@ void reset_tty (void) /*{{{*/
 
 /*}}}*/
 
-int Key_Wait_Time = 450;
+int Key_Wait_Time = 450;	       /* units of 1/10 sec */
 int jed_set_default_key_wait_time (const int *tsecs)
 {
    int tmp = Key_Wait_Time;
@@ -433,6 +433,7 @@ unsigned char sys_getkey (void) /*{{{*/
 	/* update status line in case user is displaying time */
 	if (Display_Time || all)
 	  {
+	     check_buffers ();
 	     JWindow->trashed = 1;
 	     update((Line *) NULL, 0, 1, 0);
 	  }

@@ -1799,16 +1799,20 @@ void auto_save(void) /*{{{*/
 
 void check_buffer(Buffer *b) /*{{{*/
 {
-   b->flags &= ~FILE_MODIFIED;
    if (*b->file)
      {
 	char *dirfile = jed_dir_file_merge (b->dir, b->file);
+
+	if (dirfile == NULL)
+	  return;
 
 	if (file_changed_on_disk (b, dirfile))
 	  b->flags |= FILE_MODIFIED;
 
 	SLfree (dirfile);
      }
+   else
+     b->flags &= ~FILE_MODIFIED;
 }
 
 /*}}}*/
