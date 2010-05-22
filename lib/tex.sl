@@ -17,7 +17,7 @@ require ("texcom");
 
 $1 = "TeX-Mode";
 
-!if (keymap_p($1))
+ifnot (keymap_p($1))
 {
    make_keymap ($1);
    definekey ("tex_insert_quote", "\"", $1);
@@ -80,7 +80,7 @@ define tex_info_find_node ()
    variable node;
    
    node = read_mini ("Node:", Null_String, Null_String);
-   !if (strlen (node)) return;
+   ifnot (strlen (node)) return;
    info_reader ();
    info_find_node ("(latex)top");
    info_find_node ("(latex)" + node);

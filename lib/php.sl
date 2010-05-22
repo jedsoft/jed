@@ -117,7 +117,7 @@ define php_format_paragraph( ) %{{{
 	
 	while( not( php_paragraph_sep( ) ))
 	{
-		!if( up_1( ) ) 
+		ifnot( up_1( ) ) 
 		  break;
 	}
 	if( php_paragraph_sep( ) ) 
@@ -127,7 +127,7 @@ define php_format_paragraph( ) %{{{
 	
 	while( not( php_paragraph_sep( ) ))
 	{
-		!if( down_1( ) ) 
+		ifnot( down_1( ) ) 
 		  break;
 	}
 	
@@ -267,7 +267,7 @@ define php_top_of_function( ) %{{{
 	push_spot( );
 	variable current,end,start_brace;
 	current = what_line;
-	!if( re_bsearch( "function[ \t]+[a-zA-Z_0-9]+[ \t]?\(.*\)") )
+	ifnot( re_bsearch( "function[ \t]+[a-zA-Z_0-9]+[ \t]?\(.*\)") )
 	{
 		error( "Cant find top of function" );
 	}
@@ -279,7 +279,7 @@ define php_top_of_function( ) %{{{
 		error( "Cant find top of function" );
 	}
 	
-	!if( fsearch( "{") )
+	ifnot( fsearch( "{") )
 	{
 		error( "Missing beginning brace of function." );
 	}
@@ -301,7 +301,7 @@ define php_top_of_function( ) %{{{
 %}}}
 define php_end_of_function( ) %{{{
 {
-	!if( bolp( ) and looking_at_char( '{' ))
+	ifnot( bolp( ) and looking_at_char( '{' ))
 	  php_top_of_function( );
 	call( "goto_match" );
 }
@@ -360,7 +360,7 @@ define php_bskip_over_comment( ) %{{{
 		}
 		pop_mark_1( );
 		
-		!if( blooking_at( "*/" ))
+		ifnot( blooking_at( "*/" ))
 		{
 			push_mark( );
 			variable found = 0;
@@ -382,7 +382,7 @@ define php_bskip_over_comment( ) %{{{
 			}
 			
 			bol( );
-			!if( bobp( ) )
+			ifnot( bobp( ) )
 			{
 				if( looking_at( "<?" ) or looking_at( "?>" ) or looking_at( "<%" ) or looking_at( "%>" ))
 				{
@@ -393,7 +393,7 @@ define php_bskip_over_comment( ) %{{{
 			pop_mark_1( );
 			break;
 		}
-		!if( bsearch( "/*" )) break;
+		ifnot( bsearch( "/*" )) break;
 	}
 }
 %}}}
@@ -501,7 +501,7 @@ private define inside_class( bra ) %{{{
 			return 0;
 		}
 		
-		!if( left( 1 ))
+		ifnot( left( 1 ))
 		  break;
 	}
 	
@@ -556,7 +556,7 @@ define php_indent_line( ) %{{{
 			forever
 			{
 				php_bskip_over_comment( );
-				!if( orelse
+				ifnot( orelse
 				   { blooking_at( ";" ) }
 					 { blooking_at( "{" ) }
 					 { blooking_at( "}" ) }
@@ -581,7 +581,7 @@ define php_indent_line( ) %{{{
 							push_spot( );
 							bol_skip_white( );
 							% fsearch( "{" );
-							% !if( blooking_at( ")" )
+							% ifnot( blooking_at( ")" )
 							extra_indent += PHP_CONTINUED_OFFSET;
 							pop_spot( );
 						}
@@ -592,7 +592,7 @@ define php_indent_line( ) %{{{
 					}
 				}
 				
-				!if( blooking_at( ")" ))
+				ifnot( blooking_at( ")" ))
 				  break;
 				push_mark( );
 				go_left_1( );
@@ -739,7 +739,7 @@ define php_indent_line( ) %{{{
 %}}}
 define php_indent_region_or_line( ) %{{{
 {
-	!if( is_visible_mark )
+	ifnot( is_visible_mark )
         {	
 		if( php_in_block( ) )
 		  php_indent_line( );
@@ -922,7 +922,7 @@ define php_insert_ket( ) %{{{
 define php_insert_colon( ) %{{{
 {
 	insert_char( ':' );
-	!if( php_parse_to_point( ) )
+	ifnot( php_parse_to_point( ) )
 	  php_indent_line( );
 }
 %}}}
@@ -985,7 +985,7 @@ private define php_init_menu( menu ) %{{{
 %}}}
 $1 = "PHP";
 
-!if( keymap_p( $1 )) 
+ifnot( keymap_p( $1 )) 
   make_keymap( $1 ); %{{{
 definekey( "indent_line", "\t", $1 );
 definekey( "php_top_of_function", "\e^A", $1 );

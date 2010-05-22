@@ -64,7 +64,7 @@ define run_shell_cmd (cmd) %{{{
    file = dircat (tmpdir, file);
 
    cfile = expand_jedlib_file ("vms_shell.com");
-   !if ( strlen (cfile) ) error ("Unable to open vms_shell.com");
+   ifnot ( strlen (cfile) ) error ("Unable to open vms_shell.com");
 
    flush ("starting process ...");
    () = system ((sprintf ("@%s/output=%s \"%s\"", cfile, file, cmd)));
@@ -96,14 +96,14 @@ public define shell_perform_cmd (cmd, same_buf) %{{{
 {
    variable status;
    
-   !if (same_buf) 
+   ifnot (same_buf) 
      shell_set_output_buffer ();
 
    push_spot ();
    status = run_shell_cmd (cmd);
    pop_spot ();
 
-   !if (same_buf)
+   ifnot (same_buf)
      set_buffer_modified_flag (0);
 
    vmessage ("Exit Status: %d", status);
@@ -123,7 +123,7 @@ public define do_shell_cmd () %{{{
 	(,dir,,) = getbuf_info ();
 	cmd = read_mini (sprintf ("(%s) Shell Cmd:", dir),
 			 "", Shell_Last_Shell_Command);
-	!if ( strlen (cmd) ) return;
+	ifnot ( strlen (cmd) ) return;
 	Shell_Last_Shell_Command = cmd;
      }
 
@@ -145,7 +145,7 @@ public define shell () %{{{
 {
    variable dir, buf = "*shell*";
 
-   !if ( keymap_p (buf) )
+   ifnot ( keymap_p (buf) )
      {
 	make_keymap (buf);
 	definekey ("shell_input", "^M", buf);
@@ -244,14 +244,14 @@ define shell_input () %{{{
    cmd = bufsubstr ();
    eob ();
    bol (); skip_chars (Shell_Prompt); skip_white ();
-   !if ( looking_at (cmd) ) insert (cmd);
+   ifnot ( looking_at (cmd) ) insert (cmd);
    eol (); newline ();
    update (0);			% Update now so user see that things are ok
 
    if ( strlen (cmd) )
      {
 	cmd = shell_builtin (cmd);
-	!if ( strlen (cmd) )
+	ifnot ( strlen (cmd) )
 	  {
 	     update (0);
 	     return;
@@ -265,7 +265,7 @@ define shell_input () %{{{
 #ifdef VMS
 	     tmp = make_tmp_file ("sys$login:_jed_shell_.");
 	     variable file = expand_jedlib_file ("vms_shell.com");
-	     !if ( strlen (file) ) error ("Unable to find vms_shell.com");
+	     ifnot ( strlen (file) ) error ("Unable to find vms_shell.com");
 	     () = system (sprintf ("@%s/output= %s %s", file, tmp, cmd));
 	     () = insert_file (tmp);
 	     () = delete_file (tmp);
@@ -281,7 +281,7 @@ define shell_input () %{{{
      }
    else
      {
-	!if ( bolp () ) newline ();
+	ifnot ( bolp () ) newline ();
 	insert (Shell_Prompt);
      }
    set_buffer_modified_flag (0);

@@ -28,7 +28,7 @@ define save_buffers ()
       
 	(file, dir,, flags) = getbuf_info (buf);
       
-	!if (strlen(file)) continue;        %% no file assciated with it
+	ifnot (strlen(file)) continue;        %% no file assciated with it
 	if (flags & 1)
 	  {
 	     setbuf(buf);
@@ -43,7 +43,7 @@ define save_buffers ()
 define write_region()
 {
    variable file;
-   !if (markp) error("Set Mark first!");
+   ifnot (markp) error("Set Mark first!");
    file = read_file_from_mini("File:");
    write_region_to_file(file);
 }
@@ -52,7 +52,7 @@ define write_region()
 define append_region ()
 {
    variable file;
-   !if (markp) error("Set Mark first!");
+   ifnot (markp) error("Set Mark first!");
    file = read_file_from_mini("Append to File:");
    if (-1 == append_region_to_file(file)) error ("Append failed.");
 }
@@ -63,7 +63,7 @@ define recover_file ()
    variable flags, file, dir, as, buf;
    
    (file, dir,, flags) = getbuf_info();
-   !if (strlen(file)) error("Buffer not associated with a file.");
+   ifnot (strlen(file)) error("Buffer not associated with a file.");
    as = make_autosave_filename (dir, file);
    if (file_status(as) != 1)
     {
@@ -136,7 +136,7 @@ define save_buffer_as ()
      force_overwrite = ();
    
    variable file = read_file_from_mini(sprintf("Save %s to:", whatbuf()));
-   !if (strlen(file))
+   ifnot (strlen(file))
      return;
 
    if (file_status(file) == 2) % directory

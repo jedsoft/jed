@@ -10,7 +10,7 @@
 .       bol_skip_white 
 .       '$' looking_at_char
 .          { "$\t " skip_chars
-. 	   '!' looking_at_char {what_column =goal break} !if
+. 	   '!' looking_at_char {what_column =goal break} ifnot
 . 	 } 
 . 	 {
 . 	   '!' looking_at_char 
@@ -21,10 +21,10 @@
 . 	         up_1 eol bolp not and
 . 		   {trim go_left_1
 . 		    '-' looking_at_char 
-. 		      { pop_spot what_column =goal break} !if
+. 		      { pop_spot what_column =goal break} ifnot
 . 		   } if
 . 		 pop_spot
-. 	      } !if
+. 	      } ifnot
 . 	 } else
 .    }
 .   while
@@ -48,13 +48,13 @@
 .    dcl_get_ind =goal
    
 .    push_spot
-.    up_1 {eol_trim bolp {1 go_left '-' looking_at_char {2 +=goal} if} !if} if
+.    up_1 {eol_trim bolp {1 go_left '-' looking_at_char {2 +=goal} if} ifnot} if
 .    pop_spot
    
 .    bol "\t $" skip_chars
 .    '!' looking_at_char 
 .      { "\t " bskip_chars trim goal what_column - whitespace} 
-.    !if 
+.    ifnot 
 .    pop_spot
 .    skip_white
 . )  dcl_indent
@@ -83,15 +83,15 @@
 . 	_get_point p == =cont
 .       } if
 .     p _set_point
-.   } !if
+.   } ifnot
   
 .   bolp {1 left pop 
 .         '-' looking_at_char { 1 =cont} if
 .        } 
-.       !if
+.       ifnot
 .   pop_spot
 .   newline
-.   cont {'$' insert_char} !if
+.   cont {'$' insert_char} ifnot
 .   dcl_indent
 . ) dcl_newline
 	    
@@ -141,7 +141,7 @@ set_color ("keyword2","blue","black");
 () = define_keywords_n ("dcl", "f$environment", 13, 1);
 () = define_keywords_n ("dcl", "f$file_attributes", 17, 1);
 
-!if (keymap_p ("DCL"))
+ifnot (keymap_p ("DCL"))
 {
    make_keymap ("DCL");
    definekey ("dcl_newline", "^M", "DCL");

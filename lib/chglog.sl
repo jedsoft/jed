@@ -67,7 +67,7 @@ private define get_changelog_file_item ()
    variable dir, file;
    
    (file, dir,,) = getbuf_info ();
-   !if (strlen (file))
+   ifnot (strlen (file))
      return "";
    if (file == ChangeLog_Filename)
      return "";
@@ -116,7 +116,7 @@ public define changelog_add_change ()
    set_buffer_hook ("wrap_hook", &wrap_hook);
 
    bob ();
-   !if (bol_fsearch (heading))
+   ifnot (bol_fsearch (heading))
      {
 	vinsert ("%s\n\n", heading);
 	bob ();
@@ -145,7 +145,7 @@ public define changelog_add_change ()
      }
    else 
      {
-	!if (re_fsearch ("^[ \t]*$"))
+	ifnot (re_fsearch ("^[ \t]*$"))
 	  {
 	     eob ();
 	  }

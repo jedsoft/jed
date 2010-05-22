@@ -15,7 +15,7 @@ define search_across_lines (str, dir)
 
    n = is_substr (str, "\n");
 
-   !if (n)
+   ifnot (n)
      {
 	if (@fun (str)) return len;
 	return -1;
@@ -58,7 +58,7 @@ define search_generic_search (prompt, dir, line_ok_fun)
    variable str, not_found = 1;
 
    str = read_mini(prompt, LAST_SEARCH, Null_String);
-   !if (strlen(str)) return;
+   ifnot (strlen(str)) return;
    
    push_mark ();
    
@@ -120,7 +120,7 @@ define replace_cmd ()
    variable has_prefix;
    
    pat = read_mini("Replace:", Null_String, Null_String);
-   !if (strlen (pat)) return;
+   ifnot (strlen (pat)) return;
    
    prompt = strcat (strcat ("Replace '", pat), "' with:");
    rep = read_mini(prompt, "", "");

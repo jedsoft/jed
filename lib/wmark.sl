@@ -90,7 +90,7 @@ private define after_key_hook ()
 
 private define wmark_prefix ()
 {
-   !if (is_visible_mark ()) push_visible_mark ();
+   ifnot (is_visible_mark ()) push_visible_mark ();
    if (Wmark_Movement_Flag == 0)
      {
 	add_to_hook ("_jed_before_key_hooks", &before_key_hook);

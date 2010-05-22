@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % async shell for jed
-!if (is_defined ("Shell_Default_Shell"))
+ifnot (is_defined ("Shell_Default_Shell"))
 {
 #ifdef WIN32
    variable Shell_Default_Shell = getenv ("COMSPEC");
@@ -13,7 +13,7 @@
 #endif
 }
 
-!if (is_defined ("Shell_Default_Interactive_Shell"))
+ifnot (is_defined ("Shell_Default_Interactive_Shell"))
 {
 #ifdef WIN32
    variable Shell_Default_Interactive_Shell = "";
@@ -147,12 +147,12 @@ private define try_builtin (cmd)
    variable argc, argv;
    
    (argc, argv) = parse_shell_cmd (cmd);
-   !if (argc) return cmd;
+   ifnot (argc) return cmd;
 
    variable fun, command;
 
    command = argv[0];
-   !if (assoc_key_exists (Builtin_Cmds, command))
+   ifnot (assoc_key_exists (Builtin_Cmds, command))
      return cmd;
 
    fun = Builtin_Cmds[command];
@@ -182,7 +182,7 @@ define ashell_send_input ()
      {
 	bskip_chars ("\t ");
 	push_mark ();
-	!if (bolp ())
+	ifnot (bolp ())
 	  {
 	     go_left_1 ();
 	     ch = what_char ();
@@ -296,7 +296,7 @@ define ashell_completion ()
 }
 
 $1 = "AShellMap";
-!if (keymap_p ($1)) make_keymap ($1);
+ifnot (keymap_p ($1)) make_keymap ($1);
 definekey ("ashell_send_input", "^M", $1);
 undefinekey ("^C", $1);
 definekey ("ashell_send_intr", "^C", $1);

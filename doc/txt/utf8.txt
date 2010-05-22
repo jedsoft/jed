@@ -38,7 +38,6 @@ useful for cases when the terminal does not support UTF-8 but for some
 reason one has to edit a UTF-8 encoded file.  I want to stress that
 the use of JED_UTF8 is considered to be a temporary hack.
 
-
 Character set conversion
 ------------------------
 
@@ -71,7 +70,7 @@ define iso_to_utf8 ()
 	     insert_char (-ch);
 	     continue;
 	  }
-	!if (right(1)) break;
+	ifnot (right(1)) break;
      }
    pop_spot ();
 }
@@ -92,7 +91,7 @@ define utf8_to_iso ()
 	     insert_byte (ch);
 	     continue;
 	  }
-	!if (right (1)) break;
+	ifnot (right (1)) break;
      }
    pop_spot ();
 }

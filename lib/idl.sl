@@ -69,7 +69,7 @@ define idl_beginning_of_statement ()
    while (up_1 ())
      {
 	idl_find_effective_eol (); bskip_white ();
-	!if (blooking_at ("$"))
+	ifnot (blooking_at ("$"))
 	  {
 #iffalse
 	     if (bolp ())
@@ -102,7 +102,7 @@ define idl_indent_to (col)
 
 define idl_looking_at_block (word, begin)
 {
-   !if (looking_at (word)) return 0;
+   ifnot (looking_at (word)) return 0;
    EXIT_BLOCK
      {
 	pop_spot ();
@@ -115,7 +115,7 @@ define idl_looking_at_block (word, begin)
      {
 	idl_find_effective_eol ();
 	bskip_white ();
-	!if (blooking_at ("$")) break;
+	ifnot (blooking_at ("$")) break;
      }
    while (down (1));
    bol ();
@@ -200,7 +200,7 @@ define idl_indent_line ()
      }
    
    
-   !if (up_1 ())
+   ifnot (up_1 ())
      {
 	len = 0;
 	return;
@@ -209,7 +209,7 @@ define idl_indent_line ()
    do
      {
 	bol_skip_white ();
-	!if (eolp () or looking_at_char (';') or looking_at_char ('@'))
+	ifnot (eolp () or looking_at_char (';') or looking_at_char ('@'))
 	  break;
      }
    while (up_1 ());
@@ -232,7 +232,7 @@ define idl_newline_and_indent ()
 }
 
 $1 = "IDL";
-!if (keymap_p ($1))
+ifnot (keymap_p ($1))
 {
    make_keymap ($1);
    definekey ("newline_and_indent", "\r", $1);

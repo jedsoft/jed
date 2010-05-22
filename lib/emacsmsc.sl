@@ -30,9 +30,9 @@ define find_file_other_window ()
    variable file;
 
    file = read_file_from_mini ("Find file:");
-   !if (strlen(extract_filename(file))) return;
+   ifnot (strlen(extract_filename(file))) return;
    
-   !if (read_file(file)) message ("New file.");
+   ifnot (read_file(file)) message ("New file.");
    pop2buf (whatbuf());
 }
 
@@ -41,10 +41,10 @@ define find_alternate_file ()
    variable file;
 
    file = read_file_from_mini ("Find alternate file:");
-   !if (strlen(extract_filename(file))) return;
+   ifnot (strlen(extract_filename(file))) return;
    
    delbuf (whatbuf());
-   !if (find_file (file)) message ("New file.");
+   ifnot (find_file (file)) message ("New file.");
 }
 
 define delete_blank_lines () 
@@ -148,11 +148,11 @@ define string_rectangle ()
 define list_directory ()
 {
    variable pat = read_file_from_mini ("list directory");
-   !if (strlen (pat))
+   ifnot (strlen (pat))
      return;
    variable dir = path_dirname (pat);
    pat = path_basename (pat);
-   !if (strlen(pat))
+   ifnot (strlen(pat))
      pat = "*";
 
    if (file_status (dir) != 2)

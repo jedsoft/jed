@@ -38,7 +38,7 @@ define add_keywords (tbl, kws, len, n)
    kws += define_keywords_n (tbl, "", len, n);
 
    num = strbytelen (kws) / len;
-   !if (num) return "";
+   ifnot (num) return "";
 
    hash = Assoc_Type[Int_Type];
 
@@ -63,7 +63,7 @@ define add_keywords (tbl, kws, len, n)
 define add_keyword_n (tbl, kw, n)
 {
    variable len = strbytelen (kw);
-   !if (len) return;
+   ifnot (len) return;
    () = add_keywords (tbl, kw, len, n);
 }
 
@@ -102,7 +102,7 @@ define remove_keywords (tbl, kws, len, n)
    num = strbytelen (okws) / len;
 
    nrem = strbytelen (kws) / len;
-   !if (nrem)
+   ifnot (nrem)
      {
 	() = define_keywords_n (tbl, okws, len, n);
 	return okws;

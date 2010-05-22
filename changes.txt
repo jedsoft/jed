@@ -23,6 +23,9 @@ Changes since 0.99-19
    periods of not keyboard activity, also call check_buffers.
 9. src/file.c: In check_buffer, a NULL return value from
    jed_dir_file_merge was not being checked.
+10. lib/*.sl: Change obsolete "!if" statements to "ifnot" ones. (Mark
+    Olesen).
+
 
 {{{ Previous Versions 
 

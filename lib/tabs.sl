@@ -25,7 +25,7 @@ setkey ("tab_to_tab_stop", "^I");
 private variable _Tabs_Buffer;
 
 $1 = "*TabsEdit*";
-!if (keymap_p($1))
+ifnot (keymap_p($1))
 {
    make_keymap ($1);
    undefinekey ("^C", $1);

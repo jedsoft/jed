@@ -277,14 +277,14 @@ Answers:
 	pop2buf ("*scratch*");
 	eob ();
         message ("Press key:"); update (1);
-	forever 
+	forever
 	  {
 	     c = getkey ();
 	     if (c == 0) insert("^@"); else insert (char (c));
-	     !if (input_pending (3)) break;
-	  } 
+	     ifnot (input_pending (3)) break;
+	  }
       }
-   
+
    Simply type it into the scratch buffer, press ESC-X and type
    `evalbuffer'.  Then, to use the function,  press ESC-X again and enter
    `insert_this_key'.
@@ -299,13 +299,13 @@ Answers:
    is particularly the case for Ultrix systems--- the vt102, vt200, and 
    vt300 termcap entries are missing the AL and DL termcap flags.  In fact,
    the Ultrix man page for termcap does not even mention these capabilities!
-   
+
    JED is able to compensate for missing termcap entries only for vtxxx
    terminals.  If your terminal is a fancy vtxxx terminal, put the line:
-   
+
        set_term_vtxxx (0);
-	
-   in your .jedrc file.  
+
+   in your .jedrc file.
 
 <11> How do I get a list of functions?
 
@@ -320,7 +320,7 @@ Answers:
   used to remap the numeric keypad.  Nevertheless, it is possible to use
   edt.sl with jed386.  However, the function keys, F1 to F10 must be used
   for the EDT keypad.
-  
+
   The remapping is as follows:
 
                                           VT100 Keys
@@ -336,16 +336,16 @@ Answers:
    |-----------+-----|-----|       |-----------+-----|ENTER|
    | SF5 | SF6 | SF7 | SF8 |       |     0     |  .  |     |
    -------------------------       -------------------------
-    
+
   Here, SF1 means SHIFT-F1, etc...
-  
+
 <13> The TAB key is broken--- it does not insert TABs!
 
    Should it?  By default, the TAB key runs the `indent_line'
    function.  If you really want the TAB key to insert TABS, then you
    will have to bind it to `self_insert_cmd'.  To do this for all
    modes, put the following lines in your .jedrc file:
-   
+
        public define global_mode_hook (hook_name)
        {
           local_setkey ("self_insert_cmd", "\t");
@@ -357,15 +357,15 @@ Answers:
 <14> How do I set custom tab stops in jed?
 
    Put something like:
-  
+
    variable Tab_Stops = [0:19]*8 + 1;
-   
+
    in your jed.rc file to define 8-column tab stops.  To individually
    set them use
 
      Tab_Stops[0] = 4;
      Tab_Stops[1] = 18;
-     
+
    etc...
 
 <15> When I paste indented text into Jed, it misaligns everything

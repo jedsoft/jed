@@ -21,7 +21,7 @@ define make_tmp_file (base)
    loop (1000)
      {
 	variable file = sprintf ("%s%d.%d", base, random (0, 0x7FFF), pid);
-	!if (file_status(file)) return (file);
+	ifnot (file_status(file)) return (file);
      }
    error ("Unable to create a tmp file!");
 }

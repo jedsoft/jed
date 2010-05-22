@@ -73,7 +73,7 @@
 #v+
         define find_buffer_in_window (buf)
         {
-           !if (buffer_visible (buf)) return 0;
+           ifnot (buffer_visible (buf)) return 0;
            pop2buf (buf);
            return 1;
         }

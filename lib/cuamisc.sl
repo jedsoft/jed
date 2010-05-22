@@ -25,7 +25,7 @@
 %!%-
 public define cua_delete_word ()		% ^T, Key_Ctrl_Del
 {
-   !if (markp)
+   ifnot (markp)
      {
 	variable m = create_user_mark ();
 	push_mark ();
@@ -57,11 +57,11 @@ define cua_bdelete_word ()              % Key_Ctrl_BS
 public define cua_repeat_search ()
 {
 %%#ifeval (_jed_version >= 9916)
-   !if (strlen(LAST_SEARCH))
+   ifnot (strlen(LAST_SEARCH))
      return menu_select_menu("Global.&Search");
 %%#endif   
    go_right (1);
-   !if (fsearch(LAST_SEARCH)) error ("Not found.");
+   ifnot (fsearch(LAST_SEARCH)) error ("Not found.");
 }
 
 %!%+
@@ -75,7 +75,7 @@ public define cua_repeat_search ()
 %!%-
 public define cua_indent_region_or_line ()
 {
-   !if(is_visible_mark ())
+   ifnot(is_visible_mark ())
      {
 	indent_line ();
 	return;
@@ -184,14 +184,14 @@ define cua_save_buffer()
 {
    variable file;
    
-   !if (buffer_modified())
+   ifnot (buffer_modified())
      {
 	message("Buffer not modified.");
 	return;
      }
    
    file = buffer_filename();
-   !if (strlen(file))
+   ifnot (strlen(file))
        save_buffer_as();
 
    () = write_buffer(file);

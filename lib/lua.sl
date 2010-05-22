@@ -28,10 +28,10 @@
 
 $1 = "Lua";
 
-!if (keymap_p ($1)) make_keymap ($1);
+ifnot (keymap_p ($1)) make_keymap ($1);
 
 definekey ("lua_backspace_key", "^?", $1);
-!if (is_defined ("Win_Keys")) {  % Ctrl-C conflicts with windows region copy.
+ifnot (is_defined ("Win_Keys")) {  % Ctrl-C conflicts with windows region copy.
    definekey_reserved ("lua_comment_region",	"#", $1);
    definekey_reserved ("lua_uncomment_region",	"3", $1);
    definekey_reserved ("lua_shift_region_right",">", $1);
@@ -84,7 +84,7 @@ private define lua_indent_calculate()
   
    % go to previous non blank line
    push_spot_bol ();
-   !if (re_bsearch ("[^ \t\n]"))
+   ifnot (re_bsearch ("[^ \t\n]"))
      return;
    bol_skip_white();
    col = what_column() - 1;
@@ -325,7 +325,7 @@ define lua_exec()
    % Run lua interpreter on current region if one is defined, otherwise
    % on the whole buffer.
    % Display output in *shell-output* buffer window.
-   !if (markp()) {		% create region containing entire buffer
+   ifnot (markp()) {		% create region containing entire buffer
       push_spot_bob ();
       push_mark_eob ();
    }

@@ -86,8 +86,8 @@
         {
           variable str;
           str = read_mini ("Search for:", "", "");
-          !if (strlen (str)) return;
-          !if (fsearch (str))
+          ifnot (strlen (str)) return;
+          ifnot (fsearch (str))
              {
                push_mark (); bob ();
                if (fsearch (str)) pop_mark (0);

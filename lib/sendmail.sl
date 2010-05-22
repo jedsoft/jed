@@ -28,21 +28,21 @@
 autoload ("mailalias_expand", "mailalias"); % the mail-alias package
 
 % Create a dummy function if set_line_readonly is not defined.
-!if (is_defined ("set_line_readonly")) eval (".(pop) set_line_readonly");
+ifnot (is_defined ("set_line_readonly")) eval (".(pop) set_line_readonly");
 
 %{{{ Public Variables 
 
 $1 = "~/.signature";
-!if (is_defined ("Mail_Signature_File"))
+ifnot (is_defined ("Mail_Signature_File"))
 {
    variable Mail_Signature_File = expand_filename ($1);
 }
 
-!if (is_defined ("Mail_Header_Separator_String"))
+ifnot (is_defined ("Mail_Header_Separator_String"))
   variable Mail_Header_Separator_String = 
 "--- Do not modify this line.  Enter your message below ---";
 
-!if (is_defined ("Mail_Extra_Headers"))
+ifnot (is_defined ("Mail_Extra_Headers"))
 {
    variable Mail_Extra_Headers = NULL;
 }
@@ -56,7 +56,7 @@ NULL;
 "/usr/lib/sendmail";
 "/usr/sbin/sendmail";
 
-!if (is_defined ("SendMail_Cmd"))
+ifnot (is_defined ("SendMail_Cmd"))
 {
    variable SendMail_Cmd;
 
@@ -73,10 +73,10 @@ NULL;
 
 _pop_n (_stkdepth () - $1);
 
-!if (strlen (SendMail_Cmd)) error ("`sendmail' program not found!");
+ifnot (strlen (SendMail_Cmd)) error ("`sendmail' program not found!");
 
 %!% always Reply-To: here instead.
-!if (is_defined ("Mail_Reply_To"))
+ifnot (is_defined ("Mail_Reply_To"))
 {
    variable Mail_Reply_To = Null_String;
 }
@@ -118,9 +118,9 @@ define mail_send () %{{{
    push_spot ();
 
    bob ();
-   !if (bol_fsearch (Mail_Header_Separator_String))
+   ifnot (bol_fsearch (Mail_Header_Separator_String))
      {
-	!if (bol_fsearch ("\n"))
+	ifnot (bol_fsearch ("\n"))
 	  {
 	     pop_spot ();
 	     verror ("Cannot find %s\n", Mail_Header_Separator_String);
@@ -190,7 +190,7 @@ define mail_send () %{{{
 	(file, dir,,) = getbuf_info ();
 	() = delete_file (make_autosave_filename (dir, file));
 	file = dircat (dir, file);
-	!if (strcmp (Mail_Filename, file))
+	ifnot (strcmp (Mail_Filename, file))
 	  () = delete_file (Mail_Filename);
 	mail_sw2_prev_buf ();
 	bury_buffer (buf);
@@ -217,14 +217,14 @@ define mail_format_buffer () %{{{
 
    setbuf_info (getbuf_info () & ~(0x40)); %  turn off buried buffer flag
    
-   !if (keymap_p(km)) make_keymap(km);
+   ifnot (keymap_p(km)) make_keymap(km);
    use_keymap(km);
 
    if (erase == -1)
      {
 	if (buffer_modified ())
 	  {
-	     !if (get_yes_no("Mail already being composed.  Erase it"))
+	     ifnot (get_yes_no("Mail already being composed.  Erase it"))
 	       erase = 0;
 	  }
      }
@@ -326,7 +326,7 @@ define mail () %{{{
 
 define mail_insert_signature () %{{{
 {
-   !if (strlen (Mail_Signature_File))
+   ifnot (strlen (Mail_Signature_File))
      return;
    
    push_spot ();

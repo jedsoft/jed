@@ -56,7 +56,7 @@ define text_newline_and_indent_relative ()
 }
 
 $1 = "Text";
-!if (keymap_p ($1)) make_keymap ($1);
+ifnot (keymap_p ($1)) make_keymap ($1);
 definekey ("indent_line", "\t", $1);
 
 %!%+

@@ -13,7 +13,7 @@ define push_mode ()
    variable var_name, try_mode;
 
    var_name = "push-mode-stack";
-   !if (blocal_var_exists (var_name))
+   ifnot (blocal_var_exists (var_name))
      define_blocal_var (var_name, "");
 
    if (_NARGS)
@@ -21,7 +21,7 @@ define push_mode ()
    else
      mode = strtrim (read_mini ("Push to mode:", Null_String, Null_String));
    
-   !if (strlen (mode))
+   ifnot (strlen (mode))
      return;
    
    if (is_defined (mode) <= 0)
@@ -32,7 +32,7 @@ define push_mode ()
      }
    
    (old_mode,) = what_mode ();
-   !if (strlen (old_mode))
+   ifnot (strlen (old_mode))
      old_mode = "no";
    
    old_mode = strtrans (old_mode, "-", "_");
@@ -61,7 +61,7 @@ define pop_mode ()
    variable modes, keymap, mode;
    
    modes = get_blocal_var (var_name);
-   !if (strlen (modes))
+   ifnot (strlen (modes))
      error ("mode stack is empty.");
    
    mode = extract_element (modes, 0, ',');

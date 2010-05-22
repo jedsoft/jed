@@ -228,7 +228,7 @@ define transpose_chars ()
    err = "Top of Buffer";
 
    if (eolp()) go_left_1 ();
-   !if (left(1)) error(err);
+   ifnot (left(1)) error(err);
    c = what_char();
    del();
    go_right_1 ();
@@ -246,7 +246,7 @@ define universal_argument ()
 
    forever
      {
-	!if (force) !if(input_pending(10)) force = 1;
+	ifnot (force) ifnot(input_pending(10)) force = 1;
 
 	if (force)
 	  {
@@ -266,13 +266,13 @@ define universal_argument ()
 	  }
 	  {
 	   case 21 :		       %  ^U
-	     !if (count) n = 4 * n;
+	     ifnot (count) n = 4 * n;
 	     count = 0;
 	     msg += cu;
 	  }
 	  {
 	     ungetkey(key);
-	     !if (count) count = n;
+	     ifnot (count) count = n;
 	     count = string(count);
 	     n = strlen(count);
 	     _for (n, 1, -1)

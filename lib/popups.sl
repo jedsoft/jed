@@ -226,7 +226,7 @@ menu_append_separator ($1);
 menu_append_item ($1, "&Redraw", "redraw");
 
 
-!if (_jed_secure_mode)
+ifnot (_jed_secure_mode)
 {
 $1 = "Global.S&ystem";
 menu_append_item ($1, "&S-Lang Command", "evaluate_cmd");

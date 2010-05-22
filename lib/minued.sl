@@ -337,7 +337,7 @@ public  define minued_update_eval_line () %{{{
    minued_get_line ();
    minued_cancel ();
 
-   !if (strlen (minued_line))
+   ifnot (strlen (minued_line))
       return;
 
    minued_update ();
@@ -350,10 +350,10 @@ public  define minued_update_eval_line () %{{{
 
 % DISABLED while 'is_color' and 'set_color' are not available
 %
-% !if (is_color ("minued_nums"))
+% ifnot (is_color ("minued_nums"))
 %    set_color ("minued_nums", "brightred", "black");
 %
-% !if (is_color ("minued_line"))
+% ifnot (is_color ("minued_line"))
 %    set_color ("minued_line", "black", "green");
 %
 % minued_cnums = color_number ("minued_nums");
@@ -375,7 +375,7 @@ minued_cline = 101;
 
 $0 = "minued";
 
-!if (keymap_p ($0)) {
+ifnot (keymap_p ($0)) {
    make_keymap ($0);
    if ("^C" == _Reserved_Key_Prefix)
      {

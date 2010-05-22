@@ -224,7 +224,7 @@ private define skip_over_comment ()
 
 	if (is_slang)
 	  {
-	     !if (looking_at_char ('%'))
+	     ifnot (looking_at_char ('%'))
 	       return;
 
 	     eol ();
@@ -233,7 +233,7 @@ private define skip_over_comment ()
 
 	if (looking_at ("/*"))
 	  {
-	     !if (fsearch ("*/"))
+	     ifnot (fsearch ("*/"))
 	       return;
 	     go_right(2);
 	     continue;
@@ -316,8 +316,8 @@ private define slmode_bskip_comment (skip_pp)
 	bol ();
 	pop_mark (not(looking_at_char ('#')));
 
-	!if (bolp ()) return;
-	!if (left (1)) return;
+	ifnot (bolp ()) return;
+	ifnot (left (1)) return;
 	c_find_effective_eol ();
      }
 }
@@ -337,7 +337,7 @@ define c_bskip_over_comment (skip_pp)
 	     push_mark ();
 	     while (up_1 ())
 	       {
-		  !if (blooking_at_continuation_char ())
+		  ifnot (blooking_at_continuation_char ())
 		    {
 		       go_down_1 ();
 		       break;
@@ -353,7 +353,7 @@ define c_bskip_over_comment (skip_pp)
 	     pop_mark_1 ();
 	  }
 
-	!if (blooking_at ("*/"))
+	ifnot (blooking_at ("*/"))
 	  {
 	     push_mark ();
 	     variable ptp = -2;
@@ -367,7 +367,7 @@ define c_bskip_over_comment (skip_pp)
 		  continue;
 	       }
 	     bol ();
-	     !if (bobp ())
+	     ifnot (bobp ())
 	       {
 		  if (skip_pp and looking_at_char ('#'))
 		    {
@@ -378,7 +378,7 @@ define c_bskip_over_comment (skip_pp)
 	     pop_mark_1 ();
 	     break;
 	  }
-	!if (bsearch ("/*")) break;
+	ifnot (bsearch ("/*")) break;
      }
 }
 
@@ -423,13 +423,13 @@ private define c_indent_preprocess_line ()
    push_spot_bol ();
 
    trim ();
-   !if (up_1 ())
+   ifnot (up_1 ())
      {
 	pop_spot ();
 	return;
      }
 
-   !if (bol_bsearch_char ('#'))
+   ifnot (bol_bsearch_char ('#'))
      {
 	pop_spot ();
 	return;
@@ -449,7 +449,7 @@ private define c_indent_preprocess_line ()
    skip_white ();
 
    % what does all this do - looking at 'endif' perhaps ?
-   !if (looking_at ("error"))
+   ifnot (looking_at ("error"))
      {
 	if (looking_at_char ('e'))
 	  col -= C_Preprocess_Indent;
@@ -553,7 +553,7 @@ private define continued_statement_bol ()
 {
    while (up_1 ())
      {
-	!if (blooking_at_continuation_char ())
+	ifnot (blooking_at_continuation_char ())
 	  {
 	     go_down_1 ();
 	     break;
@@ -603,13 +603,13 @@ private define inside_class_or_namespace (bra, name)
 	if (bolp () and
 	    (0 == parse_to_point ()))
 	  {
-	     !if (c_fsearch ("{"))
+	     ifnot (c_fsearch ("{"))
 	       return 0;
 
 	     return bra == create_user_mark ();
 	  }
 
-	!if (left(1))
+	ifnot (left(1))
 	  break;
      }
 
@@ -738,7 +738,7 @@ define c_indent_line ()
 	if (looking_at ("\\*"))   % "\*" ... "*/" corners
 	  col = -1;
 #endif
-	!if (bsearch ("/*"))
+	ifnot (bsearch ("/*"))
 	  col = 0;
 	col += what_column ();
 	pop_spot ();
@@ -784,7 +784,7 @@ define c_indent_line ()
 	if (blooking_at_continuation_char ())
 	  {
 	     continued_statement_bol ();
-	     !if (looking_at_char ('#'))
+	     ifnot (looking_at_char ('#'))
 	       {
 		  pop_spot ();
 		  return;
@@ -847,21 +847,21 @@ define c_indent_line ()
 	       {
 		  if (not_indenting_pp or is_continuation)
 		    {
-		       !if (indenting_solitary_left_parens)
+		       ifnot (indenting_solitary_left_parens)
 			 extra_indent += C_CONTINUED_OFFSET;
 		    }
 		  else
 		    {
 		       push_spot ();
 		       bol_skip_white ();
-		       !if (looking_at_char ('#'))
+		       ifnot (looking_at_char ('#'))
 			 extra_indent += C_CONTINUED_OFFSET;
 		       pop_spot ();
 		    }
 		  is_continuation++;
 	       }
 
-	     !if (blooking_at (")")) break;
+	     ifnot (blooking_at (")")) break;
 	     % If the line is continued, then we are at the end of a line
 	     % with a closing ')',
 	     push_mark ();
@@ -888,7 +888,7 @@ define c_indent_line ()
 	     pop_mark_0 ();
 	     bol ();
 
-	     !if (not_indenting_pp)
+	     ifnot (not_indenting_pp)
 	       {
 		  if (looking_at_char ('#'))
 		    break;
@@ -1103,7 +1103,7 @@ define c_indent_line ()
      }
      {
       case -3: 				%  inside C++ comment
-	!if ((looking_at(notCcomment)) or not(eolp()))
+	ifnot ((looking_at(notCcomment)) or not(eolp()))
 	  {
 	     goto_column(col);
 	     if (C_Autoinsert_CPP_Comments) insert(notCcomment);
@@ -1294,12 +1294,12 @@ define c_insert_ket ()
 define c_insert_colon ()
 {
    insert_char (':');
-   !if (c_parse_to_point ())
+   ifnot (c_parse_to_point ())
      indent_line ();
 }
 
 $1 = "C";
-!if (keymap_p ($1)) make_keymap ($1);
+ifnot (keymap_p ($1)) make_keymap ($1);
 definekey ("indent_line", "\t", $1);
 definekey ("newline_and_indent", "\r", $1);
 definekey ("c_insert_bra", "{", $1);
@@ -1481,7 +1481,7 @@ private define get_typedef_names (names)
 	     skip_over_comment ();
 	     if (looking_at_char ('{'))
 	       {
-		  !if (find_matching_delimiter ('{'))
+		  ifnot (find_matching_delimiter ('{'))
 		    continue;
 		  go_right_1 ();
 	       }
@@ -1610,7 +1610,7 @@ private define c_chglog_get_item ()
      }
 
    c_bskip_over_comment (1);
-   !if (blooking_at ("typedef struct"))
+   ifnot (blooking_at ("typedef struct"))
      return bextract_identifier ();
 
    goto_user_mark (m_end);

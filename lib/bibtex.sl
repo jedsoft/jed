@@ -338,7 +338,7 @@ define SearchInThisLine(str) {
    if (fsearch(str))
      if (thisline == what_line())
        res = 1;
-   !if (res) {
+   ifnot (res) {
       goto_line(thisline);
       bol();
    }
@@ -395,7 +395,7 @@ define bibtex_clean_entry ()  {
       bibtex_removeOPT();
       if (bibtex_remove_value == 1)
 	go_down(1); % removed OPT in line with content
-      !if (bibtex_remove_value) {
+      ifnot (bibtex_remove_value) {
 	 % did nothing, check for empty line
 	 if (SearchInThisLine("\"\""))
 	   delete_line();
@@ -472,7 +472,7 @@ define bibtex_prev_field() {
 private variable bibtexName = "BibTeX";
 private variable bibtexModeName = bibtexName + "-Mode";
 
-!if (keymap_p(bibtexModeName))
+ifnot (keymap_p(bibtexModeName))
 {
    make_keymap (bibtexModeName);
    definekey ("tex_insert_quote", "\"", bibtexModeName);
@@ -588,7 +588,7 @@ define bibtex_info_find_node ()
    variable node;
    
    node = read_mini ("Node:", Null_String, Null_String);
-   !if (strlen (node)) return;
+   ifnot (strlen (node)) return;
    info_reader ();
    info_find_node ("(bibtex)top");
    info_find_node ("(bibtex)" + node);

@@ -104,7 +104,7 @@ private define _ctags_find (tag, sinfo)
 {
    variable n, file, proto;
 
-   !if ((n = re_fsearch (strcat ("\\c^", tag, "\t+\\([^\t]+\\)\t+"))), n)
+   ifnot ((n = re_fsearch (strcat ("\\c^", tag, "\t+\\([^\t]+\\)\t+"))), n)
      return NULL;
    file = regexp_nth_match (1);
 
@@ -118,7 +118,7 @@ private define _ctags_find (tag, sinfo)
      {
 	go_right (2);
 	push_mark ();
-	!if (ffind ("/;\"\t"))
+	ifnot (ffind ("/;\"\t"))
 	  {
 	     eol (); bskip_chars ("\\\\$/");
 	  }
@@ -155,9 +155,9 @@ private define etags_find (tag)
 
    % we do the re_fsearch in order of preference: user->function->array
    tmptag = strcat ("[: ]", tag);
-   !if (re_fsearch (strcat (tmptag, "[\t ]+\x7F\\(\\d+\\),")))
-     !if (re_fsearch (strcat (tmptag, "[\t \\(]+\x7F\\(\\d+\\),")))
-       !if (re_fsearch (strcat (tmptag, "[\t \\[]+\x7F\\(\\d+\\),")))
+   ifnot (re_fsearch (strcat (tmptag, "[\t ]+\x7F\\(\\d+\\),")))
+     ifnot (re_fsearch (strcat (tmptag, "[\t \\(]+\x7F\\(\\d+\\),")))
+       ifnot (re_fsearch (strcat (tmptag, "[\t \\[]+\x7F\\(\\d+\\),")))
 	 error (msg);
    line = integer (regexp_nth_match (1));
 
@@ -166,7 +166,7 @@ private define etags_find (tag)
    push_mark (); skip_chars ("^,\n");
    file = bufsubstr ();
 
-   !if (read_file (file)) error ("File not found.");
+   ifnot (read_file (file)) error ("File not found.");
    goto_line (line);
 }
 
@@ -316,7 +316,7 @@ define ctags_find ()
      tag = get_tag_at_point ();
    
    tag = strtrim (tag);
-   !if (strlen (tag))
+   ifnot (strlen (tag))
      return;
 
    variable cbuf = whatbuf ();

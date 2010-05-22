@@ -68,7 +68,7 @@ private define free_f90_indent ()
 	     while (down_1 ())
 	       {
 		  bol_skip_white ();
-		  !if (looking_at (F90_Continue_Char))
+		  ifnot (looking_at (F90_Continue_Char))
 		    {
 		       go_up_1 ();
 		       bol ();
@@ -160,7 +160,7 @@ private define free_f90_newline ()
      {
 	push_spot ();
 	bol_skip_white();
-	!if (bolp()) message ("Line exceeds 72 columns.");
+	ifnot (bolp()) message ("Line exceeds 72 columns.");
 	pop_spot ();
      }
 
@@ -329,7 +329,7 @@ define fixed_f90_newline ()
      {
 	push_spot ();
 	bol_skip_white();
-	!if (bolp()) message ("Line exceeds 72 columns.");
+	ifnot (bolp()) message ("Line exceeds 72 columns.");
 	pop_spot ();
      }
 
@@ -438,7 +438,7 @@ define f90_uncomment ()
 
 define f90_comment ()
 {
-   !if (f90_is_comment ())
+   ifnot (f90_is_comment ())
      {
 	push_spot ();
 	bol ();
@@ -533,7 +533,7 @@ private define f90_prev_next_statement (dirfun)
      {
 	bol ();
 	skip_chars ("^0-9 \t\n");
-	!if (_get_point ()) break;
+	ifnot (_get_point ()) break;
      }
    
    variable col = 7;
@@ -563,7 +563,7 @@ define f90_previous_statement ()
 %
 
 $1 = "F90";
-!if (keymap_p ($1)) make_keymap ($1);
+ifnot (keymap_p ($1)) make_keymap ($1);
 
 definekey ("f90_comment",		"\e;",	$1);
 definekey ("f90_uncomment",		"\e:",	$1);

@@ -24,14 +24,14 @@ define define_abbrev_for_table (table, word)
    expans = bufsubstr ();
    pop_spot ();
 
-   !if (strlen (expans)) 
+   ifnot (strlen (expans)) 
      {
 	expans = read_mini("For what?", Null_String, Null_String);
-	!if (strlen (expans)) return;
+	ifnot (strlen (expans)) return;
      }
    
    abbrev = read_mini ("Enter abbrev for '" + expans + "'", "", "");
-   !if (strlen (abbrev)) return;
+   ifnot (strlen (abbrev)) return;
    
    define_abbrev (table,  abbrev, expans);
 }
@@ -41,7 +41,7 @@ define define_abbreviation ()
    variable tbl, word;
    
    (tbl, word) = what_abbrev_table ();
-   !if (strlen (tbl)) 
+   ifnot (strlen (tbl)) 
      {
 	tbl = "Global";
 	create_abbrev_table (tbl, Null_String);
@@ -74,15 +74,15 @@ define save_abbrevs ()
    variable file = read_file_from_mini ("Save abbrevs to:");
    variable n, table, word;
    
-   !if (strlen (extract_filename (file)))
+   ifnot (strlen (extract_filename (file)))
      {
 	file = dircat (file, Abbrev_File);
      }
    
-   !if (strlen (extract_filename (file))) error ("Invalid file.");
+   ifnot (strlen (extract_filename (file))) error ("Invalid file.");
    
    n = list_abbrev_tables ();	       %  tables on stack
-   !if (n) return;
+   ifnot (n) return;
    
    () = read_file (file);
    erase_buffer ();

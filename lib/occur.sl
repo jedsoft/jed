@@ -3,7 +3,7 @@
 
 
 $1 = "Occur";
-!if (keymap_p ($1))
+ifnot (keymap_p ($1))
 {
    make_keymap ($1);
 }
@@ -15,12 +15,12 @@ define occur_goto_line ()
 {
    variable line;
    
-   !if (bufferp (Occur_Buffer))
+   ifnot (bufferp (Occur_Buffer))
      return;
    
    bol ();
    push_mark ();
-   !if (ffind (":"))
+   ifnot (ffind (":"))
      {
 	pop_mark_0 ();
 	return;
@@ -50,7 +50,7 @@ define occur()
    variable str, tmp, n;
    
    str = read_mini("Find All (Regexp):", LAST_SEARCH, Null_String);
-   !if (strlen (str))
+   ifnot (strlen (str))
      return;
 
    tmp = "*occur*";
@@ -71,7 +71,7 @@ define occur()
 	insert(()); 
 	newline();
 	setbuf(Occur_Buffer);
-	!if (down_1 ()) %% so we do not find another occurance on same line
+	ifnot (down_1 ()) %% so we do not find another occurance on same line
 	  break;
      }
    pop_spot();

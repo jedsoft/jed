@@ -5,7 +5,7 @@
 _Jed_Emulation = "edt";
 
 #ifdef IBMPC_SYSTEM
-!if (is_defined ("NUMLOCK_IS_GOLD"))
+ifnot (is_defined ("NUMLOCK_IS_GOLD"))
   eval ("variable NUMLOCK_IS_GOLD = 0;");
 if (NUMLOCK_IS_GOLD)
   custom_variable ("Key_Gold", "\eOP");
@@ -33,7 +33,7 @@ set_status_line("(Jed %v) EDT: %b   (%m%a%n%o)  %p   Advance   %t", 1);
 %%            0 = \eOp            . = \eOn         enter = \eOM
 
 WANT_EOB = 1;
-!if (is_defined("Edt_Loaded"))
+ifnot (is_defined("Edt_Loaded"))
 {
    variable Edt_Loaded;
    variable edt_pbuf;    %% a real buffer
@@ -127,7 +127,7 @@ edt_wbuf = Null_String; edt_lbuf = Null_String; edt_cbuf = 0;
 %% character (un)deletion
 define edt_cdel()
 {
-   !if (eobp()) { edt_cbuf = what_char(); del(); }
+   ifnot (eobp()) { edt_cbuf = what_char(); del(); }
 }
 define edt_ucdel()
 {
@@ -260,7 +260,7 @@ define edt_findnxt()
 	     found = fsearch(LAST_SEARCH);
 	  }
 	else found = bsearch(LAST_SEARCH);
-	!if (found)
+	ifnot (found)
 	  {
 	     go_left(r);
 	     error("Not Found.");
@@ -360,7 +360,7 @@ define edt_page()
 define edt_cut()
 {
    variable b;
-   !if (dupmark()) return;
+   ifnot (dupmark()) return;
    b = whatbuf();
    setbuf(edt_pbuf);
    erase_buffer();
@@ -413,7 +413,7 @@ define edt_subs()
      {
 	deln (strlen(LAST_SEARCH));
 	edt_paste();
-	!if (looking_at (LAST_SEARCH)) edt_findnxt();
+	ifnot (looking_at (LAST_SEARCH)) edt_findnxt();
      }
    else error("Select range not active.");
 }
@@ -428,7 +428,7 @@ define edt_help()
 define edt_chgcase()
 {
    variable n;
-   !if (markp())
+   ifnot (markp())
      {
 	push_mark();
 	n = strlen(LAST_SEARCH);
@@ -456,7 +456,7 @@ define edt_replace()
    if (n and looking_at(LAST_SEARCH)) deln (n);
    else
      {
-	!if (markp()) error("Select range not active.");
+	ifnot (markp()) error("Select range not active.");
 	del_region();
      }
    edt_paste();

@@ -55,7 +55,7 @@ define unix_man ()
    variable subj, buf = "*manual-entry*", msg = "Getting man page...";
 
    subj = read_mini ("man", Null_String, Null_String);
-   !if ( strlen (subj) ) return;
+   ifnot ( strlen (subj) ) return;
 
    pop2buf (buf);
    set_readonly (0);

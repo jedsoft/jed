@@ -16,7 +16,7 @@ define most_exit_most ()
 {
    variable flags;
    most_edit ();
-   !if (buffer_modified ())
+   ifnot (buffer_modified ())
      delbuf (whatbuf ());
    otherwindow ();
    if (Most_N_Windows == 2) onewindow ();
@@ -32,7 +32,7 @@ define most_help ()
 
 variable Most_Map = "Most";
 
-!if (keymap_p (Most_Map))
+ifnot (keymap_p (Most_Map))
 {  
    make_keymap (Most_Map);
    _for ('A', 'z', 1) 
@@ -89,7 +89,7 @@ variable Most_Search_Dir = 1;
 define most_find_n ()
 {
    variable r;
-   !if (strlen (LAST_SEARCH))
+   ifnot (strlen (LAST_SEARCH))
      error ("Find What?");
    
    if (Most_Search_Dir > 0)

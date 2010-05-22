@@ -52,19 +52,19 @@ define bufed_get ()
    push_spot_bol ();
    EXIT_BLOCK { pop_spot (); }
 
-   !if (ffind_char ('"'))
+   ifnot (ffind_char ('"'))
      return Null_String;
 
    go_right_1 ();
    push_mark ();
-   !if (ffind_char ('"'))
+   ifnot (ffind_char ('"'))
      {
 	pop_mark_1 ();
 	return Null_String;
      }
    
    buf = bufsubstr ();
-   !if (bufferp (buf)) buf = "";
+   ifnot (bufferp (buf)) buf = "";
    return buf;
 }
 
@@ -119,7 +119,7 @@ define list_buffers ()
 	insert_char ('"');
 
 	goto_column(dir_col);
-	!if (eolp())
+	ifnot (eolp())
 	  {
 	     eol(); insert_single_space();
 	  }
@@ -165,7 +165,7 @@ define bufed_kill ()
    variable file, dir, flags, buf = bufed_get ();
    variable line;
 
-   !if (strlen (buf)) return;
+   ifnot (strlen (buf)) return;
 
    line = what_line ();
    (file,dir,,flags) = getbuf_info (buf);
@@ -184,7 +184,7 @@ define bufed_kill ()
 define bufed_save ()
 {
    variable buf = bufed_get ();
-   !if (int (buf)) return;
+   ifnot (int (buf)) return;
    bufed_savebuffer (buf);
 }
 
@@ -195,7 +195,7 @@ define bufed_update ()
    (file,dir,,flags) = getbuf_info ();
    if (flags & 2)		% file on disk modified?
      {
-	!if (find_file (dircat (dir, file)))
+	ifnot (find_file (dircat (dir, file)))
 	  error ("Error reading file");
      }
 }
@@ -205,7 +205,7 @@ define bufed_pop2buf ()
 {
    variable buf = bufed_get ();
 
-   !if (int (buf)) return;
+   ifnot (int (buf)) return;
 
    % if the buffer is already visible, scroll down
    buffer_visible (buf);	% leave on the stack
@@ -220,7 +220,7 @@ define bufed_pop2buf ()
 define bufed_sw2buf (one)
 {
    variable buf = bufed_get ();
-   !if (int (buf)) return;
+   ifnot (int (buf)) return;
    sw2buf (buf);
    bufed_update ();
    if (one) onewindow ();
@@ -240,7 +240,7 @@ define bufed_help ()
 }
 
 $1 = "bufed";
-!if (keymap_p ($1)) make_keymap ($1);
+ifnot (keymap_p ($1)) make_keymap ($1);
 definekey ("bufed_list",	"g",	$1);
 definekey ("describe_mode",	"h",	$1);
 definekey ("bufed_kill",	"k",	$1);

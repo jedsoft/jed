@@ -9,7 +9,7 @@ menu_append_popup ($1, "M&ode");       %  mode-specific
 menu_append_popup ($1, "&Search");
 menu_append_popup ($1, "&Buffers");
 menu_append_popup ($1, "W&indows");    %  Emacs uses ESC-w for yank.  Keep it
-!if (_jed_secure_mode)
+ifnot (_jed_secure_mode)
   menu_append_popup ($1, "S&ystem");
 menu_append_popup ($1, "&Help");
 

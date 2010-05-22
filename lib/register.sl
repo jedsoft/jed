@@ -41,7 +41,7 @@ private define get_register_name ()
 
 public define reg_copy_to_register ()
 {
-   !if (markp ())
+   ifnot (markp ())
      error ("No region defined.");
    
    variable name = get_register_name ();
@@ -57,7 +57,7 @@ public define reg_insert_register ()
    if (name == NULL)
      return;
 
-   !if (assoc_key_exists (Register_Buffer_Arrays, name))
+   ifnot (assoc_key_exists (Register_Buffer_Arrays, name))
      {
 	vmessage ("Register '%s' does not exist", name);
 	return;
@@ -90,12 +90,12 @@ private define reg_update_hook ()
      {
         if (what_line () > Reg_Line)
           {
-             !if (reg_next ())
+             ifnot (reg_next ())
                 () = reg_prev ();
           }
         else
           {
-             !if (reg_prev ())
+             ifnot (reg_prev ())
                 () = reg_next ();
           }
      }
@@ -138,7 +138,7 @@ public define reg_help ()
 
 
 $1 = "register";
-!if (keymap_p ($1))
+ifnot (keymap_p ($1))
 {
    make_keymap ($1);
    definekey ("reg_help", "?", $1);

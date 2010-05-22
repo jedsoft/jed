@@ -30,7 +30,7 @@ define set_selective_display ()
    do
      {
 	bol_skip_white ();
-	!if (eolp ())
+	ifnot (eolp ())
 	  h = arg * (what_column () > c);
 	% Otherwise, a blank line to if the last line was hidden, then
 	% hide this one too.

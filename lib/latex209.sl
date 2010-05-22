@@ -32,7 +32,7 @@ define latex_insert_document_env ()
    bob ();
    vinsert ("\\\\documentstyle%s{%s}\n\n", options, class);
    insert ("\\begin{document}\n\n\n\n\\end{document}\n"); go_up(3);
-   !if (strcmp(class, "letter")) latex_insert_letter_args();
+   ifnot (strcmp(class, "letter")) latex_insert_letter_args();
 }
 
 

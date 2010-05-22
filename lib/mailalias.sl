@@ -32,7 +32,7 @@ require ("mailutils");
 custom_variable ("Mailaliases", dircat (getenv ("HOME"), ".addressbook"));
 
 %!% where to find the [SPACE] delimited mail alias list
-!if (is_defined ("Mailrc"))
+ifnot (is_defined ("Mailrc"))
 {
    variable Mailrc = getenv ("MAILRC");
    if (Mailrc == NULL)
@@ -85,7 +85,7 @@ define mailalias_xAlias (alias)	%{{{
    variable name, addr = Null_String;
    variable name0, name1;
 
-   !if (strlen (alias)) return addr;
+   ifnot (strlen (alias)) return addr;
    if ((is_substr (alias, "@") or is_substr (alias, "<")))
      {
 	% "<user@machine.domain>"
@@ -94,7 +94,7 @@ define mailalias_xAlias (alias)	%{{{
      }
 
    bob ();
-   !if (right (bol_fsearch (alias + "\t"))) return alias;
+   ifnot (right (bol_fsearch (alias + "\t"))) return alias;
 
    % hand-rolled functions, regular expressions are too inconsistent
    % and do not work across lines
@@ -121,7 +121,7 @@ define mailalias_xAlias (alias)	%{{{
 	name = Null_String;	% ignore name of distribution list?
 	go_right (1);
 	push_mark ();
-	!if (fsearch_char (')')) skip_chars ("^\t \n");	% messed-up entry?
+	ifnot (fsearch_char (')')) skip_chars ("^\t \n");	% messed-up entry?
 	addr = mailalias_xList (bufsubstr (), 1);
      }
    else
@@ -156,12 +156,12 @@ define mailrc_xAlias (alias)	%{{{
    replace ("\t", " ");
    
    n = bol_fsearch (name);
-   !if (n)
+   ifnot (n)
      {
 	% look for "group name"
 	name = "group " + alias + " ";
 	n = bol_fsearch (name);
-	!if (n) return alias;
+	ifnot (n) return alias;
      }
    
    go_right (n);

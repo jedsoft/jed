@@ -418,7 +418,7 @@ define buffer_filename ()
    variable args = __pop_args (_NARGS);
    variable file, dir;
    (file, dir, , ) = getbuf_info(__push_args (args));
-   !if (strlen (file)) dir = "";
+   ifnot (strlen (file)) dir = "";
    return dir + file;
 }
 
@@ -522,7 +522,7 @@ define expand_jedlib_file (f)
 define find_jedlib_file(file)
 {
    file = expand_jedlib_file(file);
-   !if (strlen(file)) return(0);
+   ifnot (strlen(file)) return(0);
    find_file(file);
 }
 
@@ -1342,7 +1342,7 @@ define del_eol ()
 define del_through_eol ()
 {
    del_eol ();
-   !if (eobp ()) del ();
+   ifnot (eobp ()) del ();
 }
 
 %!%+
@@ -1456,7 +1456,7 @@ define get_blocal_var ()
    if (_NARGS == 2)
      {
 	(name, value) = ();
-	!if (blocal_var_exists (name))
+	ifnot (blocal_var_exists (name))
 	  return value;
      }
    else name = ();
@@ -1514,7 +1514,7 @@ define make_backup_filename(dir, file)
      return "";
 #elifdef IBMPC_SYSTEM
    variable type;
-   !if (pc_system_support_long_filenames (dir))
+   ifnot (pc_system_support_long_filenames (dir))
      {
 	% There are several things to worry about.  Here just break up the
 	% filename and truncate type to 2 chars and paste it back.
@@ -1523,7 +1523,7 @@ define make_backup_filename(dir, file)
 	% 'file.~'
 
 	type = path_extname (file);
-	!if (strlen (type))
+	ifnot (strlen (type))
 	  type = ".";
 	type = substr (type, 1, 3);
 	file = strcat (path_sans_extname (file), type);
@@ -1610,7 +1610,7 @@ define emacs_escape_x()
 	     return;
 	  }
 
-	!if (EXECUTING_MACRO or DEFINING_MACRO)
+	ifnot (EXECUTING_MACRO or DEFINING_MACRO)
 	  {
 	     if (i == 1) ungetkey(13);
 	     ungetkey(' ');
@@ -1770,7 +1770,7 @@ define modeline_hook()
 	     mode = bufsubstr ();
 	  }
 
-	!if (is_defined (mode + "_mode"))
+	ifnot (is_defined (mode + "_mode"))
 	  {
 	     if (is_list_element ("bash,ksh,ash,zsh,csh", mode, ','))
 	       mode = "sh";
@@ -1799,7 +1799,7 @@ define modeline_hook()
      {
 	variable mstr = "_mode";
 	mode = strtrans (mode, "-", "_");
-	!if (is_substr (mode, mstr)) mode += "_mode"; %mode = strcat (mode, "_mode" );
+	ifnot (is_substr (mode, mstr)) mode += "_mode"; %mode = strcat (mode, "_mode" );
 
 	if (mode == "c++_mode")
 	  mode = "c_mode";
@@ -1903,7 +1903,7 @@ define mode_hook (ext)
 	return;
      }
 
-   !if (strncmp (strup (extract_filename (buffer_filename ())), "READ", 4))
+   ifnot (strncmp (strup (extract_filename (buffer_filename ())), "READ", 4))
      {
 	text_mode ();
 	return;
@@ -2263,10 +2263,10 @@ define help ()
 
    if (help_file == NULL) help_file = "";
 
-   !if (strlen(help_file)) help_file = "generic.hlp";
+   ifnot (strlen(help_file)) help_file = "generic.hlp";
    help_file = expand_jedlib_file(help_file);
 
-  !if (buffer_visible (hlp))
+  ifnot (buffer_visible (hlp))
      {
 	buf = whatbuf();
 	onewindow();
@@ -2300,7 +2300,7 @@ define help_prefix()
 {
    variable c;
 
-   !if (input_pending(7)) flush (help_for_help_string);
+   ifnot (input_pending(7)) flush (help_for_help_string);
    c = toupper (getkey());
    switch (c)
      { case  8 or case 'H': help (); }
@@ -2337,7 +2337,7 @@ define help_prefix()
 
 % Make sure this is defined even in batch mode.
 public define mini_init_minibuffer ();
-!if (BATCH)
+ifnot (BATCH)
   () = evalfile("mini");
 
 %{{{ Reading from Mini-Buffer functions
@@ -2458,7 +2458,7 @@ private define vms_resume_hook ()
 {
    variable file = getenv("JED_FILE_NAME");
    if (file != NULL)
-     !if (find_file(file)) error("File not found!");
+     ifnot (find_file(file)) error("File not found!");
 }
 %}}}
 add_to_hook ("_jed_resume_hooks", &vms_resume_hook);
@@ -2546,17 +2546,17 @@ define save_buffer()
 {
    variable file;
 
-   !if (buffer_modified ())
+   ifnot (buffer_modified ())
      {
 	message("Buffer not modified.");
 	return;
      }
 
    file = buffer_filename ();
-   !if (strlen(file))
+   ifnot (strlen(file))
      file = read_file_from_mini ("Save to file:");
 
-   !if (strlen(file))
+   ifnot (strlen(file))
      error ("File name not specified");
 
    () = write_buffer (file);
@@ -2599,7 +2599,7 @@ define bskip_word()
 {
    while (bskip_non_word_chars(), bolp())
      {
-	!if (left(1)) break;
+	ifnot (left(1)) break;
      }
    bskip_word_chars();
 }
@@ -2727,7 +2727,7 @@ define buffer_format_in_columns()
 		  del();
 	       }
 	  }
-	!if (down_1 ()) break;
+	ifnot (down_1 ()) break;
 	% bol (); % this is a side effect of going down
      }
    pop_spot();
@@ -2867,7 +2867,7 @@ define expand_file_hook (file)
 # ifdef UNIX
    % Now look for things like: /~name/...
    pos = string_match (file, "^~", 1);
-   !if (pos)
+   ifnot (pos)
      pos = -string_match (file, "/~", 1);
 
    if (pos)
@@ -2894,7 +2894,7 @@ define expand_file_hook (file)
 	     file = Null_String;
 	  }
 
-	!if (strlen (name))
+	ifnot (strlen (name))
 	  return 0;
 
 	if (file[0] == '/') (, file) = str_split (file, 2);
@@ -3107,7 +3107,7 @@ define command_line_hook () %{{{
      }
 
    % Set up defaults in case user did not do it.
-   !if (BATCH)
+   ifnot (BATCH)
      {
 	if (_Jed_Emulation == NULL)
 	  {
@@ -3128,7 +3128,7 @@ define command_line_hook () %{{{
 	return;
      }
 #endif
-   !if (n) return;
+   ifnot (n) return;
 
    %
    % Is JED to emulate most?

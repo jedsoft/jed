@@ -26,7 +26,7 @@ define trim_buffer()
    bob(); eol_trim(); bol(); 
    if (eolp() and not(eobp ())) del();
    pop_spot();
-   !if (BATCH) message ("done.");
+   ifnot (BATCH) message ("done.");
 }
 
 

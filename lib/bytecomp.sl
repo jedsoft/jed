@@ -8,7 +8,7 @@
 %
 %
 
-!if (is_defined ("Preprocess_Only"))
+ifnot (is_defined ("Preprocess_Only"))
 {
    variable Preprocess_Only = 0;
 }
@@ -218,7 +218,7 @@ private define do_color_schemes ()
 	  continue;
    
 	i = where (array_map (Int_Type, &string_match, files, "\\.sl$", 1));
-	!if (length (i))
+	ifnot (length (i))
 	  continue;
 	
 	foreach (files[i])

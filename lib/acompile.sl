@@ -30,7 +30,7 @@ private define compile_start_process (cmd)
 
    if (cmd == NULL)
      cmd = read_mini ("Compile command:", "", Compile_Last_Compile_Cmd);
-   !if (strlen (cmd))
+   ifnot (strlen (cmd))
      return;
 
    (,dir,,) = getbuf_info ();

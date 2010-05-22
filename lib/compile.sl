@@ -69,7 +69,7 @@ private define compile_parse_make_chdir ()
 
 	goto_user_mark (beg_mark);
 
-	!if (up_1 ()) return Null_String;
+	ifnot (up_1 ()) return Null_String;
 
 	if (re_bsearch (Compile_Dir_Enter))
 	  {
@@ -122,7 +122,7 @@ private define compile_parse_errors_dir (next_error_fun, next_line_fun)
 
    Compile_Line_Mark = 0;
 
-   !if (bufferp(obuf))
+   ifnot (bufferp(obuf))
      {
 	flush ("Did you compile?");
 	return;
@@ -134,8 +134,8 @@ private define compile_parse_errors_dir (next_error_fun, next_line_fun)
 
    if (@next_error_fun (&file, &line, &col))
      {
-	!if (strlen (line)) return;
-	!if (strlen (col)) col = "0";
+	ifnot (strlen (line)) return;
+	ifnot (strlen (col)) col = "0";
 
 	bol();
 	Compile_Line_Mark = create_line_mark (3);
@@ -165,7 +165,7 @@ private define compile_find_next_error_fun (filep, linep, colp)
      return @(Error_Regexp) (1, filep, linep, colp);
 
    bol ();
-   !if (re_fsearch (Error_Regexp))
+   ifnot (re_fsearch (Error_Regexp))
      {
 	eob ();
 	return 0;
@@ -190,7 +190,7 @@ private define compile_find_prev_error_fun (filep, linep, colp)
    if (typeof (Error_Regexp) == Ref_Type)
      return @Error_Regexp (-1, filep, linep, colp);
 
-   !if (re_bsearch (Error_Regexp))
+   ifnot (re_bsearch (Error_Regexp))
      {
 	bob ();
 	return 0;

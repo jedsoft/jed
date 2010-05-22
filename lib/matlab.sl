@@ -7,7 +7,7 @@
 %  Last updated: 19 May 1999
 
 $1 = "matlab";
-!if (keymap_p ($1)) make_keymap ($1);
+ifnot (keymap_p ($1)) make_keymap ($1);
 
 % very few facilities at the moment: simple syntax highlighting,
 % indent, and comment/uncomment.
@@ -166,7 +166,7 @@ define matlab_uncomment ()
 
 define matlab_comment ()
 {
-   !if (matlab_is_comment ())
+   ifnot (matlab_is_comment ())
      {
 	push_spot_bol ();
 	insert ("%");

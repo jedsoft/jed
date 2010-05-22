@@ -214,7 +214,7 @@ define isearch_dir (dir)
 	     else
 	       {
 		  go_right_1 ();
-		  !if (strlen (str))
+		  ifnot (strlen (str))
 		    {
 		       str = Isearch_Last_Search;
 		       len = strlen (str);
@@ -232,7 +232,7 @@ define isearch_dir (dir)
 	       }
 	     else
 	       {
-		  !if (strlen (str)) str = Isearch_Last_Search;
+		  ifnot (strlen (str)) str = Isearch_Last_Search;
 	       }
 	  }
 	  { case 127 :

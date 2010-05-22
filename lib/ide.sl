@@ -438,7 +438,7 @@ define ide_repeat_search ()             % ^L
 {
   ide_set_bookmark ();
   go_right_1 ();
-   !if (fsearch(LAST_SEARCH)) error ("Not found.");
+   ifnot (fsearch(LAST_SEARCH)) error ("Not found.");
 }
 
 define ide_bdelete_word ()              % M-O
@@ -625,7 +625,7 @@ define ide_open_file_at_cursor ()       % Alt-Return, J.L.
    variable fn = bufsubstr (); % the file name
    pop_mark_0 ();
    pop_spot ();
-   !if (1 == file_status (fn)) error(strcat("File ",fn," not found"));
+   ifnot (1 == file_status (fn)) error(strcat("File ",fn," not found"));
    () = find_file (fn);
 }
 
@@ -657,7 +657,7 @@ define ide_filter_region ()             % ^K/, Joe extension
   variable cmd, tmp_file;
   ide_end_block ();
   cmd = read_mini ("Pipe to command:", Last_Process_Command, Null_String);
-  !if (strlen (cmd)) 
+  ifnot (strlen (cmd)) 
      return;
    
   Last_Process_Command = cmd;

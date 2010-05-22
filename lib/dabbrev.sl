@@ -115,7 +115,7 @@ private define get_buffer_mode_name (buf)
 private define get_buflist(scope)
 {
    variable cbuf = whatbuf ();
-   !if(scope)
+   ifnot(scope)
      return cbuf;
 
    variable buffers = [buffer_list (), pop ()];
@@ -332,7 +332,7 @@ private define dab_search (c, search_dir, match_method, pattern)
 	     else 
 	       found = bsearch (pattern);
 
-	     !if (found)
+	     ifnot (found)
 	       return NULL;
 	     
 	     % test whether at begin of a word

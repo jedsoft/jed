@@ -120,7 +120,7 @@ define tpas_wrap_hook() {
 % keymap definiiton
 %
 
-!if (keymap_p("TPas")) {
+ifnot (keymap_p("TPas")) {
    make_keymap("TPas");
    %undefinekey ("^C");
    definekey_reserved ("tpas_main", "m", "TPas");

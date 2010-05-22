@@ -286,7 +286,7 @@ set_syntax_flags ($1, 8);                       %
 % Set up syntax table
 
 $1 = "VHDL";
-!if (keymap_p ($1)) make_keymap ($1);
+ifnot (keymap_p ($1)) make_keymap ($1);
 
 definekey ("vhdl_beg_of_subprogram",	"\e^A",	$1);
 definekey ("vhdl_end_of_subprogram",	"\e^E",	$1);

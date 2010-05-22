@@ -120,11 +120,11 @@ define glob_to_regexp (glob)
 define list_directory ()
 {
    variable pat = read_file_from_mini ("list directory");
-   !if (strlen (pat))
+   ifnot (strlen (pat))
      return;
    variable dir = path_dirname (pat);
    pat = path_basename (pat);
-   !if (strlen(pat))
+   ifnot (strlen(pat))
      pat = "*";
 
    if (file_status (dir) != 2)
@@ -162,14 +162,14 @@ define directory (dirspec)
    variable pattern;
    variable files, i;
 
-   !if (strlen (dirspec))
+   ifnot (strlen (dirspec))
      dirspec = "*";
 
    (,buf_dir,,) = getbuf_info ();
    pattern = extract_filename (dirspec);
    dir = substr (dirspec, 1, strlen (dirspec) - strlen (pattern));
    dir = dircat (buf_dir, dir);
-   !if (strlen (dir))
+   ifnot (strlen (dir))
      dir = ".";
 
    pattern = glob_to_regexp (pattern);

@@ -102,7 +102,7 @@ define info_make_file_name (file)
 	if (strlen(cext)) break;
 #endif
 
-	!if (strlen(dir)) error ("Info file not found: " + file);
+	ifnot (strlen(dir)) error ("Info file not found: " + file);
 	++n;
      }
    
@@ -200,12 +200,12 @@ define info_find_node_this_file (the_node)
    forever
      {
 	% some of this could/should be replaced by a regular expression:
-	% !if (re_fsearch("^[\t ]*\x1F")) ....
+	% ifnot (re_fsearch("^[\t ]*\x1F")) ....
 	
-	!if (info_search_marker(1))
+	ifnot (info_search_marker(1))
 	  {
 	     % dont give up, maybe this is a split file
-	     !if (strlen(Info_Split_File_Buffer)) 
+	     ifnot (strlen(Info_Split_File_Buffer)) 
 	     error("Marker not found. " + node);
 	     setbuf(Info_Split_File_Buffer);
 	     info_find_node_split_file(the_node);
@@ -235,7 +235,7 @@ define info_find_node_split_file (node)
    variable re;
    buf = " *Info*";
   
-   !if (bufferp(buf), setbuf(buf)) 
+   ifnot (bufferp(buf), setbuf(buf)) 
      {
 	insbuf("*Info*");
      }
@@ -249,13 +249,13 @@ define info_find_node_split_file (node)
    eob();
   
    
-   %!if (bol_bsearch(tag)) error("tag not found.");
+   %ifnot (bol_bsearch(tag)) error("tag not found.");
    %go_right(strlen(tag));
    %skip_chars(" \t\x7F");
    
    re = tag + "[\t \x7F]\\d+[ \t]*$";
    
-   !if (re_bsearch(re)) verror ("tag %s not found.", tag);
+   ifnot (re_bsearch(re)) verror ("tag %s not found.", tag);
    eol ();
    bskip_chars(" \t");
    push_mark(); bskip_chars ("0-9");
@@ -265,14 +265,14 @@ define info_find_node_split_file (node)
    bob ();
    bol_fsearch("Indirect:"); pop();
    push_mark();
-   !if (info_search_marker(1)) eob();
+   ifnot (info_search_marker(1)) eob();
    narrow();
    bob();
    forever
      {
-	!if (down_1 ()) break;
+	ifnot (down_1 ()) break;
 	% bol(); --- implicit in down
-	!if (ffind(": ")) break;
+	ifnot (ffind(": ")) break;
 	go_right(2);
 	
 	% This will not work on DOS with 16 bit ints.  Do strcmp instead.
@@ -313,7 +313,7 @@ define info_narrow()
 
   % stack for last position 
 
-!if (is_defined ("Info_Position_Type"))
+ifnot (is_defined ("Info_Position_Type"))
 {
    typedef struct
      {
@@ -399,10 +399,10 @@ define info_find_node(node)
      }
    
    node = strtrim (node);
-   !if (strlen(node)) node = "Top";
+   ifnot (strlen(node)) node = "Top";
    widen();
    push_spot_bob ();
-   !if (info_search_marker(1)) error("Marker not found.");
+   ifnot (info_search_marker(1)) error("Marker not found.");
    go_down_1 ();
   
    if (looking_at("Indirect:"), pop_spot())
@@ -426,18 +426,18 @@ define info_find_menu(save)
 
    forever 
      {
-	!if (re_fsearch(menu_re))
+	ifnot (re_fsearch(menu_re))
 	  {
 	     pop_spot();
 	     error ("Node has no menu.");
 	  } 
 	
 	go_right (7);
-	!if (looking_at_char (':'))
+	ifnot (looking_at_char (':'))
 	  break;
      }
    
-   !if (save) 
+   ifnot (save) 
      {
 	pop_spot();
 	return;
@@ -478,7 +478,7 @@ define info_follow_current_xref ()
    
    push_spot();
   
-   !if (fsearch_char (':'))
+   ifnot (fsearch_char (':'))
      {
 	pop_spot(); error ("Corrupt File?");
      }
@@ -538,14 +538,14 @@ define info_menu ()
 	bol ();
      }
 
-   !if (strlen (node) and (LAST_CHAR == '\r'))
+   ifnot (strlen (node) and (LAST_CHAR == '\r'))
      {
 	node = read_mini("Menu item:", node, Null_String);
 	info_find_menu (1);
      }
 
-   !if (bol_fsearch("* " + node)) error ("Menu Item not found.");
-   !if (ffind(colon)) error ("Corrupt File?");
+   ifnot (bol_fsearch("* " + node)) error ("Menu Item not found.");
+   ifnot (ffind(colon)) error ("Corrupt File?");
 
    if (looking_at(colons))
      {
@@ -580,7 +580,7 @@ define info_find_dir()
 define info_up ()
 {   
    bob();
-   !if (ffind("Up: ")) 
+   ifnot (ffind("Up: ")) 
      {
 	info_find_dir ();
 	return;
@@ -598,9 +598,9 @@ define info_prev()
 {
    variable n;  n = 10;
    bob();
-   !if (ffind("Previous: "))
+   ifnot (ffind("Previous: "))
      {
-	!if (ffind("Prev: ")) error ("Node has no PREVIOUS");
+	ifnot (ffind("Prev: ")) error ("Node has no PREVIOUS");
 	n = 6;
      }
    
@@ -653,7 +653,7 @@ define info_goto_last_position ()
 	setbuf ("*Info*");
      } 
     
-   !if (strlen(file)) return;
+   ifnot (strlen(file)) return;
    info_find_file(file);
    goto_line(n); bol();
    info_narrow();
@@ -662,7 +662,7 @@ define info_goto_last_position ()
 define info_next ()
 {   
    bob();
-   !if (ffind("Next: ")) 
+   ifnot (ffind("Next: ")) 
      {
 	info_goto_last_position ();
 	message ("Node has no NEXT.");
@@ -683,7 +683,7 @@ define info_quick_help()
 
   
 $2 = "Infomap";
-!if (keymap_p($2))
+ifnot (keymap_p($2))
 {
    make_keymap($2);
    definekey("info_quick_help",		"?", $2);
@@ -749,7 +749,7 @@ define info_search ()
    err_str = "String not found.";
     
    str = read_mini("Re-Search:", LAST_SEARCH, Null_String);
-   !if (strlen(str)) return;
+   ifnot (strlen(str)) return;
    save_search_string(str);
    widen(); go_right_1 (); 
    if (re_fsearch(str)) 
@@ -761,7 +761,7 @@ define info_search ()
    %
    %  Not found.  Look to see if this is split.
    %
-   !if (strlen(Info_Split_File_Buffer))
+   ifnot (strlen(Info_Split_File_Buffer))
      {
 	info_narrow();
 	error (err_str);
@@ -794,7 +794,7 @@ define info_search ()
 	% bol(); --- implicit
 	push_mark();
 	
-	!if (ffind_char (':')) {pop_mark_0 ();  break; } 
+	ifnot (ffind_char (':')) {pop_mark_0 ();  break; } 
 	file = bufsubstr();
 	flush("Searching " + file);
 	(ifile, ext) = info_make_file_name(file);
@@ -823,7 +823,7 @@ define info_search ()
 	  }
 	else
 #endif
-	!if (search_file(ifile, str, 1))
+	ifnot (search_file(ifile, str, 1))
 	  {
 	     setbuf(Info_Split_File_Buffer);
 	     continue;
@@ -855,7 +855,7 @@ define info_looking_at (ref)
      {
 	n++;
 	skip_chars (" \t\n");
-	!if (looking_at (word)) return 0;
+	ifnot (looking_at (word)) return 0;
 	go_right (strlen (word));
      }
    1;
@@ -871,9 +871,9 @@ define info_follow_reference ()
    err = "No cross references.";
    
    push_spot();
-   !if (fsearch(note))
+   ifnot (fsearch(note))
      {
-	!if (bsearch(note))
+	ifnot (bsearch(note))
 	  {
 	     pop_spot();
 	     error(err);
@@ -885,7 +885,7 @@ define info_follow_reference ()
    push_spot_bob ();
    forever
      {
-	!if (fsearch(note))
+	ifnot (fsearch(note))
 	  {
 	     pop_spot();
 	     error ("Bad reference.");
@@ -924,7 +924,7 @@ define info_menu_number ()
 
    while (n)
      { 
-	!if (bol_fsearch("* ")) return (beep());
+	ifnot (bol_fsearch("* ")) return (beep());
 	if (ffind(colon)) --n; else eol();
      }
    
@@ -959,7 +959,7 @@ private define start_info_reader ()
 {
    variable ibuf; ibuf = "*Info*";
    if (Info_Stack_Depth) info_goto_last_position ();
-   !if (bufferp(ibuf)) info_find_dir();
+   ifnot (bufferp(ibuf)) info_find_dir();
    pop2buf(ibuf);
    onewindow();
    if (0 == is_defined ("info_reader_hook"))

@@ -177,7 +177,7 @@ define history_local_save ()
            error ("history_local_save canceled.");
      }
 
-   !if (history_save (file))
+   ifnot (history_save (file))
       flush (sprintf ("History saved in '%s'", file));
 }
 

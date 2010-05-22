@@ -72,7 +72,7 @@ if ($1 != NULL)
 }
 
 % the definition of Key_Space is missing, but it is useful
-!if (assoc_key_exists(Key_Name_Table, " "))
+ifnot (assoc_key_exists(Key_Name_Table, " "))
   Key_Name_Table[" "] = "Space";
 
 private define keyeqs (seq, key)
@@ -242,9 +242,9 @@ define where_is ()
    if (MINIBUFFER_ACTIVE) return;
    
    cmd = read_with_completion ("Where is command:", "", "", 'F');
-   !if (strlen (cmd)) return;
+   ifnot (strlen (cmd)) return;
    n = which_key (cmd);
-   !if (n) return message ("Not on any keys.");
+   ifnot (n) return message ("Not on any keys.");
    
    message (expand_keystring ());
    --n; loop (n) pop ();
@@ -383,14 +383,14 @@ define describe_mode ()
    (modstr, flags) = what_mode ();
    
    modstr = extract_element (modstr, 0, ' ');
-   !if (strlen (modstr)) modstr = "no";
-   !if (is_defined (modstr))
+   ifnot (strlen (modstr)) modstr = "no";
+   ifnot (is_defined (modstr))
      {
 	modstr = strlow (modstr);
-	!if (is_defined (modstr))
+	ifnot (is_defined (modstr))
 	  {
 	     modstr += "_mode";
-	     !if (is_defined (modstr))
+	     ifnot (is_defined (modstr))
 	       error ("Mode is not defined: " +  modstr);
 	  }
      }
@@ -551,7 +551,7 @@ define describe_bindings ()
 	  }
 
 	push_mark();
-	!if ( ffind_char('(') )
+	ifnot ( ffind_char('(') )
 	  eol();
 	variable fun = bufsubstr();
 	variable dsc;

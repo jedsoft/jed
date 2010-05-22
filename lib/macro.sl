@@ -6,10 +6,10 @@ define macro_save_macro ()
    variable macro_name;
    
    file = read_file_from_mini ("Macro filename:");
-   !if (strlen (file)) return;
+   ifnot (strlen (file)) return;
    
    macro_name = read_mini ("Name of macro:", Null_String, Null_String);
-   !if (strlen (macro_name)) return;
+   ifnot (strlen (macro_name)) return;
    
    str = sprintf ("%%%%%%MACRO NAME: %s\n@%s\n\n", macro_name, str);
    
@@ -77,7 +77,7 @@ define macro_to_function ()
 
 	if (f == "self_insert_cmd")
 	  {
-	     !if (last_was_insert)
+	     ifnot (last_was_insert)
 	       {
 		  insert ("  insert (\"\");  % insert text here\n");
 		  last_was_insert = 1;

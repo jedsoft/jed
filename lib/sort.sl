@@ -38,7 +38,7 @@ define sort_using_function (sort_fun)
    %  arrange region
    %
    goto_line (end_line);
-   !if (down_1 ())
+   ifnot (down_1 ())
      {
 	eol();
 	newline();

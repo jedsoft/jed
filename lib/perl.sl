@@ -155,7 +155,7 @@
 %% autoload ("perldoc",	"perlxtra");
 require ("perlxtra");
 
-% !if (is_defined("perldoc") and is_defined("Perl_Indent")) 
+% ifnot (is_defined("perldoc") and is_defined("Perl_Indent")) 
 %  () = evalfile("perlxtra");
 
 %{{{ default values for Perl custom variables
@@ -188,8 +188,8 @@ static variable
 
 %{{{ create/initialize key map
 $1 = "perl";
-!if (keymap_p ($1)) make_keymap($1);
-!if (is_defined("Win_Keys") ) {  % conflict with windows region copy
+ifnot (keymap_p ($1)) make_keymap($1);
+ifnot (is_defined("Win_Keys") ) {  % conflict with windows region copy
     definekey("perl_help",	"^C?", $1);
     definekey("perl_check",	"^Cc", $1);
     definekey("perl_exec",	"^Ce", $1);
@@ -356,7 +356,7 @@ private define perl_parse_to_point()
       return -3;		% pod!
 
     % check for the start of a comment
-    !if (ptp) {
+    ifnot (ptp) {
 	goto_spot();
 	bol_skip_white();
 	if (looking_at_char('#')) return -2;
@@ -446,7 +446,7 @@ private define find_matching_brace_ignore_fold_marks (endch)
    variable m = create_user_mark ();
    if (1 != find_matching_delimiter (endch))
      return 0;
-   !if (blooking_at ("#{{") or blooking_at ("# {{"))
+   ifnot (blooking_at ("#{{") or blooking_at ("# {{"))
      return 1;
    go_left(2);
    if (1 == find_matching_brace_ignore_fold_marks (endch))
@@ -510,7 +510,7 @@ public define perl_indent_line()
     variable rc, endch = ')';
     rc = find_matching_delimiter(endch);
 
-    !if (rc) {	% enclosing '()' not found - retry with enclosing '[]'
+    ifnot (rc) {	% enclosing '()' not found - retry with enclosing '[]'
 	goto_spot(); bol();
 	endch = ']';
 	rc = find_matching_delimiter(endch);
@@ -579,7 +579,7 @@ public define perl_indent_line()
 	if ( orelse { bfind_char ('(') } { bfind_char ('[') } ) {
 	    goto_spot();
 	    rc = find_matching_delimiter(')');
-	    !if (rc) {	% enclosing '()' not found
+	    ifnot (rc) {	% enclosing '()' not found
 		goto_spot();	% retry with enclosing '[]'
 		rc = find_matching_delimiter(']');
 	    }
@@ -622,25 +622,25 @@ public define perl_indent_line()
     % Find previous non-comment line
     do {
 	% Start of file, pretty hard to find context ;-)
-	!if (up_1()) {
+	ifnot (up_1()) {
 	    bol();
 	    break;
 	}
 	bol_skip_white();
-	!if (eolp()) go_right_1();
+	ifnot (eolp()) go_right_1();
     } while (perl_parse_to_point() <= -2);
     eol();
 
     % Find last non-comment character
     while ( ptp = perl_parse_to_point(), (ptp <= -2) ) {
-	!if (left(1)) break;
+	ifnot (left(1)) break;
     }
 
     % vmessage("look = %c", what_char);
 
     bskip_white();
     ch = ';';		% default final character
-    !if (bolp()) {
+    ifnot (bolp()) {
 	go_left_1();
 	if (perl_parse_to_point() >= -2) ch = what_char();
     }
@@ -684,7 +684,7 @@ public define perl_indent_line()
 %!%-
 public define perl_indent_region()
 {
-    !if (markp()) {
+    ifnot (markp()) {
 	perl_indent_line();	% do this line and get out
 	return;
     }
@@ -801,7 +801,7 @@ define perl_beg_chunk()
     variable ptp = perl_parse_to_point();
     if (ptp > -3) beg = "sub";	% not inside of pod
     eol(); 
-    !if (bol_bsearch(beg)) error ("Top of '" + beg + "' not found.");
+    ifnot (bol_bsearch(beg)) error ("Top of '" + beg + "' not found.");
 }
 
 %!%+
@@ -819,7 +819,7 @@ define perl_end_chunk()
 	if (fsearch_char('{')) call("goto_match");
     } else {
 	bol();
-	!if (bol_fsearch(pod_end)) error(pod_end + " not found");
+	ifnot (bol_fsearch(pod_end)) error(pod_end + " not found");
     }
 }
 
@@ -911,7 +911,7 @@ static variable PerlMode_CommentLen = 2;
 %
 define perl_newline_and_indent()
 {
-    !if (bolp()) {
+    ifnot (bolp()) {
 	push_spot();
 	bol_skip_white();
 	if (looking_at_char('#')) {
@@ -969,14 +969,14 @@ define perl_format_paragraph()
     if (perl_paragraph_sep()) return;
     push_spot();
     while ( not(perl_paragraph_sep()) ) {
-	!if (up_1()) break;
+	ifnot (up_1()) break;
     }
     if (perl_paragraph_sep()) go_down_1();
     push_mark();
     goto_spot();
     
     while ( not(perl_paragraph_sep()) ) {
-	!if (down_1()) break;
+	ifnot (down_1()) break;
     }
     if (perl_paragraph_sep()) go_up_1();
     narrow();

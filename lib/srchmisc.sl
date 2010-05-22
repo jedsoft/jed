@@ -45,7 +45,7 @@ define replace_with_query (search_fun, pat, rep, query, rep_fun)
    
    while (pat_len = @search_fun (pat), pat_len >= 0)
      {
-	!if (query)
+	ifnot (query)
 	  {
 	     %tmp = create_user_mark ();
 	     () = @rep_fun (rep, pat_len);

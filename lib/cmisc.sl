@@ -16,7 +16,7 @@ define c_make_comment ()
    cend = "*/";
 
    (, mode) = what_mode ();
-   !if (mode & 2) return;
+   ifnot (mode & 2) return;
 
    (file,,,) = getbuf_info();
 
@@ -30,7 +30,7 @@ define c_make_comment ()
    eol();
    if (bfind(cbeg))
      {
-	!if (bolp())
+	ifnot (bolp())
 	  {
 	     go_left_1 ();
 	     trim();
@@ -38,7 +38,7 @@ define c_make_comment ()
 	  }
 	d = C_Comment_Column - what_column;
 	if (d > 0) whitespace(d);
-	!if (ffind(cend))
+	ifnot (ffind(cend))
 	  {
 	     eol();
 	     insert_spaces (2);
@@ -89,13 +89,13 @@ define c_format_paragraph ()
 {
    variable n, dwrap;
 
-   % !if (is_c_mode ()) return;
+   % ifnot (is_c_mode ()) return;
    Cmode_Fill_Chars = "";
    if (c_paragraph_sep ()) return;
    push_spot (); push_spot (); push_spot ();
    while (not(c_paragraph_sep ()))
      {
-	!if (up_1 ()) break;
+	ifnot (up_1 ()) break;
      }
    if (c_paragraph_sep ()) go_down_1 ();
    push_mark ();
@@ -103,7 +103,7 @@ define c_format_paragraph ()
 
    while (not(c_paragraph_sep ()))
      {
-	!if (down_1 ()) break;
+	ifnot (down_1 ()) break;
      }
    if (c_paragraph_sep ()) go_up_1 ();
    narrow ();
@@ -201,7 +201,7 @@ define c_comment_region ()
    else
      {
 	eol ();
-	!if (right(1)) newline ();
+	ifnot (right(1)) newline ();
      }
    X_USER_BLOCK0 (cend, 0);
    pop_spot ();
@@ -210,7 +210,7 @@ define c_comment_region ()
 
 define c_top_of_function ()
 {
-   !if (bol_bsearch_char ('{'))
+   ifnot (bol_bsearch_char ('{'))
      {
 	error ("Top of function not found.");
      }
@@ -219,10 +219,10 @@ define c_top_of_function ()
 define c_end_of_function ()
 {
    eol ();
-   !if (bol_fsearch_char ('}'))
+   ifnot (bol_fsearch_char ('}'))
      error ("End of function not found");
 % was:   
-   % !if (bolp () and looking_at_char ('{'))
+   % ifnot (bolp () and looking_at_char ('{'))
    %   c_top_of_function ();
    % call ("goto_match");
 }
@@ -252,7 +252,7 @@ define c_plus_plus_make_comment()
     eol();
     if (bfind(cbeg))
     {
-	!if (bolp())
+	ifnot (bolp())
 	{
 	    go_left_1 ();
 	    trim();

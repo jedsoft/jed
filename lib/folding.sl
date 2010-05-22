@@ -1,7 +1,7 @@
 % -*- mode: slang; mode: fold -*-
 _debug_info = 1;
 
-!if (is_defined ("Fold_Bob_Eob_Error_Action")) %{{{
+ifnot (is_defined ("Fold_Bob_Eob_Error_Action")) %{{{
 {
 %!%+
 %\variable{Fold_Bob_Eob_Error_Action}
@@ -71,7 +71,7 @@ private define fold_is_marker_line (start, end_of_start) %{{{
 	return 1;
      }
    eol ();
-   !if (bfind (start))
+   ifnot (bfind (start))
      {
 	return 0;
      }
@@ -80,7 +80,7 @@ private define fold_is_marker_line (start, end_of_start) %{{{
 %   skip_white ();
 %   end_of_start = strtrim (__tmp(end_of_start));
 %
-%   !if (looking_at (end_of_start))
+%   ifnot (looking_at (end_of_start))
 %     return 0;
    () = ffind (end_of_start);
 
@@ -110,7 +110,7 @@ private define fold_find_marker_line_reverse (start, end_of_start, hidden_check)
      {
 	if (fold_is_marker_line (start, end_of_start))
 	  {
-	     !if (hidden_check and is_line_hidden ())
+	     ifnot (hidden_check and is_line_hidden ())
 	       return 1;
 	  }
 	bol ();
@@ -172,7 +172,7 @@ define fold_whole_buffer () %{{{
      {
 	fold_this_fold (start, end, end_of_start, end_of_end, 
 			1, fold_level);
-	!if (down_1 ())
+	ifnot (down_1 ())
 	  break;
      }
    
@@ -194,12 +194,12 @@ private define fold_is_fold (start, end_of_start) %{{{
 	pop_spot ();
      }
    
-   !if (fold_is_marker_line (start, end_of_start))
+   ifnot (fold_is_marker_line (start, end_of_start))
      return 0;
    
    % Check to make sure this is not the top of the current fold by making
    % sure that the next line is hidden.
-   !if (down_1 ()) return 0;
+   ifnot (down_1 ()) return 0;
    return is_line_hidden ();
 }
 
@@ -244,7 +244,7 @@ define fold_enter_fold () %{{{
 	     break;
 	  }
 	goto_spot ();
-	!if (is_line_hidden ())
+	ifnot (is_line_hidden ())
 	  break;
      }
    
@@ -259,7 +259,7 @@ define fold_close_this_fold () %{{{
    
    (start, end, end_of_start, end_of_end) = fold_get_marks ();
    
-   !if (fold_find_marker_line (start, end_of_start))
+   ifnot (fold_find_marker_line (start, end_of_start))
      error ("Unable to find fold-start");
    
    fold_this_fold (start, end, end_of_start, end_of_end, 1, 1);
@@ -292,11 +292,11 @@ define fold_close_fold () %{{{
    
    if (fold_is_marker_line (start, end_of_start))
      {
-	!if (down_1())
+	ifnot (down_1())
 	  return;
 	is_line_hidden();
 	goto_user_mark (orig_mark);
-	!if (())
+	ifnot (())
 	  return;
      }
  
@@ -323,7 +323,7 @@ define fold_close_fold () %{{{
 	
 	goto_user_mark (beg_mark);
 	
-	!if (up_1 ()) break;
+	ifnot (up_1 ()) break;
 	if (fold_find_marker_line_reverse (start, end_of_start, 0))
 	  {
 	     if (not(end_line)
@@ -358,7 +358,7 @@ define fold_close_fold () %{{{
        {
         is_line_hidden();
         go_up_1();
-        !if (())
+        ifnot (())
           {
              fold_this_fold (start, end, end_of_start, end_of_end, 1, 1);
              pop_spot();
@@ -416,7 +416,7 @@ define fold_close_fold () %{{{
 
 private define fold_exit_fold_internal () %{{{
 {
-   !if (count_narrows ())
+   ifnot (count_narrows ())
      {
 	error ("You are not in a fold.");
 	return;
@@ -451,7 +451,7 @@ define fold_fold_region () %{{{
    if (fold_is_fold (start, end_of_start))
      {
 	skip_hidden_lines_forward (1);
-	!if (is_line_hidden ())
+	ifnot (is_line_hidden ())
 	  go_up_1 ();
      }
    
@@ -544,10 +544,10 @@ define fold_bob_eob_error_hook (f) %{{{
    
    if (f > 0) str = "End Of Buffer.";
 
-   !if (Fold_Bob_Eob_Error_Action)
+   ifnot (Fold_Bob_Eob_Error_Action)
      error (str);
    
-   !if (count_narrows () and (abs(f) == 1)) error (str);
+   ifnot (count_narrows () and (abs(f) == 1)) error (str);
    
    fold_exit_fold ();
    
@@ -580,7 +580,7 @@ define fold_bob_eob_error_hook (f) %{{{
 %{{{ mouse interface 
 $1 = "mouse_goto_position";
 $2 = "mouse";
-!if (is_defined ($1)) autoload ($1, $2);
+ifnot (is_defined ($1)) autoload ($1, $2);
 
 define fold_mouse_2click (line, col, but, shift) %{{{
 {
@@ -612,7 +612,7 @@ define fold_mouse_2click (line, col, but, shift) %{{{
 define fold_goto_line ()
 {
    variable n = read_mini ("Goto Line:", "", "");
-   !if (strlen (n))
+   ifnot (strlen (n))
      return;
    n = integer (n);
    fold_open_buffer ();
@@ -630,7 +630,7 @@ define fold_search_line_ok () %{{{
 
 $1 = "search_generic_search";
 $2 = "search";
-!if (is_defined ($1)) autoload ($1, $2);
+ifnot (is_defined ($1)) autoload ($1, $2);
 
 define fold_search_backward () %{{{
 {
@@ -698,7 +698,7 @@ define folding_mode () %{{{
 define c_fold_buffer () %{{{
 {
    bob ();
-   !if (ffind ("mode: fold"))
+   ifnot (ffind ("mode: fold"))
      {
 	insert ("/* -*- mode: C; mode: fold; -*- */\n");
      }
@@ -711,7 +711,7 @@ define c_fold_buffer () %{{{
 	push_mark ();
 
 	go_up_1 ();		       %  at eol
-	!if (re_bsearch ("^[a-z_A-Z]"))
+	ifnot (re_bsearch ("^[a-z_A-Z]"))
 	  {
 	     pop_mark_1 ();
 	     continue;
@@ -725,14 +725,14 @@ define c_fold_buffer () %{{{
 	
 	exchange_point_and_mark ();
 	
-	!if (bol_fsearch ("}"))
+	ifnot (bol_fsearch ("}"))
 	  {
 	     pop_mark_1 ();
 	     error ("Matching } at bol not found.");
 	  }
 	go_down_1 ();
 	trim ();
-	!if (eolp ())
+	ifnot (eolp ())
 	  {
 	     newline ();
 	     go_up_1 ();
@@ -753,7 +753,7 @@ define c_fold_buffer () %{{{
 private define fold_menu_callback (m)
 {
 #ifdef HAS_BLOCAL_VAR
-   !if (blocal_var_exists ("fold_start"))
+   ifnot (blocal_var_exists ("fold_start"))
      {
 	menu_append_item (m, "Enable &Folding", "folding_mode");
 	return;

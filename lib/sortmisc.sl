@@ -16,7 +16,7 @@ define sort_region_internal (line_break_str, delim)
    do
      {
 	push_mark ();
-	!if (bol_fsearch (delim)) eob ();
+	ifnot (bol_fsearch (delim)) eob ();
 	narrow ();
 	ERROR_BLOCK
 	  {

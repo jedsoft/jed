@@ -32,7 +32,7 @@ define maple_send_input ()
 	eol ();
 	push_mark ();
 	len = re_bsearch (Maple_Prompt_Regexp);	
-	!if (len)
+	ifnot (len)
 	  {
 	     pop_mark_0 ();
 	     return;
@@ -48,7 +48,7 @@ define maple_send_input ()
 }
 
 $1 = "MapleMap";
-!if (keymap_p ($1)) make_keymap ($1);
+ifnot (keymap_p ($1)) make_keymap ($1);
 definekey ("maple_send_input", "^M", $1);
 
 define maple_signal_handler (pid, flags, status)

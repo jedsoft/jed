@@ -37,7 +37,7 @@ private define extract_major_mode (mode)
 %!%-
 public define get_comment_info ()
 {
-   !if (_NARGS)
+   ifnot (_NARGS)
      get_mode_name ();
 
    variable modename = ();
@@ -168,7 +168,7 @@ public define comment_region ()
      {
 	indent_col = what_column ();
 	bskip_white ();
-	!if (bolp())
+	ifnot (bolp())
 	  indent_col = 1;
      }
    else
@@ -230,7 +230,7 @@ public define comment_region ()
      {
 	if (comment_blank_lines)
 	  {
-	     !if (down_1 ())
+	     ifnot (down_1 ())
 	       break;
 	     skip_white ();
 	     if (eolp ())
@@ -287,12 +287,12 @@ public define uncomment_region ()
 
    do
      {
-	!if (ffind (cbeg))
+	ifnot (ffind (cbeg))
 	  continue;
 	
 	deln (len_cbeg);
 	eol ();
-	!if (bfind (cend))
+	ifnot (bfind (cend))
 	  continue;
 
 	deln (len_cend);

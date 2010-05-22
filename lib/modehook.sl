@@ -69,7 +69,7 @@ define modeline_hook2 ()
      return 0;
 
    bob ();
-   !if (fsearch (tag)) return 0;
+   ifnot (fsearch (tag)) return 0;
 
    variable checked = -1;
 
@@ -82,13 +82,13 @@ define modeline_hook2 ()
 
 	push_spot ();
 	skip_white (); 
-	!if (ffind (tag), pop_spot ()) break;	% closing tag exists?
+	ifnot (ffind (tag), pop_spot ()) break;	% closing tag exists?
 
 	forever
 	  {
 	     skip_chars (" \t;");
 	     push_mark ();
-	     !if (ffind_char (':'))
+	     ifnot (ffind_char (':'))
 	       {
 		  pop_mark_0 ();
 		  break;
@@ -117,7 +117,7 @@ define modeline_hook2 ()
 	       { case "mode":
 		  modestr = "_mode";
 		  value = strlow (strtrans (value, "-", "_"));
-		  !if (is_substr (value, modestr)) 
+		  ifnot (is_substr (value, modestr)) 
 		    value += modestr;
 		  if (value == "c++_mode")
 		    value = "c_mode";

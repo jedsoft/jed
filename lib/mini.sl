@@ -83,7 +83,7 @@ public define mini_exit_minibuffer ()
    Mini_Next_Line = Mini_Last_Line;
 
    bol_skip_white ();
-   !if (eolp ())
+   ifnot (eolp ())
      {
 	variable line = line_as_string ();
 
@@ -171,7 +171,7 @@ public define mini_get_lines (num_p)
 public define mini_init_minibuffer ()
 {   
    variable mini = "Mini_Map";
-   !if (keymap_p (mini))
+   ifnot (keymap_p (mini))
      make_keymap (mini);
 
 #ifdef IBMPC_SYSTEM

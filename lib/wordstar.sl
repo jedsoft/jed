@@ -180,7 +180,7 @@ setkey ("ws_write_region","^K^W");
 %
 % Implementation
 %
-!if (is_defined("_Ws_Bookmarks"))
+ifnot (is_defined("_Ws_Bookmarks"))
 {
   % user marks are of type 128
    $1 = 13;
@@ -320,7 +320,7 @@ define ws_repeat_search ()	% ^L
 {
   ws_set_bookmark ();
   go_right_1 ();
-   !if (fsearch(LAST_SEARCH)) error ("Not found.");
+   ifnot (fsearch(LAST_SEARCH)) error ("Not found.");
 }
 
 % !"#$%&'()*+,-./:;<=>?@[\]^`{|}~ , but not _
@@ -424,7 +424,7 @@ define ws_end_block ()
 	error ("Begin Block First!");
      }
    
-   !if (markp()) 
+   ifnot (markp()) 
      {
 	WS_Mark_Pushed = 0;
 	error ("Wordstar Error.");
@@ -470,35 +470,35 @@ define ws_comment_region ()
   
   (smode, mode) = what_mode ();
 
-  !if (strcmp(smode,"Text")) {	% Text mode
+  ifnot (strcmp(smode,"Text")) {	% Text mode
     return;
   }
   
-  !if (strcmp(smode,"TeX")) {	% TeX mode
+  ifnot (strcmp(smode,"TeX")) {	% TeX mode
     cbeg = "%  ";
     cmid = "%  ";
     cend = Null_String;
   }
 
-  !if (strcmp(smode,"html")) {	% html mode
+  ifnot (strcmp(smode,"html")) {	% html mode
     cbeg = "<!--";
     cmid = " -*-"; % Null_String;
     cend = " -->";
   }
   
-  !if (strcmp(smode,"C")) {	% C mode
+  ifnot (strcmp(smode,"C")) {	% C mode
     cbeg = "/* ";
     cmid = " * ";
     cend = " */";
   }
   
-  !if (strcmp(smode,"SL")) {	% Slang mode
+  ifnot (strcmp(smode,"SL")) {	% Slang mode
     cbeg = "%  ";
     cmid = "%  ";
     cend = Null_String;
   }
 
-  !if (strcmp(smode,"Fortran")) {	% Fortran mode
+  ifnot (strcmp(smode,"Fortran")) {	% Fortran mode
     cbeg = "C  ";
     cmid = "C  ";
     cend = Null_String;
@@ -613,7 +613,7 @@ define ws_filter_region ()	% ^K/, Joe extension
 {
    variable cmd, tmp_file;
    cmd = read_mini ("Pipe to command:", Last_Process_Command, Null_String);
-   !if (strlen (cmd)) return;
+   ifnot (strlen (cmd)) return;
    
    Last_Process_Command = cmd;
 
@@ -622,7 +622,7 @@ define ws_filter_region ()	% ^K/, Joe extension
    tmp_file = make_tmp_file ("/tmp/jedpipe");
    cmd = strcat (cmd, " > ", tmp_file, " 2>&1");
    
-   !if (dupmark ()) error ("Mark not set.");
+   ifnot (dupmark ()) error ("Mark not set.");
    
    if (pipe_region (cmd)) 
      {

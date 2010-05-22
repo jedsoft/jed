@@ -42,7 +42,7 @@ define textmac_wrap_hook ()
    if (looking_at_char ('#'))
      {
 	eol ();
-	!if (blooking_at ("\\"))
+	ifnot (blooking_at ("\\"))
 	  {
 	     insert_single_space ();
 	     insert_char ('\\');
@@ -59,9 +59,9 @@ private define in_verbatim ()
      {
 	goto_user_mark (m);
      }
-   !if (bol_bsearch ("#v+"))
+   ifnot (bol_bsearch ("#v+"))
      return 0;
-   !if (bol_fsearch ("#v-"))
+   ifnot (bol_fsearch ("#v-"))
      return 1;
    return (create_user_mark () >= m);
 }
@@ -77,7 +77,7 @@ define tm_insert_quote ()
 }
 
 $1 = "tm";
-!if (keymap_p ($1)) make_keymap ($1);
+ifnot (keymap_p ($1)) make_keymap ($1);
 definekey ("tm_insert_quote", "\"", $1);
 
 define tm_mode ()

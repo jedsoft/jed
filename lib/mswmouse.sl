@@ -72,7 +72,7 @@ define mouse_point_mouse (force, same_window, push, status_fun)
 	     eol();
 	     col = what_column ();
        	     want_col = window_info('c') + MOUSE_X - 1;
-	     !if (force or (want_col <= col)) want_col = col;
+	     ifnot (force or (want_col <= col)) want_col = col;
 	     () = goto_column_best_try(want_col);
 	     return 1;
 	  }
@@ -262,7 +262,7 @@ define mouse_mark_and_copy ()
    
 define mouse_drag ()
 {
-   !if (Mouse_Drag_Mode)
+   ifnot (Mouse_Drag_Mode)
      {
 	push_visible_mark ();
 	Mouse_Drag_Mode = 1;

@@ -1,6 +1,6 @@
 
 
-!if (is_defined ("Abbrev_File"))
+ifnot (is_defined ("Abbrev_File"))
 {
    variable Abbrev_File;
    $1 = getenv ("JED_HOME");

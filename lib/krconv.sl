@@ -3,7 +3,7 @@ private define fixup_line ()
 {
    variable col;
 
-   !if (parse_to_point ())
+   ifnot (parse_to_point ())
      {
 	col = what_column ();
 	bol_skip_white ();
@@ -15,7 +15,7 @@ private define fixup_line ()
 	  }
 	go_right_1 ();
 	trim ();
-	!if (eolp () or looking_at_char (',') or looking_at_char (';'))
+	ifnot (eolp () or looking_at_char (',') or looking_at_char (';'))
 	  {
 	     indent_line ();
 	     newline ();
@@ -49,13 +49,13 @@ define c_indent_buffer ()
 	     while (down (1))
 	       {
 		  eol ();
-		  !if (blooking_at ("\\")) break;
+		  ifnot (blooking_at ("\\")) break;
 	       }
 	     continue;
 	  }
 	trim ();
 	bol_skip_white ();
-	!if (looking_at_char ('{'))
+	ifnot (looking_at_char ('{'))
 	  {
 	     variable this_line = what_line ();
 	     % I do not want to touch constructs such as x = {1, 3};

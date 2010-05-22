@@ -171,11 +171,11 @@ define tcl_count_braces ()
    for(bol (); not(eolp()); go_right_1()) {
       c = what_char ();
       switch(c) {
-       case '\\': !if(escaped) escaped = 2;
+       case '\\': ifnot(escaped) escaped = 2;
       }{
-       case '{': !if(escaped) open_count++;
+       case '{': ifnot(escaped) open_count++;
       }{
-       case '}': !if(escaped) {
+       case '}': ifnot(escaped) {
 	  if (open_count) open_count--;
 	  else close_count++;
        }
@@ -318,7 +318,7 @@ define tcl_insert_comment ()
    if(Tcl_Check_Syntax) {
       push_spot();
       bskip_white();
-      !if (bolp() or blooking_at (";")) {
+      ifnot (bolp() or blooking_at (";")) {
 	 tcl_syntax_warning("'#' should be on a separate line or after a ';'");
       }
       pop_spot();
@@ -327,7 +327,7 @@ define tcl_insert_comment ()
 }
 
 $1 = "TCL";
-!if (keymap_p ($1))
+ifnot (keymap_p ($1))
   {
      make_keymap ($1);
      definekey("tcl_insert_bra", "{", $1);

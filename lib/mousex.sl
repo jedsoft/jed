@@ -186,7 +186,7 @@ define mouse_event (Mod)
 	n--;
      }
 
-   !if (n)
+   ifnot (n)
      {
 	if (Mouse_Y == 1)		% Mouse on top status line
 	  {
@@ -195,7 +195,7 @@ define mouse_event (Mod)
 	     return;
 	  }
 	Mouse_Button = 3;
-	!if (Mouse_Event_Type) error ("Mouse not in a window");
+	ifnot (Mouse_Event_Type) error ("Mouse not in a window");
 	emacs_escape_x ();
 	return;
      }
@@ -210,7 +210,7 @@ define mouse_event (Mod)
 
    variable fn = sprintf ("mousex_%d", Mouse_Button);
 
-   !if (Mouse_Event_Type) {
+   ifnot (Mouse_Event_Type) {
       if (n) return;		% must be the same window
       fn = strcat (fn, "U");
    }
@@ -252,7 +252,7 @@ private define mouse_goto (moveto)
 {
    if (moveto)
      pop_mark_0 ();
-   else !if (is_visible_mark ())
+   else ifnot (is_visible_mark ())
      push_visible_mark ();
 
    if (Mouse_Y == what_line ())
@@ -289,7 +289,7 @@ define mousex_0 (status)
 % Left-Release
 define mousex_0U (status)
 {
-   !if (status) mouse_goto (0);
+   ifnot (status) mouse_goto (0);
 }
 
 % Middle

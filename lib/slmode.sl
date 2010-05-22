@@ -93,7 +93,7 @@ private define mark_comment_whitespace ()
 private define is_para_sep ()
 {
    bol_skip_white ();
-   !if (looking_at ("%"))
+   ifnot (looking_at ("%"))
      return 1;
    
    if (is_empty_comment_line ())
@@ -148,7 +148,7 @@ private define format_paragraph_hook ()
    if (parse_to_point () != -2)
      return;
    bol_skip_white ();
-   !if (looking_at ("%"))
+   ifnot (looking_at ("%"))
      return;
    
    bol();
@@ -236,14 +236,14 @@ define slmode_insert_space ()
 
 
    % The following code attempts a wrapping mode in the presence of comments
-   !if (cmode_is_slang_mode ()) return;
+   ifnot (cmode_is_slang_mode ()) return;
    if (not (eolp ()) or (what_column () <= WRAP)) return;
    
    % we are at the end of line.
    cstr = "%!% ";
    bol ();
-   !if (looking_at (cstr), eol ()) return;
-   !if (bfind_char (' ')) return;
+   ifnot (looking_at (cstr), eol ()) return;
+   ifnot (bfind_char (' ')) return;
    trim ();
    newline ();
    insert (cstr);

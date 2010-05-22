@@ -113,7 +113,7 @@ private define find_signature_start ()
 {
    eob ();
    variable line = what_line ();
-   !if (bol_bsearch ("-- \n"))
+   ifnot (bol_bsearch ("-- \n"))
      return 0;
    
    if (line - what_line () > MailEdit_Max_Signature_Lines)
@@ -131,7 +131,7 @@ private define in_signature ()
      {
 	goto_user_mark (m);
      }
-   !if (find_signature_start ())
+   ifnot (find_signature_start ())
      return 0;
    return m >= create_user_mark ();
 }
@@ -176,11 +176,11 @@ private define count_quotes ()
 	push_mark ();
 	skip_chars (MailEdit_Quote_Chars);
 	variable dcount = strlen (bufsubstr ());
-	!if (dcount)
+	ifnot (dcount)
 	  break;
 	count += dcount;
 
-	!if (looking_at (" "))
+	ifnot (looking_at (" "))
 	  break;
 	go_right_1 ();
      }
@@ -207,7 +207,7 @@ private define extract_quotes ()
 
 private define mark_paragraph ()
 {
-   !if (in_mail_body ())
+   ifnot (in_mail_body ())
      {
 	push_mark ();
 	return;
@@ -235,7 +235,7 @@ private define mark_paragraph ()
 	    )
 	  {
 	     skip_white ();
-	     !if (eolp ())
+	     ifnot (eolp ())
 	       continue;
 	  }
 	go_down_1 ();
@@ -252,7 +252,7 @@ private define mark_paragraph ()
 	if (nquotes == count_quotes ())
 	  {
 	     skip_white ();
-	     !if (eolp ())
+	     ifnot (eolp ())
 	       {
 		  eol ();
 		  continue;
@@ -291,7 +291,7 @@ private define format_header ()
      insert (" ");
    
    eob ();
-   !if (bolp ())
+   ifnot (bolp ())
      newline ();
    
    widen_region ();
@@ -322,7 +322,7 @@ private define format_paragraph_hook ()
 	     push_mark ();
 	     bol ();
 	     del_region ();
-	     !if (down_1 ())
+	     ifnot (down_1 ())
 	       break;
 	  }
      }
@@ -354,7 +354,7 @@ private define format_paragraph_hook ()
 
 private define is_paragraph_separator ()
 {
-   !if (in_mail_body ())
+   ifnot (in_mail_body ())
      return 1;
 
    if (line_is_quoted ())
@@ -406,7 +406,7 @@ private define add_replyto ()
 
 private define mark_header_separator ()
 {
-   !if (mailutils_find_header_separator ())
+   ifnot (mailutils_find_header_separator ())
      return;
 
    %set_line_readonly (1);
@@ -517,7 +517,7 @@ private define newline_indent_hook ()
 {
    if (line_is_quoted ())
      {
-	!if (bolp () or eolp ())
+	ifnot (bolp () or eolp ())
 	  {
 	     variable quotes = extract_quotes ();
 	     
@@ -532,7 +532,7 @@ private define newline_indent_hook ()
    indent_line ();
 }
 
-!if (keymap_p ("mailedit"))
+ifnot (keymap_p ("mailedit"))
   make_keymap ("mailedit");
 
 public define mailedit_mode ()

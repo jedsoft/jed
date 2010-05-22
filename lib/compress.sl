@@ -27,7 +27,7 @@ private define check_is_compressed (file)
 
 private define _write_compressed_region (file, append)
 {
-   !if (blocal_var_exists ("Auto_Compression_Mode")
+   ifnot (blocal_var_exists ("Auto_Compression_Mode")
 	or Auto_Compression_Mode)
      return 0;
 
@@ -59,7 +59,7 @@ private define append_compressed_region (file)
 
 private define insert_compressed_file (file)
 {
-   !if (Auto_Compression_Mode)
+   ifnot (Auto_Compression_Mode)
      return 0;
 
    variable i = check_is_compressed (file);
@@ -96,7 +96,7 @@ private define compressed_set_mode_hook (ext)
 {
    variable i, file;
 
-   !if (Auto_Compression_Mode)
+   ifnot (Auto_Compression_Mode)
      return 0;
 
    (file,,,) = getbuf_info ();

@@ -25,7 +25,7 @@ define preparse_enable_highlight_cache (file, name)
 private define create_dfa_cache (file)
 {
    file = expand_jedlib_file (file);
-   !if (strlen (file))
+   ifnot (strlen (file))
      return;
    setbuf ("*dfa-cache*");
    erase_buffer ();
@@ -35,12 +35,12 @@ private define create_dfa_cache (file)
      return;
    
    bob ();
-   !if (fsearch ("dfa_enable_highlight_cache"))
+   ifnot (fsearch ("dfa_enable_highlight_cache"))
      return;
    
    replace ("dfa_enable_highlight_cache", "preparse_enable_highlight_cache");
    eob ();
-   !if (re_bsearch ("[ \t]*dfa_set_init_callback[ \t]*([ \t]*&[ \t]*\\([^,]+\\),[ \t]*\"\\([^\"]+\\)\""))
+   ifnot (re_bsearch ("[ \t]*dfa_set_init_callback[ \t]*([ \t]*&[ \t]*\\([^,]+\\),[ \t]*\"\\([^\"]+\\)\""))
      return;
    
    variable fun = regexp_nth_match (1);

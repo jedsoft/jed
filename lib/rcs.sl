@@ -147,7 +147,7 @@ define rcs_read_log ()
   insert_file (tmp_file);
   delete_file (tmp_file);
   most_mode ();
-  !if (keymap_p (rlog_map)) {
+  ifnot (keymap_p (rlog_map)) {
     make_keymap (rlog_map);
     definekey ("close_rlog_buffer", "q", rlog_map);
   }

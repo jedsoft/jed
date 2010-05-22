@@ -9,7 +9,7 @@
 % to override some of the functions here.
 
 #ifdef UNIX
-!if (is_defined ("Use_MailX"))
+ifnot (is_defined ("Use_MailX"))
 {
    variable Use_MailX = 0;
 }
@@ -17,7 +17,7 @@
 %%% University of California, Berkeley mail program
 %%% "/usr/ucb/mail" on most unix, "/usr/sbin/Mail" on others
 
-!if (is_defined("UCB_Mailer"))
+ifnot (is_defined("UCB_Mailer"))
 {
    variable UCB_Mailer = "/usr/ucb/mail";
    if (1 != file_status(UCB_Mailer))
@@ -91,7 +91,7 @@ define mail_send ()
    push_spot ();
    bob ();
    
-   !if (bol_fsearch ("---text follows this line---"))
+   ifnot (bol_fsearch ("---text follows this line---"))
      {
 	pop_spot ();
 	error ("Failed to find text divider.");
@@ -115,7 +115,7 @@ define mail_send ()
    eob();
    widen ();
 
-   !if (strlen(to))
+   ifnot (strlen(to))
      {
 	pop_spot ();
 	error ("Bad To: field.");
@@ -127,7 +127,7 @@ define mail_send ()
      }
 #endif
       
-   !if (down_1 ())
+   ifnot (down_1 ())
      {
 	pop_spot();
 	error ("No message!");
@@ -195,7 +195,7 @@ define mail_format_buffer ()
    set_buffer_undo(1);
    setbuf_info (getbuf_info () & ~(0x40)); %  turn off buried buffer flag
    
-   !if (keymap_p(mail_map)) make_keymap(mail_map);
+   ifnot (keymap_p(mail_map)) make_keymap(mail_map);
    use_keymap(mail_map);
 }
 

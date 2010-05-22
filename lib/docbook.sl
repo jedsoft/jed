@@ -41,7 +41,7 @@ variable SECT_TYPE = "SECT_TYPE"; % "#" = sect#, "s" = section
 
 % ----- %
 
-!if (is_defined ("tex_ldots")) % read tex_insert_quote
+ifnot (is_defined ("tex_ldots")) % read tex_insert_quote
   () = evalfile ("texcom");
 
 private define sgml_insert_pair_around_region (left, right)
@@ -208,13 +208,13 @@ define sgml_sect (do_push_spot, level_str) % ^CN
     return ();
   }
   set_blocal_var ("#", SECT_TYPE);
-  !if (strcmp ("0", level_str) )
+  ifnot (strcmp ("0", level_str) )
     while (0 == ok) {
       level_str = read_mini ("Section level (1..5)?", Null_String, "1");
       level_int = level_str [0] - '0';
       if ( (level_int > 0) and (level_int < 6) )
         ok = 1;
-      !if (ok) {
+      ifnot (ok) {
         beep ();
         message ("Wrong value! Only 1..5 allowed. ");
       }
@@ -343,7 +343,7 @@ define sgml_template ()
       read_mini ("Document type (Article, Book)?", Null_String, "a");
     if ( (type [0] == 'a') or (type [0] == 'b') )
       ok = 1;
-    !if (ok) {
+    ifnot (ok) {
       beep ();
       message ("Wrong! 'a' or 'b'! ");
     }
@@ -490,9 +490,9 @@ define sgml_arg (do_push_spot, do_pop_spot)
   switch (ch)
     {case 'r': rep =  "rep=repeat"; }
   
-  !if (strlen(choice))
+  ifnot (strlen(choice))
     sep1= "";
-  !if (strlen(rep))
+  ifnot (strlen(rep))
     sep2= "";
   tag1 = sprintf ("<arg%s%s%s%s>", sep1, choice, sep2, rep );
   tag2 = "</arg>";
@@ -555,7 +555,7 @@ define sgml_env (what)
   variable col = what_column () - 1;
   vinsert ("<%s>\n", what);
   insert_spaces (col);
-  !if (strcmp ("example", what)) {
+  ifnot (strcmp ("example", what)) {
     sgml_title ("title", PUSH_SPOT);
     insert_spaces (col + SGML_INDENT);
     sgml_para (NO_PUSH_SPOT);
@@ -801,14 +801,14 @@ define sgml_table (informal_table)
     table_columns = table_col_str [0] - '0';
     if ( (table_columns > 1) and (table_columns < 10) )
       ok = 1;
-    !if (ok) {
+    ifnot (ok) {
       beep ();
       message ("Wrong value! ");
     }
   }
   
   vinsert ("<%s frame=\"%s\">\n", type_of_table, frame);
-  !if (informal_table)
+  ifnot (informal_table)
     sgml_title ("title", PUSH_SPOT);
   else
     push_spot ();
@@ -819,7 +819,7 @@ define sgml_table (informal_table)
     vinsert 
       ("<colspec colname=\"col%s\" align=\"center\">\n", string (i+1) );
   }
-  !if (informal_table) {
+  ifnot (informal_table) {
     insert_spaces (col + SGML_INDENT);
     insert ("<thead>\n");
     insert_spaces (col + SGML_INDENT);
@@ -1142,7 +1142,7 @@ private define init_menu (menu)
 }
 
 $1 = "docbook";
-!if (keymap_p ($1))
+ifnot (keymap_p ($1))
   make_keymap ($1);
 
   % various keymaps
@@ -1292,9 +1292,9 @@ define docbook_mode ()
   use_syntax_table (mode);
 
   set_buffer_hook ("par_sep", &sgml_paragraph_separator);
-  !if (blocal_var_exists (DOC_TYPE))
+  ifnot (blocal_var_exists (DOC_TYPE))
      define_blocal_var (DOC_TYPE, "");
-  !if (blocal_var_exists (SECT_TYPE))
+  ifnot (blocal_var_exists (SECT_TYPE))
      define_blocal_var (SECT_TYPE, "");
   push_spot ();
   % is the document type already defined?

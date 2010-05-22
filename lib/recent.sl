@@ -67,7 +67,7 @@ private define load_recent_file_list ()
 	  delbuf (Recent_Files_Buf);
      }
 
-   !if (bufferp (Recent_Files_Buf))
+   ifnot (bufferp (Recent_Files_Buf))
      {
 	() = read_file (file);
 	rename_buffer (Recent_Files_Buf);
@@ -91,7 +91,7 @@ public define recent_files_menu_callback (popup)
   forever
      {
 	tmp = line_as_string ();
-	!if (strlen (tmp))
+	ifnot (strlen (tmp))
 	  break;
 	
 	cmd = sprintf ("()=find_file (\"%s\")", tmp);
@@ -117,12 +117,12 @@ public define append_recent_files (buf)
    variable file, dir, n;
    variable blist;
 
-   !if (WANT_RECENT_FILES_LIST)
+   ifnot (WANT_RECENT_FILES_LIST)
      return;
 
    % find out the file name with full path
    (file,dir,buf,) = getbuf_info ();
-   !if (strlen (file))
+   ifnot (strlen (file))
      return;
 
    blist = [buffer_list (), pop ()];
@@ -186,7 +186,7 @@ append_to_hook ("_jed_switch_active_buffer_hooks", &append_recent_files);
 
 private define add_recent_files_popup_hook (menubar)
 {
-   !if (WANT_RECENT_FILES_LIST)
+   ifnot (WANT_RECENT_FILES_LIST)
      return;
 
    variable menu = "Global.&File";

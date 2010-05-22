@@ -81,7 +81,7 @@
 variable Dired_Buffer = "*dired*";
 variable Dired_Current_Directory;
 
-!if (keymap_p (Dired_Buffer)) make_keymap (Dired_Buffer);
+ifnot (keymap_p (Dired_Buffer)) make_keymap (Dired_Buffer);
 
 
 definekey ("dired_find",	"\r",	Dired_Buffer);
@@ -127,7 +127,7 @@ define dired_vms_dir (dir)
    forever 
      {
 	n--;
-	!if (n) break;
+	ifnot (n) break;
 	
 	ch = int (substr (dir, n, 1));
 	if ((ch == '.') or (ch == '[')) break;
@@ -318,7 +318,7 @@ define dired_getfile ()
 	  }
      }
 
-   !if ( type )
+   ifnot ( type )
      {
 	bol ();
 	return (Null_String, type);
@@ -359,7 +359,7 @@ define dired_getfile ()
 	  }
      }
 
-   !if ( type )
+   ifnot ( type )
      {
 	bol ();
 	return (Null_String, type);
@@ -393,7 +393,7 @@ define dired_getfile ()
 	  }
      }
 
-   !if ( type )
+   ifnot ( type )
      {
 	bol ();
 	return (Null_String, type);
@@ -448,7 +448,7 @@ define dired_untag (dirn)
 {
    if ( dirn < 0 )
      {
-	!if ( up_1 () ) error ("Top of Buffer.");
+	ifnot ( up_1 () ) error ("Top of Buffer.");
      }
    bol ();
    if ( looking_at_char ('D') )
@@ -497,7 +497,7 @@ define dired_xop_tagged_files (prompt, msg, op_function)
      }
 
    n = _stkdepth - stack;
-   !if (n) error ("No tags!");
+   ifnot (n) error ("No tags!");
 
    sw2buf (lbuf);
    erase_buffer ();
@@ -596,7 +596,7 @@ define dired_rename ()
    variable oldf, type, len, f, n, nf, nd, od, status;
 
    (oldf, type)  = dired_getfile ();
-   !if ( type ) return;
+   ifnot ( type ) return;
    sprintf ("Rename %s to", oldf);
    n = read_file_from_mini (());
    %
@@ -714,7 +714,7 @@ define dired_find ()
 
    if ( type == 1 ) 
      {
-	!if ( read_file (name) ) error ("Unable to read file.");
+	ifnot ( read_file (name) ) error ("Unable to read file.");
 	pop2buf (whatbuf ());
      } 
    else if ( type == 2 ) 
@@ -732,7 +732,7 @@ define dired_view ()
    name = dircat (Dired_Current_Directory, name);
    if ( type == 1 ) 
      {
-	!if ( read_file (name) ) error ("Unable to read file.");
+	ifnot ( read_file (name) ) error ("Unable to read file.");
 	pop2buf (whatbuf ());
 	most_mode ();
      }
@@ -755,18 +755,18 @@ define dired_search ()
 {
    variable str, name, type;
 
-   !if ( bufferp (Dired_Buffer) ) error ( "*dired* not available.");
+   ifnot ( bufferp (Dired_Buffer) ) error ( "*dired* not available.");
    
    if ( strcmp (Dired_Buffer, whatbuf () ) ) % continue last search
      {      
-	!if ( strlen (LAST_SEARCH) ) error ("No specified search string");
+	ifnot ( strlen (LAST_SEARCH) ) error ("No specified search string");
 	if ( dired_search_files () ) return;
 	go_down_1 (); 			% do the next file!
      }
    else 
      {
 	str = read_mini ("dired_search:", Null_String, LAST_SEARCH);
-	!if ( strlen (str) ) error ("Specify search string");
+	ifnot ( strlen (str) ) error ("Specify search string");
 	save_search_string (str);
      }
    
@@ -776,7 +776,7 @@ define dired_search ()
 	if ( type == 1 ) 			% only search files
 	  {	     
 	     name = dircat (Dired_Current_Directory, name);
-	     !if ( read_file (name) ) error ("Unable to read file.");
+	     ifnot ( read_file (name) ) error ("Unable to read file.");
 	     if ( dired_search_files () )
 	       {
 		  pop2buf (whatbuf ());

@@ -148,7 +148,7 @@ define digraph_cmd ()
 		  char (get_mini_response (sprintf ("Enter [%s] to get [%s]",
 						    letters, accent))));
 
-   !if (i)
+   ifnot (i)
      {
 	beep ();
 	return;

@@ -115,7 +115,7 @@ autoload("latex_toggle_math_mode", "ltx-math");
 autoload("latex_math_mode", "ltx-math");
 
 $1 = "LaTeX-Mode";
-!if (keymap_p($1)) make_keymap ($1);
+ifnot (keymap_p($1)) make_keymap ($1);
 
 % from tex.sl
 definekey ("tex_insert_quote", "\"", $1);
@@ -170,7 +170,7 @@ define tex_embrace (pre, post)
      {  % surround word, including any initial '\'
 	go_right_1 (); push_spot();
 	bskip_word();
-	go_left_1 (); !if (looking_at_char('\\')) go_right_1 ();
+	go_left_1 (); ifnot (looking_at_char('\\')) go_right_1 ();
 	insert(pre);
 	skip_word();
      }
@@ -300,7 +300,7 @@ define latex_insert_simple_env (env)
 define latex_insert_item_env (env)
 {
    variable braces = " ";
-   !if (strcmp(env, "description")) braces = "[]";
+   ifnot (strcmp(env, "description")) braces = "[]";
    latex_embrace_env(sprintf("\\begin{%s}\n\\item%s", env, braces),
 		     sprintf("\\end{%s}\n", env));
    () = bfind_char (']');
@@ -347,7 +347,7 @@ define latex_insert_figure_env (env)
 		     sprintf("%s%s\\end{%s}\n", caption, label, env));
    push_spot();
 
-   !if (strcmp(env, "figure") and strcmp(env, "figure*"))
+   ifnot (strcmp(env, "figure") and strcmp(env, "figure*"))
      {
 	if (get_y_or_n ("Center Figure"))
 	  {
@@ -416,7 +416,7 @@ define latex_insert_document_env ()
    bob ();
    vinsert ("\\documentclass%s{%s}\n\n", options, class);
    insert ("\\begin{document}\n\n\n\n\\end{document}\n"); go_up(3);
-   !if (strcmp(class, "letter")) latex_insert_letter_args();
+   ifnot (strcmp(class, "letter")) latex_insert_letter_args();
 }
 
 define latex_change_env (env)
@@ -779,7 +779,7 @@ define tex_complete_symbol ()
    variable symbol, completion;
    variable insertbuf = whatbuf(), searchbuf = "*ltx-comp*";
 
-   !if (bufferp(searchbuf))
+   ifnot (bufferp(searchbuf))
      {
 	sw2buf(searchbuf);
 	insert_file( expand_jedlib_file("ltx-comp.dat") ); bob();
@@ -795,7 +795,7 @@ define tex_complete_symbol ()
 
    setbuf(searchbuf);
 
-   !if (bol_fsearch(sprintf("\\%s", symbol))) bob(); % wrap to start
+   ifnot (bol_fsearch(sprintf("\\%s", symbol))) bob(); % wrap to start
 
    if (bol_fsearch(sprintf("\\%s", symbol)))
      {
@@ -816,7 +816,7 @@ define tex_complete_symbol ()
 
    goto_spot ();
    push_mark();
-   !if (ffind_char (' ')) eol();
+   ifnot (ffind_char (' ')) eol();
    del_region();
    insert(completion);
    pop_spot();
@@ -828,9 +828,9 @@ define tex_insert_macro ()
 {
    variable insertbuf = whatbuf(), searchbuf = "*ltx-comp*";
 
-   !if (strcmp(LaTeX_macros, Null_String))
+   ifnot (strcmp(LaTeX_macros, Null_String))
      {
-	!if (bufferp(searchbuf))
+	ifnot (bufferp(searchbuf))
 	  {
 	     sw2buf(searchbuf);
 	     insert_file( expand_jedlib_file("ltx-comp.dat") );
@@ -850,7 +850,7 @@ define tex_insert_macro ()
 
    variable macro = read_with_completion (LaTeX_macros, "Enter Macro Name:", Null_String, Null_String, 's');
    vinsert ("\\%s", macro);
-   go_left_1 (); !if (looking_at_char('}')) go_right_1 ();
+   go_left_1 (); ifnot (looking_at_char('}')) go_right_1 ();
 }
 
 % info file interface
@@ -862,14 +862,14 @@ define latex_help ()
    variable info_file = "(latex)";
    variable latex_buf = whatbuf(), info_buf = "*Info*";
    push_spot(); variable guess = tex_current_env(); pop_spot();
-   !if (strcmp(guess, "document")) guess = Null_String;
+   ifnot (strcmp(guess, "document")) guess = Null_String;
 
    ERROR_BLOCK
      {
 	sw2buf(latex_buf);
      }
 
-   !if (strcmp(LaTeX_help, Null_String))
+   ifnot (strcmp(LaTeX_help, Null_String))
      {
 #iffalse
 	info_find_node(sprintf("%sList of Commands", info_file));
@@ -890,10 +890,10 @@ define latex_help ()
 
    sw2buf(latex_buf);
    push_spot();
-   !if (looking_at_char('\\'))
+   ifnot (looking_at_char('\\'))
      {
 	go_left_1 ();
-	!if (looking_at_char('\\'))
+	ifnot (looking_at_char('\\'))
 	  {
 	     goto_spot ();
 	     bskip_word(); go_left_1 ();

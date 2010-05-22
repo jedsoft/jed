@@ -115,13 +115,13 @@ define perltidy ()      % <AUTOLOAD> this function
     % 2: a narrowed buffer
     % 3: when no file is attached
     variable use_tmp = markp(); % a region
-    !if (use_tmp) {     % no region, but a narrowed buffer
+    ifnot (use_tmp) {     % no region, but a narrowed buffer
         use_tmp = count_narrows();
         if (use_tmp) mark_buffer();
     }
 
-    !if (use_tmp) {     % check if a file is attached
-        !if (strlen(file)) use_tmp = 1;
+    ifnot (use_tmp) {     % check if a file is attached
+        ifnot (strlen(file)) use_tmp = 1;
         mark_buffer();
     }
 
@@ -217,16 +217,16 @@ static define do_perl (opts, prompt)
     % 2: a narrowed buffer
     % 3: when no file is attached
     variable use_tmp = markp(); % a region
-    !if (use_tmp) {     % no region, but a narrowed buffer
+    ifnot (use_tmp) {     % no region, but a narrowed buffer
         use_tmp = count_narrows();
         if (use_tmp) mark_buffer();
     }
 
-    !if (use_tmp) {     % check if a file is attached
+    ifnot (use_tmp) {     % check if a file is attached
         if (strlen(prompt))
           args = read_mini( prompt, Null_String, Null_String );
 
-        !if (strlen(file)) {            % no file attached
+        ifnot (strlen(file)) {            % no file attached
             use_tmp = 1;
             mark_buffer();
         }
@@ -333,7 +333,7 @@ define perl_check() {
 %
 static define attach_keymap (name)
 {
-    !if (keymap_p(name)) {
+    ifnot (keymap_p(name)) {
         make_keymap(name);
         definekey("perl_help",   "?",   name);
         definekey("perl_help",   "\r",  name);
@@ -387,11 +387,11 @@ static define help_for_perl (what)
 %% %!%-
 static define extract_word (chars)
 {
-    !if (markp()) {
+    ifnot (markp()) {
         % skip leading non-word chars, including newline
         do {
             skip_chars ("^" + chars);
-            !if (eolp()) break;
+            ifnot (eolp()) break;
         } while (down (1));
         bskip_chars (chars);    % in case we started in the middle of a word
         push_mark(); skip_chars (chars);        % mark the word
@@ -420,7 +420,7 @@ define perl_info () { perl_get_help("perl -V"); }       % <AUTOLOAD>
 define perl_help ()     % <AUTOLOAD>
 {
     variable what = extract_word(":0-9A-Z_a-z");
-    !if (strlen(what)) {
+    ifnot (strlen(what)) {
         flush("Sorry no word extracted");
         return;         % no string - no help
     }
@@ -454,7 +454,7 @@ define perl_help ()     % <AUTOLOAD>
 %!%-
 define perldoc ()       % <AUTOLOAD> <COMPLETE>
 {
-    !if (MINIBUFFER_ACTIVE)
+    ifnot (MINIBUFFER_ACTIVE)
       help_for_perl(read_mini("perldoc:", Null_String, Null_String));
 }
 

@@ -31,7 +31,7 @@ define html_paragraph_separator ()
 %!%-
 define html_skip_tag()
 {
-   !if (fsearch_char ('>')) return;
+   ifnot (fsearch_char ('>')) return;
    go_right_1 ();
 }
 
@@ -56,7 +56,7 @@ define html_mark_next_tag()
 {
    variable taglng = 1;
    
-   !if (fsearch_char ('>')) return;
+   ifnot (fsearch_char ('>')) return;
    go_right(taglng);
    set_mark_cmd ();
    go_left(taglng);
@@ -71,7 +71,7 @@ define html_mark_next_tag()
 %!%-
 define html_mark_prev_tag()
 {
-   !if (bsearch_char ('<')) return;
+   ifnot (bsearch_char ('<')) return;
    set_mark_cmd ();
    () = find_matching_delimiter(0);
    go_right_1 ();
@@ -105,7 +105,7 @@ define html_insert_move (str)
    variable beg, end;
    
    len = is_substr (str, "@");
-   !if (len) return;
+   ifnot (len) return;
    len--;
    if (markp ())
      {
@@ -248,7 +248,7 @@ define html_quoted_insert ()
 {
    variable ch;
    
-   !if (input_pending (5)) flush ("`-");
+   ifnot (input_pending (5)) flush ("`-");
    ch = getkey ();
    switch (ch)
      {
@@ -290,7 +290,7 @@ define html_par_insert()
 define html_read_key (hlp)
 {
    variable key;
-   !if (input_pending (3)) flush (hlp);
+   ifnot (input_pending (3)) flush (hlp);
    tolower (getkey ());
 }
 
@@ -471,7 +471,7 @@ define html_keymap ()
 }
 
 $1 = "html";
-!if (keymap_p ($1)) make_keymap ($1);
+ifnot (keymap_p ($1)) make_keymap ($1);
 if (_Reserved_Key_Prefix != NULL)
 {
    undefinekey (_Reserved_Key_Prefix, $1);

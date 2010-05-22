@@ -4,7 +4,7 @@
 
 $1 = " *EZhelp*";
 
-!if (keymap_p($1))
+ifnot (keymap_p($1))
 {
    make_keymap($1);
    definekey("page_up",		"^?", $1);
@@ -34,7 +34,7 @@ define jed_easy_help(file)
 {
    variable c, hlpbuf, hlpfile, err, flags, dir;
    hlpbuf = " *EZhelp*";
-   !if (strcmp(hlpbuf, whatbuf())) return;
+   ifnot (strcmp(hlpbuf, whatbuf())) return;
    EZhelp_Last_Buffer = whatbuf();
    err = strcat("Help file not found: ", file);
    ERROR_BLOCK 
@@ -48,7 +48,7 @@ define jed_easy_help(file)
    if (strcmp(hlpfile, file))
      {
 	hlpfile = expand_jedlib_file(file);
-	!if (strlen(hlpfile)) error(err);
+	ifnot (strlen(hlpfile)) error(err);
 	erase_buffer();
 	set_readonly(0);
 	if (insert_file(hlpfile) <= 0) error(err);

@@ -55,7 +55,7 @@ define bkmrk_goto_mark ()
    Bkmrk_Last_Position = create_user_mark ();
 
    sw2buf (mrk.buffer_name);
-   !if (is_user_mark_in_narrow (mrk))
+   ifnot (is_user_mark_in_narrow (mrk))
      {
 #ifdef HAS_BLOCAL_VAR
 	variable fun;

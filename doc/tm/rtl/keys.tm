@@ -257,7 +257,7 @@
         define peek_key ()
         {
           variable ch;
-          !if (input_pending (0)) return -1;
+          ifnot (input_pending (0)) return -1;
           ch = getkey ();
           ungetkey (ch);
           return ch;

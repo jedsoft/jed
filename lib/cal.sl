@@ -104,12 +104,12 @@ private define cal_make_month (indent, month, year, day, highlight)
    month_name = CalMonths[month - 1];
    goto_column(indent + (strlen(CalDays) - strlen(month_name) - 5) / 2);
    insert(month_name); insert_single_space(); insert(string(year));
-   !if (down_1 ()) newline();
+   ifnot (down_1 ()) newline();
    
    % output days line
    goto_column(indent);
    insert(CalDays);
-   !if (down_1()) newline ();
+   ifnot (down_1()) newline ();
    
    % output day numbers in 7 columns
    goto_column(first * 3 + indent);
@@ -117,7 +117,7 @@ private define cal_make_month (indent, month, year, day, highlight)
      { 
 	if (first == 7)
 	  {
-	     !if (down_1()) {
+	     ifnot (down_1()) {
 		eol(); newline ();
 	     }
 	     goto_column(indent);
@@ -152,7 +152,7 @@ private define cal_get_date()
    for (m = 0; m < 12; ++m)
      { 
 	month = extract_element(months, m, ' ');
-	!if (strcmp(month_name, month)) {
+	ifnot (strcmp(month_name, month)) {
 	   month = m + 1;
 	   break;
 	}

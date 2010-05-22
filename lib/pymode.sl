@@ -50,7 +50,7 @@
 
 $1 = "python";
 
-!if (keymap_p ($1)) make_keymap ($1);
+ifnot (keymap_p ($1)) make_keymap ($1);
 
 definekey_reserved ("py_comment_region", "#", $1);
 definekey_reserved ("py_uncomment_region", "3", $1);
@@ -138,7 +138,7 @@ private define py_indent_calculate()
    
    % go to previous non blank line
    push_spot_bol ();
-   !if (re_bsearch ("[^ \t\n]"))
+   ifnot (re_bsearch ("[^ \t\n]"))
      return;
    bol_skip_white();
     
@@ -436,7 +436,7 @@ define py_exec()
    % Run python interpreter on current region if one is defined, otherwise
    % on the whole buffer.
    % Display output in *shell-output* buffer window.
-   !if (markp()) {		% create region containing entire buffer
+   ifnot (markp()) {		% create region containing entire buffer
       push_spot_bob ();
       push_mark_eob ();
    }
@@ -630,7 +630,7 @@ define python_mode ()
 	     go_right (1);
 	     () = fsearch("\"\"\"");
 	  }
-	else !if (looking_at_char('#') or eolp() or what_column() == 1)
+	else ifnot (looking_at_char('#') or eolp() or what_column() == 1)
 	  {
              bol();
              set_blocal_var(looking_at_char('\t'), "py_use_tab");

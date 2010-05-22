@@ -22,7 +22,7 @@ public define mailutils_find_header_separator ()
    bob ();
    if (bol_fsearch ("--- Do not modify this line.  Enter your message below ---\n"))
      return 1;
-   !if (re_looking_at ("[-A-Za-z0-9_]+: "))
+   ifnot (re_looking_at ("[-A-Za-z0-9_]+: "))
      return 0;
    return bol_fsearch ("\n");
 }

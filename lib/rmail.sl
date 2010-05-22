@@ -2,7 +2,7 @@
 % Mark Olesen's patches added.
 
 %!% variable that controls the location of the mailbox for new mail
-!if (is_defined("Rmail_Spool_Mailbox_File"))
+ifnot (is_defined("Rmail_Spool_Mailbox_File"))
 {
    variable Rmail_Spool_Mailbox_File = getenv ("MAIL");
    if (NULL == Rmail_Spool_Mailbox_File)
@@ -19,7 +19,7 @@
 
 
 %!% where the JED mail reader should put the mail
-!if (is_defined("Rmail_Directory"))
+ifnot (is_defined("Rmail_Directory"))
 {
    variable Rmail_Directory = dircat(getenv("HOME"), "Mail");
 }
@@ -34,7 +34,7 @@ variable Rmail_Newmail_Folder = "New-Mail";
 variable Rmail_Root_Buffer = "Rmail: Folder List";
 variable Rmail_Mail_Buffer_Name = Null_String;
 
-!if (is_defined("Rmail_Dont_Reply_To"))
+ifnot (is_defined("Rmail_Dont_Reply_To"))
 {
    % comma separated list of name to not reply to.   
    variable Rmail_Dont_Reply_To;
@@ -54,7 +54,7 @@ variable Rmail_Message_Number = Null_String;   %/* this is a string!! */
 
 
 % check for existence of Rmail directory.  Create it if it does not exist.
-!if (file_status(Rmail_Directory)) 
+ifnot (file_status(Rmail_Directory)) 
 {
    if (mkdir(Rmail_Directory, 0700))
      error("Unable to create " + Rmail_Directory);
@@ -63,7 +63,7 @@ variable Rmail_Message_Number = Null_String;   %/* this is a string!! */
      error ("chmod failed!");
 }
 
-!if (is_defined ("Rmail_Ask_About_Cc"))
+ifnot (is_defined ("Rmail_Ask_About_Cc"))
 {
    variable Rmail_Ask_About_Cc = 0;
 }
@@ -74,7 +74,7 @@ define rmail_buffer_name(folder)
    "Rmail: " + folder;
 }
 
-!if (is_defined ("mime_rfc1522_parse_buffer"))
+ifnot (is_defined ("mime_rfc1522_parse_buffer"))
 {
    autoload ("mime_rfc1522_parse_buffer", "mime");
    autoload ("mime_qp_parse_buffer", "mime");
@@ -104,7 +104,7 @@ define rmail_save_buffer_secure ()
    variable dir, file, flags;
    (file, dir,,flags) = getbuf_info();
 
-   !if (buffer_modified () and strlen (file))
+   ifnot (buffer_modified () and strlen (file))
      return;
 
    file = dircat(dir, file);
@@ -125,9 +125,9 @@ define rmail_update_master_index (folder, n, total, n_unread)
    rmail_set_buffer_flags();
    push_spot_bob ();
    % only save if necessary.
-   !if (bol_fsearch(fline))
+   ifnot (bol_fsearch(fline))
      {
-	!if (bol_fsearch(sprintf("Folder:\t%20s\t(", folder))) eob();
+	ifnot (bol_fsearch(sprintf("Folder:\t%20s\t(", folder))) eob();
 	set_readonly(0);
 	delete_line();
 	insert(fline);
@@ -141,7 +141,7 @@ define rmail_update_master_index (folder, n, total, n_unread)
 
 define rmail_save_folder (folder, delit)
 {
-   !if (bufferp(Rmail_Folder_Buffer)) return;
+   ifnot (bufferp(Rmail_Folder_Buffer)) return;
    
    variable file = rmail_folder_file(folder), n;
    variable total, n_ok, n_unread;
@@ -169,7 +169,7 @@ define rmail_save_folder (folder, delit)
 	  { case 'D': n_ok--; }
 	  { case '-': n_unread++; }
 	
-	!if (down_1 ()) break;
+	ifnot (down_1 ()) break;
 	bol();
      }
    
@@ -267,7 +267,7 @@ define rmail_get_header (header, continue_flag, multi_flag)
 	dh = bufsubstr();
 	if (strlen (h)) h += ",";
 	h += dh;
-	!if (multi_flag) break;
+	ifnot (multi_flag) break;
      }
    
    return strtrim (strtrans (h, "\n", " "));
@@ -277,7 +277,7 @@ define rmail_narrow_to_headers ()
 {
    bob ();
    push_mark ();
-   !if (bol_fsearch("\n")) eob();
+   ifnot (bol_fsearch("\n")) eob();
    narrow();
    bob ();
 }
@@ -291,7 +291,7 @@ define rmail_extract_headers ()
    rmail_narrow_to_headers ();
    
    from = rmail_get_header("From: ", 0, 0);
-   !if (strlen(from)) from = rmail_get_header("From ", 0, 0);
+   ifnot (strlen(from)) from = rmail_get_header("From ", 0, 0);
    
    date = rmail_get_header("Date: ", 0, 0);
    subject = rmail_get_header("Subject: ", 0, 0);
@@ -417,7 +417,7 @@ define rmail_newmail_narrow (from)
    variable content_length = 0;
    
    push_mark_eol ();
-   !if (bol_fsearch_char ('\n'))
+   ifnot (bol_fsearch_char ('\n'))
      eob ();
    narrow ();
    if (re_bsearch ("^\\CContent-Length:[ \t]+\\(\\d+\\)$"))
@@ -436,7 +436,7 @@ define rmail_newmail_narrow (from)
 		 and (skip_chars ("\n"), 
 		      (re_looking_at (from) or eobp ())))
 	       {
-		  !if (eobp ()) go_up_1 ();
+		  ifnot (eobp ()) go_up_1 ();
 		  narrow ();
 		  return;
 	       }
@@ -599,7 +599,7 @@ define rmail_unhide_headers ()
    set_readonly(0);
    widen();
    bob(); push_mark();
-   !if (bol_fsearch("\n")) eob();
+   ifnot (bol_fsearch("\n")) eob();
    narrow();
    bob();
    
@@ -641,10 +641,10 @@ define rmail_hide_headers()
    rmail_unhide_headers();
    Rmail_Headers_Hidden = 1;
    widen(); bob(); push_mark();
-   !if (bol_fsearch("\n")) eob();
+   ifnot (bol_fsearch("\n")) eob();
    narrow();
    bob();
-   !if (bol_fsearch("\x1F\xC\n")) error ("Unable to find marker.");
+   ifnot (bol_fsearch("\x1F\xC\n")) error ("Unable to find marker.");
    set_readonly(0);
    push_spot();
 
@@ -652,7 +652,7 @@ define rmail_hide_headers()
    forever
      {
 	eol (); trim ();
-	!if (looking_at ("\n ") or looking_at ("\n\t"))
+	ifnot (looking_at ("\n ") or looking_at ("\n\t"))
 	  break;
 	  
 	del ();
@@ -726,7 +726,7 @@ define rmail_add_flag(flag)
    flag = char(flag);
    n += is_substr(flags, flag);
    goto_column(n);
-   !if (looking_at(flag))
+   ifnot (looking_at(flag))
      {
 	insert(flag);
 	del();
@@ -741,11 +741,11 @@ define rmail_get_message(flag)
 {
    variable buf, file, n, n1, pop_buf, ret;
    
-   !if (bufferp(Rmail_Folder_Buffer)) return (0);
+   ifnot (bufferp(Rmail_Folder_Buffer)) return (0);
    pop2buf(Rmail_Folder_Buffer);
    
    file = rmail_extract_file_number ();
-   !if (strlen(file)) return 0;
+   ifnot (strlen(file)) return 0;
    Rmail_Message_Number = file;
    set_readonly(0);
    bol(); if (looking_at_char ('-')) 
@@ -837,7 +837,7 @@ define rmail_get_message(flag)
   
 define rmail_toggle_headers()
 {
-   !if (rmail_get_message(0)) return;
+   ifnot (rmail_get_message(0)) return;
 
    if (Rmail_Headers_Hidden)
      {
@@ -890,7 +890,7 @@ define rmail_skip_quotes ()
 #endif
 		    )
 	       {
-		  !if (down_1 ()) break;
+		  ifnot (down_1 ()) break;
 	       }
 	     recenter (1);
 	  }
@@ -926,7 +926,7 @@ define rmail_format_mail_buffer ()
    
    if (buffer_modified ())
      {
-	!if (get_yes_no("Mail already being composed.  Erase it")) return 0;
+	ifnot (get_yes_no("Mail already being composed.  Erase it")) return 0;
      }
 
    mail_format_buffer (1, opt_headers);
@@ -936,7 +936,7 @@ define rmail_format_mail_buffer ()
 define rmail_forward_message ()
 {
    variable cbuf, subj;
-   !if (rmail_get_message('F'))
+   ifnot (rmail_get_message('F'))
      {
 	beep();
 	return;
@@ -956,7 +956,7 @@ define rmail_forward_message ()
      }
    pop_spot ();
    
-   !if (rmail_format_mail_buffer ())
+   ifnot (rmail_format_mail_buffer ())
      return;
    
    eob();
@@ -1065,7 +1065,7 @@ define rmail_apply_dont_reply_to (from)
 
 	pats = "^" + strchop (Rmail_Dont_Reply_To, ',', '\\') + "$";
 	matches = array_map (Int_Type, &string_match, sub_f, pats, 1);
-	!if (any (matches))
+	ifnot (any (matches))
 	  {
 	     sub_f;
 	     num++;
@@ -1076,7 +1076,7 @@ define rmail_apply_dont_reply_to (from)
 
 define rmail_reply ()
 {
-   !if (rmail_get_message('R'))
+   ifnot (rmail_get_message('R'))
      {
 	beep();
 	return;
@@ -1095,13 +1095,13 @@ define rmail_reply ()
    set_readonly(1);
 
    replyto = rmail_get_header ("Reply-To: ", 1, 0);
-   !if (strlen (replyto))
+   ifnot (strlen (replyto))
      replyto = rmail_get_header ("From: ", 1, 0);
    
    to = rmail_get_header ("To: ", 1, 1);
 
    subj = rmail_get_header ("Subject: ", 1, 0);
-   !if (strlen (subj))
+   ifnot (strlen (subj))
      subj = "(No Subject)";
 
    msgid = rmail_get_header ("Message-ID: ", 1, 0);
@@ -1115,7 +1115,7 @@ define rmail_reply ()
 	     cc = "";
 	     _clear_error ();
 	  }
-	!if (get_yes_no ("Include the cc: header"))
+	ifnot (get_yes_no ("Include the cc: header"))
 	  cc = Null_String;
      }
 
@@ -1146,7 +1146,7 @@ define rmail_reply ()
    if (msgid != "")
      opt_headers = sprintf ("In-Reply-To: %s\n", msgid);
 
-   !if (rmail_format_mail_buffer (opt_headers))
+   ifnot (rmail_format_mail_buffer (opt_headers))
      return;
 
    bob();
@@ -1168,7 +1168,7 @@ define rmail_reply ()
 	     push_spot ();
 	     insert (subj);
 	     pop_spot ();
-	     !if (looking_at("Re:")) insert ("Re: ");
+	     ifnot (looking_at("Re:")) insert ("Re: ");
 	  }
      }
    while (down_1 () and not (looking_at ("X-Mailer:")));
@@ -1198,7 +1198,7 @@ define rmail_reply ()
    pop_spot ();
    widen();
    
-   !if (strlen (to))
+   ifnot (strlen (to))
      {
 	bob(); eol();
      }
@@ -1208,9 +1208,9 @@ define rmail_edit ()
 {
    variable file;
 
-   !if (get_y_or_n ("Are you sure you want to edit")) return;
+   ifnot (get_y_or_n ("Are you sure you want to edit")) return;
 
-   !if (rmail_get_message ('E'))
+   ifnot (rmail_get_message ('E'))
      return;
    
    % Now we are in the message buffer.  The global variable Rmail_Message_Number
@@ -1262,7 +1262,7 @@ define rmail_delete_cmd ()
 {
    bol();
    if (eolp()) return beep();
-   !if (looking_at_char ('D'))
+   ifnot (looking_at_char ('D'))
      {
 	set_readonly(0);
 	del(); insert_char ('D');
@@ -1394,7 +1394,7 @@ define rmail_folder_newmail ()
    if (-1 != prefix_argument (-1))
      {
 	file = read_file_from_mini ("Input MailBox:");
-	!if (strlen (file)) return;
+	ifnot (strlen (file)) return;
 
 	folder = query_create_folder (folder);
 	if (folder == NULL)
@@ -1437,7 +1437,7 @@ define rmail_update_folder_and_save ()
    bskip_chars ("\n \t");
    bol ();
    new_n = rmail_extract_file_number ();
-   !if (strlen(new_n)) new_n = "0";
+   ifnot (strlen(new_n)) new_n = "0";
    widen(); 
    
    bob(); push_mark_eol(); 
@@ -1484,7 +1484,7 @@ define rmail_resequence_folder ()
 	n++;
 	new_n = string(n);
 	
-	!if (n mod 10) 
+	ifnot (n mod 10) 
 	  flush (sprintf (res_fmt, n, nmax));
 	
 	if (file != new_n)
@@ -1511,7 +1511,7 @@ define rmail_resequence_folder ()
 	       }
 	  }
 
-	!if (down_1 ()) break;
+	ifnot (down_1 ()) break;
      }
 
    % update the last file number
@@ -1543,7 +1543,7 @@ define rmail_output_to_folder()
    variable new_dir, old_dir = dircat(Rmail_Directory, Rmail_Folder_Name);
    
    old_n = rmail_extract_file_number ();
-   !if (strlen(old_n)) return;
+   ifnot (strlen(old_n)) return;
 
    if (
 #if (_slang_version >= 20100)
@@ -1647,8 +1647,8 @@ define rmail_xpunge_deletions ()
    while (bol_fsearch_char ('D'))
      {
 	file = rmail_extract_file_number();
-	!if (strlen(file)) continue;
-	% !if (strcmp(file, Rmail_Message_Number))
+	ifnot (strlen(file)) continue;
+	% ifnot (strcmp(file, Rmail_Message_Number))
 	%  {
 	%     old_n = file;
 	%  }
@@ -1657,7 +1657,7 @@ define rmail_xpunge_deletions ()
 	if (1 != file_status(file))
 	  error ("Unable to access ", file);
 
-	!if (delete_file(file))
+	ifnot (delete_file(file))
 	  error ("Unable to delete ", file);
 
 	delete_line ();
@@ -1668,7 +1668,7 @@ define rmail_xpunge_deletions ()
 
 
 $1 = "Rmail-Read";
-!if (keymap_p($1))
+ifnot (keymap_p($1))
 {
    make_keymap($1);
    _for (' ', 127, 1) 
@@ -1713,11 +1713,11 @@ $1 = "Rmail-Read";
 define rmail_select_this_folder ()
 {
    bol();
-   !if (looking_at("Folder:\t")) return beep();
+   ifnot (looking_at("Folder:\t")) return beep();
    () = ffind("\t"); 
    skip_white();
    push_mark(); 
-   !if (ffind("\t("))
+   ifnot (ffind("\t("))
      {
 	pop_mark(0);
 	beep();
@@ -1733,7 +1733,7 @@ define rmail_select_this_folder ()
 
 
 $1 = "Rmail-Folder";
-!if (keymap_p($1))
+ifnot (keymap_p($1))
 {
    make_keymap($1);
    _for (' ', 127, 1) 
@@ -1859,7 +1859,7 @@ define rmail_quit_rmail()
 define rmail ()
 {
    variable n;
-   !if (rmail_check_lock_file(1)) return;
+   ifnot (rmail_check_lock_file(1)) return;
 
    rmail_save_folder(Rmail_Folder_Name, 1);
    Rmail_Folder_Buffer = Null_String;

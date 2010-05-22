@@ -59,7 +59,7 @@ define fortran_indent ()
 	     while (down_1 ())
 	       {
 		  bol_skip_white ();
-		  !if (looking_at (Fortran_Continue_Char))
+		  ifnot (looking_at (Fortran_Continue_Char))
 		    {
 		       go_up_1 ();
 		       bol ();
@@ -144,7 +144,7 @@ define fortran_newline ()
      {
 	push_spot ();
 	bol_skip_white();
-	!if (bolp()) message ("Line exceeds 72 columns.");
+	ifnot (bolp()) message ("Line exceeds 72 columns.");
 	pop_spot ();
      }
 
@@ -221,7 +221,7 @@ define fortran_uncomment ()
 
 define fortran_comment ()
 {
-   !if (fortran_is_comment ())
+   ifnot (fortran_is_comment ())
      {
 	push_spot_bol ();
 	insert (Fortran_Comment_String);
@@ -315,7 +315,7 @@ define fortran_prev_next_statement (dirfun)
      {
 	bol ();
 	skip_chars ("^0-9 \t\n");
-	!if (_get_point ()) break;
+	ifnot (_get_point ()) break;
      }
    () = goto_column_best_try (7);
 }
@@ -340,7 +340,7 @@ define fortran_previous_statement ()
 %
 
 $1 = "Fortran";
-!if (keymap_p ($1)) make_keymap ($1);
+ifnot (keymap_p ($1)) make_keymap ($1);
 
 definekey ("fortran_comment",		"\e;",	$1);
 definekey ("fortran_uncomment",		"\e:",	$1);

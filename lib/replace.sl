@@ -13,7 +13,7 @@ define replace_across_buffer_files ()
    variable pat, rep;
    
    pat = read_mini ("Replace:", Null_String, Null_String);
-   !if (strlen (pat)) return;
+   ifnot (strlen (pat)) return;
    rep = read_mini ("Replace with:", Null_String, Null_String);
    
    push_spot ();		       %  save our location
@@ -37,7 +37,7 @@ define replace_across_buffer_files ()
 	(file,,,flags) = getbuf_info ();
 	
 	% skip if no file associated with buffer, or is read only
-	!if (strlen (file) or (flags & 8)) continue;  
+	ifnot (strlen (file) or (flags & 8)) continue;  
 	
 	% ok, this buffer is what we want.
 	

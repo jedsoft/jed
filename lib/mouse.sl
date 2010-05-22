@@ -171,9 +171,9 @@ define mouse_drag_hook (line, col, but, shift)
    variable top, bot;
    variable y;
    
-   !if (Mouse_Drag_Mode)
+   ifnot (Mouse_Drag_Mode)
      {
-	!if (is_visible_mark ())
+	ifnot (is_visible_mark ())
 	  {
 	     push_visible_mark ();
 	  }

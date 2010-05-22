@@ -19,7 +19,7 @@ define mute_insert_accent (ok_chars, maps_to)
    variable pos, ch;
 
    ch = maps_to[0];
-   !if (input_pending (10))
+   ifnot (input_pending (10))
      {
 	vmessage ("%c-", ch);
 	update_sans_update_hook (0);
