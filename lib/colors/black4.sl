@@ -6,22 +6,22 @@ $4 = "brightred";
 $5 = "brightmagenta";
 $6 = "lightgray";
 
-set_color("normal",	$1, $2);
+set_color("normal",     $1, $2);
 % use white/gray status for Xjed color scheme
-set_color("status",	$1, "blue");
-set_color("region",	"yellow", "blue");
-set_color("operator",	$3, $2);
-set_color("delimiter",	$3, $2);
-set_color("number",	$4, $2);
-set_color("string",	$6, $2);
-set_color("keyword",	"yellow",  $2);
-set_color("keyword1",	"green",   $2);
-set_color("comment",	$3, "gray");
+set_color("status",     $1, "blue");
+set_color("region",     "yellow", "blue");
+set_color("operator",   $3, $2);
+set_color("delimiter",  $3, $2);
+set_color("number",     $4, $2);
+set_color("string",     $6, $2);
+set_color("keyword",    "yellow",  $2);
+set_color("keyword1",   "green",   $2);
+set_color("comment",    $3, "gray");
 set_color("preprocess", $5, $2);
-set_color("dollar",	"yellow", "gray");
-set_color("...",	$5, $2);
-set_color("message",	$3, $2);
-set_color("error",	$4, $2);
+set_color("dollar",     "yellow", "gray");
+set_color("...",        $5, $2);
+set_color("message",    $3, $2);
+set_color("error",      $4, $2);
 
 #iftrue
 % blue menu
@@ -47,12 +47,13 @@ set_color("mouse",     "green", $2);
 
 %% some of the following have been automatically generated:
 set_color("linenum", "yellow", "blue");
-set_color("trailing_whitespace", $3, "gray");
-set_color("tab", $3, $2);
+set_color("trailing_whitespace", $1, "brown");
+set_color("tab", $1, "cyan");
 set_color("url", $6, $2);
 set_color("italic", $1, $2);
 set_color("underline", "green", $2);
 set_color("bold", $1, $2);
+set_color("html", "yellow", $2);
 set_color("keyword2", $1, $2);
 set_color("keyword3", $1, $2);
 set_color("keyword4", $1, $2);
@@ -62,6 +63,4 @@ set_color("keyword7", $1, $2);
 set_color("keyword8", $1, $2);
 set_color("keyword9", $1, $2);
 
-%% The following have been automatically generated:
-
-set_color("html", "yellow", $2);
+% end

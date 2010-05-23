@@ -36,12 +36,8 @@ private define get_recent_file_list_name ()
 {
    variable file = RECENT_FILES_LIST;
    
-% Versions of slang prior to 1.4.3 have a bug in the path_is_absolute function.
-   if (_slang_version >= 10403)
-     {
-	if (path_is_absolute (file))
-	  return file;
-     }
+   if (path_is_absolute (file))
+     return file;
 
    variable dir = Jed_Home_Directory;
 #ifdef IBMPC_SYSTEM

@@ -24,9 +24,6 @@ JX_SETXXX_RETURN_TYPE (*tt_set_color)(int, SLFUTURE_CONST char *, SLFUTURE_CONST
 JX_SETXXX_RETURN_TYPE (*tt_set_mono) (int, SLFUTURE_CONST char *, SLtt_Char_Type);
 
 #ifndef IBMPC_SYSTEM
-# if SLANG_VERSION < 20000
-void (*tt_set_color_esc)(int, char *);
-# endif
 void (*tt_wide_width)(void);
 void (*tt_narrow_width)(void);
 void (*tt_enable_cursor_keys)(void);
@@ -65,9 +62,6 @@ static void get_terminfo (void)
    tt_set_mono		= SLtt_set_mono;
 
 #ifndef IBMPC_SYSTEM
-# if SLANG_VERSION < 20000
-   tt_set_color_esc		= SLtt_set_color_esc;
-# endif
    tt_wide_width		= SLtt_wide_width;
    tt_narrow_width		= SLtt_narrow_width;
    tt_enable_cursor_keys	= SLtt_enable_cursor_keys;

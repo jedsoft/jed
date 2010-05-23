@@ -696,17 +696,8 @@ static void what_char_intrin (void)
 
 static int intrin_strwidth (char *s)
 {
-   char *smax;
-   
-   smax = s + strlen (s);
-#if SLANG_VERSION < 20000
-   /* This is technically not correct but slang-1 will not be supported for
-    * much longer.
-    */
-   return smax - s;
-#else
+   char *smax = s + strlen (s);
    return (int) SLsmg_strwidth ((SLuchar_Type *)s, (SLuchar_Type *)smax);
-#endif
 }
 
 #if 0

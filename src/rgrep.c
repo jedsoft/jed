@@ -69,19 +69,6 @@ static int Stdout_Is_TTY;
 #define HOFF_STR "\033[0m"
 #define HOFF_STR_LEN 4
 
-#if SLANG_VERSION < 10410
-int SLang_get_error (void)
-{
-   return SLang_Error;
-}
-
-int SLang_set_error (int e)
-{
-   SLang_Error = e;
-   return 0;
-}
-#endif
-
 extern int jed_handle_interrupt (void);
 int jed_handle_interrupt (void)
 {
@@ -260,15 +247,9 @@ static void parse_flags(char *f)
 }
 
 
-#if SLANG_VERSION < 20000
-static SLRegexp_Type reg;
-static SLRegexp_Type recurse_reg;
-static unsigned char Recurse_Reg_Pattern_Buffer[JED_MAX_PATH_LEN];
-#else
 static SLRegexp_Type *reg;
 static SLRegexp_Type *recurse_reg;
 static unsigned char Recurse_Reg_Pattern_Buffer[JED_MAX_PATH_LEN];
-#endif
 static int Must_Match;
 static int print_file_too;
 
@@ -343,15 +324,9 @@ static unsigned char *rgrep_gets (unsigned int *n)
 
 static int OSearch_Ok = 0;
 static int Search_St_Key_Length = 0;
-#if SLANG_VERSION < 20000
-static SLsearch_Type Search_St;
-# define SEARCH_FORWARD(a,b) SLsearch ((a), (b), &Search_St)
-# define REGEXP_MATCH(r,b,n) SLang_regexp_match((unsigned char *)(b),(n), &r)
-#else
 static SLsearch_Type *Search_St;
-# define SEARCH_FORWARD(a,b) SLsearch_forward (Search_St, (a), (b))
-# define REGEXP_MATCH(r,b,n) (NULL != SLregexp_match(r,(char *) (b),(n)))
-#endif
+#define SEARCH_FORWARD(a,b) SLsearch_forward (Search_St, (a), (b))
+#define REGEXP_MATCH(r,b,n) (NULL != SLregexp_match(r,(char *) (b),(n)))
 
 static void grep(char *file)
 {
@@ -394,33 +369,11 @@ static void grep(char *file)
 
    do
      {
+	unsigned int ofs, len;
+
 	line++;
-#if SLANG_VERSION < 20000
-	if (reg.min_length > n)
-	  {
-	     if (Print_Non_Matching_Lines)
-	       {
-		  p = buf;
-		  pmax = p + n;
-		  goto match_found;
-	       }
-	     continue;
-	  }
-#endif
 	if (Must_Match)
 	  {
-#if SLANG_VERSION < 20000
-	     if (Search_St.key_len > (int) n)
-	       {
-		  if (Print_Non_Matching_Lines)
-		    {
-		       p = buf;
-		       pmax = p + n;
-		       goto match_found;
-		    }
-		  continue;
-	       }
-#endif
 	     if (NULL == (p = SEARCH_FORWARD (buf, buf + n)))
 	       {
 		  if (Print_Non_Matching_Lines)
@@ -452,18 +405,11 @@ static void grep(char *file)
 	  }
 
 	if (Print_Non_Matching_Lines) continue;
-	
-#if SLANG_VERSION < 20000
-	p = buf + reg.beg_matches[0];
-	pmax = p + reg.end_matches[0];
-#else
-	  {
-	     unsigned int ofs, len;
-	     (void) SLregexp_nth_match (reg, 0, &ofs, &len);
-	     p = buf + ofs;
-	     pmax = p + len;
-	  }
-#endif
+
+	(void) SLregexp_nth_match (reg, 0, &ofs, &len);
+	p = buf + ofs;
+	pmax = p + len;
+
 	match_found:
 	n_matches++;
 
@@ -931,12 +877,7 @@ static unsigned char *fixup_filename (unsigned char *name)
 
 int main(int argc, char **argv)
 {
-#if SLANG_VERSION < 20000
-   unsigned char buf[2 * JED_MAX_PATH_LEN];
-   unsigned char recurse_buf[JED_MAX_PATH_LEN];
-#else
    unsigned int flags;
-#endif
    char *pattern;
 
 #ifdef __unix__
@@ -954,24 +895,12 @@ int main(int argc, char **argv)
 	     argv++;
 	     if (!argc) usage();
 	     
-#if SLANG_VERSION < 20000
-	     recurse_reg.pat = fixup_filename ((unsigned char *) *argv);
-	     recurse_reg.buf = recurse_buf;
-	     recurse_reg.buf_len = JED_MAX_PATH_LEN;
-# ifdef __MSDOS__
-	     recurse_reg.case_sensitive = 0;
-# else
-	     recurse_reg.case_sensitive = 1;
-# endif
-	     if (SLang_regexp_compile (&recurse_reg)) exit_error("Error compiling pattern.");
-#else
 	     flags = 0;
-# ifdef __MSDOS__
+#ifdef __MSDOS__
 	     flags |= SLREGEXP_CASELESS;
-# endif
+#endif
 	     if (NULL == (recurse_reg = SLregexp_compile ((char *)fixup_filename((unsigned char *) *argv), flags)))
 	       exit_error ("Error compiling pattern");
-#endif
 	     Do_Recursive = 1;
 	     Recursive_Match = 1;
 	  }
@@ -994,47 +923,23 @@ int main(int argc, char **argv)
    
    pattern = *argv;
 
-#if SLANG_VERSION < 20000
-   reg.pat = (unsigned char *) pattern;
-   reg.buf = buf;
-   reg.buf_len = sizeof (buf);
-   reg.case_sensitive = Case_Sensitive;
-   
-   if (SLang_regexp_compile (&reg)) exit_error("Error compiling pattern.");
-#else
    if (NULL == (reg = SLregexp_compile (pattern, Case_Sensitive ? 0 : SLREGEXP_CASELESS)))
      exit_error ("Error compiling pattern");
-#endif
    argc--; argv++;
    
    Must_Match = 1;
    
-#if SLANG_VERSION < 20000
-   OSearch_Ok = reg.osearch;
-#else
    (void) SLregexp_get_hints (reg, &flags);
    OSearch_Ok = (0 != (flags & SLREGEXP_HINT_OSEARCH));
-#endif
    
    if (OSearch_Ok)
      {
-#if SLANG_VERSION < 20000
-	SLsearch_init (pattern, 1, Case_Sensitive, &Search_St);
-#else
 	if (NULL == (Search_St = SLsearch_new ((unsigned char *)pattern, Case_Sensitive ? 0 : SLSEARCH_CASELESS)))
 	  exit_error ("SLsearch_new failed");
-#endif
 	Search_St_Key_Length = strlen (pattern);
      }
-#if SLANG_VERSION < 20000
-   else if (reg.must_match)
-     {
-	SLsearch_init ((char *) reg.must_match_str, 1, Case_Sensitive, &Search_St);
-	Search_St_Key_Length = strlen ((char *) reg.must_match_str);
-     }
-   else
-#endif
-     Must_Match = 0;
+
+   Must_Match = 0;
 
    if (argc == 0)
      {

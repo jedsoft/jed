@@ -44,10 +44,6 @@
 
 /*}}}*/
 
-#if (SLANG_VERSION < 20003) && defined(SLKEY_F_SLANG)
-# undef SLKEY_F_SLANG
-#endif
-
 void (*X_Define_Keys_Hook)(SLKeyMap_List_Type *);
 int (*X_Set_Abort_Char_Hook) (unsigned char);
 unsigned char Jed_Abort_Char = 7;		       /* ^G */
@@ -1004,11 +1000,7 @@ void jed_set_abort_char (int *c) /*{{{*/
 {
    char str[2];
    char ch = (char) *c;
-#if SLANG_VERSION >= 20000
    SLkeymap_Type *km;
-#else
-      int i;
-#endif
 
    if (X_Set_Abort_Char_Hook != NULL)
      (void) (*X_Set_Abort_Char_Hook) ((unsigned char) ch);
@@ -1016,14 +1008,6 @@ void jed_set_abort_char (int *c) /*{{{*/
    Jed_Abort_Char = (int) ch;
 
    str[0] = ch; str[1] = 0;
-#if SLANG_VERSION < 20000   
-   for (i = 0; i < SLANG_MAX_KEYMAPS; i++)
-     {
-	if (SLKeyMap_List[i].keymap == NULL) continue;
-	SLang_undefine_key(str, &SLKeyMap_List[i]);
-	SLkm_define_key (str, (FVOID_STAR) kbd_quit, &SLKeyMap_List[i]);
-     }
-#else
    km = SLKeyMap_List_Root;
    while (km != NULL)
      {
@@ -1031,7 +1015,6 @@ void jed_set_abort_char (int *c) /*{{{*/
 	SLkm_define_key (str, (FVOID_STAR) kbd_quit, km);
 	km = km->next;
      }
-#endif
 }
 
 /*}}}*/
@@ -1396,52 +1379,21 @@ static void get_keymaps (void)
    int j, n;
    char **keymaps;
    SLang_Array_Type *at;
-#if SLANG_VERSION < 20000
-   unsigned int i;
-#else
    SLkeymap_Type *km;
-#endif
 
    n = 0;
-#if SLANG_VERSION < 20000
-   for (i = 0; i < SLANG_MAX_KEYMAPS; i++)
-     {
-	if (SLKeyMap_List[i].keymap == NULL)
-	  continue;
-
-	n++;
-     }
-#else
    km = SLKeyMap_List_Root;
    while (km != NULL)
      {
 	n++;
 	km = km->next;
      }
-#endif
 
    if (NULL == (at = SLang_create_array (SLANG_STRING_TYPE, 0, NULL, &n, 1)))
      return;
 
    keymaps = (char **)at->data;
    j = 0;
-#if SLANG_VERSION < 20000
-   for (i = 0; i < SLANG_MAX_KEYMAPS; i++)
-     {
-	if (SLKeyMap_List[i].keymap == NULL)
-	  continue;
-
-	if (j == n)
-	  break;		       /* keymap list changing?? */
-
-	if (NULL == (keymaps[j] = SLang_create_slstring (SLKeyMap_List[i].name)))
-	  {
-	     SLang_free_array (at);
-	     return;
-	  }
-	j++;
-     }
-#else
    km = SLKeyMap_List_Root;
    while (km != NULL)
      {
@@ -1456,7 +1408,6 @@ static void get_keymaps (void)
 	km = km->next;
 	j++;
      }
-#endif
    SLang_push_array (at, 1);
 }
 

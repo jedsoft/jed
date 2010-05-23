@@ -100,9 +100,7 @@ extern unsigned _stklen = 10000U;
 
 int Jed_Secure_Mode;
 int Jed_Load_Quietly = 0;
-#if JED_HAS_UTF8_SUPPORT
 int Jed_UTF8_Mode;
-#endif
 
 char Jed_Root_Dir [JED_MAX_PATH_LEN];
 
@@ -323,7 +321,6 @@ static int main_initialize (int argc, char **argv)
 	  }
      }
 
-#if JED_HAS_UTF8_SUPPORT
    Jed_UTF8_Mode = SLutf8_enable (-1);
    if (Jed_UTF8_Mode == 0)
      {
@@ -340,22 +337,17 @@ static int main_initialize (int argc, char **argv)
 	       SLtt_utf8_enable (1);
 	  }
      }
-#endif
 
-#if JED_HAS_UTF8_SUPPORT
    if (Jed_UTF8_Mode)
      define_word ("\\w");
    else
      {
-#endif
 #ifdef __MSDOS__
 	define_word("0-9a-zA-Z\200-\232\240-\245\341-\353");
 #else
 	define_word("0-9a-zA-Z\300-\326\330-\366\370-\377");
 #endif
-#if JED_HAS_UTF8_SUPPORT
      }
-#endif
    (*tt_get_terminfo) ();
 
    fd = 2;			       /* 2 is stderr, assume it is ok */
@@ -485,7 +477,6 @@ static int main_initialize (int argc, char **argv)
 	     script_usage ();
 	     return -1;
 	  }
-#if SLANG_VERSION >= 20000
 	  {
 	     char *file = SLpath_find_file_in_path (".", script_file);
 	     if (file == NULL)
@@ -500,10 +491,6 @@ static int main_initialize (int argc, char **argv)
 	       }
 	     SLfree (file);
 	  }
-#else
-	if (0 != jed_ns_load_file (script_file, NULL))
-	  return -1;
-#endif
 	if (-1 == SLang_run_hooks ("jedscript_main", 0))
 	  return -1;
      }

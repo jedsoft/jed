@@ -19,12 +19,7 @@
 #endif
 
 #ifdef __IBMC__
-#if SLANG_VERSION < 10308
-# define sleep(x) sys_pause(1000 * (x))
-#else
-/* sleep added to slang 10308 */
 extern unsigned int sleep (unsigned int);
-#endif
 #endif
 
 #include <stdio.h>

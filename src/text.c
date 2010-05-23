@@ -495,67 +495,6 @@ char *jed_get_word_chars (void)
    return Jed_Word_Range;
 }
 
-#if SLANG_VERSION < 20000
-static void skip_chars_forward (char *range, int invert)
-{
-   unsigned char lut[256];
-   
-   SLmake_lut(lut, (unsigned char *) range, (unsigned char) invert);
-   /* more flexibility is achieved with following line */
-   if (invert && lut['\n']) lut['\n'] = 0;
-   
-   do
-     {
-	unsigned char *p = CLine->data + Point;
-	unsigned char *pmax = CLine->data + CLine->len;
-
-	while (p < pmax)
-	  {
-	     if (0 == lut[*p])
-	       {
-		  jed_position_point (p);
-		  return;
-	       }
-	     p++;
-	  }
-     }
-   while (jed_down (1));
-   eob();
-}
-
-static void skip_chars_backward (char *range, int invert)
-{
-   unsigned char lut[256];
-   
-   SLmake_lut(lut, (unsigned char *) range, (unsigned char) invert);
-   /* more flexibility is achieved with following line */
-   if (invert && lut['\n']) lut['\n'] = 0;
-   
-   do
-     {
-	unsigned char *pmin = CLine->data;
-	unsigned char *p = pmin + Point;
-	
-	while (p > pmin)
-	  {
-	     p--;
-	     if (0 == lut[*p])
-	       {
-		  jed_position_point (p+1);
-		  return;
-	       }
-	  }
-
-	bol ();
-	if (lut['\n'] == 0) 
-	  return;
-     }
-   while (jed_up (1));
-   bob();
-}
-
-#else				       /* SLANG_VERSION >= 20000 */
-
 static void skip_chars_backward (char *range, int invert)
 {
    SLwchar_Lut_Type *lut;
@@ -639,7 +578,6 @@ static void skip_chars_forward (char *range, int invert)
    SLwchar_free_lut (lut);
    eob();
 }
-#endif
 
 void skip_word_chars(void) /*{{{*/
 {

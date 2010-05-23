@@ -213,9 +213,7 @@ private define minued_update_hook   ()       %{{{
    if (what_column () < 6)
       goto_column (6);
 
-   if (andelse
-         {what_line () <= minued_ncoms}
-         {buffer_modified ()})
+   if ((what_line () <= minued_ncoms) && buffer_modified ())
      {
         push_spot ();
         goto_column (4);
@@ -302,9 +300,7 @@ public  define minued_eval_line        () %{{{
 %}}}
 public  define minued_remove_line      () %{{{
 {
-   if (orelse
-      {minued_lnum > minued_ncoms}
-      {minued_ncoms == 1})
+   if ((minued_lnum > minued_ncoms) || (minued_ncoms == 1))
       return;
 
    remove_mini_command (minued_lnum);

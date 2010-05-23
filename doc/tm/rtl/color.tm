@@ -97,7 +97,7 @@
  If line attributes are available, then you may also specifiy the color
  of the hidden line indicator:
 #v+
-  "..."         Hidden line indicator
+   "..."         Hidden line indicator
 #v-
  The color of the menu objects may be specified via
 #v+

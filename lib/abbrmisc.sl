@@ -1,20 +1,20 @@
 % Miscellaneous function for the abbrev tables
 
 require ("abbrev");
-   
+
 define define_abbrev_for_table (table, word)
 {
    variable n = what_line ();
    variable use_bskip = 1;
    variable exg = "exchange";
    variable abbrev, expans;
-   
+
    if (markp ())
      {
 	call (exg);
 	if (n == what_line (), call (exg)) use_bskip = 0;
      }
-   
+
    push_spot ();
    if (use_bskip)
      {
@@ -24,24 +24,24 @@ define define_abbrev_for_table (table, word)
    expans = bufsubstr ();
    pop_spot ();
 
-   ifnot (strlen (expans)) 
+   ifnot (strlen (expans))
      {
 	expans = read_mini("For what?", Null_String, Null_String);
 	ifnot (strlen (expans)) return;
      }
-   
+
    abbrev = read_mini ("Enter abbrev for '" + expans + "'", "", "");
    ifnot (strlen (abbrev)) return;
-   
+
    define_abbrev (table,  abbrev, expans);
 }
 
 define define_abbreviation ()
 {
    variable tbl, word;
-   
+
    (tbl, word) = what_abbrev_table ();
-   ifnot (strlen (tbl)) 
+   ifnot (strlen (tbl))
      {
 	tbl = "Global";
 	create_abbrev_table (tbl, Null_String);
@@ -73,36 +73,36 @@ define save_abbrevs ()
 {
    variable file = read_file_from_mini ("Save abbrevs to:");
    variable n, table, word;
-   
+
    ifnot (strlen (extract_filename (file)))
      {
 	file = dircat (file, Abbrev_File);
      }
-   
+
    ifnot (strlen (extract_filename (file))) error ("Invalid file.");
-   
+
    n = list_abbrev_tables ();	       %  tables on stack
    ifnot (n) return;
-   
+
    () = read_file (file);
    erase_buffer ();
-   
+
    loop (n)
      {
 	table = ();
 	push_spot ();
 	word = dump_abbrev_table (table);   %  buffer now contain abbrevs
 	pop_spot ();
-	
+
 	vinsert("create_abbrev_table (\"%s\", \"%s\");\n", table, word);
 	go_up_1 ();
-	
+
 	while (down_1 () and not(eobp()))
 	  {
 	     insert ("define_abbrev (\""); insert(table);
 	     insert ("\",\t\"");
 	     quote_this_line ();
-	     () = ffind_char ('\t'); 
+	     () = ffind_char ('\t');
 	     trim ();
 	     insert ("\",\t\"");
 	     eol ();
@@ -113,8 +113,3 @@ define save_abbrevs ()
    delbuf (whatbuf);
 }
 
-	     
-	
-	
-   
-	

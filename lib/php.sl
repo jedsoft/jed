@@ -540,10 +540,7 @@ define php_indent_line( ) %{{{
 			php_mode_if_bol_skip_white( );
 		}
 		
-		if( orelse
-		  { php_looking_at( "case" ) }
-			{ php_looking_at( "default" ) }
-			)
+		if(php_looking_at( "case" ) || php_looking_at( "default" ))
 		{
 			if( ffind_char( ':' ))
 			{
@@ -556,15 +553,15 @@ define php_indent_line( ) %{{{
 			forever
 			{
 				php_bskip_over_comment( );
-				ifnot( orelse
-				   { blooking_at( ";" ) }
-					 { blooking_at( "{" ) }
-					 { blooking_at( "}" ) }
-					 { blooking_at( ")," ) }
-					 { blooking_at( "}," ) }
-					 { blooking_at( ":" ) }
-					 { bobp( ) }
-					 )
+				ifnot(
+				      blooking_at( ";" )
+				      || blooking_at( "{" )
+				      || blooking_at( "}" )
+				      || blooking_at( ")," )
+				      || blooking_at( "}," )
+				      || blooking_at( ":" )
+				      || bobp( )
+				     )
 				{	
 					% This needs to be here to make sure were still in the phpblock
 					if( php_in_block( ) )

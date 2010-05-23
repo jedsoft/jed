@@ -734,15 +734,12 @@ Buffer *jed_get_mini_action_buffer (void)
 int jed_getkey_wchar (SLwchar_Type *wchp)
 {
    int ch;
-#if JED_HAS_UTF8_SUPPORT
    SLuchar_Type buf[SLUTF8_MAX_MBLEN+1];
    unsigned int i;
-#endif
 
    ch = jed_getkey ();
    *wchp = (SLwchar_Type) ch;
 
-#if JED_HAS_UTF8_SUPPORT
    if ((ch < 128) || (Jed_UTF8_Mode == 0))
      return 0;
 
@@ -763,7 +760,6 @@ int jed_getkey_wchar (SLwchar_Type *wchp)
 	buf[i] = (SLuchar_Type) ch;
 	i++;
      }
-#endif
    return 0;
 }
 
@@ -776,18 +772,3 @@ void jed_ungetkey_wchar (SLwchar_Type wc)
    
    ungetkey_string ((char *)buf, (int)(b-buf));
 }
-
-
-#if SLANG_VERSION < 10410
-int SLang_get_error (void)
-{
-   return SLang_Error;
-}
-
-int SLang_set_error (int e)
-{
-   SLang_Error = e;
-   return 0;
-}
-
-#endif

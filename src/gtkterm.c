@@ -93,7 +93,7 @@
 /*}}}*/
 
 /* X_HAVE_UTF8_STRING is defined in X11.h */
-#if (SLANG_VERSION >= 20000) && defined(X_HAVE_UTF8_STRING)
+#if defined(X_HAVE_UTF8_STRING)
 # define USE_XUTF8_CODE		1
 #else
 # define USE_XUTF8_CODE		0
@@ -3515,7 +3515,6 @@ eventCallback( GtkWidget *w,
    return( True );
 }
 
-#if SLANG_VERSION >= 20000
 
 /************************************
 * bytes_to_wchars
@@ -3592,26 +3591,6 @@ utf8nt_to_wchars(unsigned char *s, unsigned int len, unsigned int *ncharsp)
    (sc).color = (_color)
 # define SLSMG_COUNT_CHARS(sc) ((sc).nchars)
 
-#else
-/* SLang1 versions */
-# define SLSMGCHAR_EQUAL(o, n) ((o) == (n))
-
-# ifdef SLSMG_HLINE_CHAR_UNICODE
-/* Grrr.... hack for the slang1-utf8 version hacked by RedHat and SuSE... */
-#  define SLSMGCHAR_SET_CHAR(sc, _char) (sc) = ((sc) & 0xFF000000) + (_char)
-#  define SLSMGCHAR_SET_COLOR(sc, _color) (sc) = ((sc) & 0xFF) + ((_color)<<24)
-# else
-#  define SLSMGCHAR_SET_CHAR(sc, _char) (sc) = ((sc) & 0xFF00) + (_char)
-#  define SLSMGCHAR_SET_COLOR(sc, _color) (sc) = ((sc) & 0xFF) + ((_color)<<8)
-# endif
-# define SLSMG_COUNT_CHARS(sc) (1)
-/* These exist in SLang 2 include, but not on SLang 1. Define here to allow
- * using the same code
- */
-# define SLSMG_COLOR_MASK 0xFF
-# define SLwchar_Type char
-
-#endif				       /* SLANG_VERSION >= 20000 */
 
 /************************************
 * gtkXDrawString
@@ -3781,7 +3760,6 @@ JX_write_smgchar( int row, int col, SLsmg_Char_Type *s )
    if ((color >= JMAX_COLORS) || (color < 0))
      color = 0;
 
-#if SLANG_VERSION >= 20000
    if (s->nchars > 0)
      {
 	(void) jGtkDraw( color, row, col, s->wchars, 1, 0 );
@@ -3794,13 +3772,6 @@ JX_write_smgchar( int row, int col, SLsmg_Char_Type *s )
 	for (i = 1; i < s->nchars; i++)
 	  (void) jGtkDraw( color, row, col, &s->wchars[i], 1, 1 );
      }
-#else
-     {
-	SLwchar_Type ch = SLSMG_EXTRACT_CHAR(*s);
-	(void) jGtkDraw( color, row, col, &ch, 1, 0 );
-     }
-#endif
-
 }
 
 /* Write to screen a row of SLsmg_Chars, handling combining characters
@@ -3853,7 +3824,6 @@ JX_write_smgchars( int row, int col, SLsmg_Char_Type *s, SLsmg_Char_Type *smax )
 	     b = buf;
 	     oldcolor = color;
 	  }
-#if SLANG_VERSION >= 20000
 	if ( s->nchars > 1 )
 	  {
 	 /* this cell has combining characters */
@@ -3868,7 +3838,6 @@ JX_write_smgchars( int row, int col, SLsmg_Char_Type *s, SLsmg_Char_Type *smax )
 	       *b++ = ' ';
 	  }
 	else
-#endif
 	  *b++ = SLSMG_EXTRACT_CHAR(*s);
 	s++;
      }
@@ -4305,7 +4274,6 @@ JX_write_string (char *s ) /*{{{*/
 
    /* printf( "File: %s, Line: %d: JX_write_string\n", __FILE__, __LINE__ ); */
 
-#if SLANG_VERSION >= 20000
 
    if (Jed_UTF8_Mode)
      w = utf8nt_to_wchars((unsigned char *)s, nbytes, &nchars);
@@ -4317,20 +4285,13 @@ JX_write_string (char *s ) /*{{{*/
    if ( w == NULL )
      goto write_done;
 
-#else
-   nchars = nbytes;
-   w = s;
-#endif
-
    if ((No_XEvents == 0) && JGtkWin->window_mapped)
      {
 	hide_cursor ();
 	(void) jGtkDraw( JGtkWin->current_gc_num, JGtkWin->cursor_row, JGtkWin->cursor_col, w, nchars, 0);
      }
-#if SLANG_VERSION >= 20000
    SLfree((char *)w);
 write_done:
-#endif
 
    JGtkWin->cursor_col += nchars;
    if ( JGtkWin->cursor_col >= JX_Screen_Cols)
@@ -6494,9 +6455,7 @@ jGtkSetColor (int i, char *what, char *fg, char *bg )
    if (!Term_Supports_Color)
      return JX_SETXXX_RETURN_VAL;
 
-#if SLANG_VERSION >= 10306
    SLsmg_touch_screen ();
-#endif
 
    if (i == -1)
      {
@@ -6915,24 +6874,6 @@ jgtk_server_vendor (void )
 {
 }
 
-#if SLANG_VERSION < 10404
-/************************************
-* get_termcap_string
-*
-* group:
-*
-*
-* debug print:
-*
-*
-************************************/
-
-static char *
-get_termcap_string  (char *cap)
-{
-   return "";
-}
-#endif
 
 /************************************
 * x_set_meta_keys
@@ -7052,9 +6993,6 @@ static SLang_Intrin_Fun_Type sl_x_table[] = /*{{{*/
 
    MAKE_INTRINSIC_S("jgtk_load_font", loadFont, VOID_TYPE ),
 
-#if SLANG_VERSION < 10404
-   MAKE_INTRINSIC_S("get_termcap_string", get_termcap_string, STRING_TYPE),
-#endif
    MAKE_INTRINSIC(NULL,NULL,0,0)
 };
 
@@ -7397,9 +7335,6 @@ JX_get_terminfo( void ) /*{{{*/
 	tt_get_screen_size      = get_screen_size;
 	tt_set_color            = SLtt_set_color;
 	tt_set_mono             = SLtt_set_mono;
-#if SLANG_VERSION < 20000
-	tt_set_color_esc        = SLtt_set_color_esc;
-#endif
 	tt_wide_width           = SLtt_wide_width;
 	tt_narrow_width         = SLtt_narrow_width;
 	tt_enable_cursor_keys   = SLtt_enable_cursor_keys;
@@ -7465,10 +7400,7 @@ JX_get_terminfo( void ) /*{{{*/
    tt.tt_screen_cols =   &JX_Screen_Cols;
    tt.tt_term_cannot_scroll = &JX_Term_Cannot_Scroll;
    tt.tt_has_alt_charset =    &JX_Zero;
-
-#if SLANG_VERSION >= 20000
    tt.unicode_ok = &Jed_UTF8_Mode;
-#endif
 
    SLsmg_set_terminal_info (&tt);
    Jed_Handle_SIGTSTP = 0;

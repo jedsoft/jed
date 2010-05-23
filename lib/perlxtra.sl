@@ -374,7 +374,7 @@ static define perl_get_help (cmd)
 static define help_for_perl (what)
 {
     % empty string -> translate to 'perl' (like a table-of-contents)
-    if (orelse { what == NULL } {not(strlen (what))} ) what = "perl";
+    if ((what == NULL) || not(strlen (what))) what = "perl";
     perl_get_help("perldoc -t " + what);
 }
 

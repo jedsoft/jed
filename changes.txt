@@ -25,6 +25,9 @@ Changes since 0.99-19
    jed_dir_file_merge was not being checked.
 10. lib/*.sl: Change obsolete "!if" statements to "ifnot" ones. (Mark
     Olesen).
+11. Removed dead code that pertained to versions of slang prior to
+    2.1.0.  Such versions have been unsupported for some time. (Mark
+    Olesen).
 
 
 {{{ Previous Versions 

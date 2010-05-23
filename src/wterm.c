@@ -471,7 +471,6 @@ static int wjed_has_unicode(void)
 
 static void _putkey (WCHAR wc)
 {
-#if SLANG_VERSION >= 20000
    if (wjed_has_unicode ())
      {
         unsigned char buf[SLUTF8_MAX_MBLEN+1], *b;
@@ -479,7 +478,6 @@ static void _putkey (WCHAR wc)
         buffer_keystring ((char *)buf, b-buf);
      }
    else
-#endif
      {
         /* 0xE0 is prefix for cursor keys, but also &agrave; on ANSI 
          * charset. The charmap has 0xE0 0xE0 to &agrave; */
@@ -932,8 +930,6 @@ static int decode_utf32 (unsigned int u, WCHAR *buf)
 }
 
 /* SLsmg_Char_Type decode/compare: the char internals changed for SLang2 */
-#if SLANG_VERSION >= 20000
-   
 static int decode_smgchar(SLsmg_Char_Type *s, WCHAR *buf)
 {
    if (s->nchars > 0) 
@@ -949,22 +945,6 @@ static int decode_smgchar(SLsmg_Char_Type *s, WCHAR *buf)
 	&& (0 == memcmp((o)->wchars, (n)->wchars, (n)->nchars * sizeof(SLwchar_Type))))
 # define SLSMGCHAR_SET_CHAR(sc, _char) do { (sc).nchars = 1; (sc).wchars[0] = (_char); } while (0)
 # define SLSMGCHAR_SET_COLOR(sc, _color) (sc).color = (_color)
-#else
-
-static int decode_smgchar(SLsmg_Char_Type *s, WCHAR *buf)
-{
-   *buf = SLSMG_EXTRACT_CHAR(*s);
-   return 1;
-}
-
-# define SLSMGCHAR_EQUAL(o, n) ((o) == (n))
-# define SLSMGCHAR_SET_CHAR(sc, _char) (sc) = (sc) & 0xFF00 + (_char)
-# define SLSMGCHAR_SET_COLOR(sc, _color) (sc) = ((sc) & 0xFF) + ((_color)<<8)
-
-/* define this to allow using the same code for slang 1 */
-# define SLSMG_COLOR_MASK 0xFF
-
-#endif				       /* SLANG_VERSION >= 20000 */
 
 static void msw_write_smgchars(SLsmg_Char_Type *s, SLsmg_Char_Type *smax)
 {
@@ -1399,9 +1379,7 @@ static JX_SETXXX_RETURN_TYPE msw_set_color (int i, char *what, char *fg, char *b
 	JColors[i].hbrBG = bgbr;
      }
 
-#if SLANG_VERSION >= 10306
    SLsmg_touch_screen ();
-#endif
 
    return JX_SETXXX_RETURN_VAL;
 

@@ -1366,15 +1366,11 @@ static void set_init_callback (char *name)
    
    if (NULL == (t = jed_find_syntax_table (name, 1)))
      {
-#if SLANG_VERSION > 10400
 	SLang_free_function (f);
-#endif
 	return;
      }
-#if SLANG_VERSION > 10400
    if (t->init_dfa_callback != NULL)
      SLang_free_function (t->init_dfa_callback);
-#endif
    t->init_dfa_callback = f;
 }
 

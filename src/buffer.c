@@ -255,20 +255,16 @@ unsigned char *jed_multibyte_chars_forward (unsigned char *p, unsigned char *pma
                                             int ignore_combining)
 {
    (void) ignore_combining;
-#if JED_HAS_UTF8_SUPPORT
    if (Jed_UTF8_Mode == 0)
      {
-#endif
 	if (p + n > pmax)
 	  n = pmax - p;
    
 	p += n;
 	if (dn != NULL) *dn = n;
 	return p;
-#if JED_HAS_UTF8_SUPPORT
      }
    return SLutf8_skip_chars (p, pmax, n, dn, ignore_combining);
-#endif
 }
 
 unsigned char *jed_multibyte_chars_backward (unsigned char *pmin, unsigned char *p, 
@@ -276,20 +272,16 @@ unsigned char *jed_multibyte_chars_backward (unsigned char *pmin, unsigned char 
                                              int ignore_combining)
 {
    (void) ignore_combining;
-#if JED_HAS_UTF8_SUPPORT
    if (Jed_UTF8_Mode == 0)
      {
-#endif
 	if (pmin + n > p)
 	  n = p - pmin;
    
 	p -= n;
 	if (dn != NULL) *dn = n;
 	return p;
-#if JED_HAS_UTF8_SUPPORT
      }
    return SLutf8_bskip_chars (pmin, p, n, dn, ignore_combining);
-#endif
 }
 
 int jed_multibyte_charcasecmp (unsigned char **ap, unsigned char *amax,
@@ -304,7 +296,6 @@ int jed_multibyte_charcasecmp (unsigned char **ap, unsigned char *amax,
    if ((a >= amax) || (b >= bmax))
      return 0;
 
-#if JED_HAS_UTF8_SUPPORT
    if (Jed_UTF8_Mode)
      {
         unsigned int na, nb;
@@ -326,13 +317,6 @@ int jed_multibyte_charcasecmp (unsigned char **ap, unsigned char *amax,
         else if (bok)
           return -1;
         
-# if SLANG_VERSION < 20005
-	/* Earlier versions of SLutf8_decode did not set the value of the
-	 * SLwchar_Type arg to the byte-value
-	 */
-	cha = *a;
-	chb = *b;
-# endif
         if (cha > chb)
           return 1;
         
@@ -341,7 +325,6 @@ int jed_multibyte_charcasecmp (unsigned char **ap, unsigned char *amax,
         
         return -1;
      }
-#endif
 
    *ap = a+1;
    *bp = b+1;
@@ -357,7 +340,6 @@ int jed_multibyte_charcasecmp (unsigned char **ap, unsigned char *amax,
  */
 unsigned char *jed_wchar_to_multibyte (SLwchar_Type c, unsigned char *buf)
 {
-#if JED_HAS_UTF8_SUPPORT
    if (Jed_UTF8_Mode && (c >= 0x80))
      {
 	unsigned char *b = SLutf8_encode (c, buf, JED_MAX_MULTIBYTE_SIZE);
@@ -365,14 +347,12 @@ unsigned char *jed_wchar_to_multibyte (SLwchar_Type c, unsigned char *buf)
 	  SLang_verror (SL_Unicode_Error, "Unable to convert 0x%lX to UTF-8", (unsigned long)c);
 	return b;
      }
-#endif
    *buf++ = c;
    return buf;
 }
 
 int jed_what_char (SLwchar_Type *w) /*{{{*/
 {
-#if JED_HAS_UTF8_SUPPORT
    SLuchar_Type *p, *pmax;
 
    if (eobp ())
@@ -397,12 +377,6 @@ int jed_what_char (SLwchar_Type *w) /*{{{*/
      }
 
    return 0;
-#else
-   if (eobp ())
-     return -1;
-   *w = (SLwchar_Type) *(CLine->data + Point);
-   return 0;
-#endif
 }
 
 /*}}}*/
@@ -548,14 +522,10 @@ unsigned int jed_right (unsigned int n) /*{{{*/
 
 unsigned int jed_right_bytes (unsigned int n)
 {
-#if JED_HAS_UTF8_SUPPORT
    int mode = Jed_UTF8_Mode;
    Jed_UTF8_Mode = 0;
-#endif
    n = jed_right (n);
-#if JED_HAS_UTF8_SUPPORT
    Jed_UTF8_Mode = mode;
-#endif
    return n;
 }
 

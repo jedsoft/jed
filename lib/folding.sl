@@ -10,9 +10,9 @@ ifnot (is_defined ("Fold_Bob_Eob_Error_Action")) %{{{
 %\description
 % This value of this variable determines the what will happen upon
 % reaching the boundary of the current fold via the up/down keys.
-% If the value is 0, an error will be generated; if the value is 1, 
+% If the value is 0, an error will be generated; if the value is 1,
 % the fold will be exited; otherwise, the next/previous fold will be
-% entered. 
+% entered.
 %!%-
 variable Fold_Bob_Eob_Error_Action = 1;
 }
@@ -23,11 +23,10 @@ variable Fold_Bob_Eob_Error_Action = 1;
 
 %mode_set_mode_info ("score", "fold_info", "%{{{\r%}}}\r\r");
 
-
 define fold_get_marks_for_mode () %{{{
 {
    variable mode, fold_marks;
-   
+
    fold_marks = mode_get_mode_info ("fold_info");
 
    if (fold_marks == NULL)
@@ -118,17 +117,17 @@ private define fold_find_marker_line_reverse (start, end_of_start, hidden_check)
    return 0;
 }
 %}}}
-private define fold_this_fold (start, end, end_of_start, end_of_end, 
+private define fold_this_fold (start, end, end_of_start, end_of_end,
 		       start_level, fold_level) %{{{
 {
    variable level = start_level;
-   
+
    while (down_1 ())
      {
    	set_line_hidden (level >= fold_level);
-	
+
 	if (fold_is_marker_line (start, end_of_start)) level++;
-	else if (fold_is_marker_line (end, end_of_end)) 
+	else if (fold_is_marker_line (end, end_of_end))
 	  {
 	     if (level == start_level) break;
 	     level--;
@@ -152,16 +151,16 @@ define fold_whole_buffer () %{{{
 {
    variable start, end, end_of_start, end_of_end;
    variable level, fold_level;
-   
+
    flush ("folding buffer...");
    ERROR_BLOCK
      {
 	pop_spot ();
      }
    push_spot ();
-   
+
    fold_open_buffer ();
-   
+
    bob ();
    (start, end, end_of_start, end_of_end) = fold_get_marks ();
 
@@ -170,12 +169,12 @@ define fold_whole_buffer () %{{{
 
    while (fold_find_marker_line (start, end_of_start))
      {
-	fold_this_fold (start, end, end_of_start, end_of_end, 
+	fold_this_fold (start, end, end_of_start, end_of_end,
 			1, fold_level);
 	ifnot (down_1 ())
 	  break;
      }
-   
+
    pop_spot ();
    if (is_line_hidden ())
      {
@@ -193,10 +192,10 @@ private define fold_is_fold (start, end_of_start) %{{{
      {
 	pop_spot ();
      }
-   
+
    ifnot (fold_is_marker_line (start, end_of_start))
      return 0;
-   
+
    % Check to make sure this is not the top of the current fold by making
    % sure that the next line is hidden.
    ifnot (down_1 ()) return 0;
@@ -207,7 +206,7 @@ private define fold_is_fold (start, end_of_start) %{{{
 define fold_open_fold () %{{{
 {
    variable start, end, end_of_start, end_of_end;
-   
+
    (start, end, end_of_start, end_of_end) = fold_get_marks ();
    push_spot ();
    if (is_line_hidden ())
@@ -224,11 +223,11 @@ define fold_enter_fold () %{{{
 {
    variable start, end, end_of_start, end_of_end;
    variable h;
-   
+
    (start, end, end_of_start, end_of_end) = fold_get_marks ();
-   
+
    push_spot ();
-   
+
    while (fold_find_marker_line_reverse (start, end_of_start, 1))
      {
 	push_mark ();
@@ -238,7 +237,7 @@ define fold_enter_fold () %{{{
 	     narrow ();
 	     bob ();
 	  }
-	else 
+	else
 	  {
 	     pop_mark_1 ();
 	     break;
@@ -247,7 +246,7 @@ define fold_enter_fold () %{{{
 	ifnot (is_line_hidden ())
 	  break;
      }
-   
+
    pop_spot ();
 }
 
@@ -256,12 +255,12 @@ define fold_enter_fold () %{{{
 define fold_close_this_fold () %{{{
 {
    variable start, end, end_of_start, end_of_end;
-   
+
    (start, end, end_of_start, end_of_end) = fold_get_marks ();
-   
+
    ifnot (fold_find_marker_line (start, end_of_start))
      error ("Unable to find fold-start");
-   
+
    fold_this_fold (start, end, end_of_start, end_of_end, 1, 1);
    skip_hidden_lines_backward (1);
 }
@@ -274,22 +273,22 @@ define fold_close_fold () %{{{
    variable beg_mark, end_mark, orig_mark;
    variable not_in_a_fold = "Not in a fold.";
    variable end_line;
-   
+
    (start, end, end_of_start, end_of_end) = fold_get_marks ();
-   
+
    orig_mark = create_user_mark ();
-   
+
    ERROR_BLOCK
      {
 	goto_user_mark (orig_mark);
      }
-   
+
    EXIT_BLOCK
      {
 	fold_this_fold (start, end, end_of_start, end_of_end, 1, 1);
 	skip_hidden_lines_backward (1);
      }
-   
+
    if (fold_is_marker_line (start, end_of_start))
      {
 	ifnot (down_1())
@@ -299,30 +298,30 @@ define fold_close_fold () %{{{
 	ifnot (())
 	  return;
      }
- 
+
    beg_mark = create_user_mark ();
-   
+
    if (fold_is_marker_line (end, end_of_end))
      go_up_1 ();
-   
+
    end_mark = create_user_mark ();
 
    forever
      {
 	goto_user_mark (end_mark);
-	
+
 	end_line = 0;
-	
+
 	if (fold_find_marker_line_reverse (end, end_of_end, 0))
 	  {
 	     if (up_1 ())
 	       end_line = what_line ();
-	     
+
 	     move_user_mark (end_mark);
 	  }
-	
+
 	goto_user_mark (beg_mark);
-	
+
 	ifnot (up_1 ()) break;
 	if (fold_find_marker_line_reverse (start, end_of_start, 0))
 	  {
@@ -343,19 +342,13 @@ define fold_close_fold () %{{{
    variable beg_mark, end_mark;
    variable not_in_a_fold = "Not in a fold.";
    variable end_line;
-   
+
    (start, end, end_of_start, end_of_end) = fold_get_marks ();
-   
+
    push_spot();
-   
-   if (
-# if (_slang_version >= 20100)
-       fold_is_marker_line (start, end_of_start) && down_1()
-# else
-       andelse {fold_is_marker_line (start, end_of_start)}{down_1()}
-# endif
-       )
-       {
+
+   if (fold_is_marker_line (start, end_of_start) && down_1())
+     {
         is_line_hidden();
         go_up_1();
         ifnot (())
@@ -365,19 +358,13 @@ define fold_close_fold () %{{{
              return;
           }
      }
- 
+
    beg_mark = create_user_mark ();
    end_mark = create_user_mark ();
 
    forever
      {
-        if (
-# if (_slang_version >= 20100)
-	    up_1() && fold_find_marker_line_reverse (end, end_of_end, 0)
-# else
-	    andelse {up_1()}{fold_find_marker_line_reverse (end, end_of_end, 0)}
-# endif
-	    )
+        if (up_1() && fold_find_marker_line_reverse (end, end_of_end, 0))
           {
              end_line = what_line ();
              move_user_mark (end_mark);
@@ -386,14 +373,8 @@ define fold_close_fold () %{{{
           end_line= 0;
 
         goto_user_mark (beg_mark);
-        
-        if (
-# if (_slang_version >= 20100)
-	    up_1() && fold_find_marker_line_reverse (start, end_of_start, 0)
-# else
-	    andelse{up_1()}{fold_find_marker_line_reverse (start, end_of_start, 0)}
-# endif
-	    )
+
+        if (up_1() && fold_find_marker_line_reverse (start, end_of_start, 0))
           {
              move_user_mark (beg_mark);
              if ( what_line () > end_line) break;
@@ -405,7 +386,7 @@ define fold_close_fold () %{{{
           }
         goto_user_mark (end_mark);
      }
-   
+
    fold_this_fold (start, end, end_of_start, end_of_end, 1, 1);
    pop_spot();
    goto_user_mark (beg_mark);
@@ -421,10 +402,10 @@ private define fold_exit_fold_internal () %{{{
 	error ("You are not in a fold.");
 	return;
      }
-   
+
    bob ();
    widen ();
-   
+
    fold_close_this_fold ();
 }
 
@@ -444,17 +425,17 @@ define fold_fold_region () %{{{
 
    check_region (0);
    (start, end, end_of_start, end_of_end) = fold_get_marks ();
-   
+
    % We have a canonical region with point at end.  See if this line
    % is the start of a fold.  If so, extend it to cover all of fold.
-   
+
    if (fold_is_fold (start, end_of_start))
      {
 	skip_hidden_lines_forward (1);
 	ifnot (is_line_hidden ())
 	  go_up_1 ();
      }
-   
+
    narrow ();
    eob ();
    newline ();
@@ -496,20 +477,19 @@ define fold_fold_region () %{{{
 define fold_parse_errors () %{{{
 {
    variable folded;
-   
+
    % compile_parse_errors will widen buffer the buffer.  As a result, when it
    % returns, the buffer will be unfolded but some lines may be hidden.  Simply
    % unhide all lines.  Also take care to reenter a fold only if buffer is not
    % folded.
    compile_parse_errors ();
-   
+
    push_spot ();
    eob ();
    skip_hidden_lines_backward (0);
    folded = is_line_hidden ();
    pop_spot ();
-   
-   
+
    if (folded)
      {
 	push_spot ();
@@ -526,10 +506,10 @@ define fold_parse_errors () %{{{
 define fold_goto_bookmark_hook (mrk) %{{{
 {
    variable folded;
-   
+
    while (not (is_user_mark_in_narrow (mrk)))
      fold_exit_fold_internal ();
-   
+
    goto_user_mark (mrk);
    fold_enter_fold ();
 }
@@ -541,16 +521,16 @@ define fold_bob_eob_error_hook (f) %{{{
 {
    variable str = "Top Of Buffer.";
    variable start, end, end_of_start, end_of_end;
-   
+
    if (f > 0) str = "End Of Buffer.";
 
    ifnot (Fold_Bob_Eob_Error_Action)
      error (str);
-   
+
    ifnot (count_narrows () and (abs(f) == 1)) error (str);
-   
+
    fold_exit_fold ();
-   
+
    % The rest of this function is should be made optional, e.g.,
    % if (Optional_Flag) return;
 
@@ -563,21 +543,21 @@ define fold_bob_eob_error_hook (f) %{{{
 	skip_hidden_lines_forward (1);
 	skip_chars (" \t\n");
      }
-   else 
+   else
      {
 	bskip_chars (" \t\n");
 	skip_hidden_lines_backward (1);
      }
-   
+
    (start, end, end_of_start, end_of_end) = fold_get_marks ();
-   
+
    if (fold_is_fold (start, end_of_start))
      fold_enter_fold ();
 }
 
 %}}}
 
-%{{{ mouse interface 
+%{{{ mouse interface
 $1 = "mouse_goto_position";
 $2 = "mouse";
 ifnot (is_defined ($1)) autoload ($1, $2);
@@ -589,7 +569,7 @@ define fold_mouse_2click (line, col, but, shift) %{{{
      {
 	(start, end, end_of_start, end_of_end) = fold_get_marks ();
 	mouse_goto_position (col, line);
-	
+
 	ERROR_BLOCK
 	  {
 	     _clear_error ();
@@ -598,10 +578,10 @@ define fold_mouse_2click (line, col, but, shift) %{{{
 	  fold_enter_fold ();
 	else
 	  fold_exit_fold ();
-	
+
 	return 1;
      }
-   
+
    return -1;
 }
 
@@ -619,7 +599,7 @@ define fold_goto_line ()
    goto_line (n);
 }
 
-%{{{ Interactive searching functions 
+%{{{ Interactive searching functions
 
 define fold_search_line_ok () %{{{
 {
@@ -648,11 +628,10 @@ define fold_search_forward () %{{{
 
 %}}}
 
-
 define folding_mode () %{{{
 {
    variable s, s1, e, e1;
-   
+
    if (Fold_Mode_Ok == 0)
      {
 	if (1 != get_yes_no ("Folding mode not enabled.  Enable it"))
@@ -662,14 +641,14 @@ define folding_mode () %{{{
 
 #ifdef HAS_BLOCAL_VAR
    (s, e, s1, e1) = fold_get_marks_for_mode ();
-   
+
    define_blocal_var ("fold_start", s);
    define_blocal_var ("fold_end_of_start", s1);
    define_blocal_var ("fold_end", e);
    define_blocal_var ("fold_end_of_end", e1);
    define_blocal_var ("bookmark_narrow_hook", ".fold_goto_bookmark_hook");
 #endif
-   
+
    local_setkey_reserved ("fold_whole_buffer",		"^W");
    local_setkey_reserved ("fold_enter_fold",		">");
    local_setkey_reserved ("fold_exit_fold",		"<");
@@ -679,7 +658,7 @@ define folding_mode () %{{{
    local_setkey_reserved ("fold_fold_region",		"^F");
    local_setkey_reserved ("fold_search_forward",	"f");
    local_setkey_reserved ("fold_search_backward",	"b");
-   
+
    set_buffer_hook ("bob_eob_error_hook", "fold_bob_eob_error_hook");
 #iffalse
    set_buffer_hook ("mouse_2click", "fold_mouse_2click");
@@ -688,7 +667,7 @@ define folding_mode () %{{{
      {
 	local_setkey ("fold_parse_errors", exch ());
      }
-   
+
    fold_whole_buffer ();
 
    run_mode_hooks ("fold_mode_hook");
@@ -704,7 +683,7 @@ define c_fold_buffer () %{{{
      }
    folding_mode ();
    fold_open_buffer ();
-   
+
    while (bol_fsearch ("{"))
      {
 	eol ();
@@ -716,15 +695,15 @@ define c_fold_buffer () %{{{
 	     pop_mark_1 ();
 	     continue;
 	  }
-	
+
 	if (ffind ("{{{"))
 	  {
 	     pop_mark_1 ();
 	     continue;
 	  }
-	
+
 	exchange_point_and_mark ();
-	
+
 	ifnot (bol_fsearch ("}"))
 	  {
 	     pop_mark_1 ();
@@ -741,7 +720,7 @@ define c_fold_buffer () %{{{
 	fold_fold_region ();
 	pop_spot ();
      }
-   
+
    fold_whole_buffer ();
    bob ();
 }
@@ -770,7 +749,6 @@ private define fold_menu_callback (m)
    menu_append_item (m, "S&earch Backward", "fold_search_backward");
 }
 
-
 private define install_fold_menus ()
 {
    menu_delete_item ("Global.&Buffers.Enable &Folding");
@@ -782,4 +760,4 @@ if (Menu_Popups_Loaded)
   install_fold_menus ();
 else
   add_to_hook ("load_popup_hooks", &install_fold_menus);
-   
+

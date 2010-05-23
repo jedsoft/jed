@@ -21,7 +21,7 @@
 %   be used.  Otherwise '=pod' will be used.
 %   For intermixed coding styles, a periodic M-x 'perl_mode' helps.
 %
-%   NB: this only affects the *syntax highlighting* ... 
+%   NB: this only affects the *syntax highlighting* ...
 %   indentation should be fine.
 %
 %   NB: since the syntax highlighting matches /=pod/ and not /^=pod/,
@@ -48,7 +48,7 @@
 %   Similar tricks can help with the $', $`, $(, $), $[, and $] variables.
 %   For the $) and $] variables, you need to be even a bit trickier
 %   and use a preceeding comment
-%     eg:  #( for-editor 
+%     eg:  #( for-editor
 %             $egid  = $);
 %   fortunately, there's now $^V instead of $]
 % - outdented labels is not yet supported
@@ -119,7 +119,7 @@
 % - added 'perl_exec' and 'perl_check' functions
 % - since I've never seen a perl program with folding marks,
 %   I changed the folding marks from the '#{{{' and '#}}}' to
-%   the slightly more useful '=pod' and '=cut'.  
+%   the slightly more useful '=pod' and '=cut'.
 %   Thus you can fold your documentation out of the way.
 % - added interface to the 'perltidy' (sourceforge) program.
 %   This is *extremely* handy, especially if you are a bit sloppy about
@@ -135,10 +135,10 @@
 % 2006-08-28  Mark Olesen
 % - use '#<embed>' .. '#</embed>' construct
 % - cosmetics
-% 
+%
 % 2006-11-11 JED
 % - Use "require" instead of evalfile for loading perlxtra.
-% 
+%
 % 2007-06-20 JED
 % - Added find_matching_brace_ignore_fold_marks to search for a
 %   matching delimiter ignoring fold marks.
@@ -155,7 +155,7 @@
 %% autoload ("perldoc",	"perlxtra");
 require ("perlxtra");
 
-% ifnot (is_defined("perldoc") and is_defined("Perl_Indent")) 
+% ifnot (is_defined("perldoc") and is_defined("Perl_Indent"))
 %  () = evalfile("perlxtra");
 
 %{{{ default values for Perl custom variables
@@ -208,7 +208,7 @@ definekey("perl_mark_matching", "\e^M", $1);
 definekey("perltidy",		"\e^T", $1);
 definekey("perl_format_paragraph", "\eq", $1);
 definekey("newline_and_indent", "\r", $1);
-% some people may like this: 
+% some people may like this:
 %  definekey(".\"\\\\n\" insert", "^J", $1);
 
 definekey("perl_indent_region", "\e\t", $1);	% override 'move-to-tab'
@@ -245,7 +245,7 @@ define_highlight_rule("\\$([_\\./,\"\\\\#\\*\\?\\]\\[;!@:\\$<>\\(\\)" +
 define_highlight_rule("[A-Za-z_][A-Za-z0-9_]*", "Knormal", $1);
 define_highlight_rule("[0-9]+(\\.[0-9]+)?([Ee][\\-\\+]?[0-9]+)?", "number", $1);
 define_highlight_rule("0x[0-9A-Fa-f]+", "number", $1);
-% strings: 
+% strings:
 %   strange ... " abc \" def"; would appear to be invalid
 define_highlight_rule("\"([^\"\\\\]|\\\\.)*\"", "string", $1);
 define_highlight_rule("'([^'\\\\]|\\\\.)*'", "string", $1);
@@ -256,7 +256,7 @@ define_highlight_rule("[A-Za-z0-9]", "keyword0", $1);
 %
 % unfortunately these rules are not robust enough and are also incomplete
 % eg, 's{/+}{/}g' or 's|/+|/|g';
-% 
+%
 %fixme? define_highlight_rule("m?/([^/\\\\]|\\\\.)*/[gio]*", "string", $1);
 %fixme? define_highlight_rule("m/([^/\\\\]|\\\\.)*\\\\?$", "string", $1);
 %fixme? define_highlight_rule("s/([^/\\\\]|\\\\.)*(/([^/\\\\]|\\\\.)*)?/[geio]*",
@@ -348,12 +348,12 @@ private define perl_parse_to_point()
 
     variable here = what_line();
 
-    if (andelse
-	{re_bsearch("^=[a-z]")} 	% prev /^=[a-z]/ pod command
-	  {bol_fsearch(pod_end)}	% next /^=cut/
-	  {here < what_line()}		% are we in this region?
-	)
-      return -3;		% pod!
+    if
+    (
+	re_bsearch("^=[a-z]") 	% prev /^=[a-z]/ pod command
+     && bol_fsearch(pod_end)	% next /^=cut/
+     && (here < what_line())		% are we in this region?
+    ) return -3;		% pod!
 
     % check for the start of a comment
     ifnot (ptp) {
@@ -364,7 +364,6 @@ private define perl_parse_to_point()
 
     return ptp;
 }
- 
 
 % the usual delimiters that may occur before/after a keyword
 static variable delimiter = "\t $%@([{:?}])";
@@ -381,11 +380,11 @@ private define perl_looking_at()
     EXIT_BLOCK {
 	  pop_spot();
 	  CASE_SEARCH = cs;
-      }   
- 
+      }
+
     CASE_SEARCH = 1;
     push_spot();
-    
+
     foreach (__pop_args(_NARGS)) {
 	variable token = ().value;
 	variable len = strlen(token);
@@ -399,7 +398,7 @@ private define perl_looking_at()
 	    if (rc) break;
 	}
     }
-    
+
     return rc;
 }
 
@@ -411,22 +410,22 @@ private define perl_looking_at()
 private define perl_blooking_at()
 {
     variable cs = CASE_SEARCH, rc = 0;
-    
+
     EXIT_BLOCK {
 	  pop_spot();
 	  CASE_SEARCH = cs;
-      }   
- 
+      }
+
     CASE_SEARCH = 1;
     push_spot();
-    
+
     variable n = _get_point();	% check if there's room for the word
     foreach (__pop_args(_NARGS)) {
 	variable token = ().value;
 	variable len = strlen(token);
-	
+
 	if (n < len) continue;
-	
+
 	goto_spot();
 	go_left(len);
 	if (looking_at(token)) {
@@ -475,7 +474,7 @@ public define perl_indent_line()
     bol();
     ch  = what_char();		% the first character
     ptp = perl_parse_to_point();
-    
+
     % vmessage("ptp = %d", ptp);
 
     % do not indent POD, but do trim blank lines to avoid problems
@@ -519,7 +518,7 @@ public define perl_indent_line()
 #iftrue	% the latest version - uniform 'Perl_Indent'
 	bol_skip_white();
 	col = what_column();
-#elifdef PERL_INDENT_V1    
+#elifdef PERL_INDENT_V1
 	% -----------------------------------------------------------
 	% inside '()' (or '[]')- indent to level of opening '(' + 1
 	% A solitary closing ')' gets the same indent level as the '(
@@ -533,14 +532,14 @@ public define perl_indent_line()
 	bskip_white();
 	extra_indent = 1;	% bracket offset is 1
 	% '<<= [' and '=> [' constructs are special
-	if ( orelse { blooking_at ("<=") } { blooking_at ("=>") } ) {
+	if (blooking_at ("<=") || blooking_at ("=>")) {
 	    bol_skip_white();
 	    col = what_column();
-	    extra_indent = Perl_Indent;	
+	    extra_indent = Perl_Indent;
 	}
 #endif
 	if (ch != endch) col += extra_indent;
-	indent_ok++;	
+	indent_ok++;
     }
 
     goto_spot(); bol();	% (original position : start of line)
@@ -551,7 +550,7 @@ public define perl_indent_line()
     endch = '}';
     if (ch == '{') indent_ok++;
     if (find_matching_brace_ignore_fold_marks (endch))
-    {	
+    {
 	extra_indent = Perl_Indent;
 
 	% ---------------------------------------------------------------
@@ -576,7 +575,7 @@ public define perl_indent_line()
 	push_spot();
 	rc = 0;
 
-	if ( orelse { bfind_char ('(') } { bfind_char ('[') } ) {
+	if (bfind_char ('(') || bfind_char ('[')) {
 	    goto_spot();
 	    rc = find_matching_delimiter(')');
 	    ifnot (rc) {	% enclosing '()' not found
@@ -585,7 +584,7 @@ public define perl_indent_line()
 	    }
 	}
 	pop_spot();
-	
+
 	if (rc == 1) {	% matched from within an enclosing '()' or '[]'
 	    indent_ok++;
 	} else {
@@ -618,7 +617,7 @@ public define perl_indent_line()
 
     % find out if we're on a continued line
     goto_spot();
-  
+
     % Find previous non-comment line
     do {
 	% Start of file, pretty hard to find context ;-)
@@ -646,7 +645,7 @@ public define perl_indent_line()
     }
 
     % vmessage("end char = %c", ch);
-    
+
     extra_indent = Perl_Continued_Offset;
     if ( not(is_substr (";({}", char(ch))) ) {
 	col += extra_indent;
@@ -655,7 +654,7 @@ public define perl_indent_line()
 	% started '{}' with grep/map/sort filter?
 	() = find_matching_delimiter(ch);
 	bskip_white();
-	
+
 	if (perl_blooking_at("grep", "map", "sort")) {
 	    bol_skip_white();
 	    col = what_column;
@@ -664,11 +663,11 @@ public define perl_indent_line()
 	    % ended with '}', but continued with filter or logical operator?
 	    goto_spot();	% (original position)
 	    bol_skip_white();
-	    
+
 	    if (perl_looking_at("grep", "map", "sort",
-				"and", "or", 
+				"and", "or",
 				"&&", "||",
-				"?", ":" )) 
+				"?", ":" ))
 	      col += extra_indent;
 	}
 #endif
@@ -691,7 +690,7 @@ public define perl_indent_region()
 
     check_region(1);		% canonical region
     narrow();
-    
+
     variable line = 0;
     variable nlines = what_line();	% number of lines
     bob();
@@ -704,7 +703,7 @@ public define perl_indent_region()
 	line++;
 	eol_trim(); bol();
 	% skip the comment
-	if ( orelse { looking_at (pod_beg) } { looking_at (pod_too) } ) {
+	if (looking_at (pod_beg) || looking_at (pod_too)) {
 	    while (down_1()) {
 		line++;
 		if (looking_at(pod_end)) break;
@@ -720,7 +719,7 @@ public define perl_indent_region()
 	    indent_line();
 	} else {
 	    % try our best to avoid indenting '<<HERE_DOCUMENT' code
-	    indent_line();	   
+	    indent_line();
 	    if (right (ffind ("<<"))) {
 		push_mark();
 		skip_chars("A-Z_a-z");
@@ -745,7 +744,7 @@ public define perl_indent_region()
 	}
 	vmessage("processed %d/%d lines.", line, nlines);
     } while (down_1() and (line < nlines));
-    
+
     EXECUTE_ERROR_BLOCK;	% pop_spot and restore CASE_SEARCH
 }
 
@@ -774,7 +773,7 @@ static define perl_pn_chunk (dirfun)
     push_mark();
     while (@dirfun()) {
 	% not strictly true for /^=pod/ but useful for indented 'sub'
-	bol_skip_white(); 
+	bol_skip_white();
 	if (looking_at(pod_beg) or looking_at("sub")) {
 	    pop_mark_0();
 	    return;
@@ -800,7 +799,7 @@ define perl_beg_chunk()
     variable beg = pod_beg;
     variable ptp = perl_parse_to_point();
     if (ptp > -3) beg = "sub";	% not inside of pod
-    eol(); 
+    eol();
     ifnot (bol_bsearch(beg)) error ("Top of '" + beg + "' not found.");
 }
 
@@ -851,11 +850,11 @@ define perl_mark_matching()
 {
     variable beg = "([{", end = ")]}";
     variable ch = what_char();
-    
-    ERROR_BLOCK { 
-	pop_mark_1(); 
+
+    ERROR_BLOCK {
+	pop_mark_1();
     }
-   
+
     USER_BLOCK0 {
 	variable fn = ();
 	set_mark_cmd();		% we only want a single visible mark
@@ -881,7 +880,7 @@ define perl_mark_matching()
     if (() - _get_point()) {
 	ch = what_char();
 	X_USER_BLOCK0 (&go_right_1);
-    } 
+    }
 
     % look forwards for an enclosing ")]}"
     skip_white ();
@@ -964,7 +963,7 @@ define perl_paragraph_sep()
 define perl_format_paragraph()
 {
     variable dwrap;
-    
+
     Perlmode_Fill_Chars = "";
     if (perl_paragraph_sep()) return;
     push_spot();
@@ -974,7 +973,7 @@ define perl_format_paragraph()
     if (perl_paragraph_sep()) go_down_1();
     push_mark();
     goto_spot();
-    
+
     while ( not(perl_paragraph_sep()) ) {
 	ifnot (down_1()) break;
     }
@@ -1007,7 +1006,6 @@ define perl_format_paragraph()
     pop_spot();
 }
 
-
 %------------------------------------------------------------------------------
 %!%+
 %\function{perl_mode}
@@ -1018,7 +1016,7 @@ define perl_format_paragraph()
 % The indentation style matches the results of perltidy(1) with
 % '-ci=2 -i=4 -en=8' fairly closely, except some of the closing brackets.
 %
-% This seems to be missing, so you might want to add 
+% This seems to be missing, so you might want to add
 % add_mode_for_extension("perl", "pm");
 %
 % Functions that affect this mode include:

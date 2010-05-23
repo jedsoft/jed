@@ -60,25 +60,5 @@ extern int jed_case_strcmp (char *, char *);
 extern char **_Jed_Startup_Argv;
 extern int _Jed_Startup_Argc;
 
-#if SLANG_VERSION < 20000
-# ifdef HAVE_VSNPRINTF
-#  define SLvsnprintf vsnprintf
-# else
-#  define SLvsnprintf _SLvsnprintf
-extern int _SLvsnprintf (char *, unsigned int, char *, va_list);
-# endif
-# ifdef HAVE_SNPRINTF
-#  define SLsnprintf snprintf
-# else
-#  define SLsnprintf _SLsnprintf
-extern int _SLsnprintf (char *, unsigned int, char *, ...);
-# endif
-#endif
-
-#if SLANG_VERSION < 10410
-extern int SLang_get_error (void);
-extern int SLang_set_error (int);
-#endif
-
 #endif				       /* JED_MISC_H_ */
 

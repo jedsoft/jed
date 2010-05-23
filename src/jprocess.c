@@ -309,10 +309,8 @@ static void get_process_status (Process_Type *p) /*{{{*/
 
    if (p->umark != NULL) SLang_free_mmt (p->umark);
 
-#if SLANG_VERSION > 10400
    SLang_free_function (p->slang_fun);
    SLang_free_function (p->status_change_fun);
-#endif
 
    memset ((char *)p, 0, sizeof (Process_Type));
    p->rd = p->wd = -1;
@@ -1227,9 +1225,7 @@ void jed_set_process (void)
      
    SLang_free_slstring (what);
    SLang_free_slstring (s);
-#if SLANG_VERSION > 10400
    SLang_free_function (f);
-#endif
 }
 
 

@@ -56,11 +56,6 @@
 # include "jprocess.h"
 #endif
 
-#if SLANG_VERSION < 20000
-# define SLw32_Hstdin _SLw32_Hstdin
-extern HANDLE _SLw32_Hstdin;
-#endif
-
 static int x_insert_cutbuffer(void);
 static void x_region_2_cutbuffer(void);
 static void x_warp_pointer(void);

@@ -10,7 +10,7 @@ public define test_narrow (str, narrow_str)
    insert (str);
    bob ();
    
-   !if (fsearch (narrow_str))
+   ifnot (fsearch (narrow_str))
      error ("fsearch failed");
    
    push_mark ();

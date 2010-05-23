@@ -657,9 +657,9 @@ define ide_filter_region ()             % ^K/, Joe extension
   variable cmd, tmp_file;
   ide_end_block ();
   cmd = read_mini ("Pipe to command:", Last_Process_Command, Null_String);
-  ifnot (strlen (cmd)) 
+  ifnot (strlen (cmd))
      return;
-   
+
   Last_Process_Command = cmd;
   ide_set_bookmark ();
   tmp_file = make_tmp_file ("/tmp/jedpipe");

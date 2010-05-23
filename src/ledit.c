@@ -1554,17 +1554,7 @@ int jed_ns_load_file (SLFUTURE_CONST char *file, SLFUTURE_CONST char *ns)
 	return -1;
      }
 
-#if SLANG_VERSION >= 10409
    x = SLns_allocate_load_type (dirfile, ns);
-#else
-   if ((ns != NULL) 
-       && (0 != strcmp (ns, "Global")))
-     {
-	SLang_verror (SL_NOT_IMPLEMENTED, "loading a file into a namespace is not supported");
-	x = NULL;
-     }
-   else x = SLallocate_load_type (dirfile);
-#endif
    SLang_free_slstring (dirfile);
    
    if (x == NULL)
@@ -1580,12 +1570,6 @@ int jed_ns_load_file (SLFUTURE_CONST char *file, SLFUTURE_CONST char *ns)
    vclose (vp);
    return ret;
 }
-#if SLANG_VERSION < 10409
-static int jed_load_file (char *file)
-{
-   return jed_ns_load_file (file, NULL);
-}
-#endif
 
 typedef struct
 {
@@ -1609,11 +1593,7 @@ static char *jed_read_from_buffer (SLang_Load_Type *x) /*{{{*/
    len = (unsigned int) l->len;
    if (len > 255)
      {
-#if SLANG_VERSION >= 20000
 	SLang_verror (SL_BUILTIN_LIMIT_EXCEEDED, "Line too long");
-#else
-	SLang_verror (0, "Line too long");
-#endif
 	return NULL;
      }
 
@@ -2193,35 +2173,6 @@ void jed_setup_minibuffer_keymap (void)
    The_MiniBuffer->keymap = m;
 }
 
-
-#if SLANG_VERSION < 10405
-/* Work around a slang bug triggered by jed. Apps which use slang's 
- * load_file function do not have this problem.
- */
-extern int (*_SLprep_eval_hook) (char *);
-static int bug_fixed_prep_eval_expr (char *expr)
-{
-   int ret;
-   char *end;
-
-   end = strchr (expr, '\n');
-   if (end == NULL)
-     end = expr + strlen (expr);
-   expr = SLmake_nstring (expr, (unsigned int) (end - expr));
-   if (expr == NULL)
-     return -1;
-	
-   if ((0 != SLang_load_string (expr))
-       || (-1 == SLang_pop_integer (&ret)))
-     ret = -1;
-   else
-     ret = (ret != 0);
-
-   SLfree (expr);
-   return ret;
-}
-#endif
-
 void init_minibuffer() /*{{{*/
 {
    Buffer *tmp;
@@ -2247,9 +2198,6 @@ void init_minibuffer() /*{{{*/
 #if 0
    SLang_Enter_Function = enter_function;
    SLang_Exit_Function = exit_function;
-#endif
-#if SLANG_VERSION < 10405
-   _SLprep_eval_hook = bug_fixed_prep_eval_expr;
 #endif
 
    if ((-1 == SLang_init_slang ())
@@ -2283,11 +2231,7 @@ void init_minibuffer() /*{{{*/
    SLang_Error_Hook = jed_error_hook;
    SLang_VMessage_Hook = vmsg_hook;
    SLang_User_Clear_Error = jed_clear_error;
-#if SLANG_VERSION < 10409
-   SLang_Load_File_Hook = jed_load_file;
-#else
    SLns_Load_File_Hook = jed_ns_load_file;
-#endif
 }
 
 /*}}}*/

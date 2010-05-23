@@ -52,11 +52,7 @@
 
 #define FIRST_USER_COLOR		64
 
-#if SLANG_VERSION < 20000
-# define JMAX_COLORS	128	       /* Do NOT increase this number */
-#else
-# define JMAX_COLORS	256	       /* Do NOT increase this number */
-#endif
+#define JMAX_COLORS	256	       /* Do NOT increase this number */
 
 extern int jed_init_color_intrinsics (void);
 extern int jed_get_color_obj (char *name);

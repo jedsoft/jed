@@ -5,12 +5,6 @@
  * License.  See the file COPYING for more information.
  */
 extern int VTerm_Num_Rows, VTerm_Num_Cols;
-#if SLANG_VERSION < 10310
-typedef unsigned short SLsmg_Char_Type;
-# define SLSMG_EXTRACT_CHAR(x) ((x) & 0xFF)
-# define SLSMG_EXTRACT_COLOR(x) (((x)>>8)&0xFF)
-# define SLSMG_BUILD_CHAR(ch,color) (((SLsmg_Char_Type)(unsigned char)(ch))|((color)<<8))
-#endif
 extern SLsmg_Char_Type **VTerm_Display;
 extern int VTerm_Suspend_Update;
 

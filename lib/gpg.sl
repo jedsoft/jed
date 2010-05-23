@@ -12,13 +12,12 @@ private define check_is_encrypted (file)
 
    if ((ext == ".gpg") or (ext == ".gpg#"))
      return 0;
-   
+
    return -1;
 }
 
 private define read_mini_hidden (prompt, default)
 {
-
    if (default != NULL)
      {
 	prompt += sprintf (" [** buffer default **]", default);
@@ -36,10 +35,10 @@ private define read_mini_hidden (prompt, default)
 	  break;
 	s += char (ch);
      }
-   
+
    if ((s == "") and (default != NULL))
      s = default;
-   
+
    return s;
 }
 
@@ -65,12 +64,11 @@ private define get_pass_phrase (path, use_blocal_phrase, set_blocal_phrase, conf
 
    forever
      {
-	variable p = read_mini_hidden (sprintf ("Passphrase for %s", file), 
+	variable p = read_mini_hidden (sprintf ("Passphrase for %s", file),
 				       default_pass_phrase);
 	if (p == "")
 	  return NULL;
-   
-	
+
 	if ((default_pass_phrase == NULL) and confirm_phrase)
 	  {
 	     if (p != read_mini_hidden ("Confirm Passphrase", NULL))
@@ -80,7 +78,7 @@ private define get_pass_phrase (path, use_blocal_phrase, set_blocal_phrase, conf
 		  continue;
 	       }
 	  }
-	
+
 	if (set_blocal_phrase and (p != default_pass_phrase))
 	  {
 	     if (1 == get_y_or_n ("Save passphrase as buffer-default"))
@@ -101,7 +99,7 @@ private define _write_encrypted_region (file, append)
 
    variable i = check_is_encrypted (file);
    if (i == -1) return 0;
-   
+
    variable p = get_pass_phrase (file, 1, 1, 1);
    if (p == "")
      return 0;
@@ -112,13 +110,12 @@ private define _write_encrypted_region (file, append)
    variable fp = popen (cmd, "w");
    if (fp == NULL)
      verror ("%s failed", cmd);
-   
-   if (orelse 
-       {(-1 == fputs (p + "\n", fp))}
-       {(-1 == fputs (txt, fp))}
-	 {(0 != pclose (fp))})
+
+   if ((-1 == fputs (p + "\n", fp))
+       || (-1 == fputs (txt, fp))
+       || (0 != pclose (fp)))
      verror ("write to %s failed", cmd);
-   
+
    return 1;
 }
 
@@ -134,7 +131,7 @@ private define parse_gpg_errors (file)
      return;
    if (0 == st.st_size)
      return;
-   
+
    % For now, just insert the contents into a separate buffer.
    variable cbuf = whatbuf ();
    setbuf ("*gpg-errors*");
@@ -147,7 +144,7 @@ private define parse_gpg_errors (file)
 
    setbuf (cbuf);
 }
-   
+
 private define _insert_encrypted_file (file, use_blocal_phrase, set_blocal_phrase, confirm_phrase)
 {
    variable i = check_is_encrypted (file);
@@ -178,7 +175,6 @@ private define insert_encrypted_file (file)
    return _insert_encrypted_file (file, 0, 0, 0);
 }
 
-
 private define read_encrypted_file (file)
 {
    if (_insert_encrypted_file (file, 0, 1, 0))
@@ -188,7 +184,6 @@ private define read_encrypted_file (file)
      }
    return 0;
 }
-
 
 add_to_hook ("_jed_insert_file_hooks", &insert_encrypted_file);
 add_to_hook ("_jed_read_file_hooks", &read_encrypted_file);

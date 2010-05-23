@@ -5,13 +5,8 @@
  * License.  See the file COPYING for more information.
  */
 
-#if SLANG_VERSION < 20000
-# define JX_SETXXX_RETURN_TYPE void
-# define JX_SETXXX_RETURN_VAL
-#else
 # define JX_SETXXX_RETURN_TYPE int
 # define JX_SETXXX_RETURN_VAL 0
-#endif
 
 /* This is the main hook that must be set at compile-time. */
 extern void (*tt_get_terminfo)(void);
@@ -28,9 +23,6 @@ extern void (*tt_wide_width)(void);
 extern void (*tt_narrow_width)(void);
 extern void (*tt_enable_cursor_keys)(void);
 extern void (*tt_set_term_vtxxx)(int *);
-# if SLANG_VERSION < 20000
-extern void (*tt_set_color_esc)(int, char *);
-# endif
 #endif
 
 extern int *tt_Ignore_Beep;

@@ -207,15 +207,7 @@ static void add_color_object_cmd (char *name)
 #ifndef IBMPC_SYSTEM
 static void set_color_esc (char *obj, char *esc) /*{{{*/
 {
-# if SLANG_VERSION < 20000
-   int i;
-
-   if (tt_set_color_esc == NULL) return;
-   if (-1 != (i = jed_get_color_obj (obj)))
-     tt_set_color_esc (i, esc);
-# else
    (void) obj; (void) esc;
-#endif
 }
 
 /*}}}*/

@@ -16,7 +16,7 @@ private define test_rebsearch ()
 	     return;
 	  }
      }
-   !if (bobp ())
+   ifnot (bobp ())
      {
 	()=fprintf(stderr,"re_bsearch: expected to be at the bob");
 	Failed++;

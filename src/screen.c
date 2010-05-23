@@ -41,11 +41,6 @@
 
 #include "sig.h"
 
-#if SLANG_VERSION < 20000
-#define SLstack_depth _SLstack_depth
-extern int _SLstack_depth(void);
-#endif
-
 volatile int Jed_Resize_Pending;
 char *MiniBuf_Get_Response_String;
 
@@ -110,13 +105,6 @@ static Line Eob_Line =
 #endif
 };
 
-#if SLANG_VERSION < 20000
-static unsigned char Char_Width[256];
-static int Display_Eight_Bit = 0x7FFF;
-# define FIX_CHAR_WIDTH \
-     if (SLsmg_Display_Eight_Bit != Display_Eight_Bit) fix_char_width ()
-#endif
-
 static void display_line (Line *line, int sy, int sx)
 {
    unsigned int len;
@@ -130,9 +118,7 @@ static void display_line (Line *line, int sy, int sx)
    int color_set;
 
    SLsmg_Tab_Width = Buffer_Local.tab;
-#if SLANG_VERSION >= 20000
    (void) SLsmg_embedded_escape_mode (CBuf->flags & SMG_EMBEDDED_ESCAPE);
-#endif
    is_mini = (sy + 1 == Jed_Num_Screen_Rows);
 
    SLsmg_gotorc (sy, sx);
@@ -561,7 +547,6 @@ Line *find_top (void)
    return jed_find_top_to_recenter (cline);
 }
 
-#if SLANG_VERSION >= 20000
 
 static void init_smg_for_buffer (int *rowp, int *colp)
 {
@@ -606,102 +591,6 @@ int jed_compute_effective_length (unsigned char *pos, unsigned char *pmax)
    SLsmg_gotorc (row, col);
    return len;
 }
-
-#else
-
-/* This function has to be consistent with SLsmg. */
-static void fix_char_width(void)
-{
-   int i, ebit;
-
-   ebit = SLsmg_Display_Eight_Bit;
-   if (ebit < 128)
-     ebit = 128;
-
-   /* Control Characters */
-   for (i = 0; i < 32; i++)
-     Char_Width[i] = 2;
-
-   for (i = 32; i < 127; i++)
-     Char_Width[i] = 1;
-
-   Char_Width[127] = 2;
-
-   for (i = 128; i < ebit; i++)
-     Char_Width[i] = 3;		       /* ~^X */
-
-   for (i = ebit; i < 256; i++)
-     Char_Width[i] = 1;
-
-   Display_Eight_Bit = ebit;
-}
-   
-void point_column (int n)
-{
-   register unsigned char *p, *pmax;
-   register int i;
-   int tab, w;
-
-   FIX_CHAR_WIDTH;
-
-   if (IN_MINI_WINDOW) n -= Mini_Info.effective_prompt_len;
-
-   p = CLine->data;
-   pmax = p + CLine->len;
-   if (LINE_HAS_NEWLINE (CLine))
-     pmax--;
-
-   tab = Buffer_Local.tab;
-   i = 0;
-   n--;   /* start at 0 */
-   while (p < pmax)
-     {
-	unsigned int nconsumed = 1;
-
-	if ((*p == '\t') && tab)
-	  {
-	     i = tab * (i / tab + 1);
-	  }
-	else
-	  {
-	     w = Char_Width[*p];
-	     i +=  w;
-	  }
-	if (i > n) break;
-	p += nconsumed;
-     }
-   jed_set_point (p - CLine->data);
-}
-
-int jed_compute_effective_length (unsigned char *pos, unsigned char *pmax)
-{
-   int i;
-   int tab, w;
-   register unsigned char *cw = Char_Width;
-   register unsigned char ch;
-
-   FIX_CHAR_WIDTH;
-
-   i = 0;
-   tab = Buffer_Local.tab;
-
-   while (pos < pmax)
-     {
-	ch = *pos++;
-	if ((ch == '\t') && tab)
-	  {
-	     i = tab * (i/tab + 1);  /* tab column tabs */
-	  }
-	else
-	  {
-	     w = cw[ch];
-	     i += w;
-	     if (w == 0) pos++;
-	  }
-     }
-   return i;
-}
-#endif				       /* SLANG_VERSION >= 20000 */
 
 int calculate_column (void)
 {
@@ -942,16 +831,13 @@ static void finish_status(int col_flag)
 	     break;
 
 	   case 'v':
-#if JED_HAS_UTF8_SUPPORT
 	     SLsmg_write_string (Jed_Version_String);
 	     if (Jed_UTF8_Mode) 
 	       str = "U";
 	     else
 	       str = NULL;
-#else
-	     str = Jed_Version_String;
-#endif
 	     break;
+
 	   case 'm': str = CBuf->mode_string; break;
 	   case 't': str = status_get_time(); break;
 	   case 'c':
@@ -1360,9 +1246,7 @@ static int update_1(Line *top, int force)
 	if (top != NULL) top = jed_find_non_hidden_line (top);
 #endif
 
-#if SLANG_VERSION >= 20000
 	/* (void) SLsmg_utf8_enable (CBuf->local_vars.is_utf8); */
-#endif
 	if (top == NULL)
 	  {
 	     top = find_top();
@@ -1430,9 +1314,7 @@ static int update_1(Line *top, int force)
 	  {
 	     while (JWindow != start_win) other_window();
 	     JWindow->trashed = 1;  /* since cursor not pointed */
-#if SLANG_VERSION >= 20000
 	     /* (void) SLsmg_utf8_enable (1); */  /* default state */
-#endif
 
 	     return(0);
 	  }
@@ -1450,9 +1332,7 @@ static int update_1(Line *top, int force)
 
      }
    while (JWindow != start_win);
-#if SLANG_VERSION >= 20000
    /* SLsmg_utf8_enable (1); */	       /* default state */
-#endif
    return 1;
 }
 
@@ -1843,11 +1723,7 @@ void update(Line *line, int force, int flag, int run_update_hook)
 
    if (SLang_get_error () && !(*Error_Buffer || SLKeyBoard_Quit))
      {
-#if SLANG_VERSION < 20000
-	SLang_doerror ("");
-#else
 	SLang_verror (0, "%s", SLerr_strerror (0));
-#endif
      }
 
    if (!flag && (*Error_Buffer || SLKeyBoard_Quit))

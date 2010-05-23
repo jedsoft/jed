@@ -14,24 +14,8 @@
 #include <slang.h>
 #include "jedlimit.h"
 
-#if SLANG_VERSION >= 20000
-# define SLANG_V2
-#endif
-
-#ifdef SLANG_V2
-# define JED_HAS_UTF8_SUPPORT 1
-#else
-# define JED_HAS_UTF8_SUPPORT 0
-#endif
-
-#if JED_HAS_UTF8_SUPPORT
-# define JED_MAX_MULTIBYTE_SIZE SLUTF8_MAX_MBLEN
+#define JED_MAX_MULTIBYTE_SIZE SLUTF8_MAX_MBLEN
 extern int Jed_UTF8_Mode;
-#else
-typedef unsigned long SLwchar_Type;
-typedef unsigned char SLuchar_Type;
-# define JED_MAX_MULTIBYTE_SIZE 6
-#endif
 
 typedef struct _Buffer Buffer;
 

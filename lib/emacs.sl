@@ -163,7 +163,6 @@ setkey ("yp_kill_word", "\eD");
 setkey ("yp_bkill_word", "\e^?");
 setkey ("yp_copy_region_as_kill", "\ew");
 
-
 autoload ("find_file_other_window",	"emacsmsc");
 autoload ("find_buffer_other_window",	"emacsmsc");
 autoload ("find_alternate_file",	"emacsmsc");
@@ -221,7 +220,6 @@ public define emacs_yp_kill_line ()
    yp_kill_region ();
 }
 
-     
 define transpose_chars ()
 {
    variable c, err;

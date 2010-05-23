@@ -52,47 +52,12 @@ static unsigned char *write_using_color (unsigned char *p,
      }
    /* drop */
    SLsmg_set_color (color);
-#if SLANG_VERSION < 20000
-   SLsmg_write_nchars ((char *)p, (unsigned int) (pmax - p));
-#else
    SLsmg_write_chars (p, pmax);
-#endif
    SLsmg_set_color (0);
    return pmax;
 }
 
 #if JED_HAS_COLOR_COLUMNS
-# if SLANG_VERSION < 20000
-static void color_columns (int row, register unsigned char *p, register unsigned char *pmax)
-{
-   unsigned char *c, *cmax, *pmin;
-   int color;
-
-   c = CBuf->column_colors;
-   if (c != NULL) cmax = c + CBuf->num_column_colors;
-   else cmax = c;
-
-   pmin = p;
-   color = 0;
-   while (p < pmax)
-     {
-	if (c < cmax)
-	  {
-	     if (color != (int) *c)
-	       {
-		  if (pmin != p)
-		    pmin = write_using_color (pmin, p, color);
-		  color = *c;
-	       }
-	     c++;
-	  }
-	p++;
-     }
-
-   if (pmin != p)
-     (void) write_using_color (pmin, p, color);
-}
-# else
 static void color_columns (int row, register unsigned char *p, register unsigned char *pmax)
 {
    unsigned char *c;
@@ -125,7 +90,6 @@ static void color_columns (int row, register unsigned char *p, register unsigned
    if ((x1 != x0) && (color != 0))
      SLsmg_set_color_in_region (color, row, x0, 1, x1 - x0);
 }
-# endif				       /* SLANG_VERSION < 20000 */
 #endif				       /* JED_HAS_COLOR_COLUMNS */
 
 static int try_keyword (register unsigned char *q, int n, register char *t, unsigned char color) /*{{{*/

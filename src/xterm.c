@@ -82,7 +82,7 @@
 /*}}}*/
 
 /* X_HAVE_UTF8_STRING is defined in X11.h */
-#if (SLANG_VERSION >= 20000) && defined(X_HAVE_UTF8_STRING)
+#if defined(X_HAVE_UTF8_STRING)
 # define USE_XUTF8_CODE		1
 #else
 # define USE_XUTF8_CODE		0
@@ -376,7 +376,6 @@ static XftColor *Pixel2XftColor (Pixel pixel)
 }
 #endif
 
-#if SLANG_VERSION >= 20000
 /* conversion tools */
 /* wchars to XChar2b for X drawing */
 static XChar2b *wchars_to_XChar2b(SLwchar_Type *w, unsigned int nchars)
@@ -450,26 +449,6 @@ static SLwchar_Type *utf8nt_to_wchars(unsigned char *s, unsigned int len, unsign
    (sc).color = (_color)
 # define SLSMG_COUNT_CHARS(sc) ((sc).nchars)
 
-#else
-/* SLang1 versions */
-# define SLSMGCHAR_EQUAL(o, n) ((o) == (n))
-
-# ifdef SLSMG_HLINE_CHAR_UNICODE 
-/* Grrr.... hack for the slang1-utf8 version hacked by RedHat and SuSE... */
-#  define SLSMGCHAR_SET_CHAR(sc, _char) (sc) = ((sc) & 0xFF000000) + (_char)
-#  define SLSMGCHAR_SET_COLOR(sc, _color) (sc) = ((sc) & 0xFF) + ((_color)<<24)
-# else
-#  define SLSMGCHAR_SET_CHAR(sc, _char) (sc) = ((sc) & 0xFF00) + (_char)
-#  define SLSMGCHAR_SET_COLOR(sc, _color) (sc) = ((sc) & 0xFF) + ((_color)<<8)
-# endif
-# define SLSMG_COUNT_CHARS(sc) (1)
-/* These exist in SLang 2 include, but not on SLang 1. Define here to allow
- * using the same code 
- */
-# define SLSMG_COLOR_MASK 0xFF
-# define SLwchar_Type char
-
-#endif				       /* SLANG_VERSION >= 20000 */
 
 /* This function does the low-level drawing.
  * It can draw the new text, but setting 'overimpose' to 1 it draws the string 
@@ -493,18 +472,12 @@ static int xdraw (GC_Info_Type *gc, int row, int col, SLwchar_Type *w, int nchar
 	  XftDrawRect (XWin->xftdraw, Pixel2XftColor(gc->bg), x + b, y,
 		       nchars * XWin->font_width, XWin->font_height);
 
-# if SLANG_VERSION >= 20000
 	XftDrawString32 (XWin->xftdraw, Pixel2XftColor(gc->fg), XWin->xftfont,
 			x + b, y + b + XWin->font_base, w, nchars);
-# else
-	XftDrawString8 (XWin->xftdraw, Pixel2XftColor(gc->fg), XWin->xftfont,
-			x + b, y + b + XWin->font_base, (unsigned char *)w, nchars);
-# endif
 	return 0;
      }
 #endif				       /* XJED_HAS_XRENDERFONT */
 
-#if SLANG_VERSION >= 20000
      {
 	XChar2b *d = wchars_to_XChar2b (w, nchars);
 
@@ -520,18 +493,6 @@ static int xdraw (GC_Info_Type *gc, int row, int col, SLwchar_Type *w, int nchar
 	SLfree((char *)d);
 	return 0;
      }
-#else
-   /* Standard X, SLang 1 */
-     {
-	if (overimpose)
-	  XDrawString(This_XDisplay, This_XWindow, gc->gc,
-		      x + b, y + b + XWin->font_base, w, nchars);
-	else	     
-	  XDrawImageString(This_XDisplay, This_XWindow, gc->gc,
-			   x + b, y + b + XWin->font_base, w, nchars);
-	return 0;
-     }
-#endif
 }
 
 /* Get 'n' characters from SLSMG screen, at position ('row', 'col'). */
@@ -559,7 +520,6 @@ static void JX_write_smgchar (int row, int col, SLsmg_Char_Type *s)
    if ((color >= JMAX_COLORS) || (color < 0))
      color = 0;
 
-#if SLANG_VERSION >= 20000
    if (s->nchars > 0)
      (void) xdraw (XWin->text_gc + color, row, col, s->wchars, 1, 0);
 
@@ -569,12 +529,6 @@ static void JX_write_smgchar (int row, int col, SLsmg_Char_Type *s)
 	for (i = 1; i < s->nchars; i++)
 	  (void) xdraw(XWin->text_gc+color, row, col, &s->wchars[i], 1, 1);
      }
-#else
-     {
-	SLwchar_Type ch = SLSMG_EXTRACT_CHAR(*s);
-	(void) xdraw(XWin->text_gc+color, row, col, &ch, 1, 0);
-     }
-#endif
 }
 
 /* Write to screen a row of SLsmg_Chars, handling combining characters
@@ -614,7 +568,6 @@ static void JX_write_smgchars(int row, int col, SLsmg_Char_Type *s, SLsmg_Char_T
 	     b = buf;
              oldcolor = color;
           }
-#if SLANG_VERSION >= 20000
 	if (s->nchars > 1)
 	  {
 	     /* this cell has combining characters */
@@ -629,7 +582,6 @@ static void JX_write_smgchars(int row, int col, SLsmg_Char_Type *s, SLsmg_Char_T
 	       *b++ = ' ';
 	  }
 	else
-#endif
 	  *b++ = SLSMG_EXTRACT_CHAR(*s);
 	s++;
      }
@@ -809,7 +761,6 @@ static void JX_write_string (char *s) /*{{{*/
    unsigned int nchars;
    SLwchar_Type *w;
    unsigned int nbytes = strlen(s);
-#if SLANG_VERSION >= 20000   
    
    if (Jed_UTF8_Mode)	  
      w = utf8nt_to_wchars((unsigned char *)s, nbytes, &nchars);
@@ -820,21 +771,14 @@ static void JX_write_string (char *s) /*{{{*/
      }
    if (w == NULL)
      goto write_done;
-
-#else
-   nchars = nbytes;
-   w = s;
-#endif
    
    if ((No_XEvents == 0) && XWin->window_mapped)
      {
 	hide_cursor ();
 	(void) xdraw(XWin->current_gc, XWin->cursor_row, XWin->cursor_col, w, nchars, 0);
      }
-#if SLANG_VERSION >= 20000   
    SLfree((char *)w);
-   write_done:
-#endif
+write_done:
 
    XWin->cursor_col += nchars;
    if (XWin->cursor_col >= JX_Screen_Cols) 
@@ -1655,7 +1599,6 @@ static int get_font_width (XFontStruct *f, int *wp, int *is_dualp)
    if (w0 != w1)
      (void) fprintf (stderr, "This font does not appear to be single-width.  Expect rendering problems.\n");
    
-#if SLANG_VERSION >= 20000
    if (Jed_UTF8_Mode
        && (f->min_bounds.width * 2 == f->max_bounds.width))
      {
@@ -1663,7 +1606,6 @@ static int get_font_width (XFontStruct *f, int *wp, int *is_dualp)
 	*is_dualp = 1;
 	return 0;
      }
-#endif
    
    *wp = f->max_bounds.width;
    return 0;
@@ -1736,7 +1678,6 @@ static void get_xdefaults (void) /*{{{*/
 	      * Sigh.
 	      */
 	     p = NULL;
-#if SLANG_VERSION >= 20000
 	     if (Jed_UTF8_Mode)
 	       {
 		  cnp = class_names;
@@ -1747,7 +1688,6 @@ static void get_xdefaults (void) /*{{{*/
 			 break;
 		    }
 	       }
-#endif
 	     if (p == NULL)
 	       {
 		  cnp = class_names;
@@ -1761,10 +1701,8 @@ static void get_xdefaults (void) /*{{{*/
 	       }
 	     if (p == NULL)
 	       {
-#if SLANG_VERSION >= 20000
 		  if (Jed_UTF8_Mode)
 		    p = XGetDefault (This_XDisplay, "UXTerm", xargs->name);
-#endif
 		  if (p == NULL)
 		    p = XGetDefault (This_XDisplay, "XTerm", xargs->name);
 	       }
@@ -2654,9 +2592,7 @@ static JX_SETXXX_RETURN_TYPE JX_set_color (int i, char *what, char *fg, char *bg
    if (!Term_Supports_Color) 
      return JX_SETXXX_RETURN_VAL;
 
-#if SLANG_VERSION >= 10306
    SLsmg_touch_screen ();
-#endif
 
    if (i == -1)
      {
@@ -2730,12 +2666,10 @@ static int x_insert_selection (void)
    XConvertSelection (This_XDisplay, XA_PRIMARY, Compound_Text_Atom, Xjed_Prop, This_XWindow,
 		      Current_Event.xbutton.time);
 #else
-# if SLANG_VERSION >= 20000
    if (Jed_UTF8_Mode)
      XConvertSelection (This_XDisplay, XA_PRIMARY, UTF8_String_Atom, Xjed_Prop, This_XWindow,
 			Current_Event.xbutton.time);
    else
-# endif
      XConvertSelection (This_XDisplay, XA_PRIMARY, XA_STRING, Xjed_Prop, This_XWindow,
 			Current_Event.xbutton.time);
 #endif
@@ -3013,14 +2947,6 @@ static char *x_server_vendor (void)
    return The_Xserver_Vendor;
 }
 
-#if SLANG_VERSION < 10404
-static char *get_termcap_string (char *cap)
-{
-   return "";
-}
-#endif
-
-
 static void x_set_meta_keys (int *maskp)
 {
    int mask = *maskp;
@@ -3079,9 +3005,6 @@ static SLang_Intrin_Fun_Type sl_x_table[] = /*{{{*/
     * This function returns the vendor name of the X server.
     */
    MAKE_INTRINSIC_I("x_set_meta_keys", x_set_meta_keys, SLANG_VOID_TYPE),
-#if SLANG_VERSION < 10404
-   MAKE_INTRINSIC_S("get_termcap_string", get_termcap_string, STRING_TYPE),
-#endif
    MAKE_INTRINSIC_0("x_toggle_visibility", x_toggle_visibility, SLANG_VOID_TYPE),
    MAKE_INTRINSIC(NULL,NULL,0,0)
 };
@@ -3267,9 +3190,6 @@ static void JX_get_terminfo (void) /*{{{*/
        tt_get_screen_size      = get_screen_size;
        tt_set_color            = SLtt_set_color;
        tt_set_mono             = SLtt_set_mono;
-#if SLANG_VERSION < 20000
-       tt_set_color_esc        = SLtt_set_color_esc;
-#endif
        tt_wide_width           = SLtt_wide_width;
        tt_narrow_width         = SLtt_narrow_width;
        tt_enable_cursor_keys   = SLtt_enable_cursor_keys;
@@ -3336,9 +3256,7 @@ static void JX_get_terminfo (void) /*{{{*/
    tt.tt_term_cannot_scroll = &JX_Term_Cannot_Scroll;
    tt.tt_has_alt_charset = &JX_Zero;
 
-#if SLANG_VERSION >= 20000
    tt.unicode_ok = &Jed_UTF8_Mode;
-#endif
 
    SLsmg_set_terminal_info (&tt);
    Jed_Handle_SIGTSTP = 0;

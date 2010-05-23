@@ -50,11 +50,10 @@ define tex_paragraph_separator ()
 
    if (looking_at ("\\"))
      {
-	if (orelse 
-	    {looking_at ("\\begin")}
-	    {looking_at ("\\item")}
-	    {looking_at ("\\end")}
-	    {re_looking_at ("\\\\[sub]+section{")})
+	if (looking_at ("\\begin")
+	    || looking_at ("\\item")
+	    || looking_at ("\\end")
+	    || re_looking_at ("\\\\[sub]+section{"))
 	  return 1;
      }
 
@@ -217,7 +216,7 @@ define latex_do_environment ()
    go_up(2);
 }
 
-define tex_is_verbatum_environment ()
+define tex_is_verbatim_environment ()
 {
    variable m;
 
@@ -226,9 +225,9 @@ define tex_is_verbatum_environment ()
 	goto_user_mark (m);
      }
    m = create_user_mark ();
-   ifnot (bsearch ("\\begin{verbatum}"))
+   ifnot (bsearch ("\\begin{verbatim}"))
      return 0;
-   ifnot (fsearch ("\\end{verbatum}"))
+   ifnot (fsearch ("\\end{verbatim}"))
      return 1;
    return m <= create_user_mark ();
 }
@@ -238,7 +237,7 @@ define tex_ldots ()
 {
    if (blooking_at (".."))
      {
-	ifnot (tex_is_verbatum_environment ())
+	ifnot (tex_is_verbatim_environment ())
 	  {
 	     go_left (2);
 	     deln (2);

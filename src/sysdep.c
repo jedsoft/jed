@@ -54,12 +54,7 @@
 #  include <direct.h>
 # endif
 # ifdef __IBMC__
-#  if SLANG_VERSION < 10308
-#   define sleep(x) sys_pause(1000 * (x))
-#  else
-/* sleep added to slang 10308 */
 extern unsigned int sleep (unsigned int);
-#  endif
 # endif
 #endif
 
@@ -187,10 +182,8 @@ int my_getkey() /*{{{*/
     */
 
    eightbit_hack = DEC_8Bit_Hack;
-#if JED_HAS_UTF8_SUPPORT
    if (Jed_UTF8_Mode)
      eightbit_hack = 0;
-#endif
    if (!Input_Buffer_Len)
      {
 	/* if (Batch) ch = (unsigned char) getc(stdin); else ch = sys_getkey(); */
@@ -956,11 +949,7 @@ void jed_pause (int *ms) /*{{{*/
 
 int jed_handle_interrupt (void)
 {
-#if SLANG_VERSION >= 20000
    return SLang_handle_interrupt ();
-#else
-   return 0;
-#endif
 }
 
 void jed_sleep (unsigned int n)

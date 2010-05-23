@@ -761,6 +761,7 @@ _autoload("mode_get_mode_info",		"modeinfo",
 	  "where_is",			"help",
 	  "showkey",			"help",
 	  "describe_mode",		"help",
+	  "help_slang",			"help",
 	  "format_paragraph_hook",	"tmisc",
 	  "dabbrev",			"dabbrev",
 	  "tex_mode",			"tex",
@@ -2843,13 +2844,7 @@ define expand_file_hook (file)
    file2 = file;
    file = Null_String;
    % Check for environment variable of form $(variable)
-   while (
-#if (_slang_version >= 20100)
-	  strlen (file2) && string_match (file2, "\\$[^/$]+", 1)
-#else
-	  andelse {strlen (file2)}{string_match (file2, "\\$[^/$]+", 1)}
-#endif
-	  )
+   while (strlen (file2) && string_match (file2, "\\$[^/$]+", 1))
      {
 	changed++;
 	(pos, len) = string_match_nth (0);

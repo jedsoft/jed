@@ -58,7 +58,7 @@ private define test_link_read_write_1 ()
 {
    () = read_file (Tmp_A_filec);
    bob ();
-   !if (looking_at (Tmp_A_dev_foo))
+   ifnot (looking_at (Tmp_A_dev_foo))
      {
 	message ("Failed to read $Tmp_A_dev_foo via $Tmp_A_filec"$);
 	Failed++;
@@ -87,7 +87,7 @@ private define test_link_read_write_1 ()
 
    () = read_file (Tmp_A_filec);
    bob ();
-   !if (looking_at (Tmp_A_dev_foo+Tmp_A_dev_foo))
+   ifnot (looking_at (Tmp_A_dev_foo+Tmp_A_dev_foo))
      {
 	Failed++;
 	vmessage ("Failed to write symlink file");
@@ -105,7 +105,7 @@ private define test_link_read_write_1 ()
    variable dev2_file = path_concat (Tmp_B_dev2, "../file.c");
    () = read_file (dev2_file);
    bob();
-   !if (looking_at (Tmp_A_dev_foo))
+   ifnot (looking_at (Tmp_A_dev_foo))
      {
 	Failed++;
 	vmessage ("failed to read %s via %s", Tmp_A_dev_foo, dev2_file);

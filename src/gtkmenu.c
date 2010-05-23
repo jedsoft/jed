@@ -310,12 +310,10 @@ static void free_menu_popup_subnodes (Menu_Popup_Type *m)
 static void free_menu_popup_private_data (Menu_Popup_Type *m)
 {
    free_menu_popup_subnodes (m);
-# if SLANG_VERSION > 10400
    SLang_free_function (m->select_popup_callback);
    SLang_free_function (m->tweak_popup_callback);
    m->select_popup_callback = NULL;
    m->tweak_popup_callback = NULL;
-# endif
 }
 
 /************************************
@@ -359,11 +357,8 @@ static void free_menu_bar_private_data (Menu_Bar_Type *m)
    SLfree ((char *) m->subnodes);
    SLfree ((char *) m->item_columns);
    SLang_free_slstring (m->prefix_string);
-# if SLANG_VERSION > 10400
    SLang_free_function (m->init_callback);
    SLang_free_function (m->select_callback);
-# endif
-
 }
 
 /************************************
@@ -389,9 +384,7 @@ static void free_slangfun_private_data (Menu_SLang_Fun_Type *m)
 {
    if (m->client_data != NULL)
      SLang_free_anytype (m->client_data);
-# if SLANG_VERSION > 10400
    SLang_free_function (m->slang_fun);
-# endif
 }
 
 /************************************
@@ -2892,9 +2885,7 @@ static int exec_menubar_callback (Menu_Bar_Type *b, SLang_Name_Type **ntp)
      {
 	if (Active_Menu_Bar == b)      /* disable callback */
 	  {
-# if SLANG_VERSION > 10400
 	     SLang_free_function (nt);
-# endif
 	     *ntp = NULL;
 	  }
 	return -1;
@@ -3387,9 +3378,7 @@ free_and_return:
    SLang_free_slstring( str );
    SLang_free_slstring( menu );
    SLang_free_slstring( name );
-# if SLANG_VERSION > 10400
    SLang_free_function( nt );
-# endif
 }
 
 /************************************
@@ -3571,18 +3560,14 @@ static int pop_popup_callback (Menu_Popup_Type **pp, int type,
 
    if (-1 == SLang_pop_slstring (&popup))
      {
-# if SLANG_VERSION > 10400
 	SLang_free_function (nt);
-# endif
 	return -1;
      }
 
    p = find_menu_popup (popup);
    if (p == NULL)
      {
-# if SLANG_VERSION > 10400
 	SLang_free_function (nt);
-# endif
 	SLang_free_slstring (popup);
 	return -1;
      }
@@ -3590,9 +3575,7 @@ static int pop_popup_callback (Menu_Popup_Type **pp, int type,
    if (type && (p->type != type))
      {
 	SLang_verror (SL_INVALID_PARM, "%s does not specify the proper menu type", popup);
-# if SLANG_VERSION > 10400
 	SLang_free_function (nt);
-# endif
 	SLang_free_slstring (popup);
 	return -1;
      }
@@ -4115,9 +4098,7 @@ free_and_return:
    SLang_free_slstring( menu );
    SLang_free_slstring( name );
    SLang_free_slstring( iconName );
-# if SLANG_VERSION > 10400
    SLang_free_function( nt );
-# endif
 }
 
 static void

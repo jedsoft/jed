@@ -29,10 +29,10 @@ private define build_color_list ()
 
    () = read_file ("../../src/colors.c");
 
-   !if (fsearch ("%%% COLOR-TABLE-START %%%"))
+   ifnot (fsearch ("%%% COLOR-TABLE-START %%%"))
      error ("Unable to find color table tag");
    push_mark ();
-   !if (fsearch ("%%% COLOR-TABLE-STOP %%%"))
+   ifnot (fsearch ("%%% COLOR-TABLE-STOP %%%"))
      error ("Unable to find color table tag");
    narrow ();
 
@@ -73,10 +73,10 @@ private define get_fgbg_for_color (obj, fgp, bgp)
 	obj = get_like_color (obj);
 	if (obj != NULL)
 	  {
-	     !if (find_set_color_line (obj))
+	     ifnot (find_set_color_line (obj))
 	       continue;
 	  }
-	else !if (find_set_color_line ("normal"))
+	else ifnot (find_set_color_line ("normal"))
 	  return -1;
 
 	() = ffind (",");
@@ -113,7 +113,7 @@ private define process_file (file, color_list)
    foreach (color_list)
      {
 	variable color = ();
-	!if (find_set_color_line (color))
+	ifnot (find_set_color_line (color))
 	  {
 	     eob ();
 	     if (modified == 0)

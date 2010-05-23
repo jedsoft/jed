@@ -17,10 +17,6 @@
 
 /* This is a virtual terminal used by the window system displays. */
 
-#if SLANG_VERSION < 20000
-typedef unsigned short SLsmg_Color_Type;
-#endif
-
 int VTerm_Num_Rows, VTerm_Num_Cols;
 SLsmg_Char_Type **VTerm_Display;
 int VTerm_Suspend_Update;
@@ -37,16 +33,6 @@ static int Current_Col;
  */
 static void blank_line (SLsmg_Char_Type *s, int len, int color)
 {
-#if SLANG_VERSION < 20000
-   SLsmg_Char_Type c;
-   SLsmg_Char_Type *smax;
-   
-   c = (SLsmg_Char_Type) SLSMG_BUILD_CHAR(' ', color);
-
-   smax = s + len;
-   while (s < smax)
-     *s++ = c;
-#else
    SLsmg_Char_Type *smax = s + len;
    memset ((char *)s, 0, len * sizeof (SLsmg_Char_Type));
    while (s < smax)
@@ -56,7 +42,6 @@ static void blank_line (SLsmg_Char_Type *s, int len, int color)
 	s->wchars[0] = ' ';
 	s++;
      }
-#endif
 }
 
      
@@ -258,24 +243,18 @@ void vterm_write_nchars (char *s, unsigned int len)
    pmax = p + VTerm_Num_Cols;
    p += Current_Col;
    
-#if SLANG_VERSION >= 20000
    if (p + len >= pmax)
      memset ((char *) p, 0, (pmax - p) * sizeof (SLsmg_Char_Type));
    else
      memset ((char *) p, 0, len * sizeof (SLsmg_Char_Type));
-#endif
 
    color = Current_Color;
    smax = s + len;
    while ((p < pmax) && (s < smax))
      {
-#if SLANG_VERSION < 20000
-	*p = SLSMG_BUILD_CHAR(*s, color);
-#else
 	p->color = color;
 	p->nchars = 1;
 	p->wchars[0] = (unsigned char) *s;
-#endif
 	p++;
 	s++;
      }
@@ -283,7 +262,6 @@ void vterm_write_nchars (char *s, unsigned int len)
    vterm_forward_cursor (len);
 }
 
-#if SLANG_VERSION >= 20000
 /* This is commented out until I can test it.  It was submitted by */
 #if 0
 /* // return number of wide characters written */
@@ -332,5 +310,4 @@ int vterm_write_nbytes (char *s, unsigned int len)
    
    return (p - pmin);
 }
-#endif
 #endif
