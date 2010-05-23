@@ -5,7 +5,7 @@
 %
 % v2.0 2002/09/04
 %       o Re-implemented to use an associative array so that registers can
-%         be given meaningful names.   Added reg_get/set_registers functions 
+%         be given meaningful names.   Added reg_get/set_registers functions
 %         for use by Francesc's register load/save functions.
 %
 % v1.0 2000/12/29
@@ -43,7 +43,7 @@ public define reg_copy_to_register ()
 {
    ifnot (markp ())
      error ("No region defined.");
-   
+
    variable name = get_register_name ();
    if (name != NULL)
      {
@@ -123,7 +123,7 @@ public define reg_quit ()
 public define reg_insert ()
 {
    push_mark ();
-   eol (); 
+   eol ();
    bskip_white ();
    variable name = bufsubstr ();
    reg_quit ();
@@ -136,7 +136,6 @@ public define reg_help ()
    message ("?: this help, q: quit mode, RET: insert register");
 }
 
-
 $1 = "register";
 ifnot (keymap_p ($1))
 {
@@ -145,7 +144,6 @@ ifnot (keymap_p ($1))
    definekey ("reg_quit", "q", $1);
    definekey ("reg_insert", "\r", $1);
 }
-
 
 public define register_mode ()
 {
@@ -163,13 +161,13 @@ public define register_mode ()
    foreach (Register_Buffer_Arrays) using ("keys", "values")
      {
 	variable key, value;
-	
+
 	(key, value) = ();
 	variable l = what_line ();
 
 	l++;
-	
-	insert (key); 
+
+	insert (key);
 	newline ();
 	insert (value);
 	newline ();

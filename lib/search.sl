@@ -23,14 +23,14 @@ define search_across_lines (str, dir)
    s = substr (str, 1, n);
    s1 = substr (str, n + 1, strlen(str));
    n = strlen(s);
-   
+
    push_mark ();
-   
+
    while (@fun(s))
      {
 	% we are matched at end of the line.
 	go_right (n);
-	if (looking_at(s1)) 
+	if (looking_at(s1))
 	  {
 	     go_left(n);
 	     pop_mark_0 ();
@@ -49,7 +49,7 @@ private define setup_case_search (pat)
      {
 	CASE_SEARCH = 1;
      }
-   
+
    return cs;
 }
 
@@ -59,24 +59,24 @@ define search_generic_search (prompt, dir, line_ok_fun)
 
    str = read_mini(prompt, LAST_SEARCH, Null_String);
    ifnot (strlen(str)) return;
-   
+
    push_mark ();
-   
+
    variable cs = setup_case_search (str);
-   ERROR_BLOCK 
+   ERROR_BLOCK
      {
 	pop_mark (not_found);
 	CASE_SEARCH = cs;
      }
 
    if ((dir > 0) and looking_at(str)) go_right_1 ();
-   
+
    save_search_string (str);
-   
+
    not_found = not (search_maybe_again (&search_across_lines, str, dir,
 					line_ok_fun));
    if (not_found) verror ("%s: not found.", str);
-   
+
    EXECUTE_ERROR_BLOCK;
 }
 
@@ -86,10 +86,9 @@ define search_forward ()
 }
 
 define search_backward ()
-{   
+{
    search_generic_search ("Search backward:", -1, &_function_return_1);
 }
-
 
 define replace_do_replace (str, len)
 {
@@ -118,13 +117,13 @@ define replace_cmd ()
 {
    variable pat, prompt, rep;
    variable has_prefix;
-   
+
    pat = read_mini("Replace:", Null_String, Null_String);
    ifnot (strlen (pat)) return;
-   
+
    prompt = strcat (strcat ("Replace '", pat), "' with:");
    rep = read_mini(prompt, "", "");
-   
+
    variable cs = setup_case_search (pat);
    ERROR_BLOCK
      {
@@ -132,10 +131,10 @@ define replace_cmd ()
      }
 
    replace_with_query (&search_search_function, pat, rep, 1, &replace_do_replace);
-   
+
    EXECUTE_ERROR_BLOCK;
 
-   message ("done.");   
+   message ("done.");
 }
 
 provide ("search");

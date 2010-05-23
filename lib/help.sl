@@ -2,7 +2,6 @@
 require ("keydefs");
 autoload ("glob", "glob");
 
-
 %!%+
 %\variable{Help_Describe_Bindings_Show_Synopsis}
 %\synopsis{Used to control the searching of synopsis strings}
@@ -32,7 +31,7 @@ private define convert_keystring (key)
 	new_key = strcat (new_key, the_key);
      }
    return new_key;
-}	     
+}
 
 private define make_key_name_table ()
 {
@@ -80,7 +79,7 @@ private define keyeqs (seq, key)
    variable n = strbytelen (key);
    if (strnbytecmp (seq, key, n))
      return 0;
-   
+
    return n;
 }
 
@@ -90,8 +89,8 @@ private define keyeqs (seq, key)
 %\usage{String expand_keystring (String key)}
 %\description
 % This function takes a key string that is suitable for use in a 'setkey'
-% definition and expands it to a human readable form.  
-% For example, it expands ^X to the form "Ctrl-X", ^[ to "ESC", 
+% definition and expands it to a human readable form.
+% For example, it expands ^X to the form "Ctrl-X", ^[ to "ESC",
 % ^[[A to "UP", etc...
 %\seealso{setkey}
 %!%-
@@ -103,19 +102,19 @@ define expand_keystring (seq)
      alt_char = @__get_reference ("ALT_CHAR");
 
    seq = convert_keystring (seq);
-   
+
    if (assoc_key_exists (Key_Name_Table, seq))
      return Key_Name_Table[seq];
-   
+
    variable key_seqs = assoc_get_keys (Key_Name_Table);
    variable key_name, expanded_key = "";
-   
-   forever 
+
+   forever
      {
 	variable n = strbytelen (seq);
 	if (n == 0)
 	  break;
-	
+
 	variable dn = 0;
 	foreach (key_seqs)
 	  {
@@ -172,20 +171,20 @@ define expand_keystring (seq)
 public define showkey ()
 {
    variable f, type;
-   
+
    flush("Show Key: ");
-   
+
    (type, f) = get_key_binding ();
-   
+
    if (f == NULL)
      {
 	vmessage ("Key \"%s\" is undefined.",
 		  expand_keystring (LASTKEY));
 	return;
      }
-   
+
    variable ks = expand_keystring (LASTKEY);
-   
+
    switch (type)
      {
       case 0:
@@ -217,7 +216,7 @@ define apropos ()
 {
    variable n, cbuf, s, a;
    if (MINIBUFFER_ACTIVE) return;
-   
+
    s = read_mini("apropos:", "", "");
    a = _apropos("Global", s, 0xF);
    vmessage ("Found %d matches.", length (a));
@@ -230,7 +229,7 @@ define apropos ()
 	insert(());
 	newline();
      }
-   buffer_format_in_columns();   
+   buffer_format_in_columns();
    bob();
    set_buffer_modified_flag(0);
    pop2buf(cbuf);
@@ -240,22 +239,21 @@ define where_is ()
 {
    variable n, cmd;
    if (MINIBUFFER_ACTIVE) return;
-   
+
    cmd = read_with_completion ("Where is command:", "", "", 'F');
    ifnot (strlen (cmd)) return;
    n = which_key (cmd);
    ifnot (n) return message ("Not on any keys.");
-   
+
    message (expand_keystring ());
    --n; loop (n) pop ();
 }
-
 
 define help_get_doc_string (f)
 {
    variable file;
    variable n, str;
-   
+
    n = 0;
    str = NULL;
    do
@@ -263,7 +261,7 @@ define help_get_doc_string (f)
 	file = extract_element (Jed_Doc_Files, n, ',');
 	if (file == NULL)
 	  break;
-	
+
 	if (2 == file_status (file))
 	  {
 	     foreach (glob (path_concat (file, "*.hlp")))
@@ -280,7 +278,7 @@ define help_get_doc_string (f)
 	n++;
      }
    while (str == NULL);
-   
+
    return (file, str);
 }
 
@@ -292,8 +290,8 @@ define help_for_function (f)
    variable doc_str, file;
    variable value;
    variable str = "";
-   
-   % For variables such as TAB, whose value depends upon the buffer, 
+
+   % For variables such as TAB, whose value depends upon the buffer,
    % evaluate the variable in the current buffer.
    if (is_defined (f) < 0)
      {
@@ -306,25 +304,25 @@ define help_for_function (f)
      }
    else if (is_internal (f))
      str = (f + ": internal function\n");
-   
+
    pop2buf (help); set_readonly (0); erase_buffer ();
    vinsert (str);
-   
+
    (file, doc_str) = help_get_doc_string (f);
    if (doc_str != NULL)
-     vinsert ("%s[Obtained from file %s]", doc_str, file);     
+     vinsert ("%s[Obtained from file %s]", doc_str, file);
    else	if (is_internal (f)) % this block can be removed
      {                  % once  internal funs are documented
 	vinsert ("\nUse  call (\"%s\")  to access from slang\n\n", f);
 	insert (strcat ("You might bind an internal function to a key ",
 			"using setkey() or definekey()\n"));
      }
-   else 
+   else
      {
 	vinsert ("%s: Undocumented ", f);
 	switch (is_defined (f))
 	  {
-	   case 1: 
+	   case 1:
 	     insert ("intrinsic function");
 	  }
 	  {
@@ -335,9 +333,9 @@ define help_for_function (f)
 	     insert (" and unknown");
 	  }
      }
-   
+
    insert ("\n-----------------------------------\n");
-   
+
    bob ();
    set_buffer_modified_flag (0);
    pop2buf (cbuf);
@@ -346,12 +344,12 @@ define help_for_function (f)
 define help_do_help_for_object (prompt, flags)
 {
    variable n, objs;
-   
+
    if (MINIBUFFER_ACTIVE) return;
-   
+
 #ifntrue
    n = _apropos ("", flags);
-   
+
    objs = "";
    loop (n)
      {
@@ -365,7 +363,6 @@ define help_do_help_for_object (prompt, flags)
    help_for_function (read_string_with_completion (prompt, "", objs));
 }
 
-
 define describe_function ()
 {
    help_do_help_for_object ("Describe Function:", 0x3);
@@ -376,12 +373,11 @@ define describe_variable ()
    help_do_help_for_object ("Describe Variable:", 0xC);
 }
 
-
 define describe_mode ()
 {
    variable flags, modstr;
    (modstr, flags) = what_mode ();
-   
+
    modstr = extract_element (modstr, 0, ' ');
    ifnot (strlen (modstr)) modstr = "no";
    ifnot (is_defined (modstr))
@@ -406,7 +402,7 @@ define describe_bindings ()
    variable cse = CASE_SEARCH;  CASE_SEARCH = 1;
    erase_buffer ();
    dump_bindings (map);
-   
+
    if (map != "global")
      {
 	variable dump_end_mark = create_user_mark();
@@ -431,7 +427,7 @@ define describe_bindings ()
 	     del_region ();
 	     delete_line ();
 	  }
-	
+
 	bob();
 	forever
 	  {
@@ -440,7 +436,7 @@ define describe_bindings ()
 	     key = bufsubstr();
 	     if (key == "")
 	       break;
-	     
+
 	     variable global_map_key = global_map[key];
 	     go_right (3);
 	     if (global_map_key != "")
@@ -489,8 +485,8 @@ define describe_bindings ()
 	     if (0 == down_1()) break;
 	  }
      }
-   
-   bob(); 
+
+   bob();
 
    do
      {
@@ -533,7 +529,7 @@ define describe_bindings ()
 	pop2buf (buf);
 	message ("done");
      }
-   
+
    if (Help_Describe_Bindings_Show_Synopsis == 0)
      return;
 
@@ -574,6 +570,4 @@ define describe_bindings ()
 	eol ();
      }
 }
-
-
 

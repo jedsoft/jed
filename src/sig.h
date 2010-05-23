@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -20,7 +20,6 @@ extern int Signal_Sys_Spawn_Flag;      /* used if something else sends stop */
 # endif
 extern int Jed_Handle_SIGTSTP;
 #endif
-
 
 extern int jed_handle_interrupt (void);
 

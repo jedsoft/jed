@@ -18,7 +18,7 @@ private define append_or_prepend_copy_as_kill (fun)
 	  {
 	     Kill_Buffer_Number = 0;
 	  }
-	
+
 	if (Kill_Buffer_Number > Kill_Buffer_Max_Number)
 	  Kill_Buffer_Max_Number = Kill_Buffer_Number;
 
@@ -29,7 +29,7 @@ private define append_or_prepend_copy_as_kill (fun)
      {
 	@fun (Kill_Buffer_Number);
      }
-   
+
    set_current_kbd_command (kill_fun);
 }
 
@@ -37,7 +37,6 @@ define yp_copy_region_as_kill ()
 {
    append_or_prepend_copy_as_kill (&append_region_to_kill_array);
 }
-
 
 define yp_kill_region ()
 {
@@ -57,7 +56,6 @@ define yp_prepend_kill_region ()
    yp_prepend_copy_region_as_kill ();
    del_region ();
 }
-
 
 define yp_kill_line ()
 {
@@ -90,26 +88,25 @@ define yp_yank_pop ()
      {
 	Kill_Buffer_Yank_Number = Kill_Buffer_Max_Number;
      }
-   
-   %  Delete the previous yank 
+
+   %  Delete the previous yank
    push_mark ();
    goto_user_mark (Kill_Buffer_User_Mark);
    del_region ();
-   
+
    yp_yank ();
-}   
+}
 
 define yp_kill_word ()
 {
-   push_mark(); skip_word(); 
+   push_mark(); skip_word();
    yp_kill_region ();
 }
 
 define yp_bkill_word ()
 {
-   push_mark(); bskip_word(); 
+   push_mark(); bskip_word();
    yp_prepend_kill_region ();
 }
-
 
 provide ("yankpop");

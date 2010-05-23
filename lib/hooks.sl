@@ -5,7 +5,7 @@ private variable Hooks = NULL;
 private define add_hook_function (name, main_hook)
 {
    variable h;
-   
+
    h = struct
      {
 	hook_name,
@@ -16,7 +16,7 @@ private define add_hook_function (name, main_hook)
 
    h.hook_name = name;
    h.main_hook_function = main_hook;
-   
+
    h.next = Hooks;
    Hooks = h;
 }
@@ -56,7 +56,7 @@ define hook_add_hook (hook_name, hook_function)
 	add_to_hook ("_jed_reset_display_hooks", hook_function);
 	return;
      }
-   
+
    h = find_hook (hook_name);
    if (h == NULL)
      verror ("hook %s unknown to this interface", hook_name);
@@ -70,8 +70,6 @@ define hook_add_hook (hook_name, hook_function)
    list.next = h.list_of_hooks;
    h.list_of_hooks = list;
 }
-
-   
 
 % This function just runs the hooks with arguments assuming that the
 % hook returns nothing
@@ -92,7 +90,6 @@ private define do_simple_hook (name)
      }
 }
 
-   
 define save_buffer_hook (file, mode)
 {
    do_simple_hook (file, mode, _function_name ());

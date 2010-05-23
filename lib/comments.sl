@@ -13,7 +13,6 @@ private define extract_major_mode (mode)
    return extract_element (mode, 0, ' ');
 }
 
-
 %!%+
 %\function{get_comment_info}
 %\synopsis{Get comment information according to mode}
@@ -41,14 +40,14 @@ public define get_comment_info ()
      get_mode_name ();
 
    variable modename = ();
-   
+
    modename = extract_major_mode (modename);
 
    loop (2)
      {
 	if (assoc_key_exists (Comment_Data, modename))
 	  return Comment_Data[modename];
-	
+
 	modename = strlow (modename);
      }
    return NULL;
@@ -61,9 +60,9 @@ public define get_comment_info ()
 %\description
 % This function sets comment information for a specified mode. If the
 % optional mode argument is not present, the current mode will be used.  The
-% other 3 required arguments represent the comment start string (\exmp{cbeg}), 
-% the comment end string (\exmp{cend}), and an integer flags argument that 
-% indications how these strings are to be used by the \sfun{comment_region} 
+% other 3 required arguments represent the comment start string (\exmp{cbeg}),
+% the comment end string (\exmp{cend}), and an integer flags argument that
+% indications how these strings are to be used by the \sfun{comment_region}
 % function.  In particular, \exmp{flags} is a bitmapped integer whose bits
 % have the following meaning:
 %#v+
@@ -80,8 +79,8 @@ public define set_comment_info (cbeg, cend, flags)
    if (_NARGS == 3)
      get_mode_name ();
    variable mode = ();
-   
-   variable s = struct 
+
+   variable s = struct
      {
 	cbeg, cend, flags, column
      };
@@ -116,7 +115,7 @@ private define _get_comment_info ()
 private define compute_max_column (beg_mark, end_mark)
 {
    variable max_column;
-   
+
    goto_user_mark (end_mark);
    max_column = what_column ();
    goto_user_mark (beg_mark);
@@ -134,7 +133,6 @@ private define compute_max_column (beg_mark, end_mark)
    return max_column;
 }
 
-
 public define comment_region ()
 {
    check_region (1);
@@ -149,7 +147,7 @@ public define comment_region ()
    variable cbeg = info.cbeg;
    variable cend = info.cend;
    variable flags = info.flags;
-   
+
    variable end_mark = create_user_mark ();
    exchange_point_and_mark ();
    variable beg_mark = create_user_mark ();
@@ -202,7 +200,6 @@ public define comment_region ()
    variable max_column = 0;
    if ((flags & 0x02) and strlen (cend))
      max_column = compute_max_column (beg_mark, end_mark) + strlen (cbeg);
-	
 
    goto_user_mark (beg_mark);
    insert (cbeg);
@@ -219,14 +216,14 @@ public define comment_region ()
    if (max_column)
      {
 	trim ();
-	if (what_column () < max_column) 
-	  goto_column (max_column);	
+	if (what_column () < max_column)
+	  goto_column (max_column);
      }
    insert (cend);
 
    variable comment_blank_lines = flags & 0x04;
 
-   forever 
+   forever
      {
 	if (comment_blank_lines)
 	  {
@@ -254,7 +251,7 @@ public define comment_region ()
 		 or ok_to_pad_end)
 	       {
 		  trim ();
-		  if (what_column () < max_column) 
+		  if (what_column () < max_column)
 		    goto_column (max_column);
 	       }
 	  }
@@ -277,7 +274,7 @@ public define uncomment_region ()
 	pop_spot ();
      }
 
-   variable info = _get_comment_info (); 
+   variable info = _get_comment_info ();
    variable cbeg = info.cbeg;
    variable cend = info.cend;
    variable do_trim = info.flags & 0x02;
@@ -289,7 +286,7 @@ public define uncomment_region ()
      {
 	ifnot (ffind (cbeg))
 	  continue;
-	
+
 	deln (len_cbeg);
 	eol ();
 	ifnot (bfind (cend))
@@ -356,7 +353,6 @@ public define uncomment_region_or_line ()
    else
      uncomment_line ();
 }
-
 
 % for some modes we have comment string definitons here
 set_comment_info ("html", "<!-- ", " -->", 0);

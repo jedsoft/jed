@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -100,9 +100,9 @@ static void process_key_event(KEY_EVENT_RECORD *key)
    if (d & RIGHT_ALT_PRESSED) key_state |= KEY_ALT_GR;
    if (d & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED)) key_state |= KEY_CONTROL;
    if (d & SHIFT_PRESSED) key_state |= KEY_SHIFT;
-   
+
    scan = key->wVirtualScanCode;
-   if (d & ENHANCED_KEY) 
+   if (d & ENHANCED_KEY)
      scan |= 0x100;
 
    switch (scan)
@@ -201,7 +201,7 @@ static void process_key_event(KEY_EVENT_RECORD *key)
       case 0x051:            /* KEYPAD PGDN */
       case 0x053:            /* KEYPAD DEL */
       case 0x052:            /* KEYPAD INSERT */
-	
+
 	if ((NumLock_Is_Gold == 0)
 	    && (d & NUMLOCK_ON))
 	  break;
@@ -322,10 +322,10 @@ static void process_key_event(KEY_EVENT_RECORD *key)
    if (1)
      {
 	static FILE *fp;
-	
+
 	if (fp == NULL)
 	  fp = fopen ("key.log", "w");
-	
+
 	if (fp != NULL)
 	  {
 	     fprintf (fp, "Key: scan=0x%X\n", scan);
@@ -334,7 +334,6 @@ static void process_key_event(KEY_EVENT_RECORD *key)
      }
 #endif
 }
-
 
 static void process_mouse_event(MOUSE_EVENT_RECORD *mevent)
 {
@@ -530,9 +529,9 @@ int sys_input_pending (int *tsecs, int all)
 	long rtime, t;
 
 	rtime = *tsecs * 100L;
-	
+
 	process_console_records ();
-	while ((rtime > 0) && !Input_Buffer_Len)	
+	while ((rtime > 0) && !Input_Buffer_Len)
 	  {
 	     t = GetTickCount ();
 
@@ -632,7 +631,7 @@ void sys_suspend(void)
    STARTUPINFO si;
    PROCESS_INFORMATION pi;
    char *shell;
-   
+
    shell = getenv ("COMSPEC");
    if (shell == NULL)
      shell = "CMD";

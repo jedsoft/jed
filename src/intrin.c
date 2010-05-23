@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -415,7 +415,7 @@ static void intrin_load_buffer (void)
    if ((SLang_Num_Function_Args == 1)
        && (-1 == SLang_pop_slstring (&ns)))
      return;
-	
+
    jed_load_buffer (ns);
    SLang_free_slstring (ns);	       /* NULL ok */
 }
@@ -678,7 +678,7 @@ static void what_char_intrin (void)
 
    if (-1 == SLang_pop_integer (&n))
      return;
-	
+
    push_spot ();
    if (n < 0)
      {

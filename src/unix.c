@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -175,7 +175,7 @@ static void handle_interrupt (void)
 
    if (Jed_Sig_Exit_Fun != NULL)
      (*Jed_Sig_Exit_Fun) ();
-     
+
    if (Updating_Screen)
      return;
 
@@ -336,7 +336,7 @@ int init_tty (void) /*{{{*/
    newtty.c_cc[VSWTCH] = NULL_VALUE;   /* to ignore who knows what */
 # endif
 #endif /* NOT REALLY_HAVE_TERMIOS_H */
-   
+
    while (-1 == SET_TERMIOS(Read_FD, &newtty))
      {
 	if (errno != EINTR)
@@ -354,7 +354,7 @@ int init_tty (void) /*{{{*/
    X_Update_Open_Hook = unix_update_open;
    X_Update_Close_Hook = unix_update_close;
    X_Set_Abort_Char_Hook = unix_set_abort_char;
-   
+
    set_process_group ();
 
    return 0;
@@ -377,7 +377,7 @@ void reset_tty (void) /*{{{*/
 	if (errno != EINTR)
 	  break;
      }
-   
+
    reset_process_group ();
 
    /* This statement ensures init_tty will not try to change output_rate
@@ -425,7 +425,7 @@ unsigned char sys_getkey (void) /*{{{*/
 	/* sleep for 45 second and try again */
 	if (sys_input_pending(&n, all) > 0)
 	  break;
-	
+
 	kb = SLKeyBoard_Quit;
 	if (kb)
 	  break;
@@ -584,7 +584,7 @@ int sys_input_pending(int *tsecs, int all) /*{{{*/
 	i = 0;
 	while (i < Num_Subprocesses)
 	  {
-	     
+
 	     if (Subprocess_Read_fds[i][2] == 0)   /* If non-0, fd has an EIO error */
 	       {
 		  int fd = Subprocess_Read_fds[i][0];
@@ -941,7 +941,7 @@ int sys_findnext(char *file) /*{{{*/
 # endif
 	if (!strncmp(Found_File, dp->d_name, File_Len)) break;
      }
-   safe_strcpy (file, Found_Dir, JED_MAX_PATH_LEN); 
+   safe_strcpy (file, Found_Dir, JED_MAX_PATH_LEN);
    safe_strcat (file, dp->d_name, JED_MAX_PATH_LEN);
    if (2 == file_status(file)) safe_strcat (file, "/", JED_MAX_PATH_LEN);
    return(1);

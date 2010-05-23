@@ -11,7 +11,7 @@ define set_selective_display ()
    if (c == -1)
      c = what_column ();
 
-   if (c <= 1) 
+   if (c <= 1)
      {
 	arg = 0;
 	msg = "Cancelling selective display mode...";

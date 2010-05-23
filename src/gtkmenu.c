@@ -4825,7 +4825,7 @@ menuCallback( Menu_Node_Type *menu )
 
 # if 0
 
-int 
+int
 gtkCreateTBCmd( char *name )
 {
    char *newKey = SLmalloc( strlen( name ) + 1 );

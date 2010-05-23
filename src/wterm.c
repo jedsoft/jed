@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -109,10 +109,10 @@ extern HINSTANCE _hPrev;
 
 typedef struct
 {
-   HWND hwnd;                 
-   UINT uiMshMsgMouseWheel,   
-        uiMshMsg3DSupport,    
-        uiMshMsgScrollLines;  
+   HWND hwnd;
+   UINT uiMshMsgMouseWheel,
+        uiMshMsg3DSupport,
+        uiMshMsgScrollLines;
    INT  iScrollLines;
    BOOL fActive;
 }
@@ -121,7 +121,6 @@ MS_Wheel_Type;
 static MS_Wheel_Type Wheel_Mouse;
 
 #endif                                 /* HAS_WHEEL_MOUSE_SUPPORT */
-
 
 typedef struct
 {
@@ -479,7 +478,7 @@ static void _putkey (WCHAR wc)
      }
    else
      {
-        /* 0xE0 is prefix for cursor keys, but also &agrave; on ANSI 
+        /* 0xE0 is prefix for cursor keys, but also &agrave; on ANSI
          * charset. The charmap has 0xE0 0xE0 to &agrave; */
 	unsigned char ch = (unsigned char) wc;
         if (ch == 0xE0) buffer_keystring ((char *)&ch, 1);
@@ -487,7 +486,7 @@ static void _putkey (WCHAR wc)
      }
 }
 
-static void send_key_sequence (unsigned int n, unsigned char c1, unsigned char c2, 
+static void send_key_sequence (unsigned int n, unsigned char c1, unsigned char c2,
 			       unsigned char c3, unsigned char c4)
 {
    unsigned char buf[4];
@@ -501,7 +500,6 @@ static void send_key_sequence (unsigned int n, unsigned char c1, unsigned char c
    buf[3] = c4;
    buffer_keystring((char *)buf, n);
 }
-
 
 /* Getting defaults from INI file */
 static COLORREF msw_get_color(char *s, char *dflt)
@@ -689,22 +687,20 @@ static int select_font(char *fontname, int fontheight, int fontbold)
    This_Window.font        = font;
    This_Window.font_bold   = fontbold;
    This_Window.font_height = fontheight;
-	
+
    strncpy(This_Window.font_name, fontname, MAX_STRING_SIZE-1);
    This_Window.font_name[MAX_STRING_SIZE-1] = '\0';
 
    /* retrieve font metrics (width and base) */
-   
+
    SelectObject(This_Window.hdc, This_Window.font);
    GetTextMetrics(This_Window.hdc, &tm);
    This_Window.font_width = tm.tmAveCharWidth;
    This_Window.font_height = tm.tmHeight;
-   
-   
+
    release_dc();
    return 0;
 }
-
 
 static void init_instance (void)
 {
@@ -814,7 +810,6 @@ static int msw_init_term (void)
    return 0;
 }
 
-
 static void copy_rect(int x1, int y1, int x2, int y2, int x3, int y3)
 {
    int dx, dy;
@@ -835,7 +830,7 @@ static void copy_rect(int x1, int y1, int x2, int y2, int x3, int y3)
 static void blank_rect(int x1, int y1, int x2, int y2)
 {
    char blanks[256];
-   
+
    memset (blanks, ' ', sizeof (blanks));
 
    if (This_Window.cursor_showing) hide_cursor();
@@ -858,7 +853,7 @@ static void blank_rect(int x1, int y1, int x2, int y2)
 	     else
 	       dn = n;
 
-	     (void) TextOut(This_Window.hdc, xx * This_Window.font_width, 
+	     (void) TextOut(This_Window.hdc, xx * This_Window.font_width,
 			    y1 * This_Window.font_height, blanks, dn);
 	     n -= dn;
 	     xx += dn;
@@ -880,7 +875,7 @@ static void msw_reverse_video(int color)
 {
    if ((color < 0) || (color >= JMAX_COLORS))
      return;
- 
+
    This_Window.current_color = &JColors[color];
 }
 
@@ -888,7 +883,7 @@ static int smg_read_at(int row, int col, SLsmg_Char_Type *s, unsigned int n)
 {
    int saverow, savecol;
    unsigned int rc;
-        
+
    saverow = SLsmg_get_row();
    savecol = SLsmg_get_column();
    SLsmg_gotorc(row, col);
@@ -896,7 +891,7 @@ static int smg_read_at(int row, int col, SLsmg_Char_Type *s, unsigned int n)
    SLsmg_gotorc(saverow, savecol);
    return rc;
 }
- 
+
 static void _tt_writeW(WCHAR *s, int n, int color)
 {
    if (color < 0 || color > JMAX_COLORS)
@@ -932,7 +927,7 @@ static int decode_utf32 (unsigned int u, WCHAR *buf)
 /* SLsmg_Char_Type decode/compare: the char internals changed for SLang2 */
 static int decode_smgchar(SLsmg_Char_Type *s, WCHAR *buf)
 {
-   if (s->nchars > 0) 
+   if (s->nchars > 0)
      return decode_utf32(s->wchars[0], buf);
 
    *buf = (WCHAR)' ';
@@ -951,7 +946,7 @@ static void msw_write_smgchars(SLsmg_Char_Type *s, SLsmg_Char_Type *smax)
    WCHAR buf[512];
    WCHAR *b, *bmax;
    int oldcolor, color;
-   
+
    b = buf;
    bmax = b + sizeof (buf)/sizeof(buf[0]);
 
@@ -978,7 +973,6 @@ static void msw_write_smgchars(SLsmg_Char_Type *s, SLsmg_Char_Type *smax)
 
    release_dc();
 }
-
 
 static void msw_write_smgchar(SLsmg_Char_Type *s)
 {
@@ -1010,7 +1004,6 @@ static void hide_cursor(void)
    msw_write_smgchar(&sc);
    This_Window.cursor_col = savecur;
 }
-
 
 static void show_cursor(void)
 {
@@ -1050,8 +1043,6 @@ static void show_cursor(void)
 	release_dc();
      }
 }
-
-
 
 void sys_suspend(void)
 {
@@ -1193,7 +1184,6 @@ static void msw_putchar(char ch)
    release_dc();
 }
 
-
 #endif				       /* UNUSED */
 
 static void msw_normal_video(void)
@@ -1263,7 +1253,7 @@ static void msw_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len
    while ((col < len) && SLSMGCHAR_EQUAL(&neww[col], &oldd[col]))
      col++;
 
-   if (col < len) 
+   if (col < len)
      {
 	msw_goto_rc (row, col);
 	msw_write_smgchars(&neww[col], &neww[len]);
@@ -1280,8 +1270,6 @@ static void msw_reset_scroll_region (void)
 {
    msw_set_scroll_region (0, MSW_Screen_Cols - 1);
 }
-
-
 
 static int msw_reset_video (void)
 {
@@ -1311,20 +1299,19 @@ static char *convert_color (char *c, char *buf)
 {
    unsigned long ul;
 
-   if ((*c != '#') 
+   if ((*c != '#')
        || (7 != strlen (c)))   /* e.g., #RRGGBB */
      return c;
-   
+
    if (1 != sscanf (c+1, "%lX", &ul))
      return c;
-   
+
    if (ul > 0xFFFFFFUL)
      return c;
 
    sprintf (buf, "%ld,%ld,%ld", (ul >> 16)&0xFF, (ul >> 8)&0xFF, ul & 0xFF);
    return buf;
 }
-   
 
 static JX_SETXXX_RETURN_TYPE msw_set_color (int i, char *what, char *fg, char *bg)
 {
@@ -1386,7 +1373,6 @@ static JX_SETXXX_RETURN_TYPE msw_set_color (int i, char *what, char *fg, char *b
    /* InvalidateRect(This_Window.w, NULL, FALSE); */
 }
 
-
 static void cover_exposed_area (int x, int y, int width, int height)
 {
    SLsmg_Char_Type *s;
@@ -1418,7 +1404,7 @@ static void cover_exposed_area (int x, int y, int width, int height)
      }
    SLfree((char *)s);
    msw_goto_rc (save_row, save_col);
-   
+
    done:
    Performing_Update--;
 
@@ -1478,7 +1464,7 @@ static void push_mouse_event(int button, int x, int y, int state, int type)
 	type = JMOUSE_IGNORE_EVENT;
      }
 #endif
-   
+
    jm.button = button;
 
    if ((type == JMOUSE_UP)
@@ -1533,7 +1519,7 @@ static void push_wm_mouse_event (int button, int x, int y, int state, int type)
       default:
 	return;
      }
-   
+
    push_mouse_event (button, x, y, state, type);
 }
 
@@ -1554,12 +1540,11 @@ static void msw_select_font (char *fontname, int *height, int *bold)
 	/* update font data, As I need it if the user changes Language */
 	strcpy(Font_Name, fontname);
 	Font_Height = *height;
-	Font_Bold = *bold;	
+	Font_Bold = *bold;
 	return;
      }
    jed_verror ("Unable to allocate font %s", fontname);
 }
-
 
 static void set_window_name (char *s)
 {
@@ -1612,7 +1597,7 @@ unsigned char sys_getkey(void)
 
    while (!SLKeyBoard_Quit && !Input_Buffer_Len) process_message ();
 
-   if (SLKeyBoard_Quit) 
+   if (SLKeyBoard_Quit)
      {
 	SLKeyBoard_Quit = 0;
 	flush_input ();
@@ -1691,7 +1676,7 @@ unsigned char sys_getkey(void)
 	update((Line *) NULL, 0, 1, 0);
      }
 
-   if (SLKeyBoard_Quit) 
+   if (SLKeyBoard_Quit)
      {
 	SLKeyBoard_Quit = 0;
 	flush_input ();
@@ -1940,7 +1925,7 @@ static int load_dropped_files(HDROP hDrop, HWND hwnd)
    (void) hwnd;
 
    iNumFiles = DragQueryFile (hDrop, 0xFFFFFFFF, NULL, JED_MAX_PATH_LEN-1);
-   
+
    while(--iNumFiles>=0)
      {
 	DragQueryFile(hDrop, iNumFiles, szFilename, JED_MAX_PATH_LEN-1);
@@ -1949,7 +1934,7 @@ static int load_dropped_files(HDROP hDrop, HWND hwnd)
 	jed_redraw_screen (1);
      }
    DragFinish(hDrop);
-   
+
    return 0;
 }
 
@@ -2068,19 +2053,19 @@ LRESULT CALLBACK JEDWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		  WCHAR buf[10];
 		  int i, buflen = 10;
 		  int dbcsl;
-		  
+
 		  /* Here I get ANSI characters, but _putkey() wants UTF-16. */
 		  if (!dbcsbuf[0] && IsDBCSLeadByte((unsigned char)wParam)) {
 		     dbcsbuf[0] = (char)wParam;
 		     break;
 		  }
 		  dbcsl = 1;
-		  if (dbcsbuf[0]) 
+		  if (dbcsbuf[0])
 		    {
 		       dbcsbuf[1] = (unsigned char) wParam;
 		       dbcsl = 2;
-		    } 
-		  else 
+		    }
+		  else
 		    {
 		       dbcsbuf[0] = (unsigned char) wParam;
 		    }
@@ -2197,18 +2182,18 @@ LRESULT CALLBACK JEDWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
        * and translate it into a fake keystroke. This has now been
        * tested on Win95,98,NT4,2000
        */
-        if ((Wheel_Mouse.fActive 
+        if ((Wheel_Mouse.fActive
              && (msg == Wheel_Mouse.uiMshMsgMouseWheel))
             || (msg == WM_MOUSEWHEEL))
           {
 	     /* Under X, the wheel mouse produces JMOUSE_BUTTON_4 and
  	      * JMOUSE_BUTTON_5 events.  jed/lib/mouse.sl maps JMOUSE_BUTTON_4
- 	      * events to upward movement and JMOUSE_BUTTON_5 to downward 
+ 	      * events to upward movement and JMOUSE_BUTTON_5 to downward
  	      * movement in the buffer.
  	      */
-	     if ((int) wParam < 0) 
+	     if ((int) wParam < 0)
 	       push_mouse_event (JMOUSE_BUTTON_5, LOWORD(lParam), HIWORD(lParam), wParam, JMOUSE_DOWN);
-	     else 
+	     else
 	       push_mouse_event (JMOUSE_BUTTON_4, LOWORD(lParam), HIWORD(lParam), wParam, JMOUSE_DOWN);
 
  	     return 0;
@@ -2223,10 +2208,10 @@ LRESULT CALLBACK JEDWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 static int pop_hmenu (HMENU *h)
 {
    int i;
-   
+
    if (-1 == SLang_pop_integer (&i))
      return -1;
-   
+
    *h = (HMENU) i;
    return 0;
 }
@@ -2267,7 +2252,7 @@ void destroy_menubar()
 void create_popup_menu()
 {
    HMENU hmenu = CreatePopupMenu();
-   
+
    (void) push_hmenu (hmenu);
 }
 
@@ -2750,33 +2735,32 @@ int jed_init_w32_support (void)
 static int init_wheel_mouse (void)
 {
    /* Find the mystery mouse window */
-   
+
    Wheel_Mouse.hwnd = FindWindow(MSH_WHEELMODULE_CLASS, MSH_WHEELMODULE_TITLE);
 
    /* Register messages to determine mousey information */
-   
+
    Wheel_Mouse.uiMshMsgMouseWheel  = RegisterWindowMessage(MSH_MOUSEWHEEL);
    Wheel_Mouse.uiMshMsg3DSupport   = RegisterWindowMessage(MSH_WHEELSUPPORT);
    Wheel_Mouse.uiMshMsgScrollLines = RegisterWindowMessage(MSH_SCROLL_LINES);
 
    /* If we have a wheel enquiry message, ask about the presence of a wheel */
-   
+
    if (Wheel_Mouse.uiMshMsg3DSupport)
      Wheel_Mouse.fActive = (BOOL)SendMessage(Wheel_Mouse.hwnd, Wheel_Mouse.uiMshMsg3DSupport, 0, 0);
    else
-     Wheel_Mouse.fActive = FALSE;  
+     Wheel_Mouse.fActive = FALSE;
 
    /* If we have a scroll line enquiry message ask about that */
-   
+
    if (Wheel_Mouse.uiMshMsgScrollLines)
      Wheel_Mouse.iScrollLines = (int)SendMessage(Wheel_Mouse.hwnd, Wheel_Mouse.uiMshMsgScrollLines, 0, 0);
    else
      Wheel_Mouse.iScrollLines = 3;
-   
+
    return 0;
 }
 #endif                                 /* HAS_WHEEL_MOUSE_SUPPORT */
-
 
 #if defined(__BORLANDC__) || defined(__WIN32__) || defined(__VC__)
 extern int main(int, char **);
@@ -2821,14 +2805,14 @@ int PASCAL WinMain(HINSTANCE inst, HINSTANCE pinst, LPSTR lpszCmdLine, int nCmdS
      {
 	count++;			       /* this is an argument */
 #ifdef __WIN32__
-      /* If the first character of the argument is a double quote, 
+      /* If the first character of the argument is a double quote,
        * search for a matching double-quote to end the argument,
-       * otherwise, find the next space 
+       * otherwise, find the next space
        */
 	if (*pt == '"')
 	  {
 	     pt++;		       /* Skip the initial quote */
-	     while ((*pt != '\0') 
+	     while ((*pt != '\0')
 		    && (*pt != '"'))
 	       pt++;
 	     if (*pt != '\0')	       /* Skip the end quote */
@@ -2854,14 +2838,14 @@ int PASCAL WinMain(HINSTANCE inst, HINSTANCE pinst, LPSTR lpszCmdLine, int nCmdS
 	argv[ argc ] = pt;
 	argc++;
 #ifdef __WIN32__
-      /* If the first character of the argument is a double quote, 
+      /* If the first character of the argument is a double quote,
        * search for a matching double-quote to end the argument,
-       * otherwise, find the next space 
+       * otherwise, find the next space
        */
 	if (*pt == '"')
 	  {
 	     pt++;		       /* Skip the initial quote */
-	     while ((*pt != '\0') 
+	     while ((*pt != '\0')
 		    && (*pt != '"'))
 	       pt++;
 	     if (*pt != '\0')	       /* Skip the end quote */
@@ -2915,7 +2899,7 @@ static void msw_get_terminfo (void)
    SLsmg_Term_Type tt;
 
    init_tt_hooks ();
-     
+
    MSW_Screen_Cols = 80;
    MSW_Screen_Rows = 24;
 
@@ -2925,7 +2909,7 @@ static void msw_get_terminfo (void)
     * likely that this is started from a menu or something.
     */
    Stdin_Is_TTY = -1;
-   
+
    /* init hooks */
    X_Update_Open_Hook = msw_update_open;
    X_Update_Close_Hook = msw_update_close;
@@ -2952,7 +2936,7 @@ static void msw_get_terminfo (void)
    tt.tt_flush_output = msw_flush_output;
    tt.tt_reset_video = msw_reset_video;
    tt.tt_init_video = msw_init_video;
-   
+
    tt.tt_screen_rows = &MSW_Screen_Rows;
    tt.tt_screen_cols = &MSW_Screen_Cols;
    tt.tt_term_cannot_scroll = &MSW_Term_Cannot_Scroll;

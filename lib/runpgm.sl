@@ -31,4 +31,3 @@ public define vrun_program ()
    return run_program (sprintf (__push_args (args)));
 }
 
-

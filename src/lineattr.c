@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -38,10 +38,10 @@ static void set_line_readonly (int *ro) /*{{{*/
 void jed_skip_hidden_lines_forward (int *flagp) /*{{{*/
 {
    unsigned int flag;
-   
+
    if (*flagp) flag = JED_LINE_HIDDEN;
    else flag = 0;
-   
+
    while (jed_down (1))
      {
 	if ((CLine->flags & JED_LINE_HIDDEN) != flag)
@@ -55,10 +55,10 @@ void jed_skip_hidden_lines_forward (int *flagp) /*{{{*/
 void jed_skip_hidden_lines_backward (int *flagp) /*{{{*/
 {
    unsigned int flag;
-   
+
    if (*flagp) flag = JED_LINE_HIDDEN;
    else flag = 0;
-   
+
    while (jed_up(1))
      {
 	if ((CLine->flags & JED_LINE_HIDDEN) != flag)
@@ -80,7 +80,7 @@ static void set_line_hidden (int *hide) /*{{{*/
      }
    else
      CLine->flags &= ~JED_LINE_HIDDEN;
-   
+
    /* register_change (0); */
    Suspend_Screen_Update = 1;
 }
@@ -91,10 +91,10 @@ static void set_region_hidden (int *hidep) /*{{{*/
 {
    int hide = *hidep;
    Line *l;
-   
+
    if (0 == narrow_to_lines ())
      return;
-   
+
    l = CBuf->beg;
    while (l != NULL)
      {
@@ -104,10 +104,10 @@ static void set_region_hidden (int *hidep) /*{{{*/
 	  }
 	else
 	  l->flags &= ~JED_LINE_HIDDEN;
-	
+
 	l = l->next;
      }
-   
+
    widen ();
    touch_screen ();
 }
@@ -140,7 +140,7 @@ SLang_Intrin_Fun_Type JedLine_Intrinsics[] = /*{{{*/
     */
    MAKE_INTRINSIC_I("set_region_hidden", set_region_hidden, VOID_TYPE),
    /* Prototype: Void set_region_hidden (Integer flag);
-    * This function may be used to hide the lines in a region.  If @flag@ is 
+    * This function may be used to hide the lines in a region.  If @flag@ is
     * non-zero, all lines in the region will be hidden.  If it is zero, the
     * lines in the region will be made visible.
     * Related Functions: @set_line_hidden@, @is_line_hidden@, @skip_hidden_lines_forward@
@@ -155,11 +155,11 @@ SLang_Intrin_Fun_Type JedLine_Intrinsics[] = /*{{{*/
    /* Prototype: Void skip_hidden_lines_backward (Integer type);
     * This function may be used to move backward across either hidden or non-hidden
     * lines depending upon whether the parameter @type@ is non-zero or zero.
-    * If @type@ is non-zero, the Point is moved backward across hidden lines 
+    * If @type@ is non-zero, the Point is moved backward across hidden lines
     * until a visible line is reached.  If @type@ is zero, visible lines will
     * be skipped instead.  If the top of the buffer is reached before the
     * appropriate line is reached, the Point will be left there.
-    * 
+    *
     * Note: The functions @up@ and @down@ are insensitive to whether or not
     * a line is hidden.
     * Related Functions: @skip_hidden_lines_forward@, @is_line_hidden@
@@ -168,11 +168,11 @@ SLang_Intrin_Fun_Type JedLine_Intrinsics[] = /*{{{*/
    /* Prototype: Void skip_hidden_lines_forward (Integer type);
     * This function may be used to move forward across either hidden or non-hidden
     * lines depending upon whether the parameter @type@ is non-zero or zero.
-    * If @type@ is non-zero, the Point is moved forward across hidden lines 
+    * If @type@ is non-zero, the Point is moved forward across hidden lines
     * until a visible line is reached.  If @type@ is zero, visible lines will
     * be skipped instead.  If the end of the buffer is reached before the
     * appropriate line is reached, the Point will be left there.
-    * 
+    *
     * Note: The functions @up@ and @down@ are insensitive to whether or not
     * a line is hidden.
     * Related Functions: @skip_hidden_lines_backward@, @is_line_hidden@
@@ -181,6 +181,5 @@ SLang_Intrin_Fun_Type JedLine_Intrinsics[] = /*{{{*/
 };
 
 /*}}}*/
-
 
 #endif  			       /* JED_HAS_LINE_ATTRIBUTES */

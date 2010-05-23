@@ -32,7 +32,7 @@ define man_clean_manpage ()
 	del ();
 	del ();
      }				% remove overstrike
-   
+
    % Now removed SGR sequences such as ESC[1m, ESC[m, etc....
    bob ();
    while (re_fsearch ("\e\\[\\d*m"))

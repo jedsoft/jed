@@ -1,7 +1,7 @@
 define paste ()
 {
    flush ("Ready for data...");
-   
+
    if (0 == input_pending (300))
      {
 	message ("You have taken too much time");

@@ -7,7 +7,7 @@
 % Modified by Thei Wijnen 10-Aug-2003: implemented indentation style and folding.
 % Modified by Thei Wijnen 06-Jun-2004: indent region, added more keywords.
 % Modified by Thei Wijnen 03-Mar-2005: allow mixed case, added more keywords.
-% 
+%
 % Loading this file, then executing 'vhdl_mode' will start
 % VHDL mode on the current buffer.
 
@@ -85,7 +85,7 @@ define vhdl_indent ()
   % now check current line
 
   bol_skip_white();
-%  if (looking_at("begin")) 
+%  if (looking_at("begin"))
 %    goal += VHDL_Indent_Amount;
 
   if (looking_at("elsif")
@@ -126,7 +126,6 @@ define vhdl_indent ()
   skip_white ();
 }
 
-
 define vhdl_newline ()
 {
   variable p, cont;
@@ -146,7 +145,6 @@ define vhdl_newline ()
   insert_single_space ();
   vhdl_indent ();
 }
-
 
 %
 % Look for beginning of current subroutine/function
@@ -201,13 +199,12 @@ define vhdl_mark_subprogram ()
   bol ();
 }
 
-
 % Indent the selected region (bound to \e^i)
 
 define vhdl_indent_region ()
 {
   check_region(1);
-  pop_mark_1 (); 
+  pop_mark_1 ();
   push_mark();
   vhdl_indent();        % set initial line indentation before narrowing
   pop_spot();
@@ -273,7 +270,7 @@ set_syntax_flags ($1, 8);                       %
 () = define_keywords_n ($1, "last_activerising_edgetransaction", 11, 1);
 () = define_keywords_n ($1, "falling_edge", 12, 1);
 () = define_keywords_n ($1, "driving_valuereverse_range", 13, 1);
-                             
+
 % Type 2 keywords - use for type declarator keywords
 () = define_keywords_n ($1, "msnspsus", 2, 2);
 () = define_keywords_n ($1, "linetime", 4, 2);
@@ -300,7 +297,7 @@ definekey ("vhdl_indent_region",	"\e^I", $1);
 % Mode designed for the purpose of editing VHDL files.
 % After the mode is loaded, the hook 'vhdl_hook' is called.
 % Useful functions include
-% 
+%
 %  Function:                    Default Binding:
 %   vhdl_beg_of_subprogram         ESC ^A
 %        moves cursor to beginning of current function/process
@@ -308,7 +305,7 @@ definekey ("vhdl_indent_region",	"\e^I", $1);
 %        moves cursor to end of current function/process
 %   vhdl_mark_subprogram           ESC ^H
 %        mark the current function/process
-% 
+%
 % Variables include:
 %   VHDL_Comment_String : string used by 'vhdl_comment' to
 %                         comment out a line.  Default is "--".

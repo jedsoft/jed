@@ -1,5 +1,5 @@
 /* -*- mode: c; mode: fold -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -79,7 +79,7 @@ static int check_line_attr_no_modify (Line *l)
 {
    if (0 == (l->flags & JED_LINE_HIDDEN))
      return 0;
-   
+
    msg_error ("You cannot edit this hidden line.");
    return -1;
 }
@@ -90,12 +90,12 @@ static int next_visible_lines (int n)
 #if JED_HAS_LINE_ATTRIBUTES
    int dn;
    int i;
-   
+
    i = 0;
    while (i < n)
      {
 	Line *l = CLine;
-	
+
 	dn = 0;
 	do
 	  {
@@ -103,9 +103,9 @@ static int next_visible_lines (int n)
 	     dn++;
 	  }
 	while ((l != NULL) && (l->flags & JED_LINE_HIDDEN));
-	
+
 	if (l == NULL) break;
-	
+
 	CLine = l;
 	LineNum += dn;
 	i++;
@@ -121,12 +121,12 @@ static int prev_visible_lines (int n)
 {
 #if JED_HAS_LINE_ATTRIBUTES
    int i, dn;
-   
+
    i = 0;
    while (i < n)
      {
 	Line *l = CLine;
-	
+
 	dn = 0;
 	do
 	  {
@@ -134,9 +134,9 @@ static int prev_visible_lines (int n)
 	     dn++;
 	  }
 	while ((l != NULL) && (l->flags & JED_LINE_HIDDEN));
-	
+
 	if (l == NULL) break;
-	
+
 	CLine = l;
 	LineNum -= dn;
 	i++;
@@ -201,12 +201,11 @@ static void check_last_key_function (FVOID_STAR f)
 	   || (Last_Key_Function == (FVOID_STAR) delete_char_cmd)
 	   || (Last_Key_Function == (FVOID_STAR) backward_delete_char_cmd)
 	   || (Last_Key_Function == (FVOID_STAR) backward_delete_char_untabify)))
-     
+
      register_change(0);
 #endif
 }
 
-   
 static void next_line_prev_line_helper (int *gcp, int *ret, int dr, FVOID_STAR f)
 {
    int gc;
@@ -217,13 +216,13 @@ static void next_line_prev_line_helper (int *gcp, int *ret, int dr, FVOID_STAR f
    if (Cursor_Motion <= 0) Goal_Column = gc;
    else if (Goal_Column < gc) Goal_Column = gc;
    *gcp = gc;
-   
+
    Cursor_Motion = 2;
-   
+
    check_last_key_function (f);
    *ret = 1;
 #if 0
-   *ret = (JWindow->trashed 
+   *ret = (JWindow->trashed
 	   || (CLine == JScreen[JWindow->sy + dr].line)
 #if JED_HAS_LINE_ATTRIBUTES
 	   || (CLine->flags & JED_LINE_IS_READONLY)
@@ -233,9 +232,9 @@ static void next_line_prev_line_helper (int *gcp, int *ret, int dr, FVOID_STAR f
 }
 
 static void eob_bob_error (int f)
-{   
+{
    char *str;
-   
+
    if ((CBuf->buffer_hooks != NULL)
        && (CBuf->buffer_hooks->bob_eob_error_hook != NULL))
      {
@@ -243,12 +242,12 @@ static void eob_bob_error (int f)
 	SLexecute_function (CBuf->buffer_hooks->bob_eob_error_hook);
 	return;
      }
-   
+
    if (f < 0)
      str = Top_Of_Buffer_Error;
-   else 
+   else
      str = End_Of_Buffer_Error;
-   
+
    msg_error (str);
 }
 
@@ -275,7 +274,7 @@ int delete_char_cmd (void)
 	msg_error(End_Of_Buffer_Error);
 	return(0);
      }
-   
+
    (void) jed_del_wchar ();
    return 1;
 }
@@ -289,7 +288,7 @@ int backward_delete_char_cmd()
 	msg_error(Top_Of_Buffer_Error);
 	return(0);
      }
-   
+
 #if JED_HAS_LINE_ATTRIBUTES
    if (check_line_attr_no_modify (CLine))
      return 0;
@@ -315,16 +314,16 @@ int backward_delete_char_untabify()
    int n;
 
    /* CHECK_READ_ONLY */
-   
+
 #if JED_HAS_LINE_ATTRIBUTES
    if (check_line_attr_no_modify (CLine))
      return 0;
-#endif   
+#endif
    p = CLine->data + (Point - 1);
-   
-   if (!Point || (*p != '\t') || !Buffer_Local.tab) 
+
+   if (!Point || (*p != '\t') || !Buffer_Local.tab)
      return backward_delete_char_cmd();
-   
+
    n = calculate_column() - 1;
    jed_left (1);
    if (-1 == jed_del_wchar ())
@@ -332,7 +331,7 @@ int backward_delete_char_untabify()
 
    n = n - calculate_column();
    (void) jed_insert_wchar_n_times (' ', n);
-   
+
    return(1);
 }
 
@@ -343,10 +342,10 @@ int newline_and_indent ()
 {
    static int in_function;
    if (in_function) return -1;
-   
+
 #if JED_HAS_LINE_ATTRIBUTES
    if (check_line_attr_no_modify (CLine)
-       || ((CLine->next != NULL) 
+       || ((CLine->next != NULL)
 	   && eolp () && check_line_attr_no_modify (CLine->next)))
      return 0;
 #endif
@@ -375,7 +374,7 @@ int newline (void)
 #endif
 
    if (CBuf == MiniBuffer) return exit_minibuffer();
-   
+
    (void) jed_insert_newline ();
    return(1);
 }
@@ -384,7 +383,7 @@ int newline_cmd (void)
 {
 #if JED_HAS_LINE_ATTRIBUTES
    if (check_line_attr_no_modify (CLine)
-       || ((CLine->next != NULL) 
+       || ((CLine->next != NULL)
 	   && eolp () && check_line_attr_no_modify (CLine->next)))
      return 0;
 #endif
@@ -420,15 +419,15 @@ int ins_char_cmd (void)
    if (check_line_attr_no_modify (CLine))
      return 0;
 #endif
-   
+
    ch = SLang_Last_Key_Char;
-   
+
    if (ch == '\n')
      {
 	newline();
 	return(1);
      }
-   
+
 #if JED_HAS_ABBREVS
    if (CBuf->flags & ABBREV_MODE)
      {
@@ -436,7 +435,7 @@ int ins_char_cmd (void)
 	  return -1;
      }
 #endif
-   
+
    if ((CBuf->flags & OVERWRITE_MODE) && !eolp())
      {
 	/* FIXME: jed_del_wchar should be called for the last byte of a
@@ -447,22 +446,22 @@ int ins_char_cmd (void)
 	  return -1;
      }
 
-   /* It is ok to use Point as an estimator of the current column.  This 
+   /* It is ok to use Point as an estimator of the current column.  This
     * avoids the more expensive call to calculate_column.
     */
-   if (CBuf->buffer_hooks != NULL) 
+   if (CBuf->buffer_hooks != NULL)
      wrapok_hook = CBuf->buffer_hooks->wrapok_hook;
    else
      wrapok_hook = NULL;
-   
-   if (((ch == ' ') || (Point >= wrap)) 
+
+   if (((ch == ' ') || (Point >= wrap))
        && ((CBuf->modes & WRAP_MODE) || (wrapok_hook != NULL))
        && (calculate_column() > wrap)
        && ((wrapok_hook == NULL)
 	   || (1 == execute_is_ok_hook (wrapok_hook))))
      {
 	unsigned int this_line_num = LineNum;
-	
+
 	if ((did_abbrev == 0)
 	    && (-1 == jed_insert_byte (ch)))
 	  return -1;
@@ -489,7 +488,7 @@ int ins_char_cmd (void)
 
 	return(1);
      }
-   
+
    do_blink = ((((CBuf->syntax_table != NULL)
 		 && ((CBuf->syntax_table->char_syntax[(unsigned char) ch] & CLOSE_DELIM_SYNTAX)))
 		|| ((ch == ')') || (ch == '}') || (ch == ']')))
@@ -522,17 +521,17 @@ int quoted_insert()
 	ch = jed_getkey();
 	SLang_Key_TimeOut_Flag = 0;
      }
-   
+
    if (SLang_get_error () == SL_USER_BREAK)
      SLang_set_error (0);
-   
+
    if ((ch == '\n') && (CBuf == MiniBuffer))
      {
 	(void) _jed_ins_byte ('\n');
 	/* msg_error("Not allowed!"); */
 	return (1);
      }
-   
+
    SLKeyBoard_Quit = 0;
 
    if (ins_byte == 0)
@@ -540,7 +539,7 @@ int quoted_insert()
 	if (-1 == jed_insert_wchar_n_times(ch, 1))
 	  return -1;
      }
-   else 
+   else
      {
 	unsigned char byte = (unsigned char) ch;
 	if (-1 == jed_insert_nbytes (&byte, 1))
@@ -550,7 +549,7 @@ int quoted_insert()
    if ((CBuf->syntax_table != NULL)
        && (CBuf->syntax_table->char_syntax[(unsigned char) ch] & CLOSE_DELIM_SYNTAX)
        && !input_pending(&Number_Zero)) blink_match (); /* (ch); */
-   
+
    return(1);
 }
 
@@ -562,15 +561,15 @@ int quoted_insert()
 int kill_line (void)
 {
    int n, pnt, flag = 0;
-   
+
    CHECK_READ_ONLY
-     
+
      if (eobp())
      {
 	msg_error(End_Of_Buffer_Error);
 	return(0);
      }
-   
+
    jed_push_mark();
    push_spot();
    pnt = Point;
@@ -578,7 +577,7 @@ int kill_line (void)
    n = Point - pnt;
    if ((!pnt && Kill_Line_Feature) || !n)
      {
-	
+
 	/* Either of these (flag =0,1) have the same effect on the buffer.
 	 *  However, the first sets the mark at the end of the line and moves
 	 *  the point to the end of the previous line.  This way the current
@@ -590,9 +589,9 @@ int kill_line (void)
 	     jed_right (1);
 	  }
 	else n += jed_right (1);
-	
+
      }
-   
+
    if ((Last_Key_Function == (FVOID_STAR) kill_line) && (Paste_Buffer != NULL))
      {
 	copy_region_to_buffer(Paste_Buffer);
@@ -615,34 +614,33 @@ int kill_line (void)
 int previous_line_cmd (void)
 {
    int ret, gc;
-   
+
    next_line_prev_line_helper (&gc, &ret, 0, (FVOID_STAR) previous_line_cmd);
-   
+
    if ((CLine == CBuf->beg)
        || (1 != prev_visible_lines (1)))
      {
 	eob_bob_error (-1);
 	return 1;
      }
-   
+
    point_column(Goal_Column);
    return(ret);
 }
 
-
 int next_line_cmd (void)
 {
    int ret, gc;
-   
+
    next_line_prev_line_helper (&gc, &ret, JWindow->rows - 1, (FVOID_STAR) next_line_cmd);
-   
+
    if ((CLine == CBuf->end)
        || (1 != next_visible_lines (1)))
      {
 	eob_bob_error (1);
 	return 1;
      }
-   
+
    point_column(Goal_Column);
    return(ret);
 }
@@ -651,7 +649,7 @@ int previous_char_cmd (void)
 {
    int b;
    Cursor_Motion = 1;
-   
+
    /* check_last_key_function ((FVOID_STAR) previous_char_cmd); */
    b = bolp ();
    if (1 != prev_visible_chars (1))
@@ -659,7 +657,7 @@ int previous_char_cmd (void)
 	eob_bob_error (-2);
 	return 1;
      }
-   
+
    Goal_Column = calculate_column();
    return b || JWindow->trashed;
 }
@@ -667,9 +665,9 @@ int previous_char_cmd (void)
 int next_char_cmd ()
 {
    Cursor_Motion = 1;
-   
+
    /* check_last_key_function ((FVOID_STAR) next_char_cmd); */
-   
+
    if (1 != next_visible_chars (1))
      {
 	eob_bob_error (2);
@@ -707,7 +705,7 @@ int jed_buffer_visible (char *b)
 static void scroll_completion (int dir)
 {
    Window_Type *w;
-   
+
    if (jed_buffer_visible (Completion_Buffer))
      {
 	pop_to_buffer (Completion_Buffer);
@@ -729,7 +727,7 @@ static void scroll_completion (int dir)
 int goto_bottom_of_window (void)
 {
    int n;
-   
+
    n = JWindow->rows - window_line ();
 
    return n == next_visible_lines (n);
@@ -738,11 +736,10 @@ int goto_bottom_of_window (void)
 void goto_top_of_window (void)
 {
    int n;
-   
+
    n = window_line () - 1;
    (void) prev_visible_lines (n);
 }
-
 
 static int Last_Page_Line;
 static int Last_Page_Point;
@@ -753,26 +750,26 @@ int pagedown_cmd()
 {
    int col, this_line, this_point;
    int n;
-   
+
    Cursor_Motion = -1;
    if (IN_MINI_WINDOW)
      {
 	scroll_completion (1);
 	return 1;
      }
-   
+
    if (eobp())
      {
 	eob_bob_error (3);
 	return 1;
      }
-   
+
    n = JWindow->rows;
    if ((CBuf != JWindow->buffer) || (n == 1))
      {
 	return next_visible_lines (n);
      }
-   
+
    if (JWindow->trashed)
      {
 	update (NULL, 0, 0, 1);
@@ -780,18 +777,18 @@ int pagedown_cmd()
      }
 
    /* This is ugly. */
-   
+
    this_line = LineNum;
    this_point = Point;
-   
+
    col = calculate_column ();
    if (goto_bottom_of_window ())
      {
 	recenter (&Number_One);
      }
-   
+
    goto_column1 (&col);
-   
+
    if ((Last_Key_Function == (FVOID_STAR) pageup_cmd)
        && (Jed_This_Key_Function == (FVOID_STAR) pagedown_cmd))
      {
@@ -799,12 +796,12 @@ int pagedown_cmd()
 	if (Last_Page_Point < CLine->len)
 	  Point = Last_Page_Point;
      }
-   else if (CLine->next == NULL) eol(); 
+   else if (CLine->next == NULL) eol();
    else bol ();
-   
+
    Last_Page_Line = this_line;
    Last_Page_Point = this_point;
-   
+
    return(1);
 }
 
@@ -812,48 +809,48 @@ int pageup_cmd (void)
 {
    int col, this_line, this_point;
    int n;
-   
+
    Cursor_Motion = -1;
-   
+
    if (IN_MINI_WINDOW)
      {
 	scroll_completion (-1);
 	return 1;
      }
-   
+
    if (bobp())
      {
 	eob_bob_error (-3);
 	return 1;
      }
-   
+
    n = JWindow->rows;
    if ((CBuf != JWindow->buffer) || (n == 1))
      {
 	return prev_visible_lines (n);
      }
-   
+
    if (JWindow->trashed)
      {
 	update (NULL, 0, 0, 1);
 	if (JWindow->trashed) return prev_visible_lines (n);
      }
-   
+
    this_line = LineNum;
    this_point = Point;
    col = calculate_column ();
    goto_top_of_window ();
    (void) goto_column1(&col);
    recenter(&JWindow->rows);
-   
-   if ((Last_Key_Function == (FVOID_STAR) pagedown_cmd) 
+
+   if ((Last_Key_Function == (FVOID_STAR) pagedown_cmd)
        && (Jed_This_Key_Function == (FVOID_STAR) pageup_cmd))
      {
 	goto_line (&Last_Page_Line);
 	if (Last_Page_Point < CLine->len)
 	  Point = Last_Page_Point;
      }
-   else 
+   else
      bol (); /* something like: Point = point_column(JWindow->column) better? */
    Last_Page_Line = this_line;
    Last_Page_Point = this_point;
@@ -886,7 +883,6 @@ int jed_scroll_right_cmd (void)
    return 1;
 }
 
-
 /*}}}*/
 
 /*{{{ Whitespace and Indention functions */
@@ -895,12 +891,12 @@ void insert_whitespace(int *n)
 {
    int tab = Buffer_Local.tab;
    int c1, c2, i, k, nspace;
-   
+
    if ((nspace = *n) <= 0) return;
    CHECK_READ_ONLY_VOID
      c1 = calculate_column() - 1;
    c2 = c1 + nspace;
-   
+
    if (tab && Jed_Use_Tabs)
      {
 	i = c1 / tab;
@@ -916,7 +912,7 @@ unsigned char *get_current_indent(int *np)
 {
    unsigned char *p, *pmax;
    int tab, n;
-   
+
    tab = Buffer_Local.tab;
    p = CLine->data;
    pmax = CLine->data + CLine->len;
@@ -946,7 +942,7 @@ int jed_trim_whitespace ()
 
    (void) jed_skip_whitespace ();
    n = Point;
-   
+
    (void) jed_bskip_whitespace ();
    jed_del_nbytes (n - Point);
    return 1;
@@ -956,9 +952,9 @@ int jed_trim_whitespace ()
 void indent_to(int n)
 {
    int m;
-   
+
    get_current_indent(&m);
-   
+
    if (n != m)
      {
 	bol ();
@@ -971,9 +967,9 @@ int indent_line ()
 {
    int n, n1;
    static int in_function;
-   
+
    if (in_function) return -1;
-   
+
    if ((CBuf->buffer_hooks != NULL)
        && (CBuf->buffer_hooks->indent_hook != NULL))
      {
@@ -982,9 +978,9 @@ int indent_line ()
 	in_function = 0;
 	return 1;
      }
-   
+
    /* CHECK_READ_ONLY */
-     
+
    if (CLine == CBuf->beg) return(0);
 
    push_spot();
@@ -993,10 +989,10 @@ int indent_line ()
    CLine = CLine->next;
    indent_to(n);
    pop_spot();
-   
+
    /* This moves the cursor to the first non whitspace char if we are
     before it.  Otherwise leave it alone */
-   
+
    n1 = calculate_column();
    get_current_indent(&n);
    if (n1 <= n) point_column(n + 1);
@@ -1044,7 +1040,7 @@ unsigned char *jed_skip_whitespace (void)
 
    while ((p < pmax) && IS_WHITESPACE(p))
      p = jed_multibyte_chars_forward (p, pmax, 1, NULL, 0);
-   
+
    jed_position_point (p);
    return p;
 }
@@ -1056,7 +1052,7 @@ unsigned char *jed_bskip_whitespace (void)
    pmin = CLine->data;
    pmax = p = CLine->data + Point;
 
-   while (p > pmin) 
+   while (p > pmin)
      {
 	unsigned char *p1;
 	p1 = jed_multibyte_chars_backward (pmin, p, 1, NULL, 0);
@@ -1079,7 +1075,7 @@ int jed_looking_at (char *what)
    unsigned char *w, *wmax;
    Line *l = CLine;
    int cs = Buffer_Local.case_search;
-   
+
    w = (unsigned char *) what;
    wmax = w + strlen (what);
 
@@ -1087,7 +1083,7 @@ int jed_looking_at (char *what)
    while (1)
      {
 	pmax = l->data + l->len;
-	
+
 	if (cs)
 	  {
 	     while ((w < wmax) && (p < pmax))
@@ -1096,7 +1092,7 @@ int jed_looking_at (char *what)
 		    return 0;
 	       }
 	  }
-	else 
+	else
 	  {
 	     /* Here we have to use multibyte routines */
 	     while ((w < wmax) && (p < pmax))
@@ -1141,7 +1137,7 @@ int jed_spawn_fg_process (int (*f)(VOID_STAR), VOID_STAR cd)
    SLsig_block_signals ();
    inited = Jed_Display_Initialized;
    SLsig_unblock_signals ();
-   
+
    jed_reset_display();
 #if !defined(IBMPC_SYSTEM) && !defined(VMS)
    jed_reset_signals ();
@@ -1159,7 +1155,7 @@ int jed_spawn_fg_process (int (*f)(VOID_STAR), VOID_STAR cd)
 	  {
 	     exit_error ("Unable to initialize terminal.", 0);
 	  }
-   
+
 	flush_input ();
 	jed_init_display ();
      }
@@ -1171,15 +1167,15 @@ int jed_spawn_fg_process (int (*f)(VOID_STAR), VOID_STAR cd)
 static int suspend_func (void *unused)
 {
    (void) unused;
-   
+
    if (X_Suspend_Hook != NULL)
     (*X_Suspend_Hook) ();
    else
      sys_suspend();
-   
+
    return 0;
 }
-   
+
 int sys_spawn_cmd (void)
 {
    if (X_Suspend_Hook != NULL)
@@ -1190,17 +1186,16 @@ int sys_spawn_cmd (void)
 
    if (jed_va_run_hooks ("_jed_suspend_hooks", JED_HOOKS_RUN_UNTIL_0, 0) <= 0)
      return 0;
-   
+
    (void) jed_spawn_fg_process (suspend_func, NULL);
 
    (void) jed_va_run_hooks ("_jed_resume_hooks", JED_HOOKS_RUN_ALL, 0);
 
    return 0;
 }
-   
 
 /*}}}*/
-   
+
 /*{{{ jed_quit_jed */
 int jed_quit_jed(int status)
 {
@@ -1222,18 +1217,18 @@ int jed_quit_jed(int status)
 	     while (b->narrow != NULL) widen_buffer(b);
 	     auto_save_buffer(b);      /* actually, it will save it */
 	  }
-	
+
 #if defined(__WIN32__) && JED_HAS_SUBPROCESSES
  	if (b->subprocess)
  	  jed_kill_process (b->subprocess - 1);
 #endif
 
 	(void) jed_unlock_buffer_file (b);
-	
+
 	b = b->next;
      }
    while (b != CBuf);
-   
+
    jed_reset_display();
    reset_tty();
 #ifdef VMS
@@ -1250,9 +1245,7 @@ int jed_quit_jed(int status)
    return(1);
 }
 
-
 /*}}}*/
-
 
 /*{{{ save_some_buffers */
 /* I should try it like emacs--- if prefix argument, then save all without user
@@ -1262,7 +1255,7 @@ int save_some_buffers (void)
    Buffer *b, *tmp;
    int ans = 0;
    int err;
-   
+
    b = CBuf;
    do
      {
@@ -1272,12 +1265,12 @@ int save_some_buffers (void)
 	     if (b->flags & AUTO_SAVE_JUST_SAVE) ans = 1;
 	     else ans = jed_vget_y_n ("Buffer %s not saved. Save it",
 				      b->name);
-	     
+
 	     if (ans == -1)
 	       /* warning--- bug here if user edits file at
 		startup and forgets to save it then aborts. */
 	       return -1;
-	     
+
 	     if (ans == 1)
 	       {
 		  tmp = CBuf;
@@ -1296,7 +1289,7 @@ int save_some_buffers (void)
 		  b->hits = 0;
 	       }
 	  }
-	
+
 	b = b->next;
      }
    while (b != CBuf);
@@ -1310,7 +1303,7 @@ int save_some_buffers (void)
 int jed_exit_jed (int status)
 {
    static int in_exit_jed = 0;
-   
+
    if (in_exit_jed == 0)
      {
 	in_exit_jed = 1;
@@ -1329,7 +1322,7 @@ int jed_exit_jed (int status)
    if (1 != jed_processes_ok_to_exit ())
      return 1;
 #endif
-   
+
    if (save_some_buffers() > 0) jed_quit_jed(status);
    return 1;
 }

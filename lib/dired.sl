@@ -20,7 +20,7 @@
 %       move up and unflag
 %
 %  `^K'
-%	dired_kill_line - removes a line from the dired buffer 
+%	dired_kill_line - removes a line from the dired buffer
 %       (This must be set from the dired hook)
 %
 %  ==============
@@ -83,7 +83,6 @@ variable Dired_Current_Directory;
 
 ifnot (keymap_p (Dired_Buffer)) make_keymap (Dired_Buffer);
 
-
 definekey ("dired_find",	"\r",	Dired_Buffer);
 definekey ("dired_find",	"f",	Dired_Buffer);
 definekey ("dired_view",	"v",	Dired_Buffer);
@@ -120,19 +119,19 @@ define dired_vms_dir (dir)
 {
    variable cdir = Null_String, last = Null_String,  this;
    variable n, file, ch;
-   
+
    n = strlen (dir);
    if (int (substr (dir, n, 1)) != ']') return dir;
-   
-   forever 
+
+   forever
      {
 	n--;
 	ifnot (n) break;
-	
+
 	ch = int (substr (dir, n, 1));
 	if ((ch == '.') or (ch == '[')) break;
      }
-   
+
    if (ch == '[')
      substr (dir, 1, n) +  "000000]";
    else
@@ -158,15 +157,15 @@ define dired_read_dir (dir)
    dir = msdos_fixup_dirspec (dir);
 # endif
 #endif
-   
-   if ( file_status (dir) == 2 ) 
-     {	
+
+   if ( file_status (dir) == 2 )
+     {
 	(Dired_Current_Directory,) = parse_filename (dircat (dir, Dired_Buffer));
 #ifdef VMS
 	dir = Dired_Current_Directory;
 #endif
-     } 
-   else 
+     }
+   else
      {
 	(Dired_Current_Directory,dir) = parse_filename (dir);
      }
@@ -176,7 +175,7 @@ define dired_read_dir (dir)
    (file,,,flags) = getbuf_info ();
    setbuf_info (file, Dired_Current_Directory, Dired_Buffer, flags);
    set_status_line (" DIRED: %b   (%m%n)  (%p)  |  press '?' for help.", 0);
-   set_readonly (0); 
+   set_readonly (0);
    erase_buffer ();
    use_keymap (Dired_Buffer);
    set_mode ("dired", 0);
@@ -196,7 +195,7 @@ define dired_read_dir (dir)
 #ifdef OS2
    % kill 4 lines of header junk and 2 lines of trailer junk
    push_mark (); go_down (4);
-   if ( eolp () ) 
+   if ( eolp () )
      go_down_1 ();
    del_region ();
    eob (); push_mark ();
@@ -206,12 +205,12 @@ define dired_read_dir (dir)
 #elifdef MSDOS MSWINDOWS
    push_mark (); go_down (5); del_region ();	% header junk
    eob (); push_mark ();	% trailer junk
-   if ( bsearch ("bytes free") ) 
+   if ( bsearch ("bytes free") )
      {
-	go_down_1 (); 
+	go_down_1 ();
 	del_region ();
-     } 
-   else 
+     }
+   else
      {
 	pop_mark_0 ();
      }
@@ -220,7 +219,7 @@ define dired_read_dir (dir)
    push_mark (); go_down (3); del_region ();
 #endif
 
-   do 
+   do
      {
 	insert (spaces);
      }
@@ -267,7 +266,7 @@ define dired_point (dirn)
    bskip_chars ("^ \n");
 
 #elifdef OS2
-   eol (); 
+   eol ();
    if (bfind_char (' ')) go_right_1 ();
 #elifdef VMS MSDOS WIN16
    bol (); go_right (2);
@@ -433,10 +432,10 @@ define dired_tag ()
 {
    variable type;
    EXIT_BLOCK { dired_point (1); }
-   
+
    (, type) = dired_getfile ();
    if ( type != 1 ) return;		% only files!
-   
+
    set_readonly (0);
    bol ();
    insert_char ('D'); del ();
@@ -578,7 +577,7 @@ define dired_flag_backup ()
    while ( fsearch_char ( '~' ) )
      {
 	(name, type) = dired_getfile ();
-	if ( (type == 1) and (string_match (name, "~", strlen(name))) ) 
+	if ( (type == 1) and (string_match (name, "~", strlen(name))) )
 	  {
 	     bol ();
 	     insert_char ('D'); del ();	% is a backup file
@@ -649,51 +648,51 @@ define dired_rename ()
 %\synopsis{dired}
 %\description
 % Mode designed for maintaining and editing a directory.
-% 
+%
 % To invoke Dired, do \var{M-x dired} or \var{C-x d} (emacs)
-% 
+%
 % Dired will prompt for a directory name and get a listing of files in the
 % requested directory.
-% 
+%
 % The primary use of Dired is to "flag" files for deletion and then delete
 % the previously flagged files.
-% 
+%
 % \var{d}	Flag this file for deletion.
 % \var{u}	Remove deletion flag on this line.
 % DEL	Move point to previous line and remove deletion flag.
 % \var{~}	Flag all backup files for deletion.
-% 
+%
 % \var{x}	eXpunge all flagged files.  Dired will show a list of the
 % 	files tagged for deletion and ask for confirmation before actually
 % 	deleting the files.
-% 
+%
 % \var{r}	Rename file on the current line; prompts for a newname
 % \var{m}	Move tagged files to a new dir; prompts for dir name
-% 
+%
 % \var{g}	Update the entire contents of the Dired buffer
-% 
+%
 % \var{f}	Visit the file described on the current line, like typing
 % 	\var{M-x find_file} and supplying that file name.  If current line is a
 % 	directory, runs dired on the directory and the old buffer is killed.
-% 
+%
 % \var{v}	View the file described on the current line in MOST mode.
-% 
+%
 % \var{q}	Quit dired mode.
-% 
+%
 % \var{M-x dired_search}
 % 	use fsearch to perform a search through the files listed in the
 % 	dired buffer from the current point forward.  \var{M-x dired_search}
 % 	from the visited file will revert to the dired buffer and continue
 % 	the search from the next file in the list.
-% 
+%
 % all the usual motion commands plus some extras:
-% 
+%
 % \var{C-n} \var{n} SPC
 % 	move point to the next line (at the beginning of the file name)
-% 
+%
 % \var{C-p} \var{p}
 % 	move point to the previous line (at the beginning of the file name)
-% 
+%
 % \var{M-x dired_kill_line}	\var{^K} (emacs)
 % 	removes a line from the dired buffer
 %!%-
@@ -712,12 +711,12 @@ define dired_find ()
 
    name = dircat (Dired_Current_Directory, name);
 
-   if ( type == 1 ) 
+   if ( type == 1 )
      {
 	ifnot ( read_file (name) ) error ("Unable to read file.");
 	pop2buf (whatbuf ());
-     } 
-   else if ( type == 2 ) 
+     }
+   else if ( type == 2 )
      {
 	dired_read_dir (name);
      }
@@ -730,7 +729,7 @@ define dired_view ()
    (name, type) = dired_getfile ();
 
    name = dircat (Dired_Current_Directory, name);
-   if ( type == 1 ) 
+   if ( type == 1 )
      {
 	ifnot ( read_file (name) ) error ("Unable to read file.");
 	pop2buf (whatbuf ());
@@ -744,7 +743,7 @@ define dired_search_files ()
    go_right_1 ();		% start after this one
    if ( fsearch (LAST_SEARCH) )
      return (1);		% found - stop search
-   
+
    if ( buffer_modified () ) error ("buffer has been modified");
    delbuf (whatbuf ());
    pop2buf (Dired_Buffer);
@@ -756,25 +755,25 @@ define dired_search ()
    variable str, name, type;
 
    ifnot ( bufferp (Dired_Buffer) ) error ( "*dired* not available.");
-   
+
    if ( strcmp (Dired_Buffer, whatbuf () ) ) % continue last search
-     {      
+     {
 	ifnot ( strlen (LAST_SEARCH) ) error ("No specified search string");
 	if ( dired_search_files () ) return;
 	go_down_1 (); 			% do the next file!
      }
-   else 
+   else
      {
 	str = read_mini ("dired_search:", Null_String, LAST_SEARCH);
 	ifnot ( strlen (str) ) error ("Specify search string");
 	save_search_string (str);
      }
-   
+
    do
      {
 	(name, type) = dired_getfile ();
 	if ( type == 1 ) 			% only search files
-	  {	     
+	  {
 	     name = dircat (Dired_Current_Directory, name);
 	     ifnot ( read_file (name) ) error ("Unable to read file.");
 	     if ( dired_search_files () )

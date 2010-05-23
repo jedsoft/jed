@@ -4,7 +4,7 @@
 %  Note: Eventually code here will need to be changed to use character semantics.
 %  The user should not have to worry about multibyte encodings.
 %
-   
+
 private define add_hash_to_syntax_table (tbl, hash, len, n)
 {
    variable i;
@@ -15,17 +15,16 @@ private define add_hash_to_syntax_table (tbl, hash, len, n)
    hash;
 }
 
-
 %!%+
 %\function{add_keywords}
 %\synopsis{add_keywords}
 %\usage{String add_keywords (String tbl, String kws, Int len, Int n);}
 %\description
-% 
+%
 % Adds a set of keywords `kws', each of length `len', to the already
 % existing syntax table `tbl'.  For convenience of the user, the function
 % does alphabetical sorting and removes duplicate entries.
-% 
+%
 % The previous list of keywords is returned.
 %\seealso{define_keywords_n, create_syntax_table, add_keyword_n}
 %!%-
@@ -47,7 +46,7 @@ define add_keywords (tbl, kws, len, n)
 	i = ();
 	hash [substrbytes (kws, 1 + i * len, len)] = 1;
      }
-   
+
    add_hash_to_syntax_table (tbl, hash, len, n);
 }
 
@@ -56,7 +55,7 @@ define add_keywords (tbl, kws, len, n)
 %\synopsis{add_keyword_n}
 %\usage{Void add_keyword_n (String tbl, String kw, Int n);}
 %\description
-% 
+%
 % Adds a single keyword `kw' to the already existing syntax table `tbl'.
 %\seealso{define_keywords_n, create_syntax_table, add_keywords}
 %!%-
@@ -72,7 +71,7 @@ define add_keyword_n (tbl, kw, n)
 %\synopsis{add_keyword}
 %\usage{Void add_keyword (String_Type tbl, String_Type kw);}
 %\description
-% 
+%
 % Adds a single keyword `kw' to the already existing syntax table `tbl'.
 %\seealso{define_keywords_n, create_syntax_table, add_keyword_n}
 %!%-

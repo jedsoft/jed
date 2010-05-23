@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -61,7 +61,6 @@ const char SlashChar[2] = "\\";
 int NumLock_Is_Gold = 0;	       /* map numlock key to F1 */
 int PC_Alt_Char = 27;
 
-
 /* Delete the file NAME.  returns 0 on failure, 1 on sucess
  * Under OS/2 and DOS, unlink()[UNIX] and remove()[ANSI] are equivalent.
  */
@@ -70,7 +69,6 @@ int sys_delete_file(char *name)
 {
     return(1 + remove(name));
 }
-
 
 /* find shell (once only) */
 static char *shell = NULL, *shell_switch = NULL;
@@ -83,14 +81,12 @@ static void discover_shell(void)
 #endif
    shell_switch = "/c";
    if ( (shell = getenv("COMSPEC")) != NULL ) return;
-#ifdef __os2__   
+#ifdef __os2__
    shell = "cmd.exe";		       /* absolute last resort! */
 #else
-   shell = "command.com";	       /* absolute last resort! */   
+   shell = "command.com";	       /* absolute last resort! */
 #endif
 }
-
-
 
 /* ///////////////////////////////////////////////////////////////////
 //  Function:   static int parse_command_line( int *argc, char ***argv,
@@ -125,7 +121,7 @@ parse_command_line( int *argc, char ***argv, char **fname, char *command_line )
    count = 0;
    while ( *pt != '\0' ) {
       count++;			       /* this is an argument */
-      while ((*pt != '\0') && (*pt != ' '))  
+      while ((*pt != '\0') && (*pt != ' '))
 	{
 	   if ( *pt == '|' )	       /* cannot spawn directly */
 	     handles = 0;		       /* need shell for pipes */
@@ -139,7 +135,7 @@ parse_command_line( int *argc, char ***argv, char **fname, char *command_line )
    if ( *argv == NULL )
      return 0;			       /* malloc error */
 
-   *argc = 0;   
+   *argc = 0;
    if ( !(handles & DIRECT_SPAWN) ) {
       (*argv)[ *argc ] = shell;
       (*argc)++;
@@ -196,7 +192,6 @@ parse_command_line( int *argc, char ***argv, char **fname, char *command_line )
    return handles;
 }
 
-
 /* ///////////////////////////////////////////////////////////////////
 //  Function:   int sys_System(char *command_line);
 //
@@ -237,58 +232,55 @@ sys_System(char *command_line1)
 	ret = execute_the_command (argv, handles, fname);
 	SLfree((char *)argv);
      }
-   
+
    SLfree (command_line);
    return ret;
 }
-
 
 void sys_suspend(void)
 {
    sys_System( "" );
 }
 
-
 static int execute_the_command (char **argv, int handles, char *file)
 {
    int ret = 0;
    int fd1 = -1, fd2 = -1;
    int fd_err = -1, fd_out = -1;
- 
-   
+
    if (handles & 1)
      {
 	/* save stdout file handle */
 	fd1 = dup (fileno (stdout));
-	
-	if (fd1 == -1) 
+
+	if (fd1 == -1)
 	  {
 	     msg_error ("Unable to dup stdout");
 	     return -1;
 	  }
-   
+
 	fd_out = open (file,
 		       O_CREAT | O_TRUNC | O_TEXT | O_WRONLY | O_APPEND,
 		       S_IREAD | S_IWRITE);
-	
+
 	if ((fd_out == -1) || (-1 == dup2 (fd_out, fileno (stdout))))
 	  {
 	     msg_error ("Unable to redirect stdout!");
 	     ret = -1;
 	  }
      }
-   
+
    if (handles & 0x2)		       /* stderr */
      {
 	/* save stderr file handle */
 	fd2 = dup (fileno (stderr));
-	
-	if (fd2 == -1) 
+
+	if (fd2 == -1)
 	  {
 	     msg_error ("Unable to dup stderr");
 	     return -1;
 	  }
-	
+
 	if (fd_out == -1)
 	  {
 	     fd_err = open (file,
@@ -296,25 +288,24 @@ static int execute_the_command (char **argv, int handles, char *file)
 			    S_IREAD | S_IWRITE);
 	  }
 	else fd_err = fd_out;
-	
+
 	if ((fd_err == -1) || (-1 == dup2 (fd_err, fileno (stderr))))
 	  {
 	     msg_error ("Unable to redirect stderr!");
 	     ret = -1;
 	  }
      }
-   
+
    if (fd_out != -1) close (fd_out);
    if ((fd_err != -1) && (fd_err != fd_out)) close (fd_err);
-
 
    if (ret == 0)
      {
 	ret = spawnvp(P_WAIT, argv[0], (void *) argv);
-	
-	if (-1 == ret ) 
+
+	if (-1 == ret )
 	  {
-	     switch(errno) 
+	     switch(errno)
 	       {
 		case ENOENT:
 		  if (handles & DIRECT_SPAWN ) msg_error("Command not found.");
@@ -328,7 +319,7 @@ static int execute_the_command (char **argv, int handles, char *file)
 	       }
 	  }
      }
-   
+
    if (fd1 != -1)
      {
 	if (-1 == dup2 (fd1, fileno (stdout)))
@@ -337,7 +328,7 @@ static int execute_the_command (char **argv, int handles, char *file)
 	  }
 	close (fd1);
      }
-   
+
    if (fd2 != -1)
      {
 	if (-1 == dup2 (fd2, fileno (stderr)))
@@ -346,7 +337,7 @@ static int execute_the_command (char **argv, int handles, char *file)
 	  }
 	close (fd2);
      }
-   
+
    return ret;
 }
 

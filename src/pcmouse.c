@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -23,7 +23,6 @@ static int JX_MultiClick_Time = 5;     /* 5/10 of sec */
 # include <sys/farptr.h>
 #endif
 
-
 static int Mouse_X, Mouse_Y;
 
 static void generate_press (int x, int y, int type, int but) /*{{{*/
@@ -37,18 +36,18 @@ static void generate_press (int x, int y, int type, int but) /*{{{*/
    static clock_t last_press_time;
    static unsigned int clicks;
    static unsigned int last_button;
-   
+
    t = clock ();
-   
+
    t = t / (CLOCKS_PER_SEC / 10);	       /* clocks per 1/10 sec */
-   
+
    if (type == JMOUSE_DOWN)
      {
 	if (((int)last_button == but)
 	    && (last_press_time + JX_MultiClick_Time > t))
 	  {
 	     clicks++;
-	     if (clicks == 2) 
+	     if (clicks == 2)
 	       type = JMOUSE_DOUBLE_CLICK;
 	     else
 	       type = JMOUSE_TRIPLE_CLICK;
@@ -66,22 +65,22 @@ static void generate_press (int x, int y, int type, int but) /*{{{*/
 	type = JMOUSE_IGNORE_EVENT;
      }
 #endif
-   
+
    Mouse_X = jm.x = x;
    Mouse_Y = jm.y = y;
-   
+
    b = but & 0xF;
    s = but >> 4;
-   
+
    if (b == 1) jm.button = JMOUSE_BUTTON_1;	       /* left */
    else if (b == 2) jm.button = JMOUSE_BUTTON_3;    /* right */
    else jm.button = JMOUSE_BUTTON_2;		       /* middle */
-   
+
    if (s & 0x8) 		       /* alt key--- use as middle */
      {
 	jm.button = JMOUSE_BUTTON_2;
      }
-   
+
    if (s & 0x3)	jm.state = JMOUSE_SHIFT;
    else if (s & 0x4) jm.state = JMOUSE_CTRL;
    else jm.state = 0;
@@ -92,7 +91,7 @@ static void generate_press (int x, int y, int type, int but) /*{{{*/
      return;
 
    buf[0] = 27; buf[1] = 0; buf[2] = (char) id;
-   
+
    ungetkey_string (buf, 3);
 }
 
@@ -105,13 +104,13 @@ static int Last_Mouse_Hidden = 1;
 static void show_mouse (int show) /*{{{*/
 {
    union REGS r;
-   
-   if (show) 
+
+   if (show)
      {
 	if (Mouse_Hidden == 0) return;
 	r.x.ax = 1;
      }
-   else 
+   else
      {
 	if (Mouse_Hidden) return;
 	r.x.ax = 2;
@@ -134,7 +133,7 @@ static int pc_get_mouse_event (void) /*{{{*/
    union REGS r;
    static int last_press;
    short x, y;
-   
+
    /* return 0; */
    if (last_press)
      {
@@ -146,7 +145,7 @@ static int pc_get_mouse_event (void) /*{{{*/
 	  {
 	     /* truncate to short because DJGPP has junk in 32 bit registers*/
 	     x = r.x.cx;
-	     y = r.x.dx;	       
+	     y = r.x.dx;
 	     x = x / 8 + 1;
 	     y = y / 8 + 1;
 	     generate_press (x, y, JMOUSE_UP, last_press);
@@ -154,34 +153,34 @@ static int pc_get_mouse_event (void) /*{{{*/
 	     return 1;
 	  }
      }
-	
+
    r.x.ax = 3;
    int86 (0x33, &r, &r);
    x = r.x.cx;
    y = r.x.dx;
-   
+
 #if 0
    /* Check motion counters */
    r.x.ax = 0xB;
-   int86 (0x33, &r, &r);	
+   int86 (0x33, &r, &r);
 #endif
    if (last_press)
      {
 #if 0
 	y += (short) (int) (r.x.dx);
 #endif
-	
+
 	x = x / 8 + 1;
 	y = y / 8 + 1;
-	
+
 	if ((Mouse_X == x) && (Mouse_Y == y)) return 0;
 	generate_press (x, y, JMOUSE_DRAG, last_press);
 	return 1;
      }
-   
+
    x = x / 8 + 1;
    y = y / 8 + 1;
-   
+
    /* It looks like we are looking for a press. */
    if ((Mouse_X != x) || (Mouse_Y != y))
      {
@@ -196,7 +195,7 @@ static int pc_get_mouse_event (void) /*{{{*/
 	else if (r.x.bx & 2) last_press = 2;   /* right */
 	else if (r.x.bx & 4) last_press = 3;	       /* middle */
 	else return 0;
-	
+
 	/* Find shift key status */
 #ifdef __GO32__
 	r.h.ah = 0x12;
@@ -265,12 +264,12 @@ static int insert_cutbuffer (void) /*{{{*/
 static void region_to_cutbuffer (void) /*{{{*/
 {
    int nbytes;
-   
+
    if (CutBuffer != NULL)
      {
 	SLfree (CutBuffer);
      }
-   
+
    CutBuffer = make_buffer_substring(&nbytes);
    CutBuffer_Len = nbytes;
 }
@@ -321,27 +320,27 @@ static int pc_open_mouse (void) /*{{{*/
    scanlines = *(int *) 0x485;
 #endif
    if (scanlines <= 0) scanlines = 8;
-   
+
    r.x.ax = 7;
    r.x.cx = 0;
    r.x.dx = 8 * cols - 1;
    int86 (0x33, &r, &r);
-   
+
    r.x.ax = 8;
    r.x.cx = 0;
    r.x.dx = scanlines * rows - 1;
    int86 (0x33, &r, &r);
-   
+
    move_mouse (cols / 2 + 1, rows / 2 + 1);
-   
+
    if (not_first_time == 0)
      {
 	if (-1 == SLadd_intrin_fun_table (gpm_mouse_table, "MOUSE"))
 	  return -1;
-	
+
 	not_first_time = 1;
      }
-   
+
    JMouse_Hide_Mouse_Hook = show_mouse;
    X_Close_Mouse_Hook = pc_close_mouse;
    JMouse_Event_Hook = pc_get_mouse_event;

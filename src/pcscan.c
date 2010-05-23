@@ -1,7 +1,7 @@
-/* This file is included by ibmpc.c, i386.c, and os2.c.  It provides a 
+/* This file is included by ibmpc.c, i386.c, and os2.c.  It provides a
  * mapping from the scan code/shift state to an escape sequence.
  */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -13,7 +13,7 @@
 #define ALT_KEY_MASK	0x8
 #define SHIFT_MASK	(RSHIFT_MASK|LSHIFT_MASK)
 
-static unsigned char F_Keys[4][12] = 
+static unsigned char F_Keys[4][12] =
 {
      { 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 133, 134 },
      { 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 135, 136 },
@@ -21,7 +21,7 @@ static unsigned char F_Keys[4][12] =
      { 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 139, 140 }
 };
 
-static unsigned char Small_Keypad_Keys[4][13] = 
+static unsigned char Small_Keypad_Keys[4][13] =
 {
      { 'G', 'H', 'I', 0, 'K', 0, 'M', 0, 'O', 'P', 'Q', 'R', 'S' },   /* normal */
      { '0', '1', '2', 0, '3', 0, '4', 0, '5', '6', '7', '8', '9' },   /* shift */
@@ -39,32 +39,32 @@ static unsigned char Num_Keypad_Keys[4][13] =
 
 static char *Alt_Map = "!@#$%^&*()-=\t*\0177QWERTYUIOP[]\r*ASDFGHJKL;'`*\\ZXCVBNM<>/";
 
-static unsigned int default_scan_to_key (unsigned int scan, unsigned int shift, 
+static unsigned int default_scan_to_key (unsigned int scan, unsigned int shift,
 					 unsigned char *chp)
 {
    unsigned char ch;
-   
+
    ch = (scan & 0xFF);
    chp[0] = ch;
-   
+
    if ((ch != 0) && (ch != 0xE0))
      return 1;
-   
+
    ch = (scan >> 8);
-   
+
    if ((PC_Alt_Char == 0) || (shift != ALT_KEY_MASK))
      {
 	chp[1] = ch;
 	return 2;
      }
-   
+
    if ((ch >= 14) && (ch <= 53))
      ch = (unsigned char) Alt_Map[ch];
    else if ((ch >= 120) && (ch <= 131))
      ch = (unsigned char) Alt_Map[ch - 120];
    else if (ch == 165) /* tab */
      ch = (unsigned char) Alt_Map[12];
-   
+
    chp[0] = PC_Alt_Char;
    chp[1] = ch;
 
@@ -77,9 +77,9 @@ static unsigned int jed_scan_to_key (unsigned int scan, unsigned int shift,
    unsigned int i;
    unsigned int state;
    int c1;
-   
+
    switch (scan)
-     {	
+     {
       case 0x0E08:		       /* backspace */
 	*chbuf = 127;
 	return 1;
@@ -119,7 +119,7 @@ static unsigned int jed_scan_to_key (unsigned int scan, unsigned int shift,
  	if (shift & SHIFT_MASK) state = 1;
  	if (shift & CTRL_KEY_MASK) state = 2;
  	if (shift & ALT_KEY_MASK) state = 3;
-	
+
 	i = (scan >> 8);
  	c1 = Num_Keypad_Keys[state][i  - 0x47];
  	if (shift & (CTRL_KEY_MASK | ALT_KEY_MASK))
@@ -140,7 +140,7 @@ static unsigned int jed_scan_to_key (unsigned int scan, unsigned int shift,
       case 0x51E0:		       /* PGDN */
       case 0x53E0:		       /* DEL */
       case 0x52E0:		       /* INSERT */
-	
+
 	chbuf[0] = 0xE0;
 	state = 0;
 	i = (scan >> 8) - 0x47;
@@ -151,10 +151,10 @@ static unsigned int jed_scan_to_key (unsigned int scan, unsigned int shift,
 	     chbuf[0] = 0;
 	     state = 3;
 	  }
-	
+
 	chbuf[1] = Small_Keypad_Keys[state][i];
 	return 2;
-	
+
       case 0x8500:		       /* F11 */
       case 0x8600:		       /* F12 */
 	scan = 0x4500 + (scan - 0x8500);
@@ -172,19 +172,19 @@ static unsigned int jed_scan_to_key (unsigned int scan, unsigned int shift,
       case 0x4400:		       /* F10 */
 	i = scan >> 8;
 	i = i - 0x3b;
-	
+
 	state = 0;
 	if (shift & SHIFT_MASK) state = 1;
 	if (shift & CTRL_KEY_MASK) state = 2;
 	if (shift & ALT_KEY_MASK) state = 3;
-	
+
 	chbuf[0] = 0;
 	chbuf[1] = F_Keys[state][i];
 	return 2;
 
       case 0x1C0A:		       /* Ctrl-RETURN */
 	return default_scan_to_key (0x1C0D, shift, chbuf);
-	
+
       case 0x3920: 		       /* space */
 	if (shift & CTRL_KEY_MASK)
 	  scan = 0x0300;
@@ -193,7 +193,7 @@ static unsigned int jed_scan_to_key (unsigned int scan, unsigned int shift,
       default:
 	return default_scan_to_key (scan, shift, chbuf);
      }
-   
+
    chbuf[0] = 27;
    chbuf[1] = 'O';
    chbuf[2] = c1;

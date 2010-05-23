@@ -1,5 +1,5 @@
 % BIBTeX mode for JED
-% 
+%
 % Version: 1.9
 % Original Author:  Carsten Tinggaard Nielsen, tinggard@iesd.auc.dk
 % Update: 2001-04-24
@@ -11,7 +11,7 @@
 %   removed local_setkey statements from bibtex_mode function.
 %   Added '&' character to mode menu. --JED
 % 1.7 15 October 1999
-%   * fixed bug where OPT would be removed from e.g. ".. optical.." in title 
+%   * fixed bug where OPT would be removed from e.g. ".. optical.." in title
 %     with bibtex_removeOPT and consequently bibtex_clean_entry
 %   * JED recommended self_insert_cmd thingy for keypress " to normal "
 %   * more highlight keywords
@@ -24,7 +24,7 @@
 %   Charl P. Botha <cpbotha@ieee.org>
 % 1.4 29 May 1995
 %   fixed bug refering to bibtex_insert_quote: using tex_insert_quote
-%   added usage of LaTeX font commands: ^C^F 
+%   added usage of LaTeX font commands: ^C^F
 %     as suggested by Franz-Josef Knelangen
 % 1.3 16 May 1995
 %   next/prev field can now position correct in "" and "{}"
@@ -39,10 +39,10 @@
 %     prev entry ESC p
 % 1.1 10 May 1995
 %   Optimized code after suggestions by John E. Davis
-% 1.0 08 May 1995 
+% 1.0 08 May 1995
 %   Public release to comp.editors,comp.text.tex,alt.lang.s-lang
 % -----------------------------------------------------------------------
-% 
+%
 % When bibtex mode is loaded, 'bibtex_mode_hook' is called.
 % This hook will allow users to customize the mode.
 % So, in your jed.rc /.jedrc file,
@@ -51,10 +51,10 @@
 %      local_setkey ("bibtex_Article", "^C^E^A");
 %   }
 % which binds the function to Ctrl-C Ctrl-E Ctrl-A
-% 
+%
 % For customization, the 'bibtex_item_hook' is called everytime a
 % template is entered into the buffer.
-% To add your own entry, 
+% To add your own entry,
 % then add something like (in your jed.rc /.jedrc file):
 %   autoload ("bib_field", "bibtex.sl");
 %   define bibtex_item_hook () {
@@ -100,7 +100,7 @@ define bib_field (fieldstr)  {
    }
    vinsert ("%s =", fieldstr);
    insert_spaces(sl);
-   
+
    sl = "";
    variable hook = __get_reference ("bibtex_field_default_hook");
    if (hook != NULL)
@@ -333,8 +333,8 @@ define SearchInThisLine(str) {
    % return 1 if str is found at current line
    variable thisline = what_line();
    variable res = 0;
-   
-   bol();   
+
+   bol();
    if (fsearch(str))
      if (thisline == what_line())
        res = 1;
@@ -350,7 +350,7 @@ variable bibtex_remove_value = 0; % 0:nothing removed 1:OPT 2:killed
 define bibtex_removeOPT () {
    % remove the string OPT from the current line
    % if there is no text in the entry then the line is deleted
-   
+
    % ensure beginning of current line
    bol();
    bibtex_remove_value = 0;
@@ -403,7 +403,7 @@ define bibtex_clean_entry ()  {
 	   go_down_1();
       }
       bol();
-   } 
+   }
    % there must not be a comma after the last entry
    go_left(2);
    if (looking_at_char(','))
@@ -412,7 +412,7 @@ define bibtex_clean_entry ()  {
    go_down(3);
 }
 
-define bibtex_no(whatdir, whatstr) 
+define bibtex_no(whatdir, whatstr)
 {
    vmessage ("There is no %s %s", whatdir, whatstr);
 }
@@ -543,7 +543,7 @@ set_syntax_flags (bibtexName, 1);
 () = define_keywords_n (bibtexName, "@incollection", 13, 1);
 () = define_keywords_n (bibtexName, "@inproceedings@mastersthesis", 14, 1);
 
-private define init_menu (menu) 
+private define init_menu (menu)
 {
    menu_append_item (menu, "&Article", "bibtex_Article");
    menu_append_item (menu, "&Book", "bibtex_Book");
@@ -567,7 +567,6 @@ private define init_menu (menu)
    menu_append_item (menu, "C&lean entry", "bibtex_clean_entry");
 }
 
-
 define bibtex_mode ()
 {
    use_keymap (bibtexModeName);
@@ -586,7 +585,7 @@ define bibtex_mode ()
 define bibtex_info_find_node ()
 {
    variable node;
-   
+
    node = read_mini ("Node:", Null_String, Null_String);
    ifnot (strlen (node)) return;
    info_reader ();

@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -71,7 +71,7 @@ static void macro_store_key(char ch) /*{{{*/
 {
    /* I need to put something here to increase the size of the Macro_Buffer
       in case of overflow */
-   
+
    if (Macro_Buffer_Ptr - Macro_Buffer >= JED_KBD_MACRO_SIZE) msg_error("Macro Size exceeded.");
    else *Macro_Buffer_Ptr++ = ch;
 }
@@ -107,18 +107,18 @@ int macro_query() /*{{{*/
 {
    char *s;
    int n;
-   
+
    /* macro state is already set */
    Defining_Keyboard_Macro = 0;
    Executing_Keyboard_Macro = 0;
-   
+
    if (!IN_MINI_WINDOW)
      {
 	if (NULL == (s = read_from_minibuffer("Enter String:", (char *) NULL, NULL, &n))) return(0);
 	(void) jed_insert_nbytes ((unsigned char *) s, n);
 	SLfree(s);
      }
-   
+
    /* exit from mini restores the state */
    return(1);
 }
@@ -133,7 +133,7 @@ int jed_check_string_key_buffer (void)
      return -1;
 
    ch = *Read_This_Character++;
-   if (ch == 0) 
+   if (ch == 0)
      {
 	Read_This_Character = NULL;
 	return -1;
@@ -144,7 +144,7 @@ int jed_check_string_key_buffer (void)
 	Read_This_Character = NULL;
 	return ch;
      }
-	
+
    if (ch == '^')
      {
 	if (ch1 == '?') ch = 127;
@@ -159,9 +159,7 @@ int jed_check_string_key_buffer (void)
    if (*Read_This_Character == 0) Read_This_Character = NULL;
 
    return ch;
-}	
-
-
+}
 
 int jed_getkey (void) /*{{{*/
 {
@@ -172,7 +170,7 @@ int jed_getkey (void) /*{{{*/
    ch = jed_check_string_key_buffer ();
    if (ch != -1)
      return ch;
-   
+
    if (Executing_Keyboard_Macro)
      {
 	if (Macro_Buffer_Ptr < Macro_Ptr_Max) return (*Macro_Buffer_Ptr++);
@@ -184,17 +182,17 @@ int jed_getkey (void) /*{{{*/
 #endif
 	update((Line *) NULL, 0, 0, 1);
      }
-   
+
    diff = (int) (Key_Bufferp - Key_Buffer);
    if ((SLang_get_error () == 0)
-       && SLang_Key_TimeOut_Flag 
+       && SLang_Key_TimeOut_Flag
        && ((mini_flag && (diff > 0))
 	   || !input_pending(&Number_Ten)))
      {
 	message(Key_Buffer);
 	safe_strcat(Message_Buffer, "-", sizeof(Message_Buffer));
 
-	/* This ensures that the update is performed if we are echoing from 
+	/* This ensures that the update is performed if we are echoing from
 	 * digit argument */
 	srf = Repeat_Factor; Repeat_Factor = NULL;
 	update((Line *)NULL, 0, 0, 1);
@@ -203,7 +201,7 @@ int jed_getkey (void) /*{{{*/
 	mini_flag = 1;
      }
    else (mini_flag = 0);
-   
+
    ch = my_getkey();
    if (diff < SLANG_MAX_KEYMAP_KEY_SEQ)
      {
@@ -215,8 +213,7 @@ int jed_getkey (void) /*{{{*/
 	/* msg_error("KeyBuffer overflow!"); */
 	Key_Bufferp = Key_Buffer;
      }
-   
-   
+
    if (Defining_Keyboard_Macro)
      {
 	/* starting a new keysequence to save this point */
@@ -224,7 +221,7 @@ int jed_getkey (void) /*{{{*/
 	  {
 	     Macro_Ptr_Max = Macro_Buffer_Ptr;
 	  }
-	
+
 	macro_store_key(ch);
      }
    return(ch);
@@ -239,7 +236,7 @@ void jed_error_hook (SLFUTURE_CONST char *msg)
    else
      JWindow->trashed = 1;
 
-   if (Error_Buffer[0] == 0) 
+   if (Error_Buffer[0] == 0)
      safe_strcpy(Error_Buffer, msg, sizeof (Error_Buffer));
 }
 
@@ -267,8 +264,8 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
    unsigned char *p, ch;
    static Window_Type *current_window;
    /* may get changed if user leaves minibuffer and returns from other
-    * window which means that the new window becomes target 
-    * of minibuffer action 
+    * window which means that the new window becomes target
+    * of minibuffer action
     */
    Window_Type *w;
    char *ret;
@@ -281,9 +278,9 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
 	  fputs (prompt, stdout);
 	if ((deflt != NULL) && (*deflt != 0))
 	  fprintf (stdout, "(default %s)", deflt);
-	
+
 	fflush (stdout);
-	
+
 	*n = 0;
 	if (NULL == fgets (buf, sizeof(buf), stdin))
 	  {
@@ -309,18 +306,18 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
 	current_window = JWindow;
 	start_buffer = CBuf;
      }
-   else 
+   else
      {
 	current_window = NULL;
 	start_buffer = NULL;
      }
 
    if (select_minibuffer()) return(NULL);   /* we should be on a new line of mini buffer */
-   
+
    ps = Mini_Info.prompt;
    p = (unsigned char *) prompt;
    len = 0;
-   
+
    if (p != NULL)
      {
 	while (0 != (ch = *p++))
@@ -331,12 +328,12 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
 	*ps++ =  ' ';
 	len++;
      }
-   
+
    if ((deflt != NULL) && (*deflt != 0))
      {
 	SLsnprintf (buf, sizeof (buf), "(default: %s) ", deflt);
 	p = (unsigned char *) buf;
-	
+
 	while (0 != (ch = *p++))
 	  {
 	     *ps++ = ch;
@@ -344,17 +341,17 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
 	  }
      }
    *ps = 0;
-   
+
    Mini_Info.prompt_len = len;
    Mini_Info.effective_prompt_len = jed_compute_effective_length (Mini_Info.prompt, Mini_Info.prompt + len);
-   
+
    touch_window();
    if (what != NULL) jed_insert_string(what);
    update((Line *) NULL, 0, 0, 1);
-   
+
    mini_jmp_save = Jump_Buffer_Ptr;
    Jump_Buffer_Ptr = &mini_jmp_buf;
-   
+
    if (setjmp(mini_jmp_buf.b) != 0)
      {
 	/* Do not call the restart function from here, in case this function
@@ -373,7 +370,7 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
 	if (((err == SL_USER_BREAK) || SLKeyBoard_Quit)
 	    && IN_MINI_WINDOW)
 	  break;
-	    
+
 	update((Line *) NULL, 0, 0, 1);
 	if (err)
 	  {
@@ -382,22 +379,22 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
 	     SLKeyBoard_Quit = 0;
 	  }
      }
-   
+
    if (Exit_From_MiniBuffer && !Executing_Keyboard_Macro
        && (Repeat_Factor == NULL) && !JWindow->trashed && !input_pending(&Number_Zero))
      {
 	SLsmg_gotorc (Jed_Num_Screen_Rows - 1, 0);
 	SLsmg_refresh ();
      }
-   
+
    Jump_Buffer_Ptr = mini_jmp_save;
-   
+
    exit_minibuffer ();		       /* be graceful */
-   
+
    Exit_From_MiniBuffer = 0;
    MiniBuffer_Active = 0;
    restore_macro_state();
-   
+
    if (!SLKeyBoard_Quit)
      {
 	if (CLine->len == 0)
@@ -409,43 +406,43 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
 	eob();
 	ret = make_buffer_substring(n);
      }
-   else 
+   else
      {
 	SLKeyBoard_Quit = 0;
 	ret = NULL;
      }
-   
+
    /* we should be in minibuffer so delete marks and spots */
    while (CBuf->spots) pop_spot();
    while (CBuf->marks) jed_pop_mark(0);
    erase_buffer();
-   
+
    /* Remove MiniWindow from the ring */
    w = JWindow;
    while (w->next != JWindow) w = w->next;
    other_window();
    w->next = JWindow;
-   
+
    if (current_window != NULL)
      {
 	/* Note that by this time, current_window might not exist. */
-	while((JWindow != current_window) && (JWindow != w)) 
+	while((JWindow != current_window) && (JWindow != w))
 	  other_window();
      }
 
    if ((start_buffer != NULL)
        && (buffer_exists (start_buffer)))
      switch_to_buffer (start_buffer);
-     
+
    JWindow->trashed = 1;
-   
+
    /* delete_buffer(MiniBuffer); */
    MiniBuffer = NULL;
 
 #if JED_HAS_MENUS
    jed_notify_menu_buffer_changed ();
 #endif
-   
+
    return(ret);
 }
 
@@ -459,16 +456,16 @@ char *read_from_minibuffer (char *prompt, char *deflt, char *what, int *n)
 
    if (rf != NULL)
      repeat = *rf;
-   
+
    s = read_from_minibuffer_1 (prompt, deflt, what, n);
-   
+
    if (rf != NULL)
      {
 	Repeat_Factor = rf;
 	*rf = repeat;
      }
 
-   return s;	
+   return s;
 }
 
 static int Macro_Illegal_Now = 0;
@@ -487,7 +484,7 @@ static int check_macro_legality(void) /*{{{*/
 int begin_keyboard_macro() /*{{{*/
 {
    if (!check_macro_legality()) return (0);
-   
+
    Macro_Buffer_Ptr = Macro_Buffer;
    message("Defining Macro.");
    Defining_Keyboard_Macro = 1;
@@ -499,7 +496,7 @@ int begin_keyboard_macro() /*{{{*/
 
 int end_keyboard_macro() /*{{{*/
 {
-   
+
    if (Defining_Keyboard_Macro) message("Macro Defined.");
    else
      {
@@ -507,7 +504,7 @@ int end_keyboard_macro() /*{{{*/
 	Executing_Keyboard_Macro = 0;
 	return(1);
      }
-   
+
    /* Macro_Ptr_Max = Macro_Buffer_Ptr; */
    Defining_Keyboard_Macro = 0;
    set_macro_state();
@@ -519,23 +516,23 @@ int end_keyboard_macro() /*{{{*/
 int execute_keyboard_macro() /*{{{*/
 {
    int repeat = 0, *repeat_ptr;
-   
+
    if (!check_macro_legality()) return (0);
-   
+
    if (Defining_Keyboard_Macro)
      {
 	msg_error("Can't execute a macro while defining one.");
 	return(0);
      }
-   
+
    Executing_Keyboard_Macro = 1;
    set_macro_state();
    Macro_Buffer_Ptr = Macro_Buffer;
-   
+
    /* save the repeat context */
    repeat_ptr = Repeat_Factor;
    if (repeat_ptr != NULL) repeat = *repeat_ptr;
-   
+
    JWindow->trashed = 1;
    Macro_Illegal_Now = 1;
    while ((Macro_Buffer_Ptr < Macro_Ptr_Max)
@@ -549,7 +546,7 @@ int execute_keyboard_macro() /*{{{*/
 	if (SLKeyBoard_Quit || (*Error_Buffer)) break;
      }
    Macro_Illegal_Now = 0;
-   
+
    /* restore context */
    Repeat_Factor = repeat_ptr;
    if (repeat_ptr != NULL) *repeat_ptr = repeat;
@@ -575,7 +572,7 @@ void get_last_macro () /*{{{*/
 	msg_error("Complete Macro first!");
 	return;
      }
-   
+
    m = Macro_Buffer;
    if (m == Macro_Ptr_Max)
      {
@@ -595,7 +592,7 @@ void get_last_macro () /*{{{*/
 	  {
 	     *s++ = '\\';
 	  }
-	
+
 	*s++ = (char)ch;
      }
    *s = 0;
@@ -621,9 +618,9 @@ char *safe_strcat (char *a, SLFUTURE_CONST char *b, unsigned int n) /*{{{*/
 {
    unsigned int len = strlen (a);
    unsigned int max;
-   
+
    n--;
-   
+
    if (n > len)
      {
 	max = n - len;
@@ -639,11 +636,11 @@ void jed_vmessage (int now, char *fmt, ...)
 {
    va_list ap;
    char buf[2048];
-   
+
    va_start (ap, fmt);
    SLvsnprintf (buf, sizeof (buf), fmt, ap);
    va_end (ap);
-   
+
    if (now) flush_message (buf);
    else message (buf);
 }
@@ -652,16 +649,16 @@ void jed_verror (char *fmt, ...)
 {
    va_list ap;
    char buf[2048];
-   
+
    va_start (ap, fmt);
    SLvsnprintf (buf, sizeof (buf), fmt, ap);
    va_end (ap);
-   
+
    msg_error (buf);
 }
 
-/* Since the interpreter deals mainly with hashed strings, and there is 
- * the possibility that the strings to be compared are the same, we 
+/* Since the interpreter deals mainly with hashed strings, and there is
+ * the possibility that the strings to be compared are the same, we
  * will exploit this fact.
  */
 
@@ -676,7 +673,7 @@ int jed_case_strncmp (char *a, char *b, unsigned int n)
      {
 	cha = UPPER_CASE(*a);
 	chb = UPPER_CASE(*b);
-	
+
 	if (cha != chb)
 	  return (int) cha - (int) chb;
 	if (chb == 0) return 0;
@@ -695,7 +692,7 @@ int jed_case_strcmp (char *a, char *b)
      {
 	cha = UPPER_CASE(*a);
 	chb = UPPER_CASE(*b);
-	
+
 	if (cha != chb)
 	  return (int) cha - (int) chb;
 	if (chb == 0) return 0;
@@ -720,7 +717,7 @@ Buffer *jed_get_mini_action_buffer (void)
      return NULL;
 
    w = Mini_Info.action_window;
-   
+
    if (w != NULL)
      {
 	Buffer *b = w->buffer;
@@ -769,6 +766,6 @@ void jed_ungetkey_wchar (SLwchar_Type wc)
 
    if (NULL == (b = jed_wchar_to_multibyte (wc, buf)))
      return;
-   
+
    ungetkey_string ((char *)buf, (int)(b-buf));
 }

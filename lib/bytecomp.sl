@@ -16,7 +16,7 @@ ifnot (is_defined ("Preprocess_Only"))
 define jed_byte_compile_file (f)
 {
    variable file;
-   
+
    file = expand_jedlib_file(f);
    if (strlen (file))
      {
@@ -31,7 +31,7 @@ $0 = _stkdepth ();
 
 % list of file to byte compile:
 # ifdef UNIX VMS
-"mail.sl"; 
+"mail.sl";
 "iso-latin.sl";
 %   "dispesc.sl";
 # endif
@@ -59,7 +59,7 @@ $0 = _stkdepth ();
 #ifdef VMS
 "vmshelp.sl";
 #endif
-if (is_defined ("KILL_ARRAY_SIZE")) 
+if (is_defined ("KILL_ARRAY_SIZE"))
 {
    "yankpop.sl";
    "register.sl";
@@ -151,7 +151,6 @@ loop ($0)
    jed_byte_compile_file (());
 }
 
-
 $0 = _stkdepth ();
 "tclmode.sl";
 "ashell.sl";
@@ -201,7 +200,6 @@ loop ($0)
    jed_byte_compile_file (());
 }
 
-
 % Now do color schemes
 # ifndef VMS
 _debug_info = 1;
@@ -213,14 +211,14 @@ private define do_color_schemes ()
 	variable files = listdir (dir);
 	variable file;
 	variable i;
-   
+
 	if (files == NULL)
 	  continue;
-   
+
 	i = where (array_map (Int_Type, &string_match, files, "\\.sl$", 1));
 	ifnot (length (i))
 	  continue;
-	
+
 	foreach (files[i])
 	  {
 	     file = ();

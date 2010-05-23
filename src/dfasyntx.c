@@ -47,7 +47,7 @@ typedef unsigned char Set[SET_SIZE];
 #define take_from_set(s,c) ((s)[(c)/CHAR_BIT] &= ~(1 << (c)%CHAR_BIT))
 #define is_in_set(s,c) ((s)[(c)/CHAR_BIT] & (1 << (c)%CHAR_BIT))
 
-struct NFA 
+struct NFA
 {
    NFA *next;
    int from, to;
@@ -55,7 +55,7 @@ struct NFA
    Set set;
 };
 
-struct Accept 
+struct Accept
 {
    Accept *next;
    int state;
@@ -63,7 +63,7 @@ struct Accept
    int colour, is_preproc, is_keyword;
 };
 
-struct DFA 
+struct DFA
 {
    DFA *next;
    int number;
@@ -81,12 +81,12 @@ struct DFA
  * lowest value in the same equivalence class as c. "accept" is a
  * list of accepting states in the NFA, together with their colours
  * and properties, and "dfa" is the actual DFA table.
- * 
+ *
  * DFA tables can take some time to generate - over a second on my
  * 486 for C mode - and so instead of generating them every time
  * Jed needs them, I support a caching option.
  */
-struct Highlight 
+struct Highlight
 {
    int nfa_states, dfa_states;
    NFA *nfa;
@@ -118,10 +118,10 @@ static void compute_closure (Highlight *, unsigned char *);
 #define ERR_EMPTY_SET 3
 #define ERR_METACHAR_INVALID 4
 
-static Highlight *init_highlight (void) 
+static Highlight *init_highlight (void)
 {
    Highlight *result;
-   
+
    result = (Highlight *) SLmalloc (sizeof (Highlight));
    if (result != NULL)
      {
@@ -135,7 +135,7 @@ static Highlight *init_highlight (void)
 #define FLAG_KEYWORD  2
 #define FLAG_PREPROC  4
 static void add_rule (Highlight *h, char *rule, int length,
-		      int flags, int colour) 
+		      int flags, int colour)
 {
    int start = 0, end = 0;
    int is_begin, is_end;
@@ -143,11 +143,11 @@ static void add_rule (Highlight *h, char *rule, int length,
    int old_states;
    NFA *old_nfa;
    int err;
-   
+
    old_states = h->nfa_states;
    old_nfa = h->nfa;
    err = parse_regexp (h, &rule, &length, &start, &end, &is_begin, &is_end);
-   if (!err) 
+   if (!err)
      {
 	/*
 	 * We have a partial NFA gained from parsing the rule. Add
@@ -169,7 +169,7 @@ static void add_rule (Highlight *h, char *rule, int length,
 	acc->colour = colour;
 	acc->is_end = is_end;
      }
-   else 
+   else
      {
 	/*
 	 * An error occurred while doing the parse. We must remove
@@ -177,11 +177,11 @@ static void add_rule (Highlight *h, char *rule, int length,
 	 * parse may have added.
 	 */
 	NFA *n;
-	
+
 	error:			       /* we may get here from above! */
-	
+
 	h->nfa_states = old_states;
-	for (n=h->nfa; n && n!=old_nfa ;) 
+	for (n=h->nfa; n && n!=old_nfa ;)
 	  {
 	     NFA *temp = n;
 	     n = n->next;
@@ -202,7 +202,7 @@ static void add_rule (Highlight *h, char *rule, int length,
  *          | char-set
  *          | .
  *          | ( reg1 )
- * 
+ *
  * Lexemes are: all chars (0 to 255), caret, dollar, vbar, star,
  * plus, query, lbracket, rbracket, dash, dot, lparen and rparen.
  */
@@ -223,72 +223,72 @@ static void add_rule (Highlight *h, char *rule, int length,
 #define is_normal_char(lex) ((lex)<=UCHAR_MAX)
 
 static int parse_regexp (Highlight *h, char **text, int *length,
-			 int *start, int *end, int *is_begin, int *is_end) 
+			 int *start, int *end, int *is_begin, int *is_end)
 {
    int err;
-   
-   if (get_lexeme(text, length) == LEX_CARET) 
+
+   if (get_lexeme(text, length) == LEX_CARET)
      {
 	*is_begin = 1;
 	eat_lexeme (text, length);
      }
    else
      *is_begin = 0;
-   
+
    if ( (err = parse_reg1 (h, text, length, start, end)) != 0)
      return err;
-   
-   if (get_lexeme(text, length) == LEX_DOLLAR) 
+
+   if (get_lexeme(text, length) == LEX_DOLLAR)
      {
 	*is_end = 1;
 	eat_lexeme (text, length);
      }
    else
      *is_end = 0;
-   
+
    if (get_lexeme(text, length) != LEX_ENDOFTEXT)
      return ERR_EOT_EXPECTED;
-   
+
    return 0;
 }
 
 static int parse_reg1 (Highlight *h, char **text, int *length,
-		       int *start, int *end) 
+		       int *start, int *end)
 {
    int err;
-   
+
    if ( (err = parse_reg2 (h, text, length, start, end)) != 0)
      return err;
-   
-   while (get_lexeme(text, length) == LEX_VBAR) 
+
+   while (get_lexeme(text, length) == LEX_VBAR)
      {
 	eat_lexeme (text, length);
 	if ( (err = parse_reg2 (h, text, length, start, end)) != 0)
 	  return err;
      }
-   
+
    return 0;
 }
 
 static int parse_reg2 (Highlight *h, char **text, int *length,
-		       int *start, int *end) 
+		       int *start, int *end)
 {
    int en = 0;
    int lex, err;
-   
+
    if ( (err = parse_reg3 (h, text, length, start, &en)) != 0)
      return err;
-   
+
    while ((lex=get_lexeme(text, length)) == LEX_LPAREN ||
 	  lex == LEX_LBRACKET || lex == LEX_DASH ||
-	  lex == LEX_DOT || is_normal_char(lex)) 
+	  lex == LEX_DOT || is_normal_char(lex))
      {
 	int st = en;
 	en = 0;
 	if ( (err = parse_reg3 (h, text, length, &st, &en)) != 0)
 	  return err;
      }
-   
+
    if (*end)
      add_nfa_trans (h, en, *end, NULL);
    else
@@ -297,16 +297,16 @@ static int parse_reg2 (Highlight *h, char **text, int *length,
 }
 
 static int parse_reg3 (Highlight *h, char **text, int *length,
-		       int *start, int *end) 
+		       int *start, int *end)
 {
    int lex, err;
    int st = 0, en = 0;
-   
+
    if ( (err = parse_reg4 (h, text, length, &st, &en)) != 0)
      return err;
-   
+
    lex = get_lexeme (text, length);
-   switch (lex) 
+   switch (lex)
      {
       case LEX_STAR:
 	eat_lexeme (text, length);
@@ -322,27 +322,27 @@ static int parse_reg3 (Highlight *h, char **text, int *length,
 	add_nfa_trans (h, st, en, NULL);
 	break;
      }
-   
+
    if (!*end)
      *end = h->nfa_states++;
    add_nfa_trans (h, en, *end, NULL);
-   
+
    if (!*start)
      *start = h->nfa_states++;
    add_nfa_trans (h, *start, st, NULL);
-   
+
    return 0;
 }
 
 static int parse_reg4 (Highlight *h, char **text, int *length,
-		       int *start, int *end) 
+		       int *start, int *end)
 {
    int lex, err;
    Set set;
-   
+
    lex = get_lexeme (text, length);
-   
-   if (lex == LEX_LPAREN) 
+
+   if (lex == LEX_LPAREN)
      {
 	eat_lexeme (text, length);
 	if ( (err = parse_reg1(h, text, length, start, end)) != 0)
@@ -352,18 +352,18 @@ static int parse_reg4 (Highlight *h, char **text, int *length,
 	eat_lexeme (text, length);
 	return 0;
      }
-   
+
     /*
      * OK, all other possibilities now involve a character set. So
      * create one.
      */
    empty_set ((char *)set, SET_SIZE);
-   
-   if (lex == LEX_LBRACKET) 
+
+   if (lex == LEX_LBRACKET)
      {
 	int complement = 0;
 	eat_lexeme (text, length);
-	if (get_lexeme (text, length) == LEX_CARET) 
+	if (get_lexeme (text, length) == LEX_CARET)
 	  {
 	     eat_lexeme (text, length);
 	     complement = 1;
@@ -371,18 +371,18 @@ static int parse_reg4 (Highlight *h, char **text, int *length,
 	  }
 	if (get_lexeme (text, length) == LEX_RBRACKET)
 	  return ERR_EMPTY_SET;      /* empty set?! */
-	while ( (lex = get_lexeme (text, length)) != LEX_RBRACKET) 
+	while ( (lex = get_lexeme (text, length)) != LEX_RBRACKET)
 	  {
 	     int one_end, other_end;
 	     int bottom, top;
-	     
+
 	     if (!is_normal_char(lex))
 	       return ERR_METACHAR_INVALID;
-	     
+
 	     one_end = lex;
 	     eat_lexeme (text, length);
-	     
-	     if ( (lex = get_lexeme (text, length)) == LEX_DASH) 
+
+	     if ( (lex = get_lexeme (text, length)) == LEX_DASH)
 	       {
 		  eat_lexeme (text, length);
 		  lex = get_lexeme (text, length);
@@ -392,13 +392,13 @@ static int parse_reg4 (Highlight *h, char **text, int *length,
 	       }
 	     else
 	       other_end = one_end;
-	     
+
 	     if (other_end < one_end)
 	       bottom = other_end, top = one_end;
 	     else
 	       bottom = one_end, top = other_end;
-	     
-	     while (bottom <= top) 
+
+	     while (bottom <= top)
 	       {
 		  if (complement)
 		    take_from_set (set, bottom);
@@ -409,21 +409,21 @@ static int parse_reg4 (Highlight *h, char **text, int *length,
 	  }
 	eat_lexeme (text, length);
      }
-   else if (is_normal_char (lex) || lex == LEX_DASH) 
+   else if (is_normal_char (lex) || lex == LEX_DASH)
      {
 	eat_lexeme (text, length);
 	if (lex == LEX_DASH)
 	  lex = (unsigned char) '-';
 	add_to_set (set, lex);
      }
-   else if (lex == LEX_DOT) 
+   else if (lex == LEX_DOT)
      {
 	eat_lexeme (text, length);
 	fill_set ((char *)set, SET_SIZE);
      }
    else
      return ERR_METACHAR_INVALID;
-   
+
     /*
      * We've got a character set: devise an NFA transition on it.
      */
@@ -432,25 +432,25 @@ static int parse_reg4 (Highlight *h, char **text, int *length,
    if (!*end)
      *end = h->nfa_states++;
    add_nfa_trans (h, *start, *end, set);
-   
+
    return 0;
 }
 
 /*
  * Add an NFA transition.
  */
-static void add_nfa_trans (Highlight *h, int from, int to, Set set) 
+static void add_nfa_trans (Highlight *h, int from, int to, Set set)
 {
    NFA *trans;
    int i;
    unsigned char other[UCHAR_MAX+1], in[UCHAR_MAX+1];
-   
+
    trans = (NFA *) SLmalloc(sizeof(*trans));
-   if (trans) 
+   if (trans)
      {
 	trans->next = h->nfa;
 	h->nfa = trans;
-	if (set) 
+	if (set)
 	  {
 	     memcpy ((char *) trans->set, (char *)set, sizeof(Set));
 	     trans->is_empty = 0;
@@ -460,22 +460,22 @@ static void add_nfa_trans (Highlight *h, int from, int to, Set set)
 	trans->from = from;
 	trans->to = to;
      }
-   
+
     /*
      * Adjust the equivalence classes: no equivalence class should
      * contain members both inside and outside the given set.
      */
-   if (set != NULL) 
+   if (set != NULL)
      {
-	for (i=0; i<EQUIV_TABLE_SIZE; i++) 
+	for (i=0; i<EQUIV_TABLE_SIZE; i++)
 	  {
 	     int j = h->equiv[i];
-	     if (j == i) 
+	     if (j == i)
 	       {
 		  other[i] = i;	       /* no "other" class defined yet */
 		  in[i] = is_in_set (set, i);
 	       }
-	     else if ( (!is_in_set (set, i)) ^ (!in[j]) ) 
+	     else if ( (!is_in_set (set, i)) ^ (!in[j]) )
 	       {
 		  if (other[j] == j)
 		    other[j] = i;
@@ -493,7 +493,7 @@ static int get_lexeme (char **text, int *length)
    char *t;
    if (!*length)
      return LEX_ENDOFTEXT;
-   
+
    t = *text;
    switch (*t)
      {
@@ -522,18 +522,18 @@ static int get_lexeme (char **text, int *length)
 /*
  * Advance the text pointer past the lexeme given.
  */
-static void eat_lexeme (char **text, int *length) 
+static void eat_lexeme (char **text, int *length)
 {
    if (!*length)
      return;
-   
+
    if (**text == '\\' && *length > 1)
      (*text) += 2, (*length) -= 2;
    else
      (*text) += 1, (*length) -= 1;
 }
 
-static void make_dfa (Highlight *h) 
+static void make_dfa (Highlight *h)
 {
    int setsize;
    DFA *tail, *next, *search;
@@ -541,7 +541,7 @@ static void make_dfa (Highlight *h)
    int c, dest_empty;
    NFA *n;
    Accept *a;
-   
+
     /*
      * First calculate the size of array we will need to store a
      * set of NFA states. Allocate our temporary set variables.
@@ -550,29 +550,29 @@ static void make_dfa (Highlight *h)
    destination = (unsigned char *)SLmalloc(setsize);
    if (!destination)
      return;
-   
+
     /*
      * Now define our first DFA state. This is the epsilon-closure
      * of NFA state zero, and is the normal start state for the DFA.
      */
    h->dfa_states = 0;
-   
+
    h->dfa = tail = (DFA *) SLmalloc(sizeof(DFA));
    if (tail == NULL)
      goto error;
-   
+
    memset ((char *) tail, 0, sizeof (DFA));
-   
+
    if (NULL == (tail->nfa_set = (unsigned char *)SLmalloc(setsize)))
      goto error;
-   
+
    /* tail->next = NULL;  memset has done this */
-   
+
    tail->number = h->dfa_states++;
    empty_set ((char *) tail->nfa_set, setsize);
    add_to_set (tail->nfa_set, 0);
    compute_closure (h, tail->nfa_set);
-   
+
     /*
      * Our second DFA state is the epsilon-closure of NFA states
      * zero and one, and is the start state for the DFA when we are
@@ -582,55 +582,55 @@ static void make_dfa (Highlight *h)
      goto error;
    tail = tail->next;
    memset ((char *) tail, 0, sizeof (DFA));
-   
+
    if (NULL == (tail->nfa_set = (unsigned char *) SLmalloc(setsize)))
      goto error;
-   
+
    /* tail->next = NULL; */
-   
+
    tail->number = h->dfa_states++;
    empty_set ((char *) tail->nfa_set, setsize);
    add_to_set (tail->nfa_set, 0);
    add_to_set (tail->nfa_set, 1);
    compute_closure (h, tail->nfa_set);
-   
+
     /*
      * Next, work along the DFA processing each state in turn.
      */
-   for (next = h->dfa; next; next=next->next) 
+   for (next = h->dfa; next; next=next->next)
      {
 	/*
 	 * We have a state from which we wish to compute all the
 	 * transitions. Of course we need only consider transitions
 	 * on a representative member of each equivalence class.
 	 */
-	for (c = 0; c < EQUIV_TABLE_SIZE; c++) 
+	for (c = 0; c < EQUIV_TABLE_SIZE; c++)
 	  {
-	     if (h->equiv[c] == c) 
+	     if (h->equiv[c] == c)
 	       {
 		  empty_set ((char *)destination, setsize);
 		  dest_empty = 1;
-		  
-		  for (n = h->nfa; n; n = n->next) 
+
+		  for (n = h->nfa; n; n = n->next)
 		    {
 		       if (is_in_set (next->nfa_set, n->from) &&
-			   !n->is_empty && is_in_set (n->set, c)) 
+			   !n->is_empty && is_in_set (n->set, c))
 			 {
 			    add_to_set (destination, n->to);
 			    dest_empty = 0;
 			 }
 		    }
 		  compute_closure (h, destination);
-		  
+
 		  if (dest_empty)
 		    search = NULL;
-		  else 
+		  else
 		    {
 		       for (search = h->dfa; search; search = search->next)
 			 if (!memcmp((char *) search->nfa_set, (char *) destination, setsize))
 			   break;
-		       
-		       if (!search) 
+
+		       if (!search)
 			 {
 			    if (NULL == (search = tail->next = (DFA *) SLmalloc(sizeof(DFA))))
 			      goto error;
@@ -642,13 +642,13 @@ static void make_dfa (Highlight *h)
 			    memcpy ((char *) tail->nfa_set, (char *)destination, setsize);
 			 }
 		    }
-		  
+
 		  next->where_to[c] = search;
 	       }
 	     else
 	       next->where_to[c] = next->where_to[h->equiv[c]];
 	  }
-	
+
 	/*
 	 * Having done the transitions for the state, let us also
 	 * check its acceptance properties: we need to know if it
@@ -657,9 +657,9 @@ static void make_dfa (Highlight *h)
 	 * of the line.
 	 */
 	next->accept = next->accept_end = NULL;
-	for (a = h->accept; a; a = a->next) 
+	for (a = h->accept; a; a = a->next)
 	  {
-	     if (is_in_set (next->nfa_set, a->state)) 
+	     if (is_in_set (next->nfa_set, a->state))
 	       {
 		  next->accept_end = a;
 		  if (!a->is_end)
@@ -667,18 +667,18 @@ static void make_dfa (Highlight *h)
 	       }
 	  }
      }
-   
+
     /*
      * Free the temporary variables.
      */
    SLfree ((char *)destination);
    return;
-   
+
     /*
      * Get here if a malloc returned null; clean up the mess.
      */
    error:
-   for (tail = h->dfa; tail; tail=tail->next) 
+   for (tail = h->dfa; tail; tail=tail->next)
      {
 	if (tail->nfa_set)
 	  SLfree ((char *)tail->nfa_set);
@@ -695,19 +695,19 @@ static void make_dfa (Highlight *h)
  * an epsilon NFA transition cannot move from a member of the set
  * to a non-member.
  */
-static void compute_closure (Highlight *h, unsigned char *set) 
+static void compute_closure (Highlight *h, unsigned char *set)
 {
    NFA *n;
    int changed;
-   
-   do 
+
+   do
      {
 	changed = 0;
-	for (n=h->nfa; n; n=n->next) 
+	for (n=h->nfa; n; n=n->next)
 	  {
 	     if (n->is_empty &&
 		 is_in_set (set, n->from) &&
-		 !is_in_set (set, n->to)) 
+		 !is_in_set (set, n->to))
 	       {
 		  changed = 1;
 		  add_to_set (set, n->to);
@@ -718,7 +718,6 @@ static void compute_closure (Highlight *h, unsigned char *set)
 }
 
 #if USE_DFA_CACHE
-
 
 /*
  * I'm going to do this quite a bit in the next routine, so let's
@@ -736,15 +735,15 @@ static void compute_closure (Highlight *h, unsigned char *set)
 /* FIXME!!!  This routine allocates arrays of Accept, DFA, etc structures
  * and turns them into linked lists.  However, elsewhere each node in the
  * list is allocated.  So, the free_highlight_table routine cannot be used
- * with a DFA read from the cache.  Perhaps the best and easiest fix would 
+ * with a DFA read from the cache.  Perhaps the best and easiest fix would
  * be to add a "free" method to the Highlight structure.
- * 
+ *
  * There is currently no way of knowing if the set of regular expressions
  * matches those implicit in the cache.  It would be nice to write out the
- * list of regular expressions used and compare those with the desired 
+ * list of regular expressions used and compare those with the desired
  * expressions, or to compute and compare MD5 checksums.
  */
-static int load_dfa (Highlight *h, char *name) 
+static int load_dfa (Highlight *h, char *name)
 {
    FILE *fp;
    char buffer[2048], buf2[2048];
@@ -754,14 +753,14 @@ static int load_dfa (Highlight *h, char *name)
    int accepts;
    DFA *dfa = NULL;
    int dfa_states;
-   
+
    if (h->filename == NULL)
      return 0;		       /* don't have caching enabled */
-   
+
    fp = fopen (h->filename, "r");
    if (fp == NULL)
      return 0;		       /* can't open the file */
-   
+
     /*
      * Check the first line: "DFA cache: %s".
      */
@@ -774,14 +773,14 @@ static int load_dfa (Highlight *h, char *name)
    (void) SLsnprintf (buf2, sizeof (buf2), "Version: %s", JED_VERSION_STR);
    if (strcmp(buffer, buf2))
      goto error;		       /* Not built with this executable */
-   
+
     /*
      * Check the next line: "equiv".
      */
    get(buffer);
    if (strcmp(buffer, "equiv"))
      goto error;
-   
+
     /*
      * Read in the equivalence classes.
      */
@@ -790,9 +789,9 @@ static int load_dfa (Highlight *h, char *name)
      {
 	char *p, *q, *r;
 	unsigned int e;
-	
+
 	get(buffer);
-	
+
 	p = q = buffer;
 	while (*p && i < EQUIV_TABLE_SIZE)
 	  {
@@ -804,7 +803,7 @@ static int load_dfa (Highlight *h, char *name)
 	     p = r;
 	  }
      }
-   
+
     /*
      * Read in the accepting states.
      */
@@ -814,7 +813,7 @@ static int load_dfa (Highlight *h, char *name)
    accept = (Accept *) SLmalloc(sizeof(Accept) * accepts);
    if (!accept)
      goto error;
-   for (i=0; i<accepts; i++) 
+   for (i=0; i<accepts; i++)
      {
 	if (i == accepts-1)
 	  accept[i].next = NULL;
@@ -827,7 +826,7 @@ static int load_dfa (Highlight *h, char *name)
 		    &accept[i].is_preproc, &accept[i].is_keyword) != 6)
 	  goto error;
      }
-   
+
     /*
      * Read in the DFA.
      */
@@ -837,11 +836,11 @@ static int load_dfa (Highlight *h, char *name)
    dfa = (DFA *) SLmalloc(sizeof(DFA) * dfa_states);
    if (!dfa)
      goto error;
-   for (i=0; i<dfa_states; i++) 
+   for (i=0; i<dfa_states; i++)
      {
 	int astate, estate;
 	char *p, *q, *r;
-	
+
 	if (i == dfa_states-1)
 	  dfa[i].next = NULL;
 	else
@@ -851,7 +850,7 @@ static int load_dfa (Highlight *h, char *name)
 	if (sscanf (buffer, "%d %d %d:",
 		    &dfa[i].number, &astate, &estate) != 3)
 	  goto error;
-	for (j=0; j<accepts; j++) 
+	for (j=0; j<accepts; j++)
 	  {
 	     if (accept[j].state == astate)
 	       dfa[i].accept = accept+j;
@@ -863,9 +862,9 @@ static int load_dfa (Highlight *h, char *name)
 	  goto error;
 	p++;
 	p += strspn(p, " ");
-	for (j=0; j<EQUIV_TABLE_SIZE; j++) 
+	for (j=0; j<EQUIV_TABLE_SIZE; j++)
 	  {
-	     if (equiv[j] == j) 
+	     if (equiv[j] == j)
 	       {
 		  q = p + strcspn(p, " ");
 		  r = q + strspn(q, " ");
@@ -881,7 +880,7 @@ static int load_dfa (Highlight *h, char *name)
 	       dfa[i].where_to[j] = dfa[i].where_to[equiv[j]];
 	  }
      }
-   
+
     /*
      * If we've got here, we're actually done. So free the previous
      * list of Accept structures, set up the Highlight structure,
@@ -890,7 +889,7 @@ static int load_dfa (Highlight *h, char *name)
      {
 	Accept *a, *b;
 	a = h->accept;
-	while (a) 
+	while (a)
 	  {
 	     b = a;
 	     a = a->next;
@@ -903,7 +902,7 @@ static int load_dfa (Highlight *h, char *name)
    memcpy ((char *) h->equiv, (char *) equiv, sizeof(equiv));
    fclose (fp);
    return 1;
-   
+
     /*
      * We only get here on error.
      */
@@ -949,16 +948,16 @@ static int load_dfa (Highlight *h, char *name)
  * class.)
  */
 #if USE_DFA_CACHE
-static void save_dfa (Highlight *h, char *name) 
+static void save_dfa (Highlight *h, char *name)
 {
    FILE *fp;
    int i;
    DFA *d;
    Accept *a;
-   
+
    if (!h->filename)
      return;			       /* don't have caching enabled */
-   
+
    fp = fopen (h->filename, "w");
    if (!fp)
      return;			       /* didn't have access, or something */
@@ -967,13 +966,13 @@ static void save_dfa (Highlight *h, char *name)
     * failure, remove the file.
     */
    fprintf(fp, "DFA cache: %s\nVersion: %s\nequiv\n", name, JED_VERSION_STR);
-   
+
     /* write the equivalence classes */
-   for (i=0; i<EQUIV_TABLE_SIZE; i++) 
+   for (i=0; i<EQUIV_TABLE_SIZE; i++)
      {
 	fprintf(fp, "%02X%c", h->equiv[i], ((i+1) % 16 ? ' ' : '\n'));
      }
-   
+
     /* write the accepting states */
    for (i=0, a=h->accept; a; a=a->next, i++);
    fprintf(fp, "accept %d\n", i);
@@ -981,11 +980,11 @@ static void save_dfa (Highlight *h, char *name)
      fprintf(fp, "%d %d %d %d %d %d\n",
 	     a->state, a->is_quick, a->is_end,
 	     a->colour, a->is_preproc, a->is_keyword);
-   
+
     /* write the DFA itself */
    fprintf(fp, "dfa %d\n", h->dfa_states);
-   
-   for (d = h->dfa; d; d = d->next) 
+
+   for (d = h->dfa; d; d = d->next)
      {
 	fprintf(fp, "%d %d %d:", d->number,
 		d->accept ? d->accept->state : -1,
@@ -1002,17 +1001,17 @@ static void save_dfa (Highlight *h, char *name)
 
 #ifdef TEST_MODE
 # include <ctype.h>
-static void dump_it (Highlight *h) 
+static void dump_it (Highlight *h)
 {
    NFA *n;
    DFA *df;
    Accept *a;
    int c, d;
-   
+
    printf("Equivalence classes:\n");
-   for (c=1; c<EQUIV_TABLE_SIZE; c++) 
+   for (c=1; c<EQUIV_TABLE_SIZE; c++)
      {
-	if (h->equiv[c] == c) 
+	if (h->equiv[c] == c)
 	  {
 	     printf("  equivalent to ");
 	     if (isprint(c))
@@ -1020,9 +1019,9 @@ static void dump_it (Highlight *h)
 	     else
 	       printf("\\x%02X", c);
 	     printf(": ");
-	     for (d=c; d<EQUIV_TABLE_SIZE; d++) 
+	     for (d=c; d<EQUIV_TABLE_SIZE; d++)
 	       {
-		  if (h->equiv[d] == c) 
+		  if (h->equiv[d] == c)
 		    {
 		       if (isprint(d))
 			 putchar (d);
@@ -1035,7 +1034,7 @@ static void dump_it (Highlight *h)
      }
    printf("  equivalent to \\x00: everything else\n");
    printf("NFA states: %d\n", h->nfa_states);
-   for (n=h->nfa; n; n=n->next) 
+   for (n=h->nfa; n; n=n->next)
      {
 	printf("  transition %3d -> %3d on ", n->from, n->to);
 	if (n->is_empty)
@@ -1043,7 +1042,7 @@ static void dump_it (Highlight *h)
 	else
 	  for (c=0; c<EQUIV_TABLE_SIZE; c++)
 	    if (h->equiv[c] == c)
-	      if (is_in_set (n->set, c)) 
+	      if (is_in_set (n->set, c))
 	  {
 	     if (isprint(c))
 	       putchar (c);
@@ -1055,9 +1054,9 @@ static void dump_it (Highlight *h)
    for (a=h->accept; a; a=a->next)
      printf("Accepting state: %3d%s\n",
 	    a->state, (a->is_end ? " (end)" : ""));
-   
+
    printf("DFA states:\n");
-   for (df=h->dfa; df; df=df->next) 
+   for (df=h->dfa; df; df=df->next)
      {
 	printf("  %d is [", df->number);
 	for (c=0; c<h->nfa_states; c++)
@@ -1065,7 +1064,7 @@ static void dump_it (Highlight *h)
 	    printf(" %d", c);
 	printf(" ]");
 	for (c=0; c<EQUIV_TABLE_SIZE; c++)
-	  if (h->equiv[c] == c) 
+	  if (h->equiv[c] == c)
 	  {
 	     printf(", to %d on ",
 		    df->where_to[c] ? df->where_to[c]->number : -1);
@@ -1082,34 +1081,33 @@ static void dump_it (Highlight *h)
 }
 #endif				       /* TEST_MODE */
 
-
 static int dfa_try_keyword (register unsigned char *q, int n,
 			    register char *t, int case_sense)
 {
    unsigned char *p;
    int m, result;
-   
+
    if (!t)
      return 0;
-   
-   while (*t) 
+
+   while (*t)
      {
 	p = q;
 	m = n;
 	result = 0;
-	while (m--) 
+	while (m--)
 	  {
 	     unsigned char star_p = *p++;
 	     unsigned char star_t = *t++;
 	     if (!case_sense)
 	       star_p = (unsigned char) LOWER_CASE (star_p);
-	     
+
 	     result = star_p - star_t;
 	     if (result)
 	       break;
 	  }
 	t += m;
-	
+
 	if (result < 0)
 	  return 0;
 	else if (result == 0)
@@ -1117,7 +1115,6 @@ static int dfa_try_keyword (register unsigned char *q, int n,
      }
    return 0;
 }
-
 
 static void dfa_syntax_highlight (register unsigned char *p,
 				  register unsigned char *pmax,
@@ -1130,27 +1127,26 @@ static void dfa_syntax_highlight (register unsigned char *p,
    Accept *accept, *last_accept;
    int preproc = -1, colour, i;
    int case_sense;
-   
+
    if (st == NULL)
      return;
-   
+
    case_sense = !(st->flags & SYNTAX_NOT_CASE_SENSITIVE);
-   
+
    d = h->dfa->next;		       /* the first time, start at state 1 */
-   while (p < pmax) 
+   while (p < pmax)
      {
 	q = p;
 	last_accept = NULL;
 	last_acc_pos = NULL;
-	while (q < pmax) 
+	while (q < pmax)
 	  {
 	     d = d->where_to[*q++];
 	     /* accept = (!d ? NULL : q==pmax ? d->accept_end : d->accept); */
-	     accept = ((d==NULL) ? NULL 
-		       : (q==pmax) ? d->accept_end 
+	     accept = ((d==NULL) ? NULL
+		       : (q==pmax) ? d->accept_end
 		       : d->accept);
-	     
-	     
+
 	     if (accept != NULL)
 	       {
 		/*
@@ -1173,16 +1169,16 @@ static void dfa_syntax_highlight (register unsigned char *p,
 		  break;		       /* error state */
 	       }
 	  }
-	if (last_accept) 
+	if (last_accept)
 	  {
 	     colour = last_accept->colour;
-	     if (last_accept->is_keyword) 
+	     if (last_accept->is_keyword)
 	       {
 		  int n = last_acc_pos - p;
 		  if (n>=1 && n<=MAX_KEYWORD_LEN)
 		    for (i=0; i<MAX_KEYWORD_TABLES; i++)
 		      if (dfa_try_keyword (p, n, st->keywords[i][n-1],
-					   case_sense)) 
+					   case_sense))
 			{
 			   colour = JKEY_COLOR+i;
 			   break;
@@ -1196,7 +1192,7 @@ static void dfa_syntax_highlight (register unsigned char *p,
 	     if (last_accept->is_preproc)
 	       preproc = last_accept->colour;
 	  }
-	else 
+	else
 	  {
 	     if (preproc != -1)
 	       p = write_using_color (p, q, preproc);
@@ -1217,7 +1213,7 @@ void jed_dfa_free_highlight_table (Highlight *h)
 
    if (h == NULL)
      return;
-   
+
    nfa = h->nfa;
    while (nfa != NULL)
      {
@@ -1253,30 +1249,29 @@ static Highlight *find_highlight_table (char *name, int init)
 
    if (table == NULL)
      return NULL;
-   
+
    if ((table->hilite == NULL)
        && init)
      table->hilite = init_highlight ();
-   
+
    return table->hilite;
 }
 
-
-static void define_highlight_rule (char *rule, char *colour, char *name) 
+static void define_highlight_rule (char *rule, char *colour, char *name)
 {
    Highlight *hilite;
    int flags = 0;
    int i;
-   
+
    if (NULL == (hilite = find_highlight_table (name, 1)))
      return;
-   
+
    if (hilite->dfa)
      return;			       /* don't need to */
 
-   while (*colour == 'K' || *colour == 'P' || *colour == 'Q') 
+   while (*colour == 'K' || *colour == 'P' || *colour == 'Q')
      {
-	switch (*colour) 
+	switch (*colour)
 	  {
 	   case 'K':
 	     flags |= FLAG_KEYWORD;
@@ -1290,28 +1285,27 @@ static void define_highlight_rule (char *rule, char *colour, char *name)
 	  }
 	colour++;
      }
-   
+
    if ( (i = jed_get_color_obj (colour)) != -1)
      add_rule (hilite, rule, strlen(rule), flags, i);
 }
 
-
 /* FIXME:
  * If a cache table already exists, any additional rules will get ignored
- * making the dfa_build_highlight_table_hook useless.  The init_dfa_callback 
+ * making the dfa_build_highlight_table_hook useless.  The init_dfa_callback
  * hook looks more or less like:
- * 
+ *
  *    dfa_enable_highlight_cache ("cache.dfa", "syntax-table");
  *    dfa_define_highlight_rule ("pattern", "color-obj", "syntax-table");
  *        .
  *        .
  *    dfa_define_highlight_rule ("pattern", "color-obj", "syntax-table");
  *    dfa_build_highlight_table ("tag");
- * 
- * The problem is that if "cache.dfa" already exists, it will be loaded and 
+ *
+ * The problem is that if "cache.dfa" already exists, it will be loaded and
  * used.
  */
-static void build_highlight_table (char *name) 
+static void build_highlight_table (char *name)
 {
    Highlight *hilite;
 
@@ -1320,7 +1314,7 @@ static void build_highlight_table (char *name)
 
    if (NULL == (hilite = find_highlight_table (name, 0)))
      return;
-   
+
    if (NULL == hilite->dfa)
      {
 	jed_vmessage (1, "Creating DFA syntax table for %s...", name);
@@ -1340,7 +1334,7 @@ static void enable_highlight_cache (char *file, char *name)
 
    if (NULL == (hilite = find_highlight_table (name, 1)))
      return;
-   
+
    if (hilite->filename != NULL)
      SLfree (hilite->filename);
 
@@ -1355,7 +1349,6 @@ static void enable_highlight_cache (char *file, char *name)
 #endif
 }
 
-
 static void set_init_callback (char *name)
 {
    SLang_Name_Type *f;
@@ -1363,7 +1356,7 @@ static void set_init_callback (char *name)
 
    if (NULL == (f = SLang_pop_function ()))
      return;
-   
+
    if (NULL == (t = jed_find_syntax_table (name, 1)))
      {
 	SLang_free_function (f);
@@ -1379,13 +1372,13 @@ static void use_dfa_syntax (int *x)
    Syntax_Table_Type *t = CBuf->syntax_table;
    if (t == NULL)
      t = Default_Syntax_Table;
-   
+
    if (*x == 0)
      {
 	t->use_dfa_syntax = 0;
 	return;
      }
-   
+
    if (t->hilite == NULL)
      {
 	if ((t->init_dfa_callback == NULL)
@@ -1403,7 +1396,7 @@ static void use_dfa_syntax (int *x)
    t->use_dfa_syntax = 1;
 }
 
-static SLang_Intrin_Fun_Type DFA_Intrinsics [] = 
+static SLang_Intrin_Fun_Type DFA_Intrinsics [] =
 {
    MAKE_INTRINSIC_SSS("dfa_define_highlight_rule", define_highlight_rule, VOID_TYPE),
    MAKE_INTRINSIC_S("dfa_build_highlight_table", build_highlight_table, VOID_TYPE),
@@ -1419,5 +1412,3 @@ int jed_init_dfa_syntax (void)
    return SLadd_intrin_fun_table (DFA_Intrinsics, "HAS_DFA_SYNTAX");
 }
 
-
-	

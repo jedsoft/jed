@@ -47,7 +47,6 @@ define cua_bdelete_word ()              % Key_Ctrl_BS
    del_region ();
 }
 
-
 %!%+
 %\function{repeat_search}
 %\synopsis{continue searching with last searchstring}
@@ -59,7 +58,7 @@ public define cua_repeat_search ()
 %%#ifeval (_jed_version >= 9916)
    ifnot (strlen(LAST_SEARCH))
      return menu_select_menu("Global.&Search");
-%%#endif   
+%%#endif
    go_right (1);
    ifnot (fsearch(LAST_SEARCH)) error ("Not found.");
 }
@@ -97,7 +96,7 @@ public define cua_indent_region_or_line ()
 %\synopsis{Escape from a command/aktion}
 %\usage{cua_escape_cmd()}
 %\description
-%   Undo/Stop an action. If a region is defined, undefine it. Else 
+%   Undo/Stop an action. If a region is defined, undefine it. Else
 %   call kbd_quit.
 %\seealso{kbd_quit}
 %!%-
@@ -116,8 +115,8 @@ define cua_escape_cmd()
 %\description
 %   If there is input pending (i.e. if the keycode is multi-character),
 %   "\\e" will be put back to the input stream. Otherwise (if the
-%   ESC key is pressed, "\\e\\e\\e" is pushed back. With ALT_CHAR = 27, the Alt 
-%   key can be used as Meta-key as usual (i.e. press both ALT + <some-key> 
+%   ESC key is pressed, "\\e\\e\\e" is pushed back. With ALT_CHAR = 27, the Alt
+%   key can be used as Meta-key as usual (i.e. press both ALT + <some-key>
 %   to get the equivalent of the ESC <some-key> key sequence.
 %\seealso{escape_cmd, one_press_escape, kbd_quit, map_input, setkey}
 %!%-
@@ -134,7 +133,7 @@ define cua_meta_escape_cmd ()
 %\synopsis{Redefine the ESC key to issue "\\e\\e\\e"}
 %\usage{cua_one_press_escape()}
 %\description
-%   Dependend on the jed-version, either x_set_keysym or 
+%   Dependend on the jed-version, either x_set_keysym or
 %   meta_escape_cmd is used to map the ESC key to "\\e\\e\\e"
 %\example
 % To let the ESC key abort functions but retain bindings for
@@ -146,19 +145,19 @@ define cua_meta_escape_cmd ()
 %\notes
 %   The function is experimental and has sideeffects if not using xjed.
 %   For not-x-jed:
-% 
+%
 %   It uses the "^^" character for temporarily remapping, i.e. Ctrl-^ will
 %   call cua_escape_cmd().
-%   
+%
 %   In order to work, it must be loaded before any mode-specific keymaps are
-%   defined -- otherwise this modes will be widely unusable due to not 
+%   defined -- otherwise this modes will be widely unusable due to not
 %   working cursor keys...!
-%   
+%
 %   It breaks functions that rely on getkey() (e.g. isearch, showkey, old
 %   wmark(pre 99.16), ...)
-%   
+%
 %   It will not work in keybord macros and might fail on slow terminal links.
-%     
+%
 %\seealso{cua_escape_cmd, cua_escape_cmd, getkey, setkey, x_set_keysym}
 %!%-
 define cua_one_press_escape()
@@ -183,13 +182,13 @@ define cua_one_press_escape()
 define cua_save_buffer()
 {
    variable file;
-   
+
    ifnot (buffer_modified())
      {
 	message("Buffer not modified.");
 	return;
      }
-   
+
    file = buffer_filename();
    ifnot (strlen(file))
        save_buffer_as();
@@ -198,7 +197,6 @@ define cua_save_buffer()
 
 } add_completion("cua_save_buffer");
 %}}}
-
 
 provide ("cuamisc");
 

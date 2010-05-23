@@ -1,7 +1,6 @@
 %% occur function
 %%
 
-
 $1 = "Occur";
 ifnot (keymap_p ($1))
 {
@@ -14,10 +13,10 @@ variable Occur_Buffer = Null_String;
 define occur_goto_line ()
 {
    variable line;
-   
+
    ifnot (bufferp (Occur_Buffer))
      return;
-   
+
    bol ();
    push_mark ();
    ifnot (ffind (":"))
@@ -25,14 +24,12 @@ define occur_goto_line ()
 	pop_mark_0 ();
 	return;
      }
-   
+
    line = integer (bufsubstr ());
-   
-   
+
    pop2buf (Occur_Buffer);
    goto_line (line);
 }
-
 
 %!%+
 %\function{occur}
@@ -40,7 +37,7 @@ define occur_goto_line ()
 %\usage{Void occur ();}
 %\description
 % This function may be used to search for all occurances of a string in the
-% current buffer.  It creates a separate buffer called \var{*occur*} and 
+% current buffer.  It creates a separate buffer called \var{*occur*} and
 % associates a keymap called \var{Occur} with the new buffer.  In this
 % buffer, the \var{g} key may be used to go to the line described by the
 % match.
@@ -48,7 +45,7 @@ define occur_goto_line ()
 define occur()
 {
    variable str, tmp, n;
-   
+
    str = read_mini("Find All (Regexp):", LAST_SEARCH, Null_String);
    ifnot (strlen (str))
      return;
@@ -58,17 +55,17 @@ define occur()
    pop2buf(tmp);
    erase_buffer();
    pop2buf(Occur_Buffer);
-   
+
    push_spot();
    bob ();
    while (re_fsearch(str))
      {
 	line_as_string ();  % stack-- at eol too
 	n = what_line ();
-	
+
 	setbuf(tmp);
 	vinsert ("%4d:", n);
-	insert(()); 
+	insert(());
 	newline();
 	setbuf(Occur_Buffer);
 	ifnot (down_1 ()) %% so we do not find another occurance on same line
@@ -77,7 +74,7 @@ define occur()
    pop_spot();
    setbuf(tmp);
    bob(); set_buffer_modified_flag(0);
-   
+
    use_keymap ("Occur");
    run_mode_hooks ("occur_mode_hook");
 }

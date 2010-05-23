@@ -10,7 +10,7 @@
 % Delete Key cuts the block of text.
 % Inserting a character will replace the block with the character.
 % Yanking will replace the block with the text in the yank buffer
-% 
+%
 % Note: If you are having problems with this under linux, then read the
 % jed/doc/txt/linux-keys.txt file.
 
@@ -63,7 +63,6 @@ private define end_wmark ()
    remove_from_hook ("_jed_after_key_hooks", &after_key_hook);
 }
 
-
 private define before_key_hook (fun)
 {
    if (typeof (fun) == Ref_Type)
@@ -99,7 +98,6 @@ private define wmark_prefix ()
 	Wmark_Buffer = whatbuf ();
      }
 }
-
 
 private define wmark_eval (fun)
 {

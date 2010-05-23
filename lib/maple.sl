@@ -31,7 +31,7 @@ define maple_send_input ()
 	pop_mark_1 ();
 	eol ();
 	push_mark ();
-	len = re_bsearch (Maple_Prompt_Regexp);	
+	len = re_bsearch (Maple_Prompt_Regexp);
 	ifnot (len)
 	  {
 	     pop_mark_0 ();
@@ -73,7 +73,6 @@ define maple_insert_output (pid, str)
    move_user_mark (process_mark (pid));
 }
 
-   
 define maple ()
 {
    variable buf = "*maple*";

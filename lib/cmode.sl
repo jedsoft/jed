@@ -42,7 +42,6 @@ custom_variable ("C_Autoinsert_CPP_Comments", 1);
 %!%-
 custom_variable ("C_Switch_Offset", 0);
 
-
 %!%+
 %\variable{C_Outer_Block_Offset}
 %\synopsis{Indentation offset for code in an outer block}
@@ -134,7 +133,6 @@ custom_variable ("C_Macro_Indent", 3);
 %\seealso{C_INDENT}
 %!%-
 custom_variable ("C_Bracket_Indent", 4);
-
 
 %!%+
 %\variable{C_Label_Indents_Relative}
@@ -685,7 +683,7 @@ private define is_continuation_line ()
    % with the common usages of ")," and "},"
    if (blooking_at ("),")) return 1;
    if (blooking_at ("},")) return 0;
-   
+
    return 1;
 }
 
@@ -804,7 +802,7 @@ define c_indent_line ()
      }
 
    % colon statement
-   if (c_looking_at("case") 
+   if (c_looking_at("case")
        || c_looking_at("default")
        || c_looking_at("protected")
        || c_looking_at("private")
@@ -824,7 +822,7 @@ define c_indent_line ()
 	     extra_indent -= C_INDENT;
 	     extra_indent += C_Label_Offset;
 	  }
-	else 
+	else
 	  {
 	     c_indent_to (C_Label_Offset);
 	     pop_spot ();
@@ -1036,7 +1034,7 @@ define c_indent_line ()
 	     % Currently, this results:
 	     %    |static char *
 	     %    |   foo
-	     % FIXME: This is a quick-n-dirty fix that does not work 
+	     % FIXME: This is a quick-n-dirty fix that does not work
 	     % in all cases.
 	     if (looking_at_char ('{'))
 	       extra_indent = 0;
@@ -1225,13 +1223,13 @@ define c_insert_bra ()
    c_bskip_over_comment (0);
    variable ch = what_char (-1);
    pop_spot ();
-   
+
    if (any (ch == [',', '[', '=', '+', '-', '*', '/', '(']))
      {
 	insert_char ('{');
 	return;
      }
-   
+
    push_spot ();
    skip_white ();
    if (eolp ())

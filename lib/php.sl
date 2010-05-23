@@ -6,39 +6,39 @@
 %
 %   D e s c r i p t i o n
 %   ---------------------
-%   
+%
 %   This is a mode for editing php files in jed, hence the name phpmode :)
-%    
+%
 %   The reason for this mode is that the only mode i
-%   could find for editing php files under jed was one 
-%   i found on dotfiles made by Eric Thelin. 
+%   could find for editing php files under jed was one
+%   i found on dotfiles made by Eric Thelin.
 %   But it didn't work as i wanted, so i grabbed what i
 %   could from it, and started from cmode as a template.
-%   
+%
 %   At the moment it does keyword highlighting and proper
 %   indenting, plus a slew of other functionality.
-%   
+%
 %   -------------------------------------------------------------------------------------------
 %   PHP-mode variables:
 %   -------------------------------------------------------------------------------------------
 %   variable PHP_INDENT      = 4;       % Amount of space to indent within block.
 %   variable PHP_BRACE       = 0;       % Amount of space to indent brace
-%   variable PHP_BRA_NEWLINE = 0;       % If non-zero, insert a newline first before inserting 
+%   variable PHP_BRA_NEWLINE = 0;       % If non-zero, insert a newline first before inserting
 %                                       % a '{'.
 %   variable PHP_CONTINUED_OFFSET = 2;  % This variable controls the indentation of statements
 %                                       % that are continued onto the next line.
 %   variable PHP_Colon_Offset = 1;      % Controls the indentation of case inside switch statements.
 %   variable PHP_Class_Offset = 4;      % Controls the amount of indenting inside the class,
 %                                       % doesn't apply to the braces
-%   variable PHP_Switch_Offset = 0      % Controls the ammount of extra indention inside switch statements.                                    
-%   variable PHP_KET_NEWLINE = 0;       % If non-zero, insert a newline first before inserting 
+%   variable PHP_Switch_Offset = 0      % Controls the ammount of extra indention inside switch statements.
+%   variable PHP_KET_NEWLINE = 0;       % If non-zero, insert a newline first before inserting
 %                                       % a '}'.
 %   variable PHP_Autoinsert_Comments = 1;
 %  --------------------------------------------------------------------------------------------
-%   
+%
 %   T h a n k s  g o  o u t  t o
 %   ----------------------------
-%   
+%
 %    o Eric thelin <eric at thelin.org> for his phpmode that got me started.
 %    o David <dstegbauer at post.cz>  who pointed out that php isn't in fact a
 %      case sensitive language when it comes to
@@ -65,7 +65,6 @@ custom_variable( "PHP_Switch_Offset", 0 );
 custom_variable( "PHP_KET_NEWLINE", 0 );
 custom_variable( "PHP_Autoinsert_Comments", 0 );
 
-
 private define php_is_comment( ) %{{{
 {
 	push_spot( );
@@ -88,7 +87,7 @@ private define php_parse_to_point( ) %{{{
 private variable PHPmode_Fill_Chars = "";
 define php_paragraph_sep( ) %{{{
 {
-	if( strlen( PHPmode_Fill_Chars )) 
+	if( strlen( PHPmode_Fill_Chars ))
 	  return 0;
 	push_spot( );
 	bol_skip_white( );
@@ -96,10 +95,10 @@ define php_paragraph_sep( ) %{{{
 	{
 		go_right( 2 );
 		skip_white( );
-		if( looking_at( "@ " )) 
+		if( looking_at( "@ " ))
 		  eol( );
 	}
-	
+
 	eolp( ) or ( -2 != parse_to_point( ) );
 	pop_spot( );
 }
@@ -107,73 +106,73 @@ define php_paragraph_sep( ) %{{{
 define php_format_paragraph( ) %{{{
 {
 	variable n, dwrap;
-	
+
 	PHPmode_Fill_Chars = "";
-	if( php_paragraph_sep( ) ) 
+	if( php_paragraph_sep( ) )
 	  return;
-	push_spot( ); 
-	push_spot( ); 
 	push_spot( );
-	
+	push_spot( );
+	push_spot( );
+
 	while( not( php_paragraph_sep( ) ))
 	{
-		ifnot( up_1( ) ) 
+		ifnot( up_1( ) )
 		  break;
 	}
-	if( php_paragraph_sep( ) ) 
+	if( php_paragraph_sep( ) )
 	  go_down_1( );
 	push_mark( );
 	pop_spot( );
-	
+
 	while( not( php_paragraph_sep( ) ))
 	{
-		ifnot( down_1( ) ) 
+		ifnot( down_1( ) )
 		  break;
 	}
-	
-	if( php_paragraph_sep( ) ) 
+
+	if( php_paragraph_sep( ) )
 	  go_up_1( );
-	
+
 	narrow( );
 	pop_spot( );
 	bol( );
 	push_mark( );
 	skip_white( );
-	if( looking_at( "* " )) 
+	if( looking_at( "* " ))
 	  go_right( 2 );
-	else if( looking_at( "// " )) 
+	else if( looking_at( "// " ))
 	  go_right( 3 );
-	else if( looking_at( "# " )) 
+	else if( looking_at( "# " ))
 	  go_right( 2 );
-	
+
 	PHPmode_Fill_Chars = bufsubstr( );
 	dwrap = what_column( );
 	bob( );
-	do 
+	do
 	{
 		bol_trim( );
-		if( looking_at( "* " )) 
+		if( looking_at( "* " ))
 		  deln( 2 );
-		else if( looking_at( "// " )) 
+		else if( looking_at( "// " ))
 		  deln( 3 );
-		else if( looking_at( "# " )) 
+		else if( looking_at( "# " ))
 		  deln( 2 );
 	}
-	
+
 	while( down_1( ) );
 	WRAP -= dwrap;
 	call( "format_paragraph" );
 	WRAP += dwrap;
 	bob( );
-	do 
+	do
 	{
 		insert( PHPmode_Fill_Chars );
 	}
 	while( down_1( ) );
-	
+
 	bol( );
 	go_right( strlen( PHPmode_Fill_Chars ));
-	
+
 	skip_white( );
 	if( looking_at( "*/" ))
 	{
@@ -181,7 +180,7 @@ define php_format_paragraph( ) %{{{
 		bol_skip_white( );
 		del_region( );
 	}
-	
+
 	PHPmode_Fill_Chars = "";
 	widen( );
 	pop_spot( );
@@ -189,26 +188,26 @@ define php_format_paragraph( ) %{{{
 %}}}
 define php_in_block( ) %{{{
 {
-	variable begin = 0, end = 0;	
+	variable begin = 0, end = 0;
 	variable delim_start = "<?";
 	variable delim_end   = "?>";
 	variable delim_ASP_start = "<%";
 	variable delim_ASP_end   = "%>";
 	variable test;
-	
+
 	push_spot( );
 	if( bolp( ) )
 	{
-		if( looking_at( delim_start ) 
-			or looking_at( delim_end ) 
-			or looking_at( delim_ASP_start ) 
+		if( looking_at( delim_start )
+			or looking_at( delim_end )
+			or looking_at( delim_ASP_start )
 			or looking_at( delim_ASP_end ))
 		{
 			pop_spot( );
 			return( 1 );
 		}
 	}
-	
+
 	if( looking_at( ">" ))
 	{
 		go_left( 1 );
@@ -218,7 +217,7 @@ define php_in_block( ) %{{{
 			return( 1 );
 		}
 	}
-	
+
 	forever
 	{
 		if( bsearch( delim_start ) or bsearch( delim_ASP_start ))
@@ -233,9 +232,9 @@ define php_in_block( ) %{{{
 			break;
 		}
 	}
-	
+
 	pop_spot( );
-	
+
 	push_spot( );
 	forever
 	{
@@ -251,9 +250,9 @@ define php_in_block( ) %{{{
 			break;
 		}
 	}
-	
+
 	pop_spot( );
-	
+
 	if( end < begin )
 	{
 		return( 1 );
@@ -271,14 +270,14 @@ define php_top_of_function( ) %{{{
 	{
 		error( "Cant find top of function" );
 	}
-	
+
 	% Check to see if were in a comment
 	if( php_parse_to_point( ) )
 	{
 		pop_spot( );
 		error( "Cant find top of function" );
 	}
-	
+
 	ifnot( fsearch( "{") )
 	{
 		error( "Missing beginning brace of function." );
@@ -329,7 +328,7 @@ define php_mark_matching( ) %{{{
 		% Found one
 		pop_spot( );
 		push_visible_mark( );
-		find_matching_delimiter( 0 );		
+		find_matching_delimiter( 0 );
 		exchange_point_and_mark( );
 	} else {
 		pop_spot( );
@@ -338,28 +337,28 @@ define php_mark_matching( ) %{{{
 %}}}
 define php_bskip_over_comment( ) %{{{
 {
-	forever 
-	{	
+	forever
+	{
 		bskip_chars (" \t\n");
 		if( bobp( ) )
 		  return;
-		
+
 		push_mark( );
 		while( up_1( ) )
-		{	
+		{
 			go_down_1( );
 			break;
 		}
-		
+
 		bol_skip_white( );
-		
+
 		if( looking_at( "<?" ) or looking_at( "?>" ) or looking_at( "<%" ) or looking_at( "%>" ))
 		{
 			pop_mark_0( );
 			continue;
 		}
 		pop_mark_1( );
-		
+
 		ifnot( blooking_at( "*/" ))
 		{
 			push_mark( );
@@ -373,14 +372,14 @@ define php_bskip_over_comment( ) %{{{
 					break;
 				}
 			}
-			
+
 			if( 0 == parse_to_point( ) and found != 0 )
 			{
 				% Not in a comment or string
 				pop_mark_0( );
 				continue;
 			}
-			
+
 			bol( );
 			ifnot( bobp( ) )
 			{
@@ -389,7 +388,7 @@ define php_bskip_over_comment( ) %{{{
 					pop_mark_0( );
 					continue;
 				}
-			}			
+			}
 			pop_mark_1( );
 			break;
 		}
@@ -401,7 +400,7 @@ private define php_looking_at( token ) %{{{
 {
 	variable cse = CASE_SEARCH, ret = 0;
 	CASE_SEARCH = 1;
-	
+
 	if( looking_at( token ))
 	{
 		push_spot( );
@@ -421,7 +420,7 @@ private define php_indent_to( n ) %{{{
 	% Force a reindent if the line does not contain tabs followed by spaces.
 	skip_chars( "\t" );
 	skip_chars( " " );
-	
+
 	if( ( what_column != n )
 		or ( _get_point( ) != ( skip_white( ), _get_point( ))))
 	{
@@ -436,7 +435,7 @@ private define php_indent_continued_comment( col ) %{{{
 	push_spot( );
 	col++;			       %  add 1 so the we indent under * in /*
 	php_indent_to( col );
-	
+
 	if( looking_at( "*" )
 		or not( eolp( ) ))
 	  pop_spot( );
@@ -444,7 +443,7 @@ private define php_indent_continued_comment( col ) %{{{
 	{
 		insert( "* " );
 		pop_spot( );
-		
+
 		if( what_column( ) <= col )
 		{
 			goto_column( col + 2 );
@@ -477,9 +476,9 @@ private define inside_class( bra ) %{{{
 	{
 		pop_spot( );
 	}
-	
+
 	goto_user_mark( bra );
-	
+
 	% Assume that class is at the beginning of a line.  We may want to
 	% change this assumption later.
 	while( re_bsearch( "^\\c[ \t]*\\<class\\>" ))
@@ -493,35 +492,35 @@ private define inside_class( bra ) %{{{
 					go_right_1( );
 					continue;
 				}
-				
+
 				if ( bra == create_user_mark( ) )
 				  return 1;
 				break;
 			}
 			return 0;
 		}
-		
+
 		ifnot( left( 1 ))
 		  break;
 	}
-	
+
 	return 0;
 } %}}}
 %#endif
 define php_indent_line( ) %{{{
-{	
+{
 	variable val, col, extra_indent = 0;
 	variable prep_line = 0;
 	variable match_char, match_indent, this_char, match_line;
 	variable match_mark;
 	variable is_continuation = 0;
-	
+
 	% Check whetever we are in a php block or not
 	if( php_in_block( ) )
 	{
 		push_spot( );
 		bol_skip_white( );
-		
+
 		% Store the character we are standing on
 		this_char = what_char( );
 		if( -2 == parse_to_point( ) )
@@ -534,12 +533,12 @@ define php_indent_line( ) %{{{
 			php_mode_if_bol_skip_white( );
 			return;
 		}
-		
+
 		EXIT_BLOCK
 		{
 			php_mode_if_bol_skip_white( );
 		}
-		
+
 		if(php_looking_at( "case" ) || php_looking_at( "default" ))
 		{
 			if( ffind_char( ':' ))
@@ -562,7 +561,7 @@ define php_indent_line( ) %{{{
 				      || blooking_at( ":" )
 				      || bobp( )
 				     )
-				{	
+				{
 					% This needs to be here to make sure were still in the phpblock
 					if( php_in_block( ) )
 					{
@@ -571,8 +570,8 @@ define php_indent_line( ) %{{{
 						{
 							% message("hej");
 							extra_indent += PHP_CONTINUED_OFFSET;
-						} 
-						else 
+						}
+						else
 						{
 							% message("hej3");
 							push_spot( );
@@ -582,13 +581,13 @@ define php_indent_line( ) %{{{
 							extra_indent += PHP_CONTINUED_OFFSET;
 							pop_spot( );
 						}
-					
-						% extra_indent += PHP_CONTINUED_OFFSET;					
+
+						% extra_indent += PHP_CONTINUED_OFFSET;
 						is_continuation++;
 						% is_continuation++;
 					}
 				}
-				
+
 				ifnot( blooking_at( ")" ))
 				  break;
 				push_mark( );
@@ -598,27 +597,27 @@ define php_indent_line( ) %{{{
 					pop_mark_1( );
 					break;
 				}
-				
+
 				php_bskip_over_comment( );
-				
+
 				push_spot( );
 				if( ( 1 == find_matching_delimiter( ')' )), pop_spot( ) )
 				{
 					pop_mark_1( );
 					break;
 				}
-				
+
 				pop_mark_0( );
 				bol ( );
 			}
 		}
-		
+
 		val = find_matching_delimiter( ')' );
 		match_mark = create_user_mark( );
-		
+
 		match_char = what_char( );
 		match_line = what_line( );
-		
+
 		if( ( val < 0 ) and looking_at( "/*" ))
 		  val = -2;
 		else if( val == 1 )
@@ -626,7 +625,7 @@ define php_indent_line( ) %{{{
 			go_right( 1 );
 			skip_white( );
 		}
-		
+
 		col = what_column( );
 
 		bol_skip_white( );
@@ -635,9 +634,9 @@ define php_indent_line( ) %{{{
 		{
 			match_char = 0;
 		}
-		
+
 		pop_spot( );
-		
+
 		switch( val )
 		{
 		 case 0:			       %  mismatch
@@ -645,27 +644,27 @@ define php_indent_line( ) %{{{
 			{
 				push_spot( );
 				goto_user_mark( match_mark );
-				
-				bskip_chars( "\n\t " );				
+
+				bskip_chars( "\n\t " );
 				if( blooking_at( ")" ))
 				{
 					variable same_line = ( what_line == match_line );
-					
+
 					go_left_1( );
 					if( 1 == find_matching_delimiter( ')' ))
 					{
 						bol_skip_white( );
-						
+
 						if( same_line )
 						  match_indent = what_column( );
-						
+
 						% NOTE: This needs work.
 						if( ( this_char != '}' )
 							and looking_at( "switch" ))
 						  match_indent += PHP_Switch_Offset;
 					}
 				}
-				
+
 				pop_spot( );
 				col = match_indent;
 #ifexists PHP_Class_Offset
@@ -690,7 +689,7 @@ define php_indent_line( ) %{{{
 				  extra_indent = PHP_BRACE;
 				extra_indent++;
 				php_indent_to( extra_indent );
-				pop_spot( );				
+				pop_spot( );
 				return;
 			}
 		}
@@ -700,7 +699,7 @@ define php_indent_line( ) %{{{
 		}
 		{
 		case -2:			       %  inside comment
-			if( this_char != '\\' ) 
+			if( this_char != '\\' )
 			  col++;
 			php_indent_continued_comment( col );
 			return;
@@ -718,7 +717,7 @@ define php_indent_line( ) %{{{
 			col -= PHP_INDENT;
 		}
 		{
-		 case '{':			
+		 case '{':
 			col += PHP_BRACE;
 			if( is_continuation )
 			  col -= PHP_CONTINUED_OFFSET;
@@ -727,7 +726,7 @@ define php_indent_line( ) %{{{
 		{
 			col += extra_indent;
 		}
-		
+
 		push_spot( );
 		php_indent_to( col );
 		pop_spot( );
@@ -737,7 +736,7 @@ define php_indent_line( ) %{{{
 define php_indent_region_or_line( ) %{{{
 {
 	ifnot( is_visible_mark )
-        {	
+        {
 		if( php_in_block( ) )
 		  php_indent_line( );
 		else
@@ -775,28 +774,28 @@ define php_indent_buffer( ) %{{{
 		bol_skip_white( );
 		indent_line( );
 	} while( down_1( ) );
-	
+
 	trim_buffer( );
 	flush( sprintf( "processed %d/%d lines.", what_line( ), max_line ));
 	pop_spot( );
 }
 %}}}
 define php_newline_and_indent( ) %{{{
-{	
+{
 	variable PhpCcComment = "//";
 	variable PhpBashComment = "#";
-	
+
 	if( bolp ( ) )
 	{
 		newline( );
 		php_indent_line( );
 		return;
 	}
-	
+
 	variable col;
 	variable PhpCcComment_len = strlen( PhpCcComment );
 	variable PhpBashComment_len = strlen( PhpBashComment );
-	
+
 	if( PHP_Autoinsert_Comments )
 	{
 		col = what_column( );
@@ -820,10 +819,10 @@ define php_newline_and_indent( ) %{{{
 			newline( );
 			if( col > PhpBashComment_len ) insert( PhpBashComment );
 			return;
-		}		  
+		}
 		pop_spot( );
 	}
-	
+
 	col = php_is_comment( );
 	newline( );
 	if( col )
@@ -844,23 +843,23 @@ define php_insert_bra( ) %{{{
 		if( blooking_at( "," ), pop_spot( ) )
 		{
 			insert_char( '{' );
-		} else { 
+		} else {
 			push_spot( );
 			skip_white( );
 			if( eolp( ) )
 			{
 				bskip_white( );
-				if( not( bolp( ) ) and PHP_BRA_NEWLINE, pop_spot( ) ) 
+				if( not( bolp( ) ) and PHP_BRA_NEWLINE, pop_spot( ) )
 				  newline( );
 				push_spot( );
 				bskip_white( );
 				bolp( );	       %  on stack
 				pop_spot( );
 				insert_char( '{' );
-				if( ( ) ) 
+				if( ( ) )
 				  php_indent_line( );   %  off stack
 				eol( );
-				if( PHP_BRA_NEWLINE ) 
+				if( PHP_BRA_NEWLINE )
 				  php_newline_and_indent( );
 			} else  {
 				pop_spot( );
@@ -874,11 +873,11 @@ define php_insert_ket( ) %{{{
 {
 	variable status = php_parse_to_point( );
 	variable line = what_line( );
-	
+
 	push_spot( );
 	skip_white( );
 	push_spot( );
-	if( status 
+	if( status
 		or not( eolp( ) )
 		or( 1 == find_matching_delimiter( '}' )) and( line == what_line( ) ))
 		%or (bol_skip_white ( ), looking_at_char ('{')), pop_spot ( ))
@@ -895,7 +894,7 @@ define php_insert_ket( ) %{{{
 		blink_match( );
 		return;
 	}
-	
+
 	pop_spot( );
 	bskip_white( );
 	if( bolp( ), pop_spot( ) )
@@ -910,7 +909,7 @@ define php_insert_ket( ) %{{{
 		  insert( "}" );
 	}
 	php_indent_line( );
-	eol( ); 
+	eol( );
 	blink_match( );
 	if( PHP_BRA_NEWLINE )
 	  php_newline_and_indent( );
@@ -941,9 +940,9 @@ define php_insert_function( ) %{{{
 	variable name = php_getname( "function:" );
 	php_ins_tn( sprintf( "function %s ( )", name ));
 	php_ins_tn( "{" );
-	php_ins_tn( "" );	
+	php_ins_tn( "" );
 	php_ins_tn( "}" );
-	bsearch( ")" );	
+	bsearch( ")" );
 }
 %}}}
 define php_insert_class( ) %{{{
@@ -951,8 +950,8 @@ define php_insert_class( ) %{{{
 	variable name = php_getname( "class:" );
 	php_ins_tn(sprintf( "class %s", name ));
 	php_ins_tn( "{" );
-	php_ins_tn( "" );	
-	php_ins_tn( "}" );	
+	php_ins_tn( "" );
+	php_ins_tn( "}" );
 }
 %}}}
 define php_insert_tab( ) %{{{
@@ -982,7 +981,7 @@ private define php_init_menu( menu ) %{{{
 %}}}
 $1 = "PHP";
 
-ifnot( keymap_p( $1 )) 
+ifnot( keymap_p( $1 ))
   make_keymap( $1 ); %{{{
 definekey( "indent_line", "\t", $1 );
 definekey( "php_top_of_function", "\e^A", $1 );
@@ -1026,7 +1025,7 @@ private define setup_dfa_callback( name )
 	dfa_enable_highlight_cache( "php.dfa", name );
 	dfa_define_highlight_rule( "<%", "Qpreprocess", name );          % Asp style start tag
 	dfa_define_highlight_rule( "%>", "Qpreprocess", name );          % Asp style end tag
-	dfa_define_highlight_rule( "<\\?|<\\?php", "preprocess", name ); % Php style start tag 
+	dfa_define_highlight_rule( "<\\?|<\\?php", "preprocess", name ); % Php style start tag
 	dfa_define_highlight_rule( "\\?>", "Qpreprocess", name ); % Php style end tag
 	dfa_define_highlight_rule ("<!\\-\\-.*\\-\\-[ \t]*>", "Qcomment", name); % HTML comments
 	dfa_define_highlight_rule ("<!\\-\\-", "comment", name); % HTML comments
@@ -1869,10 +1868,10 @@ define php_mode( )
 	use_syntax_table( kmap );
 	set_buffer_hook( "par_sep", "php_paragraph_sep" );
 	set_buffer_hook( "indent_hook", "php_indent_region_or_line" );
-	set_buffer_hook( "newline_indent_hook", "php_newline_and_indent" ); 
-	
+	set_buffer_hook( "newline_indent_hook", "php_newline_and_indent" );
+
 	mode_set_mode_info( "PHP", "fold_info", "//{{{\r//}}}\r\r" );
-	mode_set_mode_info( "PHP", "init_mode_menu", &php_init_menu );	
+	mode_set_mode_info( "PHP", "init_mode_menu", &php_init_menu );
 	run_mode_hooks( "php_mode_hook" );
 }
 

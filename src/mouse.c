@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -63,7 +63,6 @@ static JMouse_Type Current_Event;
 
 static int Mouse_Queue_Hint;
 
-
 static unsigned char Mouse_Button_Map [6] =
 {
    JMOUSE_BUTTON_1,
@@ -77,7 +76,7 @@ static unsigned char Mouse_Button_Map [6] =
 /*}}}*/
 
 #ifndef USE_GPM_MOUSE
-# if defined(__MSDOS__) 
+# if defined(__MSDOS__)
 #  if !defined(MSWINDOWS)
 #   include "pcmouse.c"
 #  endif
@@ -90,7 +89,6 @@ void (*X_Close_Mouse_Hook)(void);
 #  endif /* os2 */
 # endif /* ibmpc */
 #endif /* NOT USE_GPM_MOUSE */
-
 
 #if JED_HAS_MENUS
 static int Hack_Hack = 1;
@@ -118,12 +116,12 @@ static unsigned char m2b (int m)
 void jed_map_mouse_buttons (int *ap, int *bp) /*{{{*/
 {
    unsigned char a, b;
-   
+
    a = m2b (*ap);
    b = m2b (*bp);
-   
+
    if ((a > 5) || (b > 5)) return;
-   
+
    Mouse_Button_Map [a] = b << 1;
 }
 
@@ -142,7 +140,7 @@ int jed_mouse_add_event (JMouse_Type *ev) /*{{{*/
 	  }
 	Mouse_Queue_Hint++;
      }
-   
+
    Mouse_Queue_Hint = save;
    while (Mouse_Queue_Hint > 0)
      {
@@ -153,14 +151,14 @@ int jed_mouse_add_event (JMouse_Type *ev) /*{{{*/
 	     return Mouse_Queue_Hint;
 	  }
      }
-   
+
    if (Input_Buffer_Len == 0)
      {
 	jed_flush_mouse_queue ();
 	Mouse_Queue [0] = *ev;
 	return 0;
      }
-   
+
    return -1;
 }
 
@@ -170,25 +168,25 @@ static JMouse_Type *get_mouse_event (unsigned int *type) /*{{{*/
 {
    int queue_pos;
    JMouse_Type *jm;
-   
-   /* Keyboard input should be ready.  If it is not, get out. */   
+
+   /* Keyboard input should be ready.  If it is not, get out. */
    if (0 == input_pending (&Number_Zero))
      return NULL;
-   
+
    queue_pos = jed_getkey ();
-   
-   if ((queue_pos >= JED_MOUSE_MAX_QUEUE_SIZE) 
+
+   if ((queue_pos >= JED_MOUSE_MAX_QUEUE_SIZE)
        || (queue_pos < 0))
      return NULL;
-   
+
    jm = Mouse_Queue + queue_pos;
    /* 1, 2, 4, 8,..., 32 --> Mouse_Button_Map of 0, 1, 2, ... 5 */
    jm->button = Mouse_Button_Map [m2b(jm->button)];
    *type = jm->type;
    jm->type = 0;
-   
+
    Mouse_Queue_Hint = queue_pos;
-   
+
    return jm;
 }
 
@@ -206,7 +204,7 @@ void jed_mouse_get_event_info (void) /*{{{*/
 void jed_flush_mouse_queue (void) /*{{{*/
 {
    unsigned int i;
-   
+
    for (i = 0; i < JED_MOUSE_MAX_QUEUE_SIZE; i++)
      Mouse_Queue[i].type = 0;
    Mouse_Queue_Hint = 0;
@@ -217,7 +215,7 @@ void jed_flush_mouse_queue (void) /*{{{*/
 static int window_exists (Window_Type *win) /*{{{*/
 {
    Window_Type *w;
-   
+
    w = JWindow;
    do
      {
@@ -235,9 +233,9 @@ static int switch_to_event_window (int x, int y, int *linep, int *colp, int *sta
    Window_Type *w;
    int delta_y;
    static int last_status;
-   
+
    *status = 0;
-   
+
    if (Use_This_Window != NULL)
      {
 #if JED_HAS_MENUS
@@ -268,7 +266,7 @@ static int switch_to_event_window (int x, int y, int *linep, int *colp, int *sta
 	     *status = last_status = MENU_BAR_STATUS;
 	     return 0;
 	  }
-#endif	     
+#endif
 	w = JWindow;
 	do
 	  {
@@ -276,7 +274,7 @@ static int switch_to_event_window (int x, int y, int *linep, int *colp, int *sta
 
 	     sy = w->sy;
 	     bot = sy + w->rows + 1;
-	     
+
 	     if ((y >= sy) && (y < bot))
 	       {
 		  Use_This_Window = w;
@@ -292,23 +290,23 @@ static int switch_to_event_window (int x, int y, int *linep, int *colp, int *sta
 	  }
 	while (w != JWindow);
      }
-   
-   if (Use_This_Window == NULL) 
+
+   if (Use_This_Window == NULL)
      {
 	last_status = 0;
 	return -1;
      }
-   
+
    while (JWindow != Use_This_Window)
      other_window ();
 
    last_status = *status;
-   if (last_status) 
+   if (last_status)
      {
 	*colp = x;
 	return 0;
      }
-   
+
    /* What line does y correspond ??? */
    delta_y = y - (Use_This_Window->sy + window_line ());
    y = LineNum;
@@ -316,7 +314,7 @@ static int switch_to_event_window (int x, int y, int *linep, int *colp, int *sta
    if (delta_y == 0)
      {
 	Line *l = CLine;
-	while ((l != NULL) 
+	while ((l != NULL)
 	       && (l->flags & JED_LINE_HIDDEN))
 	  {
 	     y--;
@@ -333,7 +331,7 @@ static int switch_to_event_window (int x, int y, int *linep, int *colp, int *sta
 	     l = l->next;
 	     y++;
 	  }
-	
+
 	while ((l != NULL) && (l->flags & JED_LINE_HIDDEN))
 	  {
 	     l = l->next;
@@ -350,7 +348,7 @@ static int switch_to_event_window (int x, int y, int *linep, int *colp, int *sta
 	     l = l->prev;
 	     y--;
 	  }
-	
+
 	while ((l != NULL) && (l->flags & JED_LINE_HIDDEN))
 	  {
 	     l = l->prev;
@@ -377,11 +375,11 @@ static int do_function (SLang_Name_Type *fun, int line, int col, int button, int
        || (-1 == SLang_push_integer (shift))
        || (-1 == SLang_end_arg_list ()))
      return 1;
-   
+
    if ((-1 == SLexecute_function (fun))
        || (-1 == SLang_pop_integer (&ret)))
      ret = 1;
-   
+
    return ret;
 }
 
@@ -396,7 +394,7 @@ static void switch_to_window (Window_Type *w) /*{{{*/
 }
 
 /*}}}*/
-   
+
 static int do_mouse_cmd (JMouse_Type *jmouse, unsigned int type) /*{{{*/
 {
    int button, shift;
@@ -406,7 +404,7 @@ static int do_mouse_cmd (JMouse_Type *jmouse, unsigned int type) /*{{{*/
    Jed_Buffer_Hook_Type *h = CBuf->buffer_hooks;
 
    button = jmouse->button;
-   
+
    /* Consistency check */
    if (type == JMOUSE_DOWN)
      {
@@ -424,18 +422,18 @@ static int do_mouse_cmd (JMouse_Type *jmouse, unsigned int type) /*{{{*/
 	Down_Mask = 0;
 	return 0;
      }
-     
+
    if (Down_Mask == 0)
      Use_This_Window = NULL;
-   
-   if (-1 == switch_to_event_window (jmouse->x, jmouse->y, 
+
+   if (-1 == switch_to_event_window (jmouse->x, jmouse->y,
 				     &linenum, &column, &is_status))
      {
 	Down_Mask = 0;
 	Use_This_Window = NULL;
 	return 0;
      }
-   
+
    default_fun = NULL;
    fun = NULL;
 
@@ -477,10 +475,10 @@ static int do_mouse_cmd (JMouse_Type *jmouse, unsigned int type) /*{{{*/
 	     default_fun = Jed_Default_Mouse_Down_Hook;
 	  }
 	break;
-	
+
       case JMOUSE_UP:
 	Down_Mask &= ~button;
-	
+
 	if (is_status) fun = Jed_Mouse_Status_Up_Hook;
 	else
 	  {
@@ -488,7 +486,7 @@ static int do_mouse_cmd (JMouse_Type *jmouse, unsigned int type) /*{{{*/
 	     default_fun = Jed_Default_Mouse_Up_Hook;
 	  }
 	break;
-	
+
       default:
 	flush_input ();
 	fun = NULL;
@@ -510,7 +508,7 @@ static int do_mouse_cmd (JMouse_Type *jmouse, unsigned int type) /*{{{*/
      {
 	ret = do_function (fun, linenum, column, button, shift);
      }
-   
+
    if ((ret == -1) && (default_fun != NULL))
      {
 	ret = do_function (default_fun, linenum, column, button, shift);
@@ -533,11 +531,11 @@ int jed_mouse_cmd (void) /*{{{*/
 {
    unsigned int type;
    JMouse_Type *jmouse;
-   
+
    if ((NULL == (jmouse = get_mouse_event (&type)))
        || (type == JMOUSE_IGNORE_EVENT))
      return 0;
-   
+
    Current_Event = *jmouse;
 
 #if JED_HAS_MULTICLICK
@@ -566,7 +564,7 @@ void jed_set_current_mouse_window (void) /*{{{*/
 void jed_set_default_mouse_hook (char *hook_name, char *function) /*{{{*/
 {
    SLang_Name_Type *f;
-   
+
    f = SLang_get_function (function);
 
    if (!strcmp ("mouse_drag", hook_name))

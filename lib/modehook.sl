@@ -5,7 +5,7 @@
 %\synopsis{Control the use of "eval" from a file's mode statement}
 %\description
 % When a file is read into a buffer, the editor will look for a line near the
-% top of the file containing \exmp{-*- TEXT -*-}, where \exmp{TEXT} usually 
+% top of the file containing \exmp{-*- TEXT -*-}, where \exmp{TEXT} usually
 % specifies the mode to be applied to the buffer, e.g.,
 %#v+
 %    /* -*- C -*- */
@@ -17,15 +17,15 @@
 %   /* -*- mode: C; eval: set_buffer_no_backup; -*- */
 %#v-
 % This example would cause c-mode to be assigned to the buffer, and backups
-% for the file turned-off.  Obviously this poses a security risk, since it 
-% permits the evaluation of arbitrary \slang code.  
-% 
-% The \var{Enable_Mode_Hook_Eval} variable may be used to control how 
+% for the file turned-off.  Obviously this poses a security risk, since it
+% permits the evaluation of arbitrary \slang code.
+%
+% The \var{Enable_Mode_Hook_Eval} variable may be used to control how
 % \var{eval}, and other potentially risky constructs are handled by the file's
 % mode statement.  If its value is 0, such statements will not get executed.
 % If the value of \var{Enable_Mode_Hook_Eval} is \NULL, then the editor will
-% query the user about whether to execute the statement, otherwise such 
-% statements will get executed.  The default value is \NULL, i.e., to 
+% query the user about whether to execute the statement, otherwise such
+% statements will get executed.  The default value is \NULL, i.e., to
 % query the user.
 %\seealso{modeline_hook2, eval, evalfile, set_mode}
 %!%-
@@ -35,7 +35,7 @@ private define check_eval (checked)
 {
    if (@checked != -1)
      return @checked;
-   
+
    if (Enable_Mode_Hook_Eval == NULL)
      {
 	sw2buf (whatbuf ());
@@ -43,7 +43,7 @@ private define check_eval (checked)
 	@checked = get_yes_no ("Allow execution of file's mode statement");
      }
    else @checked = Enable_Mode_Hook_Eval == 1;
-   
+
    return @checked;
 }
 
@@ -64,7 +64,7 @@ private define check_eval (checked)
 define modeline_hook2 ()
 {
    variable keyword, value, mode = 0, tag = "-*-", modestr;
-   
+
    if (BATCH)
      return 0;
 
@@ -81,7 +81,7 @@ define modeline_hook2 ()
 #endif
 
 	push_spot ();
-	skip_white (); 
+	skip_white ();
 	ifnot (ffind (tag), pop_spot ()) break;	% closing tag exists?
 
 	forever
@@ -93,7 +93,7 @@ define modeline_hook2 ()
 		  pop_mark_0 ();
 		  break;
 	       }
-	     keyword = bufsubstr ();	     
+	     keyword = bufsubstr ();
 	     go_right_1 ();
 
 	     push_mark ();
@@ -105,9 +105,9 @@ define modeline_hook2 ()
 	       }
 	     while (right (1));
 	     value = strtrim (bufsubstr ());
-	     
+
 	     push_spot ();
-	     
+
 	     ERROR_BLOCK
 	       {
 		  pop_spot ();
@@ -117,7 +117,7 @@ define modeline_hook2 ()
 	       { case "mode":
 		  modestr = "_mode";
 		  value = strlow (strtrans (value, "-", "_"));
-		  ifnot (is_substr (value, modestr)) 
+		  ifnot (is_substr (value, modestr))
 		    value += modestr;
 		  if (value == "c++_mode")
 		    value = "c_mode";
@@ -139,7 +139,7 @@ define modeline_hook2 ()
 		  if (check_eval (&checked))
 		    eval (keyword + " = " + value);
 	       }
-	     
+
 	     pop_spot ();
 	  }
 	go_down_1 ();

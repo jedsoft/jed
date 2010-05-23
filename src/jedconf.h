@@ -1,6 +1,6 @@
 #ifndef _JED_CONFIG_H_
 #define _JED_CONFIG_H_
-/* Copyright (c) 1992, 1998, 2000, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -113,7 +113,7 @@
 # define HAS_MOUSE 1
 #endif
 
-#if defined(__DECC) 
+#if defined(__DECC)
 # define HAVE_STDLIB_H
 # define HAVE_UNISTD_H
 #else
@@ -136,8 +136,8 @@
 #undef HAVE_VSNPRINTF
 #undef HAVE_SNPRINTF
 
-/* If you have missing typedefs for any of these, uncomment and modify 
- * accordingly 
+/* If you have missing typedefs for any of these, uncomment and modify
+ * accordingly
  */
 /* typedef int mode_t; */
 /* typedef int pid_t; */

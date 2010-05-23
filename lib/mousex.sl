@@ -75,20 +75,20 @@ setkey (".'s'mouse_event",	"\e[\e[M");	% simulate Shift+MouseButton
 %   ESC [ M 'b' 'x' 'y'
 % Here 'b' represents the key state and button information.  It is a number
 % equal to 32 + button-number + key-state.  The left-button is button-number 0,
-% the middle is 1, and the right is 2.  A value of 3 appears to indicate 
-% a button release event. The key-state is: 
+% the middle is 1, and the right is 2.  A value of 3 appears to indicate
+% a button release event. The key-state is:
 %      4 = Shift
 %      8 = Meta
 %     16 = Ctrl
 %     32 = double click (rxvt)
 %
 % x and y represent the 32 + column and 32 + row.
-% 
+%
 private define mousex_init_display_hook ()
 {
    variable esc_seq = "\e[?1000h";
    if (strncmp (getenv ("TERM"), "xterm", 5))
-     esc_seq = "\e[?9h";	       %  (X10 compatibility) NOT xterm  
+     esc_seq = "\e[?9h";	       %  (X10 compatibility) NOT xterm
    tt_send (esc_seq);
 }
 

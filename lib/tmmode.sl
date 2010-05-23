@@ -55,7 +55,7 @@ define textmac_wrap_hook ()
 private define in_verbatim ()
 {
    variable m = create_user_mark ();
-   EXIT_BLOCK 
+   EXIT_BLOCK
      {
 	goto_user_mark (m);
      }
@@ -89,7 +89,7 @@ define tm_mode ()
    set_buffer_hook ("par_sep", "textmac_paragraph_separator");
    set_buffer_hook ("wrap_hook", "textmac_wrap_hook");
    use_syntax_table (mode);
-   
+
    mode_set_mode_info (mode, "fold_info", "#%{{{\r#%}}}\r\r");
    TAB = 0;
    run_mode_hooks ("tm_mode_hook");

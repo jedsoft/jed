@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -107,7 +107,7 @@ char Jed_Root_Dir [JED_MAX_PATH_LEN];
 typedef struct /*{{{*/
 {
    jmp_buf b;
-} 
+}
 /*}}}*/
 jmp_buf_struct;
 extern jmp_buf_struct Jump_Buffer, *Jump_Buffer_Ptr;
@@ -130,14 +130,13 @@ static char *get_win32_root(void)
 	     *p = '\0';
 	     /* drop also 'bin' */
 	     p = strrchr(base_path, '\\');
-	     if (p != NULL) 
+	     if (p != NULL)
 	       *p = '\0';
 	  }
      }
    return base_path;
 }
 #endif
- 
 
 static void set_jed_root (char *pgm)
 {
@@ -151,7 +150,7 @@ static void set_jed_root (char *pgm)
 #else
    jr = (char *) getenv("JED_ROOT");
 #endif
-   
+
 #ifdef JED_ROOT
    if ((jr == NULL) && (file_status(JED_ROOT) == 2))
      {
@@ -163,7 +162,7 @@ static void set_jed_root (char *pgm)
      jr = get_win32_root ();
 #endif
 
-   if (jr != NULL) 
+   if (jr != NULL)
      {
 	strcpy (Jed_Root_Dir, jr);
 	strcpy (jed_lib, jr);
@@ -174,15 +173,15 @@ static void set_jed_root (char *pgm)
 	strcat(jed_lib, "[lib]");
 #endif
      }
-   
+
    jl = (char *) getenv("JED_LIBRARY");
-	
+
    if (jl == NULL)
      {
 	if (*jed_lib == 0)
 	  {
 	     unsigned int len;
-	     
+
 	     jl = extract_file (pgm);
 	     len = (unsigned int) (jl - pgm);
 	     strncpy (jed_lib, pgm, len);
@@ -190,12 +189,11 @@ static void set_jed_root (char *pgm)
 	  }
      }
    else strcpy(jed_lib, jl);
-   
+
    if (-1 == SLpath_set_load_path (jed_lib))
      exit_error ("Out of memory", 0);
 }
 
-   
 void (*X_Init_Global_Structures_Hook)(void);
 
 int Stdin_Is_TTY;
@@ -214,10 +212,9 @@ If the script contains a public function called `jedscript_main`, then it\n\
 will be called after the script has been loaded.  The value of __argv[0] will\n\
 be the name of the script, and __argv[[1:]] will be set to the script\n\
 arguments.\n\
-", 
+",
 		 stderr);
 }
-
 
 static int main_initialize (int argc, char **argv)
 {
@@ -244,12 +241,12 @@ static int main_initialize (int argc, char **argv)
 	exit(1);
      }
 #endif
-   
+
 #if JED_HAS_DISPLAY_TABLE
    for (i = 0; i < 256; i++) Output_Display_Table[i] = i;
 #endif
 
-   if ((argc > 1) 
+   if ((argc > 1)
        && ((0 == strcmp (argv[1], "-secure"))
 	   || (0 == strcmp (argv[1], "--secure"))))
      {
@@ -258,10 +255,10 @@ static int main_initialize (int argc, char **argv)
 	argv[1] = argv[0];
 	argv++;
      }
-   
+
    /* If this hook is defined, let it peel off what ever arguments
       it wants.  It should return the number of remaining arguments */
-   if (X_Argc_Argv_Hook != NULL) 
+   if (X_Argc_Argv_Hook != NULL)
      {
 	i = (*X_Argc_Argv_Hook)(argc, argv) - 1;
 	argv[i] = argv[0];
@@ -365,7 +362,7 @@ static int main_initialize (int argc, char **argv)
 # ifdef EINTR
 		  if (errno == EINTR)
 		    continue;
-# endif		  
+# endif
 		  fd = 2;
 		  break;
 	       }
@@ -396,11 +393,11 @@ static int main_initialize (int argc, char **argv)
 	 * However, that group will disappear if the other processes
 	 * in the pipe have exited.  The only way I know how to deal
 	 * with this is to fork another process.
-	 * 
+	 *
 	 * Better ideas are welcome.
 	 */
-	(void) jed_fork_monitor (); 
-#endif 
+	(void) jed_fork_monitor ();
+#endif
      }
 
    if (-1 == init_tty ())
@@ -417,7 +414,7 @@ static int main_initialize (int argc, char **argv)
    (*tt_set_mono) (JMENU_SELECTION_COLOR, NULL, SLTT_REV_MASK|SLTT_BOLD_MASK);
    (*tt_set_mono) (JMENU_POPUP_COLOR, NULL, 0);
    (*tt_set_mono) (JMENU_SELECTED_CHAR_COLOR, NULL, SLTT_BOLD_MASK);
- 
+
    (void) jed_set_color (JMENU_SHADOW_COLOR, "blue", "black");
 
    (void) jed_set_color (JMENU_POPUP_COLOR, "lightgray", "blue");
@@ -435,15 +432,15 @@ static int main_initialize (int argc, char **argv)
 	exit_error("main: Allocation Failure", 0);
      }
    CLine = NULL;
-   
+
    init_minibuffer();
 
    set_file_modes();
-   
+
    /* what if someone pipes something to jed, allow it unless if is a
     * jed script.
     */
-   
+
    if (read_stdin_to_buffer)
      /* 1 if stdin is a terminal, 0 otherwise */
      {
@@ -453,10 +450,10 @@ static int main_initialize (int argc, char **argv)
 	fclose(stdin);
 	dup2(fd, 0);
      }
-   
+
    if (CLine == NULL) make_line(25);
    bol ();
-   
+
    window_buffer(CBuf);
 #if !defined(IBMPC_SYSTEM) && !defined(VMS)
    init_signals();
@@ -469,7 +466,7 @@ static int main_initialize (int argc, char **argv)
      return -1;
 
    if (Batch) Ignore_User_Abort = 0;
-   
+
    if (Batch == 2)
      {
 	if (script_file == NULL)
@@ -495,7 +492,7 @@ static int main_initialize (int argc, char **argv)
 	  return -1;
      }
    else
-     {     
+     {
 	if (SLang_is_defined(cmd_hook + 3))
 	  {
 	     SLang_run_hooks(cmd_hook + 3, 0);
@@ -518,7 +515,7 @@ static int main_initialize (int argc, char **argv)
      return -1;
 
    /* after we have possible loaded key definitions, we can fix up
-    * the minibuffer map. This way user definitions are used. 
+    * the minibuffer map. This way user definitions are used.
     */
    jed_setup_minibuffer_keymap ();
 
@@ -557,11 +554,11 @@ int main(int argc, char **argv) /*{{{*/
 	exit_error("main: Fatal Error", 0);
 	exit (1);
      }
-   
+
    if ((0 == main_initialize (argc, argv))
        && (Batch == 0))
      jed (); /* edit_loop -- never returns */
-   
+
    jed_reset_display();
    reset_tty();
 
@@ -569,6 +566,5 @@ int main(int argc, char **argv) /*{{{*/
      SLang_restart (1);
    return err;
 }
-
 
 /*}}}*/

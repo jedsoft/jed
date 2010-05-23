@@ -1,6 +1,6 @@
 % -*- mode: slang; mode: fold; -*-
-% 
-% 
+%
+%
 %% system specific routines
 
 if (_jed_secure_mode) %{{{
@@ -22,8 +22,6 @@ Shell_Prompt = "> ";
 Shell_Prompt = "$ ";
 #endif
 
-
-
 #ifdef MSDOS
 % pass "(cmd) 2>&1" contructs to the system as "(cmd) > tmpfile 2>&1"
 define run_shell_cmd (cmd) %{{{
@@ -36,11 +34,11 @@ define run_shell_cmd (cmd) %{{{
 
    if (2 != file_status (dir))
      (,dir,,) = getbuf_info ();	% get directory
-   
+
    tmp = dircat (dir, "_jed_shl.cmd");
-   
+
    flush (msg);
-   
+
 %%    if ( is_substr (cmd, "2>&1") )
 %%      both;
 %%   	argv = extract_element (cmd, 1, ' ');
@@ -78,14 +76,14 @@ define run_shell_cmd (cmd) %{{{
 private define shell_set_output_buffer () %{{{
 {
    variable dir, file, name, flags;
-   
+
    (,dir,,) = getbuf_info ();
-   if ( change_default_dir (dir) ) 
+   if ( change_default_dir (dir) )
      error ("Unable to chdir!");
-   
-   pop2buf ("*shell-output*"); 
+
+   pop2buf ("*shell-output*");
    erase_buffer ();
-   
+
    (file,,name, flags) = getbuf_info ();
    setbuf_info (file, dir,name, flags);
 }
@@ -95,8 +93,8 @@ private define shell_set_output_buffer () %{{{
 public define shell_perform_cmd (cmd, same_buf) %{{{
 {
    variable status;
-   
-   ifnot (same_buf) 
+
+   ifnot (same_buf)
      shell_set_output_buffer ();
 
    push_spot ();
@@ -110,7 +108,7 @@ public define shell_perform_cmd (cmd, same_buf) %{{{
 }
 
 %}}}
-      
+
 public define do_shell_cmd () %{{{
 {
    variable cmd, dir;
@@ -177,13 +175,13 @@ public define shell () %{{{
 % 	`cd [dir]'	change the default directory
 % 	`exit'		exit the subshell
 % 	`pwd'		Print Working Directory
-% 
+%
 % functions to eliminate some jed/shell vs. real shell problems
 % 	`clear'		erase the *shell* buffer
 % 	`e'		simulate ^X^F keybinding
 % 	`jed'		simulate ^X^F keybinding
-% 
-% 
+%
+%
 % returns one of the following on the stack
 % 	Null_String	- builtin dispatched, no prompt
 % 	"pwd"		- builtin dispatched, give prompt
@@ -292,6 +290,5 @@ define shell_input () %{{{
 }
 
 %}}}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%

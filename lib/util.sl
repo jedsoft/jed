@@ -17,16 +17,15 @@ define trim_buffer()
 	if (eolp())
 	  {
 	     go_down_1 ();
-	     while (eol_trim(), bol(), 
+	     while (eol_trim(), bol(),
 		    eolp() and not(eobp())) del();
-	  } 
+	  }
      }
    while (down_1 ());
 
-   bob(); eol_trim(); bol(); 
+   bob(); eol_trim(); bol();
    if (eolp() and not(eobp ())) del();
    pop_spot();
    ifnot (BATCH) message ("done.");
 }
-
 

@@ -1,28 +1,28 @@
 % File:          rcs.sl      -*- SLang -*-
 %
 % Author:        Guido Gonzato, <ggonza@tin.it>. Contributions by JED.
-% 
+%
 % Version:       1.0.1. This file provides an interface to RCS a la
 %                Emacs (sort of).
 %
-% Installation:  unless rcs.sl is already loaded from site.sl (check), 
+% Installation:  unless rcs.sl is already loaded from site.sl (check),
 %                insert this line in your .jedrc:
-%  
+%
 %                  () = evalfile ("rcs.sl");
 %
 %                or, better, insert autoload lines in your defaults.sl
 %                like this:
-%  
+%
 %                  autoload ("rcs_open_file", "rcs.sl");
 %                  autoload ("rcs_check_in_and_out", "rcs.sl");
 %                  autoload ("rcs_read_log", "rcs.sl");
-% 
+%
 % Usage:         rcs_open_file ()         -- open an RCS file
 %                rcs_check_in_and_out ()  -- check in/out an RCS file
 %                rcs_read_log ()          -- read the change history
-% 
+%
 %                you might want to set these key bindings in your .jedrc:
-% 
+%
 %                  setkey_reserved ("rcs_open_file",        "vf");
 %                  setkey_reserved ("rcs_check_in_and_out", "vv");
 %                  setkey_reserved ("rcs_read_log",         "vl");
@@ -44,7 +44,7 @@ private define build_rcs_filename (file)
 private define checkout (file)
 {
   variable cmd, dir, name;
-  
+
   flush (sprintf ("Checking out %s...", file));
 
   (dir, name) = parse_filename (file);
@@ -78,7 +78,7 @@ define rcs_open_file ()         % Emacs uses ^X-v-f
   variable rcs_file, dir, file;
 
   file = read_file_from_mini ("RCS open file:");
-  
+
   file = file [[:-3]]; % remove ",v"
   (dir, file) = parse_filename (file);
   file = dircat (dir [[:-5]], file); % remove "RCS/"
@@ -104,7 +104,7 @@ define rcs_check_in_and_out ()  % Emacs uses ^X-v-v
     checkin (file, "RCS file description:");
     return;
   }
-  
+
   % the RCS file exists; if the buffer is read only, then check it out
   if (flags & (1 shl 3)) { %  readonly
     checkout (file);
@@ -112,7 +112,7 @@ define rcs_check_in_and_out ()  % Emacs uses ^X-v-v
     () = find_file (file);
     return;
   }
-  
+
   % Otherwise, check it in
   checkin (file, "Enter a change comment:");
 }
@@ -140,7 +140,7 @@ define rcs_read_log ()
 
   tmp_file = make_tmp_file ("/tmp/jedrlog");
   cmd = sprintf ("rlog %s > %s", file, tmp_file); % exec rlog
-  if (0 != system (cmd)) 
+  if (0 != system (cmd))
     verror ("Error rlogging %s!", file);
 
   sw2buf (rlog_buf);

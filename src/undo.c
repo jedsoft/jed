@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -15,7 +15,6 @@
 #include "line.h"
 #include "misc.h"
 #include "screen.h"
-
 
 #define LAST_UNDO CBuf->undo->Last_Undo
 #define FIRST_UNDO CBuf->undo->First_Undo
@@ -49,7 +48,7 @@ static void prepare_next_undo(void) /*{{{*/
 {
    LAST_UNDO++;
    if (LAST_UNDO >= UNDO_RING + MAX_UNDOS) LAST_UNDO = UNDO_RING;
-   if (LAST_UNDO == FIRST_UNDO) 
+   if (LAST_UNDO == FIRST_UNDO)
      {
 	FIRST_UNDO++;
 #ifdef UNDO_HAS_REDO
@@ -63,7 +62,6 @@ static void prepare_next_undo(void) /*{{{*/
    if (FIRST_UNDO >= UNDO_RING + MAX_UNDOS) FIRST_UNDO = UNDO_RING;
 #endif
 
-   
    LAST_UNDO->type = 0;
    LAST_UNDO->misc = 0;
 }
@@ -79,19 +77,19 @@ void record_deletion (unsigned char *p, int n) /*{{{*/
 {
    int misc;
    unsigned char *pb;
-   
+
    if (DONT_RECORD_UNDO || (n == 0)) return;
 
    while (1)
      {
-	if (((LAST_UNDO->type & 0xFF) == 0) 
+	if (((LAST_UNDO->type & 0xFF) == 0)
 	    || ((LAST_UNDO->type & CDELETE)
 		&& (LAST_UNDO->linenum == LineNum + CBuf->nup)
 		&& (LAST_UNDO->point == Point)))
 	  {
 	     if (LAST_UNDO->type != 0) misc = LAST_UNDO->misc; else misc = 0;
 	     pb = LAST_UNDO->buf + misc;
-	     while ((misc < 8) && n) 
+	     while ((misc < 8) && n)
 	       {
 		  *pb++ = *p++;
 		  misc++;
@@ -104,10 +102,10 @@ void record_deletion (unsigned char *p, int n) /*{{{*/
 	     if (Undo_Buf_Unch_Flag) LAST_UNDO->type |= UNDO_UNCHANGED_FLAG;
 	     Undo_Buf_Unch_Flag = 0;
 	  }
-	
+
 	if (n == 0)
 	  break;
-   
+
 	prepare_next_undo();
      }
 
@@ -128,7 +126,7 @@ int undo (void) /*{{{*/
 	msg_error("Undo not enabled for this buffer.");
 	return(0);
      }
-   else if ((CBuf->undo == NULL) 
+   else if ((CBuf->undo == NULL)
 #ifdef UNDO_HAS_REDO
 	    || (0 == MORE_UNDO_INFO)
 #else
@@ -140,7 +138,7 @@ int undo (void) /*{{{*/
 	return(0);
      }
    Undo_In_Progress = 1;
-   
+
    do
      {
 	int undo_type;
@@ -151,7 +149,7 @@ int undo (void) /*{{{*/
 	line = (int) LAST_UNDO->linenum;
 	undo_type = LAST_UNDO->type & 0xFF;
 #endif
-	if ((line <= (int) CBuf->nup) 
+	if ((line <= (int) CBuf->nup)
 	    || ((unsigned int) line >= CBuf->nup + Max_LineNum))
 	  {
 	     if (((unsigned int) line != CBuf->nup + Max_LineNum)
@@ -192,7 +190,7 @@ int undo (void) /*{{{*/
 	   case CINSERT: (void) jed_del_nbytes (LAST_UNDO->misc);
 #endif
 	     break;
-	     
+
 	   case UNDO_POSITION:
 	     break;
 
@@ -204,14 +202,14 @@ int undo (void) /*{{{*/
 #ifdef UNDO_HAS_REDO
 	if (CURRENT_UNDO == NULL) break;
 	/*  no more undo info after overflow */
-	
+
 	/*  above calls to ins_chars/deln/del may overflow the undo-ring */
-	if (CURRENT_UNDO->type & UNDO_UNCHANGED_FLAG) 
+	if (CURRENT_UNDO->type & UNDO_UNCHANGED_FLAG)
 	  {
 	     mark_buffer_modified (CBuf, 0, 1);
 	  }
 
-	if (CURRENT_UNDO == FIRST_UNDO) 
+	if (CURRENT_UNDO == FIRST_UNDO)
 	  {
 	     CURRENT_UNDO = NULL ;
 	     break ;			/*  no more undo info  */
@@ -224,9 +222,9 @@ int undo (void) /*{{{*/
 	  {
 	     mark_buffer_modified (CBuf, 0, 1);
 	  }
-	
+
 	if (LAST_UNDO == FIRST_UNDO) LAST_UNDO->type = 0;
-	else 
+	else
 	  {
 	     LAST_UNDO--;
 	     if (LAST_UNDO < UNDO_RING) LAST_UNDO = UNDO_RING + MAX_UNDOS - 1;
@@ -238,7 +236,7 @@ int undo (void) /*{{{*/
 #else
    while ((!IS_UNDO_BD) && (LAST_UNDO->type));
 #endif
-	
+
    message("Undo!");
    Undo_In_Progress = 0;
    return(1);
@@ -247,14 +245,14 @@ int undo (void) /*{{{*/
 /*}}}*/
 
 void record_insertion(int n) /*{{{*/
-{   
+{
    if (DONT_RECORD_UNDO || !n) return;
 
    if ((Undo_Buf_Unch_Flag) && (LAST_UNDO->type))
      {
 	prepare_next_undo ();
      }
-   
+
    if (LAST_UNDO->type == 0)
      {
 	LAST_UNDO->misc = n;
@@ -272,7 +270,7 @@ void record_insertion(int n) /*{{{*/
 	LAST_UNDO->point = Point;
 	LAST_UNDO->misc = n;
      }
-   
+
    LAST_UNDO->type |= CINSERT;
    if (Undo_Buf_Unch_Flag) LAST_UNDO->type |= UNDO_UNCHANGED_FLAG;
    LAST_UNDO->linenum = LineNum + CBuf->nup;
@@ -325,7 +323,7 @@ void create_undo_ring() /*{{{*/
    Undo_Type *ur;
    Undo_Object_Type *uo;
    int n;
-   
+
    if (NULL == (ur = (Undo_Type *) SLmalloc (sizeof(Undo_Type))))
      {
 	msg_error("Unable to malloc space for undo!");
@@ -337,9 +335,9 @@ void create_undo_ring() /*{{{*/
 #ifdef UNDO_HAS_REDO
    ur->Current_Undo = NULL;
 #endif
-   
+
    n = MAX_UNDOS;
-   while (n--) 
+   while (n--)
      {
 	uo->type = 0;
 	uo++;
@@ -351,9 +349,9 @@ void create_undo_ring() /*{{{*/
 void mark_undo_boundary (Buffer *b) /*{{{*/
 {
    Buffer *s = CBuf;
-   
+
    CBuf = b;
-   
+
    if (!DONT_RECORD_UNDO && (LAST_UNDO->type != 0))
      {
 	LAST_UNDO->type |= UNDO_BD_FLAG;
@@ -369,7 +367,7 @@ void unmark_undo_boundary (Buffer *b) /*{{{*/
    (void) b;
 #else
    Buffer *s = CBuf;
-   
+
    CBuf = b;
 
    if (!DONT_RECORD_UNDO && (LAST_UNDO->type != 0))
@@ -385,7 +383,7 @@ void unmark_undo_boundary (Buffer *b) /*{{{*/
 #ifdef UNDO_HAS_REDO
 void set_current_undo()		/*  Called when text is inserted, deleted,  */ /*{{{*/
 {				/*  or the abort key is pressed.  */
-   if ((!Undo_In_Progress) && CBuf->undo) 
+   if ((!Undo_In_Progress) && CBuf->undo)
      {
 	CURRENT_UNDO = LAST_UNDO ;
      }
@@ -400,21 +398,20 @@ void update_undo_unchanged (void) /*{{{*/
 {
    Undo_Object_Type *uo;
    int n;
- 
+
    if (DONT_RECORD_UNDO) return;
-   
+
    uo = UNDO_RING ;
    n = MAX_UNDOS;
-   while (n--) 
+   while (n--)
      {
 	uo->type &= ~UNDO_UNCHANGED_FLAG;
 	uo++;
      }
-   
+
    CURRENT_UNDO = LAST_UNDO ;
 }
 
 /*}}}*/
 #endif
-   
-   
+

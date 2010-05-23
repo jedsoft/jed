@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -150,7 +150,7 @@ typedef struct /*{{{*/
    XftFont *xftfont;
    XftDraw *xftdraw;
    double face_size;
-#endif    
+#endif
 
    /* GC info */
    GC_Info_Type *text_gc;
@@ -320,7 +320,7 @@ static XWindow_Arg_Type X_Arg_List[] = /*{{{*/
 #endif
 #if XJED_HAS_XRENDERFONT
      {"facesize",	"fs",	STRING_TYPE,	NULL,	&This_Face_Size},
-#endif	
+#endif
      {NULL,		NULL,	0,		NULL,	NULL}
 };
 
@@ -332,7 +332,7 @@ static XWindow_Arg_Type X_Arg_List[] = /*{{{*/
 static XftColor *Pixel2XftColor (Pixel pixel)
 {
 # define CACHE_SIZE  40
-   static struct 
+   static struct
      {
 	XftColor        color;
 	unsigned long use;
@@ -342,20 +342,20 @@ static XftColor *Pixel2XftColor (Pixel pixel)
    unsigned int i;
    unsigned long oldest, oldestuse;
    XColor color;
-    
+
    oldestuse = (unsigned long) -1L;
    oldest = 0;
    for (i = 0; i < CACHE_SIZE; i++)
      {
 	if (cache[i].use)
-	  {	  
+	  {
 	     if (cache[i].color.pixel == pixel)
 	       {
 		  cache[i].use = ++use;
 		  return &cache[i].color;
 	       }
 	  }
-	
+
 	if (cache[i].use < oldestuse)
 	  {
 	     oldestuse = cache[i].use;
@@ -386,7 +386,7 @@ static XChar2b *wchars_to_XChar2b(SLwchar_Type *w, unsigned int nchars)
    if (x == NULL)
      return NULL;
 
-   for (i = 0; i < nchars; i++) 
+   for (i = 0; i < nchars; i++)
      {
 	SLwchar_Type w_i = w[i];
 	if (w_i > 0xFFFF)
@@ -401,12 +401,12 @@ static XChar2b *wchars_to_XChar2b(SLwchar_Type *w, unsigned int nchars)
 static SLwchar_Type *bytes_to_wchars (unsigned char *s, unsigned int nchars)
 {
    unsigned int i;
-   
-   SLwchar_Type *w = (SLwchar_Type *)SLmalloc(nchars*sizeof(SLwchar_Type));   
+
+   SLwchar_Type *w = (SLwchar_Type *)SLmalloc(nchars*sizeof(SLwchar_Type));
    if (w == NULL)
      return NULL;
 
-   for (i = 0; i < nchars; i++) 
+   for (i = 0; i < nchars; i++)
      w[i] = s[i];
 
    return w;
@@ -449,9 +449,8 @@ static SLwchar_Type *utf8nt_to_wchars(unsigned char *s, unsigned int len, unsign
    (sc).color = (_color)
 # define SLSMG_COUNT_CHARS(sc) ((sc).nchars)
 
-
 /* This function does the low-level drawing.
- * It can draw the new text, but setting 'overimpose' to 1 it draws the string 
+ * It can draw the new text, but setting 'overimpose' to 1 it draws the string
  * over the existing text (used for unicode combining characters).
  * It can use Xft (if configured), or plain X functions.
  */
@@ -488,7 +487,7 @@ static int xdraw (GC_Info_Type *gc, int row, int col, SLwchar_Type *w, int nchar
 	  XDrawString16(This_XDisplay, This_XWindow, gc->gc,
 			x + b, y + b + XWin->font_base, d, nchars);
 	else
-	  XDrawImageString16(This_XDisplay, This_XWindow, gc->gc, 
+	  XDrawImageString16(This_XDisplay, This_XWindow, gc->gc,
 			     x + b, y + b + XWin->font_base, d, nchars);
 	SLfree((char *)d);
 	return 0;
@@ -506,17 +505,17 @@ static unsigned int smg_read_at(int row, int col, SLsmg_Char_Type *s, unsigned i
    SLsmg_gotorc(row, col);
    rc = SLsmg_read_raw (s, n);
    SLsmg_gotorc (saverow, savecol);
-   return rc; 
+   return rc;
 }
 
-/* Write to screen a single SLsmg_Char, handling combining characters 
+/* Write to screen a single SLsmg_Char, handling combining characters
  * (X doesn't seem to handle these...) to position (row, col).
  * This function doesn't touch the cursor position.
  */
 static void JX_write_smgchar (int row, int col, SLsmg_Char_Type *s)
 {
    int color = SLSMG_EXTRACT_COLOR(*s) & SLSMG_COLOR_MASK;
-   
+
    if ((color >= JMAX_COLORS) || (color < 0))
      color = 0;
 
@@ -549,7 +548,7 @@ static void JX_write_smgchars(int row, int col, SLsmg_Char_Type *s, SLsmg_Char_T
    oldcolor = (SLSMG_EXTRACT_COLOR(*s) & SLSMG_COLOR_MASK);
    if ((oldcolor < 0) || (oldcolor >= JMAX_COLORS))
      oldcolor = 0;
-   
+
    is_dual_font = XWin->is_dual_font;
    s0 = s;
    while (s < smax)
@@ -745,7 +744,6 @@ static void toggle_cursor (int on) /*{{{*/
 
 /*}}}*/
 
-
 /* This routine assumes that cursor is in the correct location.  The
  * cursor is placed at the end of the string.  Even if we are unable to
  * write the string, make sure that the cursor is moved as if we did
@@ -761,17 +759,17 @@ static void JX_write_string (char *s) /*{{{*/
    unsigned int nchars;
    SLwchar_Type *w;
    unsigned int nbytes = strlen(s);
-   
-   if (Jed_UTF8_Mode)	  
+
+   if (Jed_UTF8_Mode)
      w = utf8nt_to_wchars((unsigned char *)s, nbytes, &nchars);
    else
-     {	
+     {
 	w = bytes_to_wchars((unsigned char *)s, nbytes);
 	nchars = nbytes;
      }
    if (w == NULL)
      goto write_done;
-   
+
    if ((No_XEvents == 0) && XWin->window_mapped)
      {
 	hide_cursor ();
@@ -781,7 +779,7 @@ static void JX_write_string (char *s) /*{{{*/
 write_done:
 
    XWin->cursor_col += nchars;
-   if (XWin->cursor_col >= JX_Screen_Cols) 
+   if (XWin->cursor_col >= JX_Screen_Cols)
      XWin->cursor_col = JX_Screen_Cols - 1;
    if (!Performing_Update)
      show_cursor ();
@@ -925,8 +923,8 @@ static void JX_smart_puts(SLsmg_Char_Type *neww, SLsmg_Char_Type *oldd, int len,
    col = 0;
    while ((col < len) && SLSMGCHAR_EQUAL(&neww[col], &oldd[col]))
      col++;
-   
-   if (col < len) 
+
+   if (col < len)
      {
 	hide_cursor();
 	JX_write_smgchars(row, col, neww+col, neww+len);
@@ -1027,7 +1025,7 @@ static int x_handle_harmless_events (XEvent *report) /*{{{*/
 	break;
 
       case ConfigureNotify:
-	if ((report->xconfigure.height == XWin->height) 
+	if ((report->xconfigure.height == XWin->height)
 	    && (report->xconfigure.width == XWin->width))
 	  break;
 
@@ -1207,7 +1205,7 @@ static int X_process_events (int force, char *buf, unsigned int buflen,
 	     if ((abs(button_press_x - posx) <= MOUSE_DRAG_THRESHOLD)
 		 && (abs(button_press_y - posy) <= MOUSE_DRAG_THRESHOLD))
 	       break;
-#endif	     
+#endif
 	     if ((last_x == jmouse.x) && (last_y == jmouse.y)) break;
 	     if (-1 == (ch1 = jed_mouse_add_event (&jmouse)))
 	       break;		       /* queue full */
@@ -1330,7 +1328,7 @@ static int X_process_events (int force, char *buf, unsigned int buflen,
 						       &ks, &status_return);
 		       else
 #endif
-			 
+
 			 *n_chars = XmbLookupString (R6IM_Xic, &report.xkey, buf, buflen,
 						     &ks, &status_return);
 		    }
@@ -1350,7 +1348,7 @@ static int X_process_events (int force, char *buf, unsigned int buflen,
 		  buf[0] = ks & 0x00FF ;
 	       }
 #endif
-	     
+
 	     bufp = (char *)map_keysym_to_keyseq (ks, report.xkey.state & (ShiftMask|ControlMask));
 	     if (bufp != NULL)
 	       {
@@ -1581,7 +1579,6 @@ static void x_toggle_visibility (void) /*{{{*/
 }
 /*}}}*/
 
-
 static int get_font_width (XFontStruct *f, int *wp, int *is_dualp)
 {
    int w0, w1;
@@ -1598,7 +1595,7 @@ static int get_font_width (XFontStruct *f, int *wp, int *is_dualp)
    w1 = XTextWidth (f, "l", 1);
    if (w0 != w1)
      (void) fprintf (stderr, "This font does not appear to be single-width.  Expect rendering problems.\n");
-   
+
    if (Jed_UTF8_Mode
        && (f->min_bounds.width * 2 == f->max_bounds.width))
      {
@@ -1606,7 +1603,7 @@ static int get_font_width (XFontStruct *f, int *wp, int *is_dualp)
 	*is_dualp = 1;
 	return 0;
      }
-   
+
    *wp = f->max_bounds.width;
    return 0;
 }
@@ -1619,8 +1616,8 @@ static int load_font (char *font) /*{{{*/
    if (XWin->face_size > 0)
      {
 	/* the user wants xrender */
-	XWin->xftfont = XftFontOpen(This_XDisplay, This_XScreen, 
-				    XFT_FAMILY, XftTypeString, font, 
+	XWin->xftfont = XftFontOpen(This_XDisplay, This_XScreen,
+				    XFT_FAMILY, XftTypeString, font,
 				    XFT_SIZE, XftTypeDouble, XWin->face_size,
 				    XFT_SPACING, XftTypeInteger, XFT_MONO,
 				    NULL);
@@ -1631,7 +1628,7 @@ static int load_font (char *font) /*{{{*/
 	XWin->font_base = XWin->xftfont->ascent;
 	return 0;
      }
-#endif       
+#endif
    xfont = XLoadQueryFont(This_XDisplay, font);
    if (xfont == NULL) return -1;
    XWin->font = xfont;
@@ -1667,7 +1664,7 @@ static void get_xdefaults (void) /*{{{*/
 	     static char *class_names[] =
 	       {
 		  "UXjed", "UXJed", "uxjed", NULL
-	       };	     
+	       };
 	     char *p, *cn;
 	     char **cnp;
 
@@ -1905,7 +1902,7 @@ static int setup_and_parse_colors (void) /*{{{*/
 
 	x_set_color_free (i, d->fg_name, d->bg_name, 0);
      }
-   
+
    return 0;
 }
 
@@ -2073,7 +2070,7 @@ static Window create_XWindow (JXWindow_Type *win) /*{{{*/
 #if XJED_SET_WM_COMMAND
    XSetCommand(This_XDisplay, win->w, _Jed_Startup_Argv, _Jed_Startup_Argc);
 #endif
-   
+
    if (NULL == (The_Xserver_Vendor = XServerVendor (This_XDisplay)))
      The_Xserver_Vendor = "";
 
@@ -2140,14 +2137,13 @@ static int open_Xdisplay (void) /*{{{*/
      }
 
    XSetIOErrorHandler (x_ioerr_handler);
-   
+
    if ( (This_XDisplay = XOpenDisplay(n)) == NULL )
      return 0;
 
    XSetErrorHandler (x_err_handler);
    return 1;
 }
-
 
 /* returns socket descriptor */
 static int init_Xdisplay (void) /*{{{*/
@@ -2323,7 +2319,7 @@ static void move_input_position (void)
 
    spot.x = XWin->border + XWin->cursor_col * XWin->font_width;
    spot.y = XWin->cursor_row * XWin->font_height + XWin->border + XWin->font_base;
-   
+
    if (R6IM_Preedit_Attr != NULL)
      XFree (R6IM_Preedit_Attr);
    if (NULL != (R6IM_Preedit_Attr = XVaCreateNestedList (0, XNSpotLocation, &spot, NULL)))
@@ -2505,17 +2501,17 @@ static void i18init (void) /*{{{*/
 	char **miss, *def;
 	int n_miss;
 	char *fontlist;
-	
+
 	R6IM_Spot.x = 0;
 	R6IM_Spot.y = 0;
 	/*	R6IM_Spot.x = XWin->border + XWin->cursor_col * XWin->font_width;
 	 R6IM_Spot.y = XWin->cursor_row * XWin->font_height + XWin->border + XWin->font_base; */
-	
+
 	if (NULL != (fontlist = SLmake_string (This_Font_Name)))
 	  {
 	     fs = XCreateFontSet (This_XDisplay, fontlist, &miss, &n_miss, &def);
 	     SLfree(fontlist);
-	     
+
 	     R6IM_Preedit_Attr = XVaCreateNestedList (0, XNFontSet, fs,
 						      XNSpotLocation, &R6IM_Spot,
 						      NULL);
@@ -2589,7 +2585,7 @@ static JX_SETXXX_RETURN_TYPE JX_set_color (int i, char *what, char *fg, char *bg
    if (XWin == NULL)
      return JX_SETXXX_RETURN_VAL;
 
-   if (!Term_Supports_Color) 
+   if (!Term_Supports_Color)
      return JX_SETXXX_RETURN_VAL;
 
    SLsmg_touch_screen ();
@@ -2693,7 +2689,7 @@ static void free_selection_list (Selection_Data_Type *list)
 	list = next;
      }
 }
-		
+
 static int append_to_selection_list (unsigned char *buf, unsigned int len,
 				 Selection_Data_Type **rootp, Selection_Data_Type **tailp)
 {
@@ -2746,13 +2742,13 @@ static Selection_Data_Type *read_selection (Display *d, Window w, Atom property)
 	int mb_n;
 	int status;
 
-	if (Success != XGetWindowProperty (d, w, property, 
+	if (Success != XGetWindowProperty (d, w, property,
 					   total_bytes/4, 1 + bytes_after/4,
 					   False, AnyPropertyType,
 					   &actual_type, &actual_format,
 					   &nitem, &bytes_after, &data))
 	  break;		       /* What the ?? */
-	
+
 	bytes_read = nitem * (actual_format/8);
 
         tp.value = data;
@@ -2826,7 +2822,6 @@ static int receive_selection (XEvent *ev)
    return 0;
 }
 
-
 static void x_region_2_selection (void)
 {
    int nbytes;
@@ -2835,7 +2830,7 @@ static void x_region_2_selection (void)
      SLfree (Selection_Send_Data);
    Selection_Send_Data = make_buffer_substring (&nbytes);
    if (Selection_Send_Data == NULL) return;
-   
+
    XSetSelectionOwner (This_XDisplay, XA_PRIMARY, This_XWindow, Current_Event.xbutton.time);
    if (This_XWindow != XGetSelectionOwner (This_XDisplay, XA_PRIMARY)) return;
 }
@@ -2850,7 +2845,7 @@ static int send_selection (XEvent *ev)
    Atom target;
    int free_tp_value;
 
-   if (NULL == Selection_Send_Data) 
+   if (NULL == Selection_Send_Data)
      return 0;
 
    memset ((char *)&tp, 0, sizeof (tp));
@@ -2910,12 +2905,12 @@ static int send_selection (XEvent *ev)
 		  XFree (name);
 	       }
 	     return -1;
-	  }   
+	  }
 	status = (*text_to_property) (This_XDisplay, &Selection_Send_Data, 1, style, &tp);
 
 	if ((status != Success) || (tp.value == NULL))
 	  return -1;
-	
+
 	free_tp_value = 1;
 	len = strlen (Selection_Send_Data);
      }
@@ -3130,7 +3125,6 @@ static void get_screen_size (int *r, int *c)
    *c = SLtt_Screen_Cols;
 }
 
-
 /* the links to functions and variables here */
 void (*tt_beep)(void);
 void (*tt_write_string)(char *);
@@ -3213,9 +3207,9 @@ static void JX_get_terminfo (void) /*{{{*/
 
    JX_Screen_Cols = 80;
    JX_Screen_Rows = 24;
-   
+
    (void) jed_add_init_slang_hook (X_init_slang);
-     
+
    /* init hooks */
    X_Read_Hook = X_read_key;
    X_Input_Pending_Hook = X_input_pending;

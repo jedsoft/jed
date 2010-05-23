@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1999, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1999-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -19,7 +19,6 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-
 
 #include <sys/types.h>
 #include <errno.h>
@@ -75,12 +74,12 @@ int jed_unlock_file (char *file)
  * The protocol is this: If in the directory of the file is a
  * symbolic link with name ".#FILE", the FILE is considered to be locked
  * by the process specified by the link.
- * 
+ *
  * Here are the scenerios requiring a lock:
- * 
+ *
  *    1.  When a buffer attached to a file becomes modified.
  *    2.  When appending or writing to a file.
- * 
+ *
  * Suppose that a buffer has not been modified but one appends a
  * region of the buffer to some file.  Then while that file is being
  * written, it should be locked and then released when finished.
@@ -91,12 +90,11 @@ int jed_unlock_file (char *file)
  * steal the lock from the other buffer, then that lock will be
  * deleted after the file has been modfied.  Of course these same comments
  * apply if another process owns the lock.
- * 
+ *
  * Now consider the case when a buffer is modified and has the file locked.
  * When the buffer is saved, the file will already be locked and there is no
  * need to lock it again.
  */
-
 
 typedef struct
 {
@@ -114,7 +112,7 @@ static char *make_lockfile_name (char *file)
    file = jed_expand_link (file);
    if (file == NULL)
      return NULL;
-   
+
    if (-1 == jed_dirfile_to_dir_file (file, &dir, &name))
      {
 	SLfree (file);
@@ -172,9 +170,9 @@ static int ask_about_lock (char *file, Lock_Info_Type *l)
 	return -1;
      }
 
-   len = 64 + strlen (file) 
+   len = 64 + strlen (file)
      + strlen (l->host) + strlen (l->user);
-   
+
    if (NULL == (buf = SLmalloc (len)))
      return -1;
 
@@ -189,14 +187,14 @@ static int ask_about_lock (char *file, Lock_Info_Type *l)
 	   case 'S':
 	     SLfree (buf);
 	     return 1;
-	     
+
 	   case 'P':
 	   case 'p':
 	   case 'q':
 	   case 'Q':
 	     SLfree (buf);
 	     return 0;
-	     
+
 	   case 'A':
 	   case 'a':
 	     SLfree (buf);
@@ -208,12 +206,11 @@ static int ask_about_lock (char *file, Lock_Info_Type *l)
 	     SLfree (buf);
 	     return -1;
 	  }
-	
+
 	jed_beep ();
      }
 }
 
-   
 /* Returns 0 if file does not exist, or 1 with info, or -1 for error */
 static int get_lock_info (char *lockfile, Lock_Info_Type *l)
 {
@@ -239,9 +236,9 @@ static int get_lock_info (char *lockfile, Lock_Info_Type *l)
    if ((n == -1)
        || (n >= (int)sizeof(buf)-1))
      return -1;
-   
+
    buf[n] = 0;
-   
+
    /* The format is: username@host.pid:boot_time */
    b = strchr (buf, '@');
    if (b == NULL)
@@ -252,7 +249,7 @@ static int get_lock_info (char *lockfile, Lock_Info_Type *l)
    user = SLang_create_slstring (buf);
    if (user == NULL)
      return -1;
-   
+
    host = b;
    b += strlen (b);
    while (b > host)
@@ -267,13 +264,13 @@ static int get_lock_info (char *lockfile, Lock_Info_Type *l)
 	return -1;
      }
    *b++ = 0;
-   
+
    if (NULL == (host = SLang_create_slstring (host)))
      {
 	SLang_free_slstring (user);
 	return -1;
      }
-   
+
    l->pid = atoi (b);
    l->host = host;
    l->user = user;
@@ -302,7 +299,7 @@ static int perform_lock (char *lockfile, Lock_Info_Type *l, int force)
 	return 1;
      }
 
-   if (not_supported 
+   if (not_supported
 # ifdef EPERM
        || (errno == EPERM)
 # endif
@@ -332,10 +329,10 @@ static int perform_lock (char *lockfile, Lock_Info_Type *l, int force)
 	SLfree (buf);
 	if (errno == EEXIST)
 	  return 0;
-	
+
 	return -1;
      }
-   
+
    (void) unlink (lockfile);
    status = symlink (buf, lockfile);
    if (status == -1)
@@ -349,14 +346,14 @@ static int perform_lock (char *lockfile, Lock_Info_Type *l, int force)
 
 /* Return 0 if same, -1 if same host, 1 if different host */
 static int compare_lock_info (Lock_Info_Type *a, Lock_Info_Type *b)
-{	
+{
    if (a->host != b->host)
      return 1;
 
    if ((a->pid != b->pid)
        || (a->user != b->user))
      return -1;
-   
+
    return 0;
 }
 
@@ -385,15 +382,15 @@ int jed_lock_file (char *file)
 	status = perform_lock (lockfile, &l0, force);
 	if (status == 1)	       /* lock succeeded */
 	  break;
-	
+
 	if (status == -1)	       /* error */
 	  break;
-	
+
 	/* Lock already exists.  Let's see who owns it */
 	status = get_lock_info (lockfile, &l1);
 	if (status == -1)
 	  break;
-	
+
 	if (status == 0)	       /* lock nolonger exists, try again */
 	  continue;
 
@@ -405,7 +402,7 @@ int jed_lock_file (char *file)
 	     status = 1;
 	     break;
 	  }
-	
+
 	if (status == -1)
 	  {
 	     /* Some process on this machine owns it.  See if the process is
@@ -421,7 +418,7 @@ int jed_lock_file (char *file)
 # endif
 	       }
 	  }
-	
+
 	if (status != 2)
 	  status = ask_about_lock (file, &l1);
 
@@ -429,7 +426,7 @@ int jed_lock_file (char *file)
 
 	if (status <= 0)
 	  break;
-	
+
 	force = 1;
      }
 
@@ -438,7 +435,7 @@ int jed_lock_file (char *file)
 
    if (status == -1)
      return -1;
-   
+
    return 0;
 }
 
@@ -476,7 +473,6 @@ int jed_unlock_file (char *file)
    return 0;
 }
 
-
 int jed_lock_buffer_file (Buffer *b)
 {
    int status;
@@ -484,7 +480,7 @@ int jed_lock_buffer_file (Buffer *b)
 
    if ((b->file[0] == 0) || (b->flags & BUFFER_NON_LOCKING))
      return 0;
-	
+
    file = jed_dir_file_merge (b->dir, b->file);
    status = jed_lock_file (file);
    SLfree (file);
@@ -503,7 +499,7 @@ int jed_unlock_buffer_file (Buffer *b)
    file = jed_dir_file_merge (b->dir, b->file);
    status = jed_unlock_file (file);
    SLfree (file);
-   
+
    return status;
 }
 
@@ -511,13 +507,13 @@ int jed_unlock_buffer_files (void)
 {
    int status;
    Buffer *b;
-   
+
    status = 0;
    b = CBuf;
    do
      {
 	b = b->next;
-	
+
 	if (-1 == jed_unlock_buffer_file (b))
 	  status = -1;
      }
@@ -525,5 +521,5 @@ int jed_unlock_buffer_files (void)
 
    return status;
 }
-   
+
 #endif				       /* JED_HAS_EMACS_LOCKING */

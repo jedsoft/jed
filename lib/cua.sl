@@ -1,23 +1,23 @@
 %%  CUA (Windows/Mac/CDE/KDE-like) bindings for Jed.
-%% 
+%%
 %%  Reuben Thomas (rrt@sc3d.org)
 %%  modified by Guenter Milde <g.milde at web.de>
-%% 
+%%
 %%  Versions:
 %%  1   first version by Guenter Milde <g.milde at web.de>
 %%  1.1 05/2003 triple (optional single) ESC-keypress aborts functions
-%%              fixed missing definition of Key_Ins 
+%%              fixed missing definition of Key_Ins
 %%              Key_Ctrl_Del calls cua_delete_word (was delete_word)
 %%              F3 bound to repeat_search (tip by Guido Gonzato)
 %%              removed definitions for F4...F10 (cua-compatible suggestions?)
 %%              ^Q exits without asking for confirmation
-%% 
+%%
 %%  USAGE:
-%% 
+%%
 %%  put somewhere in your path and uncomment the line
 %%  %  () = evalfile ("cua");            % CUA-like key bindings
 %%  in your .jedrc/jed.rc file
-%% 
+%%
 %%  ESC-problem: unfortunately, some function keys return "\e\e<something>"
 %%  as keystring. To have a single ESC-press aborting, insert
 %%     autoload("cua_one_press_escape", "cuamisc");
@@ -25,7 +25,7 @@
 %%  into your .jedrc. !! Attention, except for xjed, this is an experimental
 %%  feature that can cause problems with functions that use getkey(),
 %%  (e.g. showkey(), wmark.sl (before jed 99.16), ...)
-%% 
+%%
 %%  Enhancements (optional helper modes from http://jedmodes.sf.net/):
 %%   cuamouse.sl: cua-like mouse bindings
 %%   cuamark.sl:  cua-like marking/copy/paste using yp_yank.sl (a ring of
@@ -146,7 +146,7 @@ setkey("kill_rect",		"^RX");  % delete and copy to rect-buffer
 setkey("open_rect",		"^R ");  % ^R Space: insert whitespace
 setkey("blank_rect",		"^RY");  % delete (replace with spaces)
 setkey("blank_rect",		"^R" + Key_Del);
-setkey("cua_save_buffer",	"^S");   % Save 
+setkey("cua_save_buffer",	"^S");   % Save
 %setkey("transpose_chars",  "^T");
 % 				 ^T      % still free
 setkey("yp_yank",              	"^V");   % insert/paste
@@ -165,7 +165,7 @@ private define cua_load_popup_hook (menubar)
    menu_insert_item("&Save", "Global.&File", "&Close", "delbuf(whatbuf)");
    if(strlen(expand_jedlib_file("print.sl"))) % non standard mode
      {
-     menu_insert_item("Canc&el Operation", "Global.&File", "&Print", 
+     menu_insert_item("Canc&el Operation", "Global.&File", "&Print",
 		      "print_buffer");
      menu_insert_separator("Canc&el Operation", "Global.&File");
      }

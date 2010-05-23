@@ -1,4 +1,4 @@
-/* Copyright (c) 1999, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1999-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -24,7 +24,7 @@ char *Jed_Version_String = JED_VERSION_STR;
 # define USE_GPM_MOUSE 0
 #endif
 
-typedef struct 
+typedef struct
 {
    char *name;
    int value;
@@ -55,7 +55,7 @@ static void show_features (FILE *fp)
    unsigned int len;
 
    fprintf (fp, "\njed compile-time options:\n");
-   
+
    opt = Compile_Options;
    len = 0;
    while (opt->name != NULL)
@@ -98,14 +98,14 @@ void jed_show_version (FILE *fp)
 #  endif
 # endif
 #endif
-   
+
    fprintf (fp, "jed version: %s/%s\n", Jed_Version_String, os);
 
 #if defined(__GNUC__) && defined(__GNUC_MINOR__)
    fprintf (fp, " Compiled with GNU C %d.%d", __GNUC__, __GNUC_MINOR__);
 # if defined(__DJGPP) && defined(__DJGPP_MINOR)
    fprintf (fp, " (DJGPP v%d.%d)", __DJGPP, __DJGPP_MINOR);
-# endif 
+# endif
 # ifdef __MINGW32__
 #  ifndef __MINGW32_PATCHLEVEL
 #   define __MINGW32_PATCHLEVEL 0
@@ -123,6 +123,6 @@ void jed_show_version (FILE *fp)
    if (SLang_Version != SLANG_VERSION)
      fprintf (fp, "*** Compiled against S-Lang %d but linked to %d\n",
 			SLANG_VERSION, SLang_Version);
-   
+
    show_features (fp);
 }

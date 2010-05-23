@@ -37,7 +37,7 @@ define lisp_indent_line ()
    pop_spot ();
    push_mark ();
    bskip_white ();
-   if (bolp ()) 
+   if (bolp ())
      {
 	skip_white ();
 	pop_mark_0 ();

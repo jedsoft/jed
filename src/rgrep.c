@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -15,7 +15,6 @@
 #include "jdmacros.h"
 
 #include <string.h>
-
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -39,7 +38,6 @@
 #  define JED_MAX_PATH_LEN 1024
 # endif
 #endif
-
 
 #ifdef __MSDOS__
 # include <io.h>
@@ -87,7 +85,6 @@ static void version (void)
    exit (0);
 }
 
-
 static void usage(void)
 {
    fputs("Usage: rgrep [options..] pattern [files ...]\n\
@@ -115,7 +112,7 @@ Options:\n\
 \n\
 'pattern' is a valid 'ex' type of regular expression.  See the man page for ex.\n\
 It is best enclosed in single quotes to avoid shell expansion.\n", stderr);
-   
+
    exit(1);
 }
 
@@ -141,9 +138,9 @@ static void additional_help (void)
    \\( ... \\)\n\
    \\1, \\2, ..., \\9    matches match specified by nth \\( ... \\) expression.\n\
                       For example, '\\([ \\t][a-zA-Z]+\\)\\1[ \\t]' matches any\n\
-		      word repeated consecutively.\n", 
+		      word repeated consecutively.\n",
 	 stderr);
-   
+
    if (isatty(fileno(stderr)) && isatty(fileno(stdin)))
      {
 	fputs("\nPress RETURN for examples>", stderr);
@@ -170,7 +167,7 @@ static void additional_help (void)
     rgrep -W80 ^EXTNAME file.fits\n\
    (Note that the regular expression '^[A-Z]+' will dump all fits headers.)\n",
 	  stderr);
-   
+
    exit (-1);
 }
 
@@ -236,7 +233,7 @@ static void parse_flags(char *f)
 	       }
 	     Fixed_Len_Mode = 1;
 	     break;
-	     
+
 	   case '-':
 	     if (!strcmp (f, "version"))
 	       version ();
@@ -246,13 +243,11 @@ static void parse_flags(char *f)
      }
 }
 
-
 static SLRegexp_Type *reg;
 static SLRegexp_Type *recurse_reg;
 static unsigned char Recurse_Reg_Pattern_Buffer[JED_MAX_PATH_LEN];
 static int Must_Match;
 static int print_file_too;
-
 
 static void do_fwrite (unsigned char *s, int n, int nl)
 {
@@ -260,7 +255,7 @@ static void do_fwrite (unsigned char *s, int n, int nl)
 #if defined(__unix__) || defined(VMS)
    unsigned char ch1;
 #endif
-   
+
    while (s < smax)
      {
 	ch = *s++;
@@ -281,8 +276,6 @@ static void do_fwrite (unsigned char *s, int n, int nl)
    if (nl && (ch != '\n')) putc ('\n', stdout);
 }
 
-
-
 static void output_line(unsigned char *s, unsigned int n, unsigned char *p, unsigned char *pmax)
 {
    if (Highlight == 0)
@@ -296,7 +289,7 @@ static void output_line(unsigned char *s, unsigned int n, unsigned char *p, unsi
 	     do_fwrite (s, (int) (p - s), 0);
 	     fwrite (HON_STR, 1, HON_STR_LEN, stdout);
 	  }
-	
+
 	do_fwrite (p, (int) (pmax - p), 0);
 	if (Output_Match_Only == 0)
 	  {
@@ -307,20 +300,17 @@ static void output_line(unsigned char *s, unsigned int n, unsigned char *p, unsi
      }
 }
 
-
-
 static unsigned char *rgrep_gets (unsigned int *n)
 {
    unsigned int nread;
-   
+
    if (File_Vp != NULL) return (unsigned char *) vgets (File_Vp, n);
-   
+
    nread = fread (Fixed_Len_Buf, 1, Fixed_Line_Len, File_Fp);
    if (nread == 0) return NULL;
    *n = nread;
    return Fixed_Len_Buf;
 }
-
 
 static int OSearch_Ok = 0;
 static int Search_St_Key_Length = 0;
@@ -336,11 +326,11 @@ static void grep(char *file)
 
    if (NULL == (buf = (unsigned char *) rgrep_gets(&n)))
      return;
-   
+
    if (Binary_Option)
      {
 	p = buf;
-	
+
 	if (File_Vp == NULL)
 	  {
 	     if (n < 32) pmax = p + n;
@@ -349,17 +339,17 @@ static void grep(char *file)
 	else
 	  {
 	     unsigned int vn;
-	     
+
 	     p = (unsigned char *) File_Vp->buf;
-	     
+
 	     if (File_Vp->eof != NULL)
 	       vn = (unsigned char *) File_Vp->eof - p;
 	     else vn = (unsigned char *) File_Vp->bmax - p;
-	     
+
 	     if (vn < 32) pmax = p + vn;
 	     else pmax = p + 32;
 	  }
-	
+
 	while (p < pmax)
 	  {
 	     if (*p == 0) return;
@@ -382,7 +372,7 @@ static void grep(char *file)
 		       pmax = p + n;
 		       goto match_found;
 		    }
-		  
+
 		  continue;
 	       }
 	     if (OSearch_Ok)
@@ -392,7 +382,7 @@ static void grep(char *file)
 		  goto match_found;
 	       }
 	  }
-	
+
 	if (!REGEXP_MATCH (reg, buf, n))
 	  {
 	     if (Print_Non_Matching_Lines)
@@ -432,15 +422,15 @@ static void grep(char *file)
 	  {
 	     fprintf(stdout, "%d:", line);
 	  }
-	
+
 	output_line(buf, n, p, pmax);
 #ifdef __unix__
 	if (Stdout_Is_TTY) fflush (stdout);
-#endif	
+#endif
      }
    while (NULL != (buf = (unsigned char *) rgrep_gets(&n)));
 
-   if (Print_Non_Matching_Lines 
+   if (Print_Non_Matching_Lines
        && File_Name_Only
        && (n_matches == line))
      {
@@ -472,7 +462,6 @@ static void grep(char *file)
 # include <sys/types.h>
 # include <sys/stat.h>
 #endif
-
 
 #ifdef IBMPC_USE_ASM
 typedef struct Dos_DTA_Type
@@ -524,7 +513,6 @@ typedef struct
 }
 Sys_Dir_Type;
 
-
 #ifdef IBMPC_USE_ASM
 void dos_set_dta (DOS_DTA_Type *dta)
 {
@@ -540,7 +528,7 @@ int dos_is_dir (char *file)
    int n = strlen (file);
    if (n == 0) return 0;
    if (file[n - 1] == '\\') return 1;
-   
+
    asm mov ah, 0x43
      asm mov al, 0
      asm push ds
@@ -550,7 +538,7 @@ int dos_is_dir (char *file)
      asm mov n, cx
      asm jnc L1
      return 0;
-   
+
    L1:
    if (n & 0x10) return 1;
    return 0;
@@ -582,18 +570,18 @@ static int unix_is_dir (char *dir, int force_link)
        && (-1 == lstat(dir, &buf)))
      return -1;
 #endif
-   
+
    mode = buf.st_mode & S_IFMT;
-   
+
 #ifdef S_IFLNK
-   if (mode == S_IFLNK) 
+   if (mode == S_IFLNK)
      {
 	return -2;
      }
 #endif
    if (mode == S_IFDIR) return (1);
    if (mode != S_IFREG) return (-1);
-   
+
    return(0);
 }
 #endif
@@ -604,7 +592,7 @@ static Sys_Dir_Type *sys_opendir(char *dir, Sys_Dir_Type *x)
    char slash = '\\';
    char *pat = "*.*";
    dos_set_dta (x->dta);
-   
+
    if ((dir[1] == ':') && (dir[2] == '\\'))
      {
 	strcpy (x->dir, dir);
@@ -623,7 +611,7 @@ static Sys_Dir_Type *sys_opendir(char *dir, Sys_Dir_Type *x)
 	     strcat(x->dir, dir);
 	  }
      }
-   
+
    dir = x->dir + strlen (x->dir);
    /* check for a pattern already as part of the dirspec */
    while (dir > x->dir)
@@ -639,7 +627,7 @@ static Sys_Dir_Type *sys_opendir(char *dir, Sys_Dir_Type *x)
 	dir--;
      }
    strcpy (x->pattern, pat);
-   
+
 #else
 #ifdef __unix__
    char slash = '/';
@@ -661,8 +649,6 @@ static Sys_Dir_Type *sys_opendir(char *dir, Sys_Dir_Type *x)
      }
    return (x);
 }
-
-
 
 static void sys_closedir(Sys_Dir_Type *x)
 {
@@ -697,11 +683,11 @@ static char *sys_dir_findnext(Sys_Dir_Type *x)
      asm int 21h
      asm jnc L1
      return NULL;
-   
+
    L1:
    file = dos_dta_fixup_name (x);
 #else
-   
+
 #ifdef __unix__
 #  ifdef NEED_D_NAMLEN
 #    define dirent direct
@@ -709,7 +695,7 @@ static char *sys_dir_findnext(Sys_Dir_Type *x)
    struct dirent *dp;
    DIR *d;
    d = x->dirp;
-   
+
    if (NULL == (dp = readdir(d))) return(NULL);
 #  ifdef NEED_D_NAMLEN
    dp->d_name[dp->d_namlen] = 0;
@@ -734,13 +720,13 @@ static char *sys_dir_findfirst(Sys_Dir_Type *x)
 #ifdef IBMPC_USE_ASM
    unsigned int attr = 0x1 | 0x10;     /* read only + sub directory */
    char pat[JED_MAX_PATH_LEN], *patp, *file;
-   
+
    attr |= 0x2 | 0x4;		       /* hidden and system */
-   
+
    strcpy (pat, x->dir);
    strcat (pat, x->pattern);
    patp = pat;
-   
+
    asm mov ah, 0x4e
      asm mov cx, attr
      asm push ds
@@ -748,7 +734,7 @@ static char *sys_dir_findfirst(Sys_Dir_Type *x)
      asm int 21h
      asm pop ds
      asm jc L1
-     
+
      file = dos_dta_fixup_name (x);
    /* exclude '.' and '..' */
    if (*file++ == '.')
@@ -757,7 +743,7 @@ static char *sys_dir_findfirst(Sys_Dir_Type *x)
 	    ((*file == '.') && (*(file + 1) == 0))) x->isdir = -1;
      }
    return x->dir;
-   
+
    L1:
    return NULL;
 #else
@@ -791,16 +777,16 @@ static void grep_file(char *file, char *filename)
 	else if (!REGEXP_MATCH(recurse_reg, filename, strlen(filename)))
 	  return;
      }
-   
+
    File_Fp = NULL;
    File_Vp = NULL;
-   
+
    if (Fixed_Len_Mode)
      {
 	File_Fp = fopen (file, "rb");
      }
    else File_Vp = vopen (file, BUF_SIZE, 0);
-   
+
    if ((File_Vp == NULL) && (File_Fp == NULL))
      {
 	fprintf(stderr, "rgrep: unable to read %s\n", file);
@@ -823,28 +809,28 @@ static void grep_dir(char *dir)
    DOS_DTA_Type dta;
    x.dta = &dta;
 #endif
-   
+
    if (NULL == sys_opendir(dir, &x)) return;
    if (depth >= MAX_DEPTH)
      {
 	fprintf(stderr, "Maximum search depth exceeded.\n");
 	return;
      }
-   
+
    depth++;
    if (Debug_Mode) fprintf(stderr, "%s\n", dir);
-   
+
    for (file = sys_dir_findfirst(&x);
 	file != NULL; file = sys_dir_findnext(&x))
      {
 	if (x.isdir == 0) grep_file(file, x.file);
 	else if ((Do_Recursive > 0) && (x.isdir == 1)) grep_dir(file);
-	
+
 #ifdef IBMPC_USE_ASM
 	dos_set_dta (&dta);	       /* something might move it */
 #endif
      }
-   
+
    sys_closedir(&x);
    depth--;
 }
@@ -853,7 +839,7 @@ static unsigned char *fixup_filename (unsigned char *name)
 {
    unsigned char *pat = Recurse_Reg_Pattern_Buffer;
    unsigned char ch;
-   
+
    *pat++ = '^';
    while ((ch = *name++) != 0)
      {
@@ -873,8 +859,6 @@ static unsigned char *fixup_filename (unsigned char *name)
    return Recurse_Reg_Pattern_Buffer;
 }
 
-
-
 int main(int argc, char **argv)
 {
    unsigned int flags;
@@ -885,7 +869,7 @@ int main(int argc, char **argv)
 #endif
    argv++;
    argc--;
-   
+
    SLang_init_case_tables ();
    while (argc && (**argv == '-') && *(*argv + 1))
      {
@@ -894,7 +878,7 @@ int main(int argc, char **argv)
 	     argc--;
 	     argv++;
 	     if (!argc) usage();
-	     
+
 	     flags = 0;
 #ifdef __MSDOS__
 	     flags |= SLREGEXP_CASELESS;
@@ -918,20 +902,20 @@ int main(int argc, char **argv)
 	  }
 	argv++; argc--;
      }
-   
+
    if (!argc) usage();
-   
+
    pattern = *argv;
 
    if (NULL == (reg = SLregexp_compile (pattern, Case_Sensitive ? 0 : SLREGEXP_CASELESS)))
      exit_error ("Error compiling pattern");
    argc--; argv++;
-   
+
    Must_Match = 1;
-   
+
    (void) SLregexp_get_hints (reg, &flags);
    OSearch_Ok = (0 != (flags & SLREGEXP_HINT_OSEARCH));
-   
+
    if (OSearch_Ok)
      {
 	if (NULL == (Search_St = SLsearch_new ((unsigned char *)pattern, Case_Sensitive ? 0 : SLSEARCH_CASELESS)))
@@ -974,13 +958,13 @@ int main(int argc, char **argv)
 	     if (
 #ifdef IBMPC_USE_ASM
 		 dos_is_dir (*argv)
-/*		 
+/*
  *		 && (('\\' == (*argv)[strlen(*argv) - 1])
  *		     || (!strcmp (*argv, "."))
  *		     || (!strcmp (*argv, ".."))) */
 #else
 #ifdef __unix__
-		 (1 == (ret = unix_is_dir (*argv, 
+		 (1 == (ret = unix_is_dir (*argv,
 					   (strlen(*argv) && ('/' == (*argv)[strlen(*argv) - 1])))))
 #endif
 #endif
@@ -989,7 +973,7 @@ int main(int argc, char **argv)
 		  print_file_too = 1;
 		  if (Do_Recursive >= 0) grep_dir (*argv);
 	       }
-	     
+
 	     else
 #ifdef __MSDOS__
 	       {
@@ -1014,7 +998,6 @@ int main(int argc, char **argv)
    return (0);
 }
 
-
 /* ------------------------------------------------------------ */
 
 #ifdef VMS
@@ -1028,7 +1011,7 @@ int vms_expand_filename(char *file,char *expanded_file)
    $DESCRIPTOR(default_dsc,"SYS$DISK:[]*.*;");
    static struct dsc$descriptor_s  result =
      {0, DSC$K_DTYPE_T, DSC$K_CLASS_D, NULL};
-   
+
    if (strcmp(inputname, file))
      {
 	if (context)
@@ -1039,7 +1022,7 @@ int vms_expand_filename(char *file,char *expanded_file)
 	strcpy(inputname, file);
 	file_desc.dsc$w_length = strlen(inputname);
      }
-   
+
    if (RMS$_NORMAL == lib$find_file(&file_desc,&result,&context,
 				    &default_dsc,0,0,&Number_Zero))
      {
@@ -1067,7 +1050,7 @@ int sys_findnext(char *file)
      {
 	0, DSC$K_DTYPE_T, DSC$K_CLASS_D, NULL
      };
-   
+
    if (RMS$_NORMAL == lib$find_file(&file_desc,&result,&context,
 				    &default_dsc,0,0,&Number_Zero))
      {

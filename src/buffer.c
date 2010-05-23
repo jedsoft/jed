@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -34,7 +34,6 @@
 #if JED_HAS_SUBPROCESSES
 #include "jprocess.h"
 #endif
-
 
 /*}}}*/
 
@@ -91,7 +90,7 @@ void jed_set_point (int point)
      point = CLine->len;
    if (point < 0)
      point = 0;
-   
+
    Point = point;
 }
 
@@ -115,13 +114,13 @@ int eob()                      /* point to end of buffer */ /*{{{*/
 	Point = 0;
 	return(0);
      }
-   
+
    if (LINE_HAS_NEWLINE(CLine)
        && (CBuf != MiniBuffer))
      Point = CLine->len - 1;
    else
      Point = CLine->len;
-   
+
    return 1;
 }
 
@@ -165,17 +164,17 @@ int bobp (void)                /* returns 1 if top line of buffer, 0 otherwise *
 int eolp (void) /*{{{*/
 {
    int len;
-   
+
    if ((CLine == NULL)
        || (0 == (len = CLine->len)))
      return 1;
 
    if (Point < len - 1) return 0;
-   
+
    if (CBuf == MiniBuffer)
      return (Point >= len);
 
-   /* Point is either len or len - 1.  If it is len-1, then we are at the 
+   /* Point is either len or len - 1.  If it is len-1, then we are at the
     * end of the line only if the line ends with \n.
     */
 
@@ -214,9 +213,9 @@ unsigned int jed_up (unsigned int n) /*{{{*/
    while (i < n)
      {
 	Line *prev = CLine->prev;
-	
+
 	/* Why would prev->len be 0 ??? */
-	while ((prev != NULL) && (prev->len == 0)) 
+	while ((prev != NULL) && (prev->len == 0))
 	  prev = prev->prev;
 
 	if (prev == NULL) break;
@@ -251,7 +250,7 @@ unsigned int jed_down (unsigned int n) /*{{{*/
 /*}}}*/
 
 unsigned char *jed_multibyte_chars_forward (unsigned char *p, unsigned char *pmax,
-					    unsigned int n, unsigned int *dn, 
+					    unsigned int n, unsigned int *dn,
                                             int ignore_combining)
 {
    (void) ignore_combining;
@@ -259,7 +258,7 @@ unsigned char *jed_multibyte_chars_forward (unsigned char *p, unsigned char *pma
      {
 	if (p + n > pmax)
 	  n = pmax - p;
-   
+
 	p += n;
 	if (dn != NULL) *dn = n;
 	return p;
@@ -267,8 +266,8 @@ unsigned char *jed_multibyte_chars_forward (unsigned char *p, unsigned char *pma
    return SLutf8_skip_chars (p, pmax, n, dn, ignore_combining);
 }
 
-unsigned char *jed_multibyte_chars_backward (unsigned char *pmin, unsigned char *p, 
-					     unsigned int n, unsigned int *dn, 
+unsigned char *jed_multibyte_chars_backward (unsigned char *pmin, unsigned char *p,
+					     unsigned int n, unsigned int *dn,
                                              int ignore_combining)
 {
    (void) ignore_combining;
@@ -276,7 +275,7 @@ unsigned char *jed_multibyte_chars_backward (unsigned char *pmin, unsigned char 
      {
 	if (pmin + n > p)
 	  n = p - pmin;
-   
+
 	p -= n;
 	if (dn != NULL) *dn = n;
 	return p;
@@ -292,7 +291,7 @@ int jed_multibyte_charcasecmp (unsigned char **ap, unsigned char *amax,
 
    a = *ap;
    b = *bp;
-   
+
    if ((a >= amax) || (b >= bmax))
      return 0;
 
@@ -303,10 +302,10 @@ int jed_multibyte_charcasecmp (unsigned char **ap, unsigned char *amax,
 
         aok = (NULL != SLutf8_decode (a, amax, &cha, &na));
         bok = (NULL != SLutf8_decode (b, bmax, &chb, &nb));
-        
+
         *ap = a + na;
         *bp = b + nb;
-        
+
         if (aok && bok)
           {
              cha = SLwchar_toupper (cha);
@@ -316,13 +315,13 @@ int jed_multibyte_charcasecmp (unsigned char **ap, unsigned char *amax,
           return 1;
         else if (bok)
           return -1;
-        
+
         if (cha > chb)
           return 1;
-        
+
         if (cha == chb)
           return 0;
-        
+
         return -1;
      }
 
@@ -381,7 +380,6 @@ int jed_what_char (SLwchar_Type *w) /*{{{*/
 
 /*}}}*/
 
-
 void jed_count_chars (void) /*{{{*/
 {
    unsigned long n = 0, m = 0;
@@ -389,7 +387,7 @@ void jed_count_chars (void) /*{{{*/
    SLwchar_Type w;
 
    Line *l = CBuf->beg;
-   
+
    while (l != NULL)
      {
 	n += l->len;
@@ -423,7 +421,7 @@ void jed_count_chars (void) /*{{{*/
                }
              else
                pmax = jed_multibyte_chars_forward (p, CLine->data + CLine->len, 1, NULL, 1);
-             
+
              buf[0] = '\'';
              strncpy (buf + 1, (char *)p, pmax - p);
              p1 = (SLuchar_Type *) (buf + 1 + (pmax - p));
@@ -445,20 +443,19 @@ void jed_count_chars (void) /*{{{*/
 	       }
           }
      }
-   
+
    sprintf (buf + strlen (buf), ", point %lu of %lu", m, n);
    SLang_push_string(buf);
 }
 
 /*}}}*/
 
-
 unsigned char *jed_eol_position (Line *l)
 {
    unsigned char *p = l->data + l->len;
    if (LINE_HAS_NEWLINE(l))
      p--;
-   
+
    return p;
 }
 
@@ -478,7 +475,7 @@ void jed_position_point (unsigned char *p)
 unsigned int jed_right (unsigned int n) /*{{{*/
 {
    unsigned int total = 0;
-   
+
    while (1)
      {
 	int len = CLine->len;
@@ -534,7 +531,7 @@ unsigned int jed_right_bytes (unsigned int n)
 unsigned int jed_left (unsigned int n) /*{{{*/
 {
    unsigned int total = 0;
-   
+
    while (1)
      {
 	unsigned char *pmin = CLine->data;
@@ -594,7 +591,7 @@ static Line *create_line_from_bunch(void) /*{{{*/
    Line *l;
    unsigned long flags;
    int count;
-   
+
    if (Last_Free_Group != NULL)
      {
 	l = &Last_Free_Group->lines[Last_Free_Offset];
@@ -603,13 +600,13 @@ static Line *create_line_from_bunch(void) /*{{{*/
 	  {
 	     exit_error("create group: internal error 1", 1);
 	  }
-	
+
 	Last_Free_Group->flags &= ~flags;
 	Last_Free_Group = NULL;
 	Number_Freed--;
 	return (l);
      }
-   
+
    if (Next_Free_Offset < BUNCH_SIZE)
      {
 	flags = ((unsigned long) 1L << Next_Free_Offset);
@@ -617,20 +614,19 @@ static Line *create_line_from_bunch(void) /*{{{*/
 	  {
 	     exit_error("free group: internal error 2", 1);
 	  }
-	
-	
+
 	Bunch_Lines->flags &= ~flags;
 	Number_Freed--;
 	return(&Bunch_Lines->lines[Next_Free_Offset++]);
      }
-   
+
    /* search list */
    b = Bunch_Lines;
    if (b != NULL)
      {
 	b = b->next;
      }
-   
+
    if ((b != NULL) && Number_Freed)
      {
 	bsave = b;
@@ -659,12 +655,12 @@ static Line *create_line_from_bunch(void) /*{{{*/
 	  }
 	while (b != bsave);
      }
-   
+
    /* failed so now malloc new bunch */
-   
+
    if (NULL == (b = (Bunch_Lines_Type *) SLmalloc (sizeof(Bunch_Lines_Type))))
      return NULL;
-   
+
    if (Bunch_Lines == NULL)
      {
 	Bunch_Lines = b;
@@ -676,7 +672,7 @@ static Line *create_line_from_bunch(void) /*{{{*/
 	Bunch_Lines->next = b;
 	Bunch_Lines = b;
      }
-   
+
    b->flags = MAX_LONG;
    Next_Free_Offset = 1;
    b->flags &= ~(unsigned long) 1;
@@ -686,7 +682,6 @@ static Line *create_line_from_bunch(void) /*{{{*/
 
 /*}}}*/
 
-
 static void destroy_bunch_line(Line *l) /*{{{*/
 {
 #ifdef _MSC_VER
@@ -694,15 +689,15 @@ static void destroy_bunch_line(Line *l) /*{{{*/
 #else
    register Line *ll;
 #endif
-   
+
    register Bunch_Lines_Type *b, *bsave, *last, *next;
    static Bunch_Lines_Type *slast;
-   
+
    if (slast != NULL) last = slast;
    else last = Bunch_Lines;
-   
+
    b = bsave = last;
-   
+
    do
      {
 	ll = b->lines;
@@ -720,9 +715,9 @@ static void destroy_bunch_line(Line *l) /*{{{*/
 	       {
 		  exit_error("free group: internal error 2", 1);
 	       }
-	     
+
 	     b->flags |= (unsigned long) 1L << Last_Free_Offset;
-	     
+
 	     /* if this whole structure is free, free it */
 	     if (b->flags == MAX_LONG)
 	       {
@@ -730,9 +725,9 @@ static void destroy_bunch_line(Line *l) /*{{{*/
 		    {
 		       while ((next = last->next) != b) last = next;
 		    }
-		  
+
 		  last->next = b->next;
-		  
+
 		  if (b == Bunch_Lines)
 		    {
 		       if (last == b)
@@ -742,13 +737,13 @@ static void destroy_bunch_line(Line *l) /*{{{*/
 			     last = last->next;
 			     if (last == b) last = NULL; */
 			 }
-		       
+
 		       Bunch_Lines = last;
 		       Next_Free_Offset = BUNCH_SIZE;
 		    }
-		  
+
 		  SLfree ((char *)b);
-		  
+
 		  if (last == b) last = NULL;
 		  b = NULL;
 		  Number_Freed -= BUNCH_SIZE - 1;
@@ -758,7 +753,7 @@ static void destroy_bunch_line(Line *l) /*{{{*/
 	       {
 		  Number_Freed++;
 	       }
-	     
+
 	     Last_Free_Group = b;
 	     if (Bunch_Lines == NULL) goto L1;
 	     return;
@@ -778,7 +773,7 @@ Line *make_line1(unsigned int size) /*{{{*/
    Line *new_line;
    unsigned char *data = NULL;
    unsigned int chunk;
-   
+
    /* 4 byte chunks */
 #if defined(SIXTEEN_BIT_SYSTEM)
    chunk = (size + 3) & 0xFFFCU;
@@ -797,7 +792,7 @@ Line *make_line1(unsigned int size) /*{{{*/
 	  }
 	else data = (unsigned char *) SLmalloc (chunk);   /* was chunk + 1 */
      }
-   
+
    if ((new_line == NULL) || (data == NULL))
      {
 	*Error_Buffer = 0;	       /* this is critical */
@@ -822,7 +817,7 @@ Line *make_line1(unsigned int size) /*{{{*/
 unsigned char *make_line(unsigned int size) /*{{{*/
 {
    Line *new_line;
-   
+
    new_line = make_line1(size);
    /* if CLine is Null, then we are at the top of a NEW buffer.  Make this
     explicit. */
@@ -846,7 +841,7 @@ unsigned char *make_line(unsigned int size) /*{{{*/
 	CLine->next = new_line;
 	new_line->prev = CLine;
      }
-   
+
    if (CLine == NULL)
      {
 	Max_LineNum = LineNum = 1;
@@ -857,7 +852,7 @@ unsigned char *make_line(unsigned int size) /*{{{*/
 	LineNum++;
      }
    CLine = new_line;
-   
+
    return(CLine->data);
 }
 
@@ -866,7 +861,7 @@ unsigned char *make_line(unsigned int size) /*{{{*/
 void free_line(Line *line) /*{{{*/
 {
    register unsigned char *dat = line->data;
-   
+
    if (dat != NewLine_Buffer) SLfree ((char *)dat);
    destroy_bunch_line(line);
 }
@@ -880,10 +875,10 @@ void free_line(Line *line) /*{{{*/
 int delete_line() /*{{{*/
 {
    Line *n, *p, *tthis;
-   
+
    p = CLine -> prev;
    if (p == NULL) return(1);
-   
+
    n = CLine -> next;
    tthis = CLine;
    if (n == NULL)
@@ -896,12 +891,12 @@ int delete_line() /*{{{*/
 	p->next = n;
 	n->prev = p;
      }
-   
+
    free_line(tthis);
    CLine = p;
    LineNum--;
    Max_LineNum--;
-   
+
    return(0);
 }
 
@@ -917,7 +912,7 @@ unsigned char *remake_line(unsigned int size) /*{{{*/
    mask = 0xFFFFFFFCu;
 #endif
    size = (unsigned) (size + 3) & mask;   /* 4 byte chunks */
-   
+
    if (d == NewLine_Buffer)
      {
 	if (NULL != (d = (unsigned char *) SLmalloc (size))) *d = '\n';
@@ -933,7 +928,7 @@ unsigned char *remake_line(unsigned int size) /*{{{*/
 #endif
 	d = (unsigned char *) SLrealloc ((char *) d, size);
      }
-   
+
    if (d == NULL)
      {
 	*Error_Buffer = 0;	       /* critical error */
@@ -941,7 +936,7 @@ unsigned char *remake_line(unsigned int size) /*{{{*/
 	longjmp(Jump_Buffer_Ptr->b, 1);
 	/* exit_error(buf); */
      }
-   
+
 #ifdef KEEP_SPACE_INFO
    CLine->space = size;
 #endif
@@ -957,7 +952,7 @@ void uniquely_name_buffer (Buffer *b, SLFUTURE_CONST char *trry) /*{{{*/
    int version = 0, n;
    char *neew;
    char *name;
-   
+
    n = strlen(trry);
    neew = SLmalloc (n + 12);
    if (neew == NULL)
@@ -976,7 +971,7 @@ void uniquely_name_buffer (Buffer *b, SLFUTURE_CONST char *trry) /*{{{*/
 
 	     bnext = bnext->next;
 	  }
-	
+
 	if (bnext == b)
 	  {
 	     name = SLang_create_slstring (neew);
@@ -999,9 +994,9 @@ void uniquely_name_buffer (Buffer *b, SLFUTURE_CONST char *trry) /*{{{*/
 Buffer *make_buffer (char *name, char *dir, char *file) /*{{{*/
 {
    Buffer *newB;
-   
+
    newB = (Buffer *) jed_malloc0 (sizeof(Buffer));
-   
+
    if (newB == NULL)
      exit_error("Out of memory", 0);
 
@@ -1023,7 +1018,7 @@ Buffer *make_buffer (char *name, char *dir, char *file) /*{{{*/
 	CBuf->prev->next = newB;
 	CBuf->prev = newB;
      }
-   
+
 #ifdef IBMPC_SYSTEM
    newB->flags |= ADD_CR_ON_WRITE_FLAG;
 #endif
@@ -1041,7 +1036,6 @@ Buffer *make_buffer (char *name, char *dir, char *file) /*{{{*/
 }
 
 /*}}}*/
-
 
 /* if there is a window attached to this buffer, then there are problems
  *  if we get to update() without attaching another one to it.  So
@@ -1073,7 +1067,7 @@ void delete_buffer(Buffer *buf) /*{{{*/
 	SLfree ((char *)m);
 	m = m1;
      }
-   
+
    m = buf->spot_array;
    while (m != NULL)
      {
@@ -1083,18 +1077,18 @@ void delete_buffer(Buffer *buf) /*{{{*/
      }
 
    if (buf->user_marks != NULL) free_user_marks (buf);
-   
+
    if (buf->undo != NULL) delete_undo_ring (buf);
-   
-#if JED_HAS_BUFFER_LOCAL_VARS 
+
+#if JED_HAS_BUFFER_LOCAL_VARS
    jed_delete_blocal_vars (buf->blocal_table);
 #endif
-   
+
 #if JED_HAS_SAVE_NARROW
    while (buf->save_narrow != NULL)
      jed_free_saved_narrow (buf);
 #endif
-   
+
 #if JED_HAS_COLOR_COLUMNS
    SLfree ((char *)buf->column_colors);
 #endif
@@ -1108,14 +1102,14 @@ void delete_buffer(Buffer *buf) /*{{{*/
 #if JED_HAS_SUBPROCESSES
    if (buf->subprocess) jed_kill_process (buf->subprocess - 1);
 #endif
-   
+
    SLang_free_slstring (buf->dir);
    SLang_free_slstring (buf->file);
    SLfree (buf->canonical_dirfile);
    SLfree (buf->dirfile);
    SLang_free_slstring (buf->name);
    SLang_free_slstring (buf->mode_string);
-   
+
    delete_buffer_hooks (buf->buffer_hooks);
    SLfree ((char *)buf);
 }
@@ -1127,7 +1121,7 @@ void goto_line (int *np) /*{{{*/
    unsigned int n;
    unsigned int half1 = LineNum / 2;
    unsigned int half2 = (Max_LineNum + LineNum) / 2;
-   
+
    if (*np <= 1) n = 0; else n = (unsigned int) *np;
 
    if (n < LineNum)
@@ -1157,13 +1151,13 @@ Line *dup_line(Line *l) /*{{{*/
    Line *neew;
    int n;
    unsigned char *p, *q;
-   
+
 #ifdef KEEP_SPACE_INFO
    n = l->space;
 #else
    n = l->len;
 #endif
-   
+
    neew = (Line *) SLmalloc (sizeof(Line));
    if ((neew == NULL) ||
        (NULL == (neew->data = (unsigned char *) SLmalloc (n))))
@@ -1178,7 +1172,7 @@ Line *dup_line(Line *l) /*{{{*/
 #endif
    p = neew->data;
    q = l->data;
-   
+
    while (n--) *p++ = *q++;
    return(neew);
 }
@@ -1188,7 +1182,7 @@ Line *dup_line(Line *l) /*{{{*/
 Buffer *find_buffer(char *name) /*{{{*/
 {
    Buffer *b;
-   
+
    b = CBuf;
    do
      {
@@ -1196,7 +1190,7 @@ Buffer *find_buffer(char *name) /*{{{*/
 	b = b->next;
      }
    while(b != CBuf);
-   
+
 #if !JED_FILE_PRESERVE_CASE
    b = CBuf;
    do
@@ -1236,33 +1230,33 @@ int switch_to_buffer(Buffer *buf) /*{{{*/
    CBuf->point = Point;
    CBuf->linenum = LineNum;
    CBuf->max_linenum = Max_LineNum;
-   
+
    /* local variables */
    SLMEMCPY ((char *) &CBuf->local_vars, (char *) &Buffer_Local, sizeof (Buffer_Local_Type));
-   
+
    if (buf == CBuf) return(0);
-   
+
 #if 0
    buf->prev->next = buf->next;
    buf->next->prev = buf->prev;
-   
+
    buf->next = CBuf;
    buf->prev = CBuf->prev;
    CBuf->prev->next = buf;
    CBuf->prev = buf;
 #endif
-   
+
    /* now restore new buffer */
    CBuf = buf;
    CLine = CBuf->line;
    Point = CBuf->point;
-   
+
    /* Buffer local variables */
    SLMEMCPY ((char *) &Buffer_Local, (char *) &CBuf->local_vars, sizeof (Buffer_Local_Type));
-	   
+
    LineNum = CBuf->linenum;
    Max_LineNum = CBuf->max_linenum;
-   
+
    if (CLine == NULL)
      {
 	make_line(25);
@@ -1284,7 +1278,7 @@ static Buffer *find_file_buffer_via_inode (char *file)
 
    if (-1 == jed_get_inode_info (file, &device, &inode))
      return NULL;
-   
+
    if ((device == -1) || (inode == -1))
      return NULL;
 
@@ -1297,7 +1291,7 @@ static Buffer *find_file_buffer_via_inode (char *file)
 	b = b->next;
      }
    while (b != CBuf);
-   
+
    return NULL;
 }
 #endif
@@ -1337,7 +1331,7 @@ Buffer *find_file_buffer(char *file) /*{{{*/
 	return b;
      }
 # endif
-   
+
    SLfree (file);
    return NULL;
 }
@@ -1360,18 +1354,18 @@ void buffer_filename(Buffer *b, SLFUTURE_CONST char *dir, SLFUTURE_CONST char *f
      }
    else
      dirlen = strlen (dir);
-   
+
    dirfile = jed_dir_file_merge (dir, file);
    if (dirfile != NULL)
      canonical_dirfile = jed_get_canonical_pathname (dirfile);
-   else 
+   else
      canonical_dirfile = NULL;
 
    SLfree (b->dirfile);
    SLfree (b->canonical_dirfile);
    SLang_free_slstring (b->file);
    SLang_free_slstring (b->dir);
-   
+
    if ((NULL == (b->dirfile = dirfile))
        || (NULL == (b->canonical_dirfile = canonical_dirfile))
        || (NULL == (b->file = SLang_create_slstring (file)))
@@ -1393,7 +1387,6 @@ void buffer_filename(Buffer *b, SLFUTURE_CONST char *dir, SLFUTURE_CONST char *f
 
 /*}}}*/
 
-
 /* This kills all undo information! */
 int erase_buffer (void) /*{{{*/
 {
@@ -1412,13 +1405,13 @@ int erase_buffer (void) /*{{{*/
 	tthis = CLine;
 	beg->next = tthis->next;
 	tthis->prev = beg;
-	
+
 	jed_update_marks(LDELETE, 1);
 	CLine = tthis->next;
 	Max_LineNum--;
 	free_line(tthis);
      }
-   
+
    CLine = CBuf->beg; LineNum = 1;
    Point = 0;
    jed_update_marks(CDELETE, CLine->len);
@@ -1490,7 +1483,6 @@ void check_line() /*{{{*/
 
 /*}}}*/
 
-
 static SLang_Name_Type **find_buffer_hook (Jed_Buffer_Hook_Type *b, char *s)
 {
    if (b == NULL)
@@ -1521,7 +1513,6 @@ static SLang_Name_Type **find_buffer_hook (Jed_Buffer_Hook_Type *b, char *s)
    return NULL;
 }
 
-
 int jed_unset_buffer_hook (Buffer *buffer, char *name)
 {
    Jed_Buffer_Hook_Type *b;
@@ -1535,11 +1526,11 @@ int jed_unset_buffer_hook (Buffer *buffer, char *name)
 	SLang_Name_Type **nt = find_buffer_hook (b, name);
 	if (nt == NULL)
 	  return -1;
-	
+
 	*nt = NULL;
 	return 0;
      }
-   
+
    memset ((char *)b, 0, sizeof (Jed_Buffer_Hook_Type));
    return 0;
 }
@@ -1548,10 +1539,10 @@ int jed_set_buffer_hook (Buffer *buffer, char *name, SLang_Name_Type *nt)
 {
    SLang_Name_Type **ntp;
    Jed_Buffer_Hook_Type *b;
-   
+
    if (buffer == NULL)
      return -1;
-   
+
    b = buffer->buffer_hooks;
 
    if (b == NULL)
@@ -1562,11 +1553,11 @@ int jed_set_buffer_hook (Buffer *buffer, char *name, SLang_Name_Type *nt)
 	memset ((char *) b, 0, sizeof (Jed_Buffer_Hook_Type));
 	buffer->buffer_hooks = b;
      }
-   
+
    ntp = find_buffer_hook (b, name);
    if (ntp == NULL)
      return -1;
-   
+
    SLang_free_function (*ntp);
    *ntp = nt;
    return 0;

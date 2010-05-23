@@ -1,5 +1,3 @@
-
-
 ifnot (is_defined ("Abbrev_File"))
 {
    variable Abbrev_File;
@@ -9,7 +7,7 @@ ifnot (is_defined ("Abbrev_File"))
 	$1 = getenv ("HOME");
 	if ($1 == NULL) $1 = "";
      }
-   
+
 #ifdef VMS
    if (0 == strlen ($1))
      {
@@ -17,14 +15,14 @@ ifnot (is_defined ("Abbrev_File"))
      }
    else Abbrev_File = dircat ($1, Abbrev_File);
 #else
-   
+
 #ifdef UNIX
    Abbrev_File = ".abbrevs.sl";
 #else
    Abbrev_File = "abbrevs.sl";
 #endif
    Abbrev_File = dircat ($1, Abbrev_File);
-#endif % VMS 
+#endif % VMS
 }
 
 if (file_status (Abbrev_File) > 0) pop (evalfile (Abbrev_File));
@@ -46,6 +44,5 @@ define abbrev_mode ()
    else
      message ("Abbrev mode OFF");
 }
-
 
 provide ("abbrev");

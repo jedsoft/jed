@@ -1,7 +1,7 @@
 % File:          recent.sl      -*- SLang -*-
 %
 % Author:        Guido Gonzato, <ggonza@tin.it>
-% 
+%
 % Version:       1.0.1. This file provides easy access to recently
 %                accessed files.
 %
@@ -12,7 +12,7 @@
 %                  variable MAX_RECENT_FILES  = 20;              % ditto
 %
 %                For personal customisation, insert these lines in your .jedrc:
-% 
+%
 %                  % WANT_RECENT_FILES_LIST = 1 % set this to 0 to disable
 %                  % RECENT_FILES_LIST = ".jedrecent"; % uncomment to customise
 %                  % MAX_RECENT_FILES  = 10;
@@ -35,7 +35,7 @@ private variable List_Of_Buffers = NULL;
 private define get_recent_file_list_name ()
 {
    variable file = RECENT_FILES_LIST;
-   
+
    if (path_is_absolute (file))
      return file;
 
@@ -71,7 +71,6 @@ private define load_recent_file_list ()
    bob ();
 }
 
-
 % Build the menu of recent files.
 public define recent_files_menu_callback (popup)
 {
@@ -81,15 +80,15 @@ public define recent_files_menu_callback (popup)
   buf = whatbuf ();
   load_recent_file_list ();  % load the list of recent files
   bob ();
-  
+
   i = '1'; % use 1-9 first, then a-z, then A-Z, then give up and restart
-   
+
   forever
      {
 	tmp = line_as_string ();
 	ifnot (strlen (tmp))
 	  break;
-	
+
 	cmd = sprintf ("()=find_file (\"%s\")", tmp);
 	(cmd, ) = strreplace (cmd, "\\", "\\\\", strlen (cmd)); % fix DOS
 	menu_append_item (popup, sprintf ("&%c %s", i, tmp), cmd);
@@ -102,10 +101,9 @@ public define recent_files_menu_callback (popup)
 	  { case 'Z': i = '1' - 1; }
 	i++;
      }
-  
+
   setbuf (buf);
 }
-
 
 % This function is called by _jed_switch_active_buffer_hooks
 public define append_recent_files (buf)
@@ -131,7 +129,7 @@ public define append_recent_files (buf)
 	sw2buf (buf);
 	List_Of_Buffers = blist;
      }
-   
+
    if (is_readonly ())
      return;			       %  no permission to modify buffer/list
 
@@ -140,9 +138,9 @@ public define append_recent_files (buf)
    if (file == line_as_string ())
      return;
 
-   % Only add the file to the list if it is not on the list, or it was 
+   % Only add the file to the list if it is not on the list, or it was
    % not in the previously checked list of buffers.
-   
+
    if (List_Of_Buffers != NULL)
      {
 	if (any (List_Of_Buffers == buf))
@@ -167,7 +165,7 @@ public define append_recent_files (buf)
 	eob ();
 	del_region ();
      }
-   
+
    ERROR_BLOCK
      {
 	_clear_error ();
@@ -186,7 +184,7 @@ private define add_recent_files_popup_hook (menubar)
      return;
 
    variable menu = "Global.&File";
-   
+
    menu_append_separator (menu);
    menu_append_popup (menu, "&Recent Files");
    menu_set_select_popup_callback (strcat (menu, ".&Recent Files"),

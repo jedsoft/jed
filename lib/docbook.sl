@@ -1,12 +1,12 @@
 % File:          docbook.sl      -*- SLang -*-
 %
 % Author:        Guido Gonzato, <ggonza@tin.it>
-% 
+%
 % Version:       1.0.0.
-% 
+%
 % Description:   this mode is designed to facilitate the editing of
 %                Docbook SGML files. It supports a large subset of Docbook
-%                3.1, as described in the LDP Author Guide 
+%                3.1, as described in the LDP Author Guide
 %                <http://www.linuxdoc.org/LDP/LDP-Author-Guide/> and
 %                "Docbook: The Definive Guide" <http://www.docbook.org/tdg/>
 %                Complete enough for writing Linux HOWTOs, manuals, and much
@@ -18,7 +18,7 @@
 %
 %                  autoload ("docbook_mode", "docbook");
 %                  add_mode_for_extension ("docbook", "sgml");
-%                     
+%
 % Last updated:	 24 May 2001
 
 WRAP_INDENTS = 1; % you really want this
@@ -64,7 +64,7 @@ define sgml_skip_tag ()		% ^C^F
 define sgml_bskip_tag ()	% ^C^B
 {
   () = bsearch_char ('<');
-}  
+}
 
 private define sgml_insert_tags (tag1, tag2, do_push_spot, do_pop_spot)
 {
@@ -219,7 +219,7 @@ define sgml_sect (do_push_spot, level_str) % ^CN
         message ("Wrong value! Only 1..5 allowed. ");
       }
     }
-  
+
   insert (sprintf ("<sect%s id=\"", level_str));
   if (do_push_spot)
     push_spot ();
@@ -339,7 +339,7 @@ define sgml_template ()
   col = what_column () - 1;
   ok = 0;
   while (0 == ok) {
-    type = 
+    type =
       read_mini ("Document type (Article, Book)?", Null_String, "a");
     if ( (type [0] == 'a') or (type [0] == 'b') )
       ok = 1;
@@ -357,13 +357,13 @@ define sgml_template ()
     set_blocal_var ("b", DOC_TYPE);
     type = "book";
   }
-  vinsert 
+  vinsert
     ("<!DOCTYPE %s PUBLIC \"-//OASIS//DTD DocBook V3.1//EN\">", type);
   if (is_article)
     vinsert ("\n\n<%s lang=\"en\">\n<%s>\n\n", type, "artheader");
   else
     vinsert ("\n\n<%s lang=\"en\">\n<%s>\n\n", type, "bookinfo");
-  
+
   insert_spaces (col + SGML_INDENT);
   sgml_title ("title", PUSH_SPOT);
   insert_spaces (col + SGML_INDENT);
@@ -386,7 +386,7 @@ define sgml_template ()
   insert ("\n");
   insert_spaces (col + SGML_INDENT);
   insert ("</abstract>\n");
-  
+
   if (is_article) {
     vinsert ("\n</%s>\n\n", "artheader");
     insert ("<!-- sections here... -->\n");
@@ -474,11 +474,11 @@ define sgml_arg_plain (do_push_spot, do_pop_spot)
 define sgml_arg (do_push_spot, do_pop_spot)
 {
   variable ch, rep, choice, tag1, tag2, sep1, sep2;
-  
+
   choice = "";
   rep = "";
   sep1 = " "; sep2 = " ";
-  
+
   flush ("Choice:  Req  Plain (Enter=nothing) ");
   ch = tolower (getkey ());
   switch (ch)
@@ -489,7 +489,7 @@ define sgml_arg (do_push_spot, do_pop_spot)
   ch = tolower (getkey ());
   switch (ch)
     {case 'r': rep =  "rep=repeat"; }
-  
+
   ifnot (strlen(choice))
     sep1= "";
   ifnot (strlen(rep))
@@ -740,7 +740,7 @@ define sgml_procedure ()
 define sgml_table_row (table_col_int, do_push_spot)
 {
   variable i, col = what_column () - 1;
-  
+
   insert ("<row>\n");
   for (i = 0; i < table_col_int; i++) {
     insert_spaces (col + SGML_INDENT);
@@ -756,8 +756,8 @@ define sgml_table_row (table_col_int, do_push_spot)
 define sgml_align ()
 {
   variable ch, align;
-  
-  flush 
+
+  flush
     ("Align (Center cHar Justify Left Right)? ");
   ch = tolower (getkey ());
   switch (ch)
@@ -766,7 +766,7 @@ define sgml_align ()
     {case 'j': align = "justify"; }
     {case 'l': align = "left"; }
     {case 'r': align = "right"; }
-  
+
   vinsert ("align=\"%s\"", align);
 
 }
@@ -778,13 +778,13 @@ define sgml_table (informal_table)
 {
   variable col = what_column () - 1;
   variable i, ch, frame, type_of_table, table_col_str, ok;
-  
+
   if (informal_table)
     type_of_table = "informaltable";
   else
     type_of_table = "table";
-  
-  flush 
+
+  flush
     ("Frame (All, Bottom, None, Sides, Top, tOpbot)? ");
   ch = tolower (getkey ());
   switch (ch)
@@ -794,7 +794,7 @@ define sgml_table (informal_table)
     {case 's': frame = "sides"; }
     {case 't': frame = "top"; }
     {case 'o': frame = "topbot"; }
-  
+
   ok = 0;
   while (0 == ok) {
     table_col_str = read_mini ("Columns?", Null_String, "4");
@@ -806,7 +806,7 @@ define sgml_table (informal_table)
       message ("Wrong value! ");
     }
   }
-  
+
   vinsert ("<%s frame=\"%s\">\n", type_of_table, frame);
   ifnot (informal_table)
     sgml_title ("title", PUSH_SPOT);
@@ -816,20 +816,20 @@ define sgml_table (informal_table)
   insert (sprintf ("\n<tgroup cols=\"%s\">\n", table_col_str));
   for (i = 0; i < table_columns; i++) {
     insert_spaces (col + SGML_INDENT);
-    vinsert 
+    vinsert
       ("<colspec colname=\"col%s\" align=\"center\">\n", string (i+1) );
   }
   ifnot (informal_table) {
     insert_spaces (col + SGML_INDENT);
     insert ("<thead>\n");
     insert_spaces (col + SGML_INDENT);
-    
+
     sgml_table_row (table_columns, NO_PUSH_SPOT);
-    
+
     insert ("\n");
     insert_spaces (col + SGML_INDENT);
     insert ("</thead>\n");
-    
+
     insert_spaces (col + SGML_INDENT);
     insert ("<tfoot>\n");
     insert_spaces (col + SGML_INDENT);
@@ -902,7 +902,7 @@ define insert_sgml_screen ()
 {
   % this function is redundant, but I can't find a way to pass
   % Width="80" through menu_append_item
-  sgml_insert_tags ("<screen width=\"80\">\n", "</screen>\n", 
+  sgml_insert_tags ("<screen width=\"80\">\n", "</screen>\n",
 		    PUSH_SPOT, NO_POP_SPOT);
 }
 
@@ -979,7 +979,7 @@ private define setup_dfa_callback (name)
   dfa_define_highlight_rule ("^([^\\-]|-+[^>])*-+[ \t]*>", "Qcomment", name);
   dfa_define_highlight_rule ("<!.*", "comment", name);
   dfa_define_highlight_rule ("<([^>\"]|\"[^\"]*\")*>", "keyword", name);
-  dfa_define_highlight_rule ("<([^>\"]|\"[^\"]*\")*(\"[^\"]*)?$", "delimiter", 
+  dfa_define_highlight_rule ("<([^>\"]|\"[^\"]*\")*(\"[^\"]*)?$", "delimiter",
 			     name);
   dfa_define_highlight_rule ("&#[0-9]+;", "keyword1", name);
   dfa_define_highlight_rule ("&[A-Za-z]+;", "Kdelimiter", name);
@@ -994,7 +994,7 @@ private define init_menu (menu)
 {
   % header
   menu_append_popup (menu, "&Header");
- 
+
   variable m = sprintf ("%s.&Header", menu);
   menu_append_item (m, "<&ackno>", "sgml_insert_tag (\"ackno\", 1, 1)");
   menu_append_item (m, "<a&uthor>", "sgml_author (1, 1)");
@@ -1013,52 +1013,52 @@ private define init_menu (menu)
   menu_append_item (m, "&numbered section", "sgml_sect (1, \"0\")");
   menu_append_item (m, "<&section>", "sgml_section ()");
   menu_append_item (m, "<s&idebar>", "sgml_sidebar (1)");
-  menu_append_item (m, "<&title>", 
+  menu_append_item (m, "<&title>",
 		    "sgml_title (\"title\", 1); pop_spot ()");
-  menu_append_item (m, "<s&ubtitle>", 
+  menu_append_item (m, "<s&ubtitle>",
 		    "sgml_title (\"subtitle\", 1); pop_spot ()");
   % character
   menu_append_popup (menu, "&Character");
   m = sprintf ("%s.&Character", menu);
   menu_append_item (m, "<&acronym>", "sgml_insert_tag (\"acronym\", 1, 1)");
-  menu_append_item (m, "<&citation>", 
+  menu_append_item (m, "<&citation>",
 		    "sgml_insert_tag (\"citation\", 1, 1)");
-  menu_append_item (m, "<&emphasis>", 
+  menu_append_item (m, "<&emphasis>",
 		    "sgml_insert_tag (\"emphasis\", 1, 1)");
-  menu_append_item (m, "<&firstterm>", 
+  menu_append_item (m, "<&firstterm>",
 		    "sgml_insert_tag (\"firstterm\", 1, 1)");
-  menu_append_item (m, "<foot&note>", 
+  menu_append_item (m, "<foot&note>",
 		    "sgml_insert_tag (\"footnote\", 1, 1)");
-  menu_append_item (m, "<&superscript>", 
+  menu_append_item (m, "<&superscript>",
 		    "sgml_insert_tag (\"superscript\", 1, 1)");
-  menu_append_item (m, "<s&ubscript>", 
+  menu_append_item (m, "<s&ubscript>",
 		    "sgml_insert_tag (\"subscript\", 1, 1)");
   % computer
   menu_append_popup (menu, "C&omputer");
   m = sprintf ("%s.C&omputer", menu);
-  menu_append_item (m, "<&application>", 
+  menu_append_item (m, "<&application>",
 		    "sgml_insert_tag (\"application\", 1, 1)");
-  menu_append_item (m, "<mouse&button>", 
+  menu_append_item (m, "<mouse&button>",
 		    "sgml_insert_tag (\"mousebutton\", 1, 1)");
   menu_append_item (m, "<&command>", "sgml_insert_tag (\"command\", 1, 1)");
   menu_append_item (m, "&directory", "sgml_directory ()");
-  menu_append_item (m, "<&envar>", 
+  menu_append_item (m, "<&envar>",
 		    "sgml_insert_tag (\"envar\", 1, 1)");
-  menu_append_item (m, "<&filename>", 
+  menu_append_item (m, "<&filename>",
 		    "sgml_insert_tag (\"filename\", 1, 1)");
-  menu_append_item (m, "<fu&nction>", 
+  menu_append_item (m, "<fu&nction>",
 		    "sgml_insert_tag (\"function\", 1, 1)");
-  menu_append_item (m, "<program&listing>", 
+  menu_append_item (m, "<program&listing>",
 		    "sgml_insert_tag (\"programlisting\", 1, 1)");
-  menu_append_item (m, "<computer&output>", 
+  menu_append_item (m, "<computer&output>",
 		    "sgml_insert_tag (\"computeroutput\", 1, 1)");
-  menu_append_item (m, "<cons&tant>", 
+  menu_append_item (m, "<cons&tant>",
 		    "sgml_insert_tag (\"constant\", 1, 1)");
   menu_append_item (m, "<&prompt>", "sgml_insert_tag (\"prompt\", 1, 1)");
   menu_append_item (m, "<&screen>", "insert_sgml_screen ()");
-  menu_append_item (m, "<&userinput>", 
+  menu_append_item (m, "<&userinput>",
 		    "sgml_insert_tag (\"userinput\", 1, 1)");
-  menu_append_item (m, "<&varname>", 
+  menu_append_item (m, "<&varname>",
 		    "sgml_insert_tag (\"varname\", 1, 1)");
   % computer: popups
   menu_append_popup (m, "&Menu");
@@ -1069,7 +1069,7 @@ private define init_menu (menu)
   menu_append_item (m, "<&accel>", "sgml_insert_tag (\"accel\", 1, 1)");
   menu_append_item (m, "<menu&choice>", "sgml_menuchoice ()");
   menu_append_item (m, "<&guimenu>", "sgml_insert_tag (\"guimenu\", 1, 1)");
-  menu_append_item (m, "<guimenu&item>", 
+  menu_append_item (m, "<guimenu&item>",
 		    "sgml_insert_tag (\"guimenuitem\", 1, 1)");
   % computer/keys
   m = sprintf ("%s.C&omputer.&Keys", menu);
@@ -1084,7 +1084,7 @@ private define init_menu (menu)
   menu_append_item (m, "<cmd&synopsis>", "sgml_cmdsynopsis ()");
   menu_append_item (m, "&plain <arg>", "sgml_arg_plain (1, 1)");
   menu_append_item (m, "<&group>", "sgml_group ()");
-  menu_append_item (m, "<&replaceable>", 
+  menu_append_item (m, "<&replaceable>",
 		    "sgml_insert_tag (\"replaceable\", 1, 1)");
   % environment
   menu_append_popup (menu, "&Environment");
@@ -1112,9 +1112,9 @@ private define init_menu (menu)
   menu_append_item (m, "<&orderedlist>", "sgml_ordered_list ()");
   menu_append_item (m, "<&segmentedlist>", "sgml_segmented_list ()");
   menu_append_item (m, "<&variablelist>", "sgml_variable_list ()");
-  menu_append_item (m, "<varlist&entry>", 
+  menu_append_item (m, "<varlist&entry>",
 		    "sgml_varlistentry (); pop_spot ()");
-  menu_append_item (m, "<se&glistitem>", 
+  menu_append_item (m, "<se&glistitem>",
 		    "sgml_seglistitem  (1); pop_spot ()");
   menu_append_item (m, "<&procedure>", "sgml_procedure ()");
   menu_append_item (m, "<s&tep>", "sgml_step (1)");
@@ -1124,7 +1124,7 @@ private define init_menu (menu)
   menu_append_item (m, "<&align>", "sgml_align ()");
   menu_append_item (m, "<&informaltable>", "sgml_table (1)");
   menu_append_item (m, "<&table>", "sgml_table (0)");
-  menu_append_item (m, "<&row>", 
+  menu_append_item (m, "<&row>",
 		    "sgml_table_row (table_columns, 1, 1); pop_spot ()");
   % paragraph
   menu_append_item (menu, "<&para>", "sgml_para (1); pop_spot ()");
@@ -1238,7 +1238,6 @@ definekey_reserved ("sgml_figure ()", "f", $1);
 definekey ("tex_insert_quote", "\"", $1);
 definekey ("tex_insert_quote", "'", $1);
 
-
 %!%+
 %\function{docbook_mode}
 %\synopsis{docbook_mode}
@@ -1247,7 +1246,7 @@ definekey ("tex_insert_quote", "'", $1);
 % This mode is designed to facilitate the editing of Docbook 3.1 SGML files.
 % If a region is defined (i.e., if a mark is set), many SGML tags will
 % insert around the region; e.g. '<emphasis>' and '</emphasis>'. Tags are
-% inserted either using the Mode menu, or with a key combination resembling 
+% inserted either using the Mode menu, or with a key combination resembling
 % the menu entry, e.g. ^Cce inserts <emphasis> (M&ode/&Character/<&emphasis>).
 % Functions that affect this mode include (Emacs mode assumed - IDE mode
 % uses ^Z instead of ^C):

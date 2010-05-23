@@ -4,7 +4,7 @@
 %
 % Sendmail interface for Unix.
 %
-%  Functions: 
+%  Functions:
 %   mail_send             : send message
 %   mail                  : initiate mail mode
 %   mail_insert_signature : append contents of Mail_Signature_File
@@ -15,7 +15,7 @@
 %   Mail_Signature_File   : Filename of signature (~/.signature is default)
 %   SendMail_Cmd          : Name of sendmail program including switches
 %   Mail_Extra_Headers	  : Misc headers to insert
-%   
+%
 % You might want something like the following in mail_hook
 %
 % define mail_hook ()
@@ -30,7 +30,7 @@ autoload ("mailalias_expand", "mailalias"); % the mail-alias package
 % Create a dummy function if set_line_readonly is not defined.
 ifnot (is_defined ("set_line_readonly")) eval (".(pop) set_line_readonly");
 
-%{{{ Public Variables 
+%{{{ Public Variables
 
 $1 = "~/.signature";
 ifnot (is_defined ("Mail_Signature_File"))
@@ -39,14 +39,13 @@ ifnot (is_defined ("Mail_Signature_File"))
 }
 
 ifnot (is_defined ("Mail_Header_Separator_String"))
-  variable Mail_Header_Separator_String = 
+  variable Mail_Header_Separator_String =
 "--- Do not modify this line.  Enter your message below ---";
 
 ifnot (is_defined ("Mail_Extra_Headers"))
 {
    variable Mail_Extra_Headers = NULL;
 }
-
 
 % The sendmail program
 
@@ -68,7 +67,7 @@ ifnot (is_defined ("SendMail_Cmd"))
 	     break;
 	  }
      }
-   
+
 }
 
 _pop_n (_stkdepth () - $1);
@@ -93,7 +92,6 @@ private variable Mail_Filename = dircat (getenv ("HOME"), ".__jed_mail__");
 %}}}
 
 %{{{ Private Functions
-
 
 define mail_sw2_prev_buf ()
 {
@@ -140,11 +138,10 @@ define mail_send () %{{{
 	fcc_file = strtrim (substr (bufsubstr_delete (), 6, -1));
 	fcc_mark = create_user_mark ();
      }
-  
-  
+
    mark_buffer ();
    sent = not (pipe_region (SendMail_Cmd));
-   
+
    if (fcc_mark != NULL)
      {
 	if (sent and strlen (fcc_file))
@@ -164,7 +161,7 @@ define mail_send () %{{{
 	     bskip_chars (" \t\n");
 	     del_region ();
 	     newline (); newline ();
-	     
+
 	     mark_buffer ();
 	     () = append_region_to_file (fcc_file);
 	  }
@@ -216,7 +213,7 @@ define mail_format_buffer () %{{{
    text_mode ();
 
    setbuf_info (getbuf_info () & ~(0x40)); %  turn off buried buffer flag
-   
+
    ifnot (keymap_p(km)) make_keymap(km);
    use_keymap(km);
 
@@ -255,7 +252,7 @@ define mail_format_buffer () %{{{
 
 	bob (); eol ();
 	set_buffer_modified_flag(0);
-   
+
      }
 
    push_spot ();
@@ -279,11 +276,11 @@ define mail () %{{{
 {
    variable status, dir, file, buf = "*mail*";
    variable do_format = -1;
-   
+
    status = bufferp (buf);
    Mail_Previous_Windows = nwindows ();
    Mail_This_Buffer = whatbuf ();
-   
+
    if (BATCH)
      {
 	% Mail_Previous_Buffer = whatbuf ();
@@ -305,7 +302,7 @@ define mail () %{{{
      {
 	(dir, file) = parse_filename (Mail_Filename);
 	setbuf_info (file, dir, buf, 2);	% autosave
-	
+
 	file = make_autosave_filename(dir, file);
 	if (1 == file_status (file))
 	  {
@@ -328,7 +325,7 @@ define mail_insert_signature () %{{{
 {
    ifnot (strlen (Mail_Signature_File))
      return;
-   
+
    push_spot ();
    eob ();
    insert ("\n-- \n");

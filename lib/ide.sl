@@ -102,7 +102,7 @@ setkey ("ide_window_down", "\eZ");
 setkey ("ide_insert_any_char", "^P");
 %
 % Control-Q keys  --- hope you figure out how to pass ^Q/^S through system
-% In case you *cannot* figure out how, you can use ESC+^key instead of ^Q; 
+% In case you *cannot* figure out how, you can use ESC+^key instead of ^Q;
 % for instance, ESC-^Y acts as ^Q-Y. Twisted, but some terminals need it.
 % There's an exception: use ESC + ESC + digit to mimick ^Q + digit; this is
 % to avoid overriding the ESC + number + operation feature.
@@ -263,7 +263,7 @@ $1 = 13;
 private variable _Ide_Bookmarks = Mark_Type[$1];
 
 %  ide_set_bookmark () and ide_goto_bookmark () are implemented to provide
-%  a more Borland-ish way of copying and moving blocks, and of moving 
+%  a more Borland-ish way of copying and moving blocks, and of moving
 %  around generally.
 
 define ide_set_bookmark ()
@@ -271,7 +271,7 @@ define ide_set_bookmark ()
   _Ide_Bookmarks[10] = create_user_mark ();
   Ide_Bookmark_Exist = 1;
 }
-   
+
 define ide_goto_bookmark ()
 {
   variable mrk = _Ide_Bookmarks[10];
@@ -433,7 +433,7 @@ define ide_toggle_overwrite ()
    else
      message ("Insert");
 }
-  
+
 define ide_repeat_search ()             % ^L
 {
   ide_set_bookmark ();
@@ -447,7 +447,7 @@ define ide_bdelete_word ()              % M-O
   ide_set_bookmark ();
   push_mark ();
   bskip_chars ("a-zA-Z0-9");
-  if (_get_point () == p) bskip_chars (" \n\t"); 
+  if (_get_point () == p) bskip_chars (" \n\t");
   if (_get_point () == p) go_left (1);
   del_region ();
 }
@@ -467,7 +467,7 @@ define ide_delete_word ()               % ^T
   variable p = _get_point ();
   push_mark ();
   skip_chars ("a-zA-Z0-9");
-  if (_get_point () == p) skip_chars (" \n\t"); 
+  if (_get_point () == p) skip_chars (" \n\t");
   if (_get_point () == p) go_right (1);
   del_region ();
 }
@@ -584,7 +584,7 @@ define ide_void_block ()                % ^KK
 define ide_clear_block ()               % ^KH
 {
   ide_end_block ();
-  call ("copy_region");                 %  copy region to internal buffer  
+  call ("copy_region");                 %  copy region to internal buffer
   ide_copy_block_to_buffer ();
   IDE_Block_Buffer_Empty = 0;
   ide_goto_end_block ();
@@ -602,7 +602,7 @@ define ide_delete_block ()              % ^KY
 
 define ide_goto_prev ()                 % ^QP
 {
-  if (Ide_Bookmark_Exist != 1) 
+  if (Ide_Bookmark_Exist != 1)
     error ("No previous location!");
   ide_goto_bookmark ();
 }
@@ -631,7 +631,7 @@ define ide_open_file_at_cursor ()       % Alt-Return, J.L.
 
 define ide_insert_file ()               % ^KR
 {
-  variable file = 
+  variable file =
     read_with_completion ("File:", Null_String, Null_String, 'f');
   push_spot ();
   () = insert_file (file);
@@ -685,7 +685,7 @@ define ide_uppercase_region()           % ^KU
   xform_region('u');
   ide_goto_end_block ();
 }
-   
+
 define ide_lowercase_region()           % ^KL
 {
   ide_end_block ();
@@ -714,7 +714,7 @@ define ide_set_mark_n (n)               % ^K0..9
   _Ide_Bookmarks[n] = create_user_mark ();
   vmessage ("Bookmark %d set.", n);
 }
-   
+
 define ide_save_buffer ()               % ^KS
 {
   variable file = read_file_from_mini ("Save to file:");
@@ -734,7 +734,7 @@ define ide_better_help ()
 }
 
 % Menu Interface.  Use existing menu definitions in most cases, but
-% change definitions in others. 
+% change definitions in others.
 private define ide_load_popups_hook ()
 {
    variable m;
@@ -752,14 +752,14 @@ private define ide_load_popups_hook ()
    menu_append_item (m, "Cance&l Operation", "kbd_quit");
    menu_append_item (m, "S&hell", "shell");
    menu_append_item (m, "E&xit", "exit_jed");
-   
+
    m = "Global.&File.&Versions";
    menu_append_item (m, "RCS &Open File", "rcs_open_file");
    menu_append_item (m, "&Check In/Out", "rcs_check_in_and_out");
    menu_append_item (m, "RCS Read &Log", "rcs_read_log");
    menu_append_item (m, "Backups &On", "backups_on");
    menu_append_item (m, "Backups O&ff", "backups_off");
-   
+
    m = "Global.&Edit";
    menu_delete_items (m);
    menu_append_item (m, "&Begin Region/Rect", "ide_begin_block");
@@ -773,7 +773,7 @@ private define ide_load_popups_hook ()
    menu_append_separator (m);
    menu_append_item (m, "Re&format", "format_paragraph");
    menu_append_item (m, "&Undo", "undo");
-   
+
    m = "Global.&Edit.&Advanced";
    menu_append_item (m, "&Compose Character", "ide_insert_any_char");
    if (is_defined ("digraph_cmd"))
@@ -788,14 +788,14 @@ private define ide_load_popups_hook ()
    menu_append_item (m, "&Start Macro", "begin_macro");
    menu_append_item (m, "S&top Macro", "end_macro");
    menu_append_item (m, "&Replay Last Macro", "execute_macro");
-   
+
    m = "Global.&Edit.&Rectangles";
    menu_append_item (m, "&Cut Rectangle", "kill_rect");
    menu_append_item (m, "C&opy Rectangle", "copy_rect");
    menu_append_item (m, "&Paste Rectangle", "insert_rect");
    menu_append_item (m, "Op&en Rectangle", "open_rect");
    menu_append_item (m, "&Blank Rectangle", "blank_rect");
-   
+
    m = "Global.&Edit.Bloc&ks";
    menu_append_item (m, "&Write to File", "write_region");
    menu_append_item (m, "&Filter", "ide_filter_region");
@@ -806,13 +806,13 @@ private define ide_load_popups_hook ()
    menu_append_item (m, "&Paste From Register", "reg_insert_register");
    menu_append_item (m, "&Comment", "comment_region");
    menu_append_item (m, "U&ncomment", "uncomment_region");
-   
+
    m = "Global.&Search";
    menu_append_item (m, "Search &Forward", "ide_search_forward");
    menu_append_item (m, "Repeat &Last Search", "ide_repeat_search");
    menu_append_item (m, "&Replace", "ide_replace_cmd");
    menu_append_item (m, "Search &Match", "goto_match");
-   
+
    m = "Global.&Buffers";
    % menu_append_separator (m);
    menu_append_item (m, "C&ompile", "compile");
@@ -820,7 +820,7 @@ private define ide_load_popups_hook ()
    menu_append_item (m, "&Previous Error", "compile_previous_error");
    if (is_defined ("gdb_mode"))
      menu_append_item (m, "Debug with &gdb", "gdb_mode");
-   
+
    m = "Global.&Help";
    % menu_append_separator (m);
    menu_append_item (m, "Describe ID&E Mode", "ide_better_help");

@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -13,5 +13,4 @@ extern void dump_abbrev_table (char *);
 extern void what_abbrev_table (void);
 extern int list_abbrev_tables (void);
 extern void delete_abbrev_table (char *);
-
 

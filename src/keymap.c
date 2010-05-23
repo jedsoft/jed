@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -72,7 +72,6 @@ static int Last_Key_Buffer_Len;
 
 int Jed_Max_Hits = 300;
 
-
 int jed_beep (void) /*{{{*/
 {
    tt_beep ();
@@ -99,7 +98,7 @@ static int xterm_mouse_cmd (void)
    b = my_getkey ();
    m.x = (unsigned char) my_getkey () - 32;
    m.y = (unsigned char) my_getkey () - 32;
-   
+
    b -= 32;
 
    if ((b & 3) == 3)
@@ -123,7 +122,7 @@ static int xterm_mouse_cmd (void)
 
    if (-1 == (id = jed_mouse_add_event (&m)))
      return -1;
-   
+
    ungetkey (&id);
    jed_mouse_cmd ();
    return 1;
@@ -228,7 +227,7 @@ int kbd_quit(void) /*{{{*/
 #endif
    SLang_set_error (SL_USER_BREAK);
    msg_error("Quit!");
-   if (Ignore_User_Abort) 
+   if (Ignore_User_Abort)
      SLang_set_error (sle);
 #ifdef UNDO_HAS_REDO
    set_current_undo ();
@@ -243,12 +242,12 @@ void init_keymaps(void) /*{{{*/
    int ch;
    char simple[2];
    simple[1] = 0;
-   
+
    if (NULL == (Global_Map = SLang_create_keymap ("global", NULL)))
      exit_error ("Malloc error creating keymap.", 0);
-   
+
    Global_Map->functions = Jed_Functions;
-   
+
    /* This breaks under some DEC ALPHA compilers (scary!) */
 #ifndef __DECC
    for (ch = ' '; ch < 256; ch++)
@@ -266,7 +265,7 @@ void init_keymaps(void) /*{{{*/
 	if (ch == 256) break;
      }
 #endif
-   
+
    SLkm_define_key ("^[1", (FVOID_STAR) digit_arg, Global_Map);
    SLkm_define_key ("^[2", (FVOID_STAR) digit_arg, Global_Map);
    SLkm_define_key ("^[3", (FVOID_STAR) digit_arg, Global_Map);
@@ -277,7 +276,7 @@ void init_keymaps(void) /*{{{*/
    SLkm_define_key ("^[8", (FVOID_STAR) digit_arg, Global_Map);
    SLkm_define_key ("^[9", (FVOID_STAR) digit_arg, Global_Map);
    SLkm_define_key ("^[0", (FVOID_STAR) digit_arg, Global_Map);
-   
+
 #ifdef IBMPC_SYSTEM
    SLkm_define_key (PC_DEL, (FVOID_STAR) delete_char_cmd, Global_Map);
    SLkm_define_key (PC_DEL1, (FVOID_STAR) delete_char_cmd, Global_Map);
@@ -298,10 +297,10 @@ void init_keymaps(void) /*{{{*/
    SLkm_define_key (PC_HOME1, (FVOID_STAR) bol, Global_Map);
    SLkm_define_key (PC_END, (FVOID_STAR) eol_cmd, Global_Map);
    SLkm_define_key (PC_END1, (FVOID_STAR) eol_cmd, Global_Map);
-   
+
    /* Now special keypad stuff */
    SLkm_define_key (PC_ENTER, (FVOID_STAR) newline_cmd, Global_Map);
-   
+
    /* wordperfect type stuff */
    SLkm_define_key (PC_F1, (FVOID_STAR) kbd_quit, Global_Map);
    /* SLkm_define_key (PC_F2, (FVOID_STAR) search_forward_cmd, Global_Map);
@@ -312,7 +311,7 @@ void init_keymaps(void) /*{{{*/
    SLkm_define_key (PC_SHIFT_F6, (FVOID_STAR) center_line, Global_Map);
    SLkm_define_key (PC_F7, (FVOID_STAR) jed_exit_jed_cmd, Global_Map);
 #else
-   
+
    /* give vtxxx arrow keys */
    SLkm_define_key ("^[[D", (FVOID_STAR) previous_char_cmd, Global_Map);
    SLkm_define_key ("^[OD", (FVOID_STAR) previous_char_cmd, Global_Map);
@@ -337,8 +336,8 @@ void init_keymaps(void) /*{{{*/
    SLkm_define_key ("\033[214z", (FVOID_STAR) bol, Global_Map);
    SLkm_define_key ("\033[220z", (FVOID_STAR) eol_cmd, Global_Map);
 #endif
-#endif   
-   
+#endif
+
    /* SLkm_define_key ("'", (FVOID_STAR) text_smart_quote, Global_Map);
    SLkm_define_key ("\"", (FVOID_STAR) text_smart_quote, Global_Map); */
    SLkm_define_key ("^_", (FVOID_STAR) undo, Global_Map);
@@ -400,7 +399,7 @@ void init_keymaps(void) /*{{{*/
    SLkm_define_key ("^[\\", (FVOID_STAR) jed_trim_whitespace, Global_Map);
    SLkm_define_key ("^\\", (FVOID_STAR) goto_match, Global_Map);
    SLkm_define_key ("`", (FVOID_STAR) quoted_insert, Global_Map);
-   
+
    if (X_Define_Keys_Hook != NULL)  (*X_Define_Keys_Hook)(Global_Map);
 }
 
@@ -430,7 +429,7 @@ static void update_jed_keybuffer (void) /*{{{*/
         *Key_Bufferp = 0;
 	strcpy (Jed_Key_Buffer, Key_Buffer);
      }
-   
+
    Key_Bufferp = Key_Buffer;
 }
 
@@ -448,21 +447,21 @@ static int do_macro_string (char *str, int repeat)
 	msg_error ("Possible runaway macro aborted.");
 	return -1;
      }
-	     
+
    macro_depth++;
    rtc_save = Read_This_Character;
-	     
+
    while (repeat > 0)
      {
 	repeat--;
 
 	Read_This_Character = str;
-   
+
 	while ((SLang_get_error () == 0)
 	       && (SLKeyBoard_Quit == 0)
 	       && (Read_This_Character != NULL))
 	  jed_do_key();
-	
+
 	if (Read_This_Character != NULL)
 	  {
 	     ret = -1;
@@ -480,7 +479,7 @@ static int key_interpret (SLang_Key_Type *key) /*{{{*/
 {
    char *str;
    int ret;
-   
+
    strcpy (Last_Kbd_Command_String, Current_Kbd_Command_String);
    Jed_This_Key_Function = key->f.f;
 
@@ -490,7 +489,7 @@ static int key_interpret (SLang_Key_Type *key) /*{{{*/
 	set_current_kbd_command (Jed_Key_Buffer);
 	ret = (key->f.f) ();
 	break;
-	
+
       case SLKEY_F_INTERPRET:
 	str = key->f.s;
 	set_current_kbd_command (str);
@@ -540,9 +539,9 @@ static int key_interpret (SLang_Key_Type *key) /*{{{*/
 static char *find_function_string (FVOID_STAR f) /*{{{*/
 {
    SLKeymap_Function_Type *fp;
-   
+
    if (f == (FVOID_STAR) ins_char_cmd) return "self_insert_cmd";
-   
+
    fp = Jed_Functions;
    while ((fp != NULL) && (fp->name != NULL))
      {
@@ -563,10 +562,10 @@ static SLFUTURE_CONST char *lookup_key_function_string (SLang_Key_Type *key)
      {
       case SLKEY_F_INTRINSIC:
 	return find_function_string (key->f.f);
-	
+
       case SLKEY_F_INTERPRET:
 	return key->f.s;
-	
+
 #ifdef SLKEY_F_SLANG
       case SLKEY_F_SLANG:
 	return key->f.slang_fun->name;
@@ -576,12 +575,11 @@ static SLFUTURE_CONST char *lookup_key_function_string (SLang_Key_Type *key)
      }
 }
 
-
 static int do_key (void) /*{{{*/
 {
    SLang_Key_Type *key;
    int repeat;
-   
+
    if (SLang_Key_TimeOut_Flag == 0)
      {
 	Key_Bufferp = Key_Buffer;
@@ -603,29 +601,29 @@ static int do_key (void) /*{{{*/
 	    && (key != NULL)
 	    && jed_hook_exists ("_jed_before_key_hooks"))
 	  {
-	     (void) jed_va_run_hooks ("_jed_before_key_hooks", JED_HOOKS_RUN_ALL, 
+	     (void) jed_va_run_hooks ("_jed_before_key_hooks", JED_HOOKS_RUN_ALL,
 				      1, lookup_key_function_string (key));
 	  }
      }
-   
+
    if ((key != NULL) && (key->f.f != NULL))
      {
 	if (Repeat_Factor == NULL) return key_interpret (key);
 	repeat = *Repeat_Factor;
 	Suspend_Screen_Update = 1;
-	
+
 	/* some routines may use the repeat factor as a prefix argument */
 	while (repeat > 0)
 	  {
 	     repeat--;
 
-	     if (SLKeyBoard_Quit || SLang_get_error () || (Repeat_Factor == NULL)) 
+	     if (SLKeyBoard_Quit || SLang_get_error () || (Repeat_Factor == NULL))
 	       break;
 
 	     key_interpret (key);
 	  }
 	Repeat_Factor = NULL;
-	
+
 	return(1);
      }
    else if (!Executing_Keyboard_Macro && !SLKeyBoard_Quit)
@@ -651,8 +649,6 @@ int jed_do_key (void)
    return ret;
 }
 
-
-
 void do_jed(void) /*{{{*/
 {
    char *mode;
@@ -667,7 +663,7 @@ void do_jed(void) /*{{{*/
    Repeat_Factor = NULL;
    Replace_Preserve_Case = 0;
    if (jed_do_key()) JWindow->trashed = 1;
-   
+
     /* internal editing commands may have selected a different buffer
      * so put it back to the one associated with the window.
      */
@@ -675,7 +671,7 @@ void do_jed(void) /*{{{*/
      {
 	char *name;
 	if (buffer_exists(JWindow->buffer))
-	  name = JWindow->buffer->name; 
+	  name = JWindow->buffer->name;
 	else name = "*scratch*";
 	switch_to_buffer_cmd(name);
      }
@@ -702,14 +698,13 @@ static int run_switch_active_buffer_hooks (char **bnamep)
 	(void) jed_va_run_hooks ("_jed_switch_active_buffer_hooks", JED_HOOKS_RUN_ALL, 1, buffer_name);
 	SLang_free_slstring (buffer_name);
      }
-   
+
    /* This should not fail because CBuf->name is an slstring, and if it
     * does fail, it is not important.
     */
    *bnamep = SLang_create_slstring (CBuf->name);
    return 0;
 }
-
 
 void jed (void) /*{{{*/
 {
@@ -734,14 +729,14 @@ void jed (void) /*{{{*/
    (void) run_switch_active_buffer_hooks (&buffer_name);
    (void) jed_va_run_hooks ("_jed_startup_hooks", JED_HOOKS_RUN_ALL, 0);
    (void) run_switch_active_buffer_hooks (&buffer_name);
-   
+
    Jump_Buffer_Ptr = &Jump_Buffer;
-   
+
    if (setjmp(Jump_Buffer.b) != 0)
      {
 	SLang_restart(1);   /* just in case */
      }
-   
+
    if (CBuf != JWindow->buffer)
      {
 	switch_to_buffer(JWindow->buffer);
@@ -760,7 +755,7 @@ void jed (void) /*{{{*/
      {
 	int had_err = 0;
 	Suspend_Screen_Update = 0;
-	
+
 	do_jed();
 	if (SLang_get_error ())
 	  {
@@ -772,7 +767,7 @@ void jed (void) /*{{{*/
 
 	if (!SLKeyBoard_Quit && (CBuf->flags & BUFFER_MODIFIED)
 	    && (!Cursor_Motion)) CBuf->hits += 1;
-	
+
 	SLKeyBoard_Quit = 0;
 
 	if (CBuf->hits > Jed_Max_Hits)
@@ -802,17 +797,17 @@ int digit_arg(void) /*{{{*/
    char buf[20];
    int key;
    unsigned int i;
-   
+
    i = 0;
    buf[i++] = (char) SLang_Last_Key_Char;
-   
-   /* After jed_do_key (what called this), Key_Bufferp is reset.  However, I want 
-    * to keep it for echoing subsequent characters.  I restore its previous 
-    * value so that echoing will continue. 
+
+   /* After jed_do_key (what called this), Key_Bufferp is reset.  However, I want
+    * to keep it for echoing subsequent characters.  I restore its previous
+    * value so that echoing will continue.
     */
-   
+
    Key_Bufferp = Key_Buffer + Last_Key_Buffer_Len;
-   
+
    SLang_Key_TimeOut_Flag = 1;
    while (i < sizeof(buf)-1)
      {
@@ -830,9 +825,9 @@ int digit_arg(void) /*{{{*/
 	ungetkey (&key);
 	if (Defining_Keyboard_Macro) Macro_Buffer_Ptr--;
      }
-   
+
    if (Key_Bufferp != Key_Buffer) Key_Bufferp--;
-   
+
    /* Key_Timeout is still active and is only reset after this call. */
    jed_do_key();
    return(1);
@@ -847,11 +842,11 @@ static int which_key (char *f) /*{{{*/
    FVOID_STAR fp;
    unsigned char type;
    unsigned char buf[5];
-   
+
    if (NULL == (fp = (FVOID_STAR) SLang_find_key_function(f, CBuf->keymap)))
      type = SLKEY_F_INTERPRET;
    else type = SLKEY_F_INTRINSIC;
-   
+
    i = 256;
    key_root = CBuf->keymap->keymap;
    while (i--)
@@ -867,7 +862,7 @@ static int which_key (char *f) /*{{{*/
 	     SLang_push_string(SLang_make_keystring(buf));
 	     num++;
 	  }
-	
+
 	while (key != NULL)
 	  {
 	     if ((key->type == type) &&
@@ -886,19 +881,18 @@ static int which_key (char *f) /*{{{*/
 
 /*}}}*/
 
-
 static void dump_this_binding (SLang_Key_Type *key) /*{{{*/
 {
    unsigned char ch, *s;
    char *str,  ctrl[2];
    SLFUTURE_CONST char *fun;
    int n, len;
-   
+
    s = key->str;
-   
+
    ctrl[0] = '^';
    len = *s++ - 1;;
-   
+
    while (len-- > 0)
      {
 	n = 1;
@@ -932,9 +926,9 @@ static void dump_this_binding (SLang_Key_Type *key) /*{{{*/
 	(void) jed_insert_byte (' ');
      }
    (void) jed_insert_wchar_n_times('\t', 3);
-   
+
    fun = lookup_key_function_string (key);
-   
+
    if (fun == NULL) fun = "** Unknown **";
    (void) jed_insert_string (fun);
    (void) jed_insert_newline ();
@@ -949,14 +943,14 @@ static void dump_bindings(char *map) /*{{{*/
    SLKeyMap_List_Type *kml;
 
    CHECK_READ_ONLY_VOID
-   
+
    if (NULL == (kml = SLang_find_keymap(map)))
      {
 	msg_error("Keymap undefined.");
 	return;
      }
    key_root = kml->keymap;
-   
+
    for (i = 0; i < 256; i++)
      {
 	next = key_root->next;
@@ -978,7 +972,7 @@ static void dump_bindings(char *map) /*{{{*/
 static void use_keymap(char *name) /*{{{*/
 {
    SLKeyMap_List_Type *map;
-   
+
    if ((name == NULL) || (*name == 0)
        || (NULL == (map = SLang_find_keymap(name))))
      {
@@ -1029,16 +1023,16 @@ int next_function_list(char *buf) /*{{{*/
 {
    char *name;
    char **max;
-   
+
    /* Convert '-' to '_' */
-   
+
    name = buf;
    while (*name != 0)
      {
 	if (*name == '-') *name = '_';
 	name++;
      }
-   
+
    while (1)
      {
 	SLKeymap_Function_Type *tthis = Flist_Context;
@@ -1051,7 +1045,7 @@ int next_function_list(char *buf) /*{{{*/
 	     return(1);
 	  }
      }
-   
+
    max = Slang_Functions + JED_MAX_ADD_COMPLETIONS;
    while (Slang_Flist_Context < max)
      {
@@ -1143,13 +1137,13 @@ void jed_call_cmd (char *str)
 	jed_insert_string (str + 1);
 	return;
      }
-   
+
    if (*str == '@')
      {
 	(void) do_macro_string (str + 1, 1);
 	return;
      }
-   
+
    km = CBuf->keymap;
    if (NULL == (fp = (int (*)(void)) (SLang_find_key_function(str, km))))
      jed_verror ("Internal function %s does not exist", str);
@@ -1169,15 +1163,14 @@ static Getkey_Callback_Data_Type Getkey_Callback_Data;
 static int get_key_function_callback (void)
 {
    unsigned int i = Getkey_Callback_Data.num_read;
-   
+
    if (i == Getkey_Callback_Data.len)
      return SLANG_GETKEY_ERROR;
-   
+
    Getkey_Callback_Data.num_read += 1;
    return (int) Getkey_Callback_Data.key[i];
 }
 
-   
 static int push_key_binding (unsigned char *keystr)
 {
    SLang_Key_Type *key;
@@ -1190,7 +1183,7 @@ static int push_key_binding (unsigned char *keystr)
    SLang_Key_TimeOut_Flag = 0;
 
    if (keystr == NULL)
-     {	
+     {
 	Key_Bufferp = Key_Buffer;
 	key = SLang_do_key (CBuf->keymap, jed_getkey);
 	update_jed_keybuffer ();
@@ -1210,7 +1203,7 @@ static int push_key_binding (unsigned char *keystr)
 	Getkey_Callback_Data.num_read = 0;
 	key = SLang_do_key (CBuf->keymap, get_key_function_callback);
      }
-   
+
    fun = NULL;
    type = -1;
 
@@ -1221,14 +1214,14 @@ static int push_key_binding (unsigned char *keystr)
 	  type = 1;
 	  fun = find_function_string (key->f.f);
 	  break;
-	  
+
 	case SLKEY_F_INTERPRET:
 	  fun = key->f.s;
 	  type = 0;
 	  if (fun[0] == '@') type = 2;
 	  else if (fun[0] == ' ') type = 3;
 	  break;
-	  
+
 #ifdef SLKEY_F_SLANG
 	case SLKEY_F_SLANG:
 	  type = 4;
@@ -1236,7 +1229,7 @@ static int push_key_binding (unsigned char *keystr)
 	  break;
 #endif
      }
-   
+
    if (-1 == SLang_push_integer (type))
      return -1;
 
@@ -1246,12 +1239,12 @@ static int push_key_binding (unsigned char *keystr)
    else
 #endif
      type = SLang_push_string (fun);
-   
+
    return type;
 }
 
 /*}}}*/
-   
+
 static void get_key_binding (void)
 {
    unsigned char *s = NULL;
@@ -1272,7 +1265,7 @@ static void get_key_binding (void)
 
    (void) push_key_binding (s);
 }
-   
+
 /* This is weird, Ultrix cc will not compile if set_key comes before unset_key */
 static void unset_key (char *key) /*{{{*/
 {
@@ -1291,7 +1284,7 @@ static void unset_key_in_keymap(char *key, char *map) /*{{{*/
 	jed_verror ("Unknown keymap: %s", map);
 	return;
      }
-   
+
    if (*key) SLang_undefine_key(key, kmap);
 }
 
@@ -1330,7 +1323,7 @@ static void set_key_in_keymap_1 (SLKeyMap_List_Type *kmap)
 
    if (*key)
      (void) SLang_define_key(key, func, kmap);
-   
+
    SLang_free_slstring (func);
    SLang_free_slstring (key);
 }
@@ -1358,7 +1351,6 @@ static void set_key (void)
    set_key_in_keymap_1 (Global_Map);
 }
 
-
 /*}}}*/
 
 static int keymap_p(char *name) /*{{{*/
@@ -1367,7 +1359,6 @@ static int keymap_p(char *name) /*{{{*/
 }
 
 /*}}}*/
-
 
 static void make_keymap_cmd (char *km)
 {
@@ -1415,7 +1406,7 @@ static void getkey_wchar_intrin (void)
 {
    int ch;
    SLwchar_Type wch;
-   
+
    if (-1 == jed_getkey_wchar (&wch))
      {
 	ch = (int) wch;
@@ -1436,7 +1427,7 @@ static void ungetkey_wchar_intrin (long *chp)
    jed_ungetkey_wchar ((SLwchar_Type)*chp);
 }
 
-static SLang_Intrin_Fun_Type Keymap_Intrinsics [] = 
+static SLang_Intrin_Fun_Type Keymap_Intrinsics [] =
 {
    MAKE_INTRINSIC_0("setkey", set_key, VOID_TYPE),
    MAKE_INTRINSIC_0("definekey", set_key_in_keymap, VOID_TYPE),
@@ -1478,6 +1469,6 @@ int jed_init_keymap_intrinsics (void)
    if ((-1 == SLadd_intrin_fun_table (Keymap_Intrinsics, NULL))
        || (-1 == SLadd_intrin_var_table (Keymap_Variables, NULL)))
      return -1;
-   
+
    return 0;
 }

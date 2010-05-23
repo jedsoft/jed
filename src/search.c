@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -363,7 +363,7 @@ static int re_search_dir(unsigned char *pat, int dir) /*{{{*/
 
    (void) SLregexp_get_hints (Regexp, &flags);
    must_match_bol = flags & SLREGEXP_HINT_BOL;
-   if (must_match_bol 
+   if (must_match_bol
        && (dir == 1) && (Point != 0)
        && (0 == jed_down (1)))
      return 0;
@@ -414,7 +414,7 @@ static int re_search_dir(unsigned char *pat, int dir) /*{{{*/
 	  {
 	     unsigned int ofs, len;
 	     jed_position_point ((unsigned char *)match);
-	     
+
 	     (void) SLregexp_nth_match (Regexp, 0, &ofs, &len);
 	     return (len + 1);
 	  }
@@ -436,7 +436,6 @@ static int re_search_dir(unsigned char *pat, int dir) /*{{{*/
    return (0);
 }
 /*}}}*/
-
 
 int re_search_forward(char *pat) /*{{{*/
 {
@@ -477,7 +476,7 @@ int replace_match(char *s, int *literal) /*{{{*/
    unsigned int i;
    int beg_matches[10];
    unsigned int len_matches[10];
-   
+
    if (Regexp == NULL)
      return 0;
    offset = Regexp_Offset;
@@ -555,7 +554,7 @@ int replace_match(char *s, int *literal) /*{{{*/
 	     nmax = ch - '0';
 	     if ((n = beg_matches[nmax]) == -1) continue;
 	     nmax = len_matches[nmax] + beg_matches[nmax];
-	
+
 	     while (n < nmax)
 	       {
 		  /* _jed_ins_byte may reallocate CLine->data */
@@ -566,7 +565,7 @@ int replace_match(char *s, int *literal) /*{{{*/
 	       }
 	  }
      }
-   
+
    push_spot();
    while (CLine != match_line)
      {
@@ -576,7 +575,7 @@ int replace_match(char *s, int *literal) /*{{{*/
 	     return -1;
 	  }
      }
-   
+
    Point = beg_matches[0] + offset;
    n = len_matches[0];
    (void) jed_generic_del_nbytes (n);
@@ -612,16 +611,16 @@ void regexp_nth_match (int *np) /*{{{*/
 	(void) push_string ("", 0);
 	return;
      }
-   
+
    if (-1 == SLregexp_nth_match (Regexp, (unsigned int) *np, &ofs, &len))
      {
 	(void) push_string ("", 0);
 	return;
      }
-   
+
    p = CLine->data + Regexp_Offset + ofs;
    pmax = p + len;
-   
+
    if (pmax > CLine->data + CLine->len)
      {
 	SLang_set_error (SL_RunTime_Error);
@@ -684,10 +683,10 @@ int search_file (char *file, char *pat, int *np) /*{{{*/
 match_found:
 
 	n_matches++;
-	
+
 	if (-1 == push_string ((char *) buf, n))
 	  break;
-	
+
 	n_max--;
 	if (n_max == 0)
 	  break;

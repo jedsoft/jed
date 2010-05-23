@@ -15,7 +15,7 @@ private define find_mode_info (mode_name)
 {
    ifnot (assoc_key_exists (Mode_Info_List, mode_name))
      return NULL;
-   
+
    return Mode_Info_List[mode_name];
 }
 
@@ -23,10 +23,10 @@ define mode_set_mode_info (field_name, field_value)
 {
    variable mode_info;
    variable mode_name = get_mode_name ();
-   
+
    if (_NARGS == 3)
      mode_name = ();
-     
+
    mode_info = find_mode_info (mode_name);
    if (mode_info == NULL)
      {
@@ -38,7 +38,7 @@ define mode_set_mode_info (field_name, field_value)
    ifnot (any (fields == field_name))
      {
 	variable new_mode_info = @Struct_Type ([fields, field_name]);
-	
+
 	foreach (fields)
 	  {
 	     variable f = ();
@@ -49,20 +49,20 @@ define mode_set_mode_info (field_name, field_value)
      }
    set_struct_field (mode_info, field_name, field_value);
 }
-   
+
 define mode_get_mode_info (field_name)
 {
    variable mode_info;
-   
+
    if (_NARGS == 1)
      get_mode_name ();
 
    variable mode_name = ();
-     
+
    mode_info = find_mode_info (mode_name);
    if (mode_info == NULL)
      return NULL;
-   
+
    ifnot (any (field_name == get_struct_field_names (mode_info)))
      return NULL;
 

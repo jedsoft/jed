@@ -40,7 +40,7 @@ private define build_sccs_filename (file)
 private define execute_sccs_cmd (cmd)
 {
    variable cbuf, buf;
-   
+
    buf = "*SCCS Message*";
    cbuf = whatbuf ();
    setbuf (buf);
@@ -55,13 +55,12 @@ private define execute_sccs_cmd (cmd)
    return 0;
 }
 
-
 private define checkout (file)
 {
    variable cmd;
    variable dir;
    variable name;
-   
+
    flush (sprintf ("Checking out %s...", file));
 
    (dir, name) = parse_filename (file);
@@ -78,7 +77,7 @@ private define checkin (file)
    variable dir, name, cmd;
 
    () = write_buffer (file);
-   
+
    (dir, name) = parse_filename (file);
    Last_Comment = read_mini ("Enter a change comment:", "", Last_Comment);
 
@@ -93,7 +92,7 @@ private define checkin (file)
 
 % calls "sccs create" on file. Note that this normally
 % leaves a dropping in the form of ",filename"
-private define sccs_create (file) 
+private define sccs_create (file)
 {
    variable dir, name, cmd;
 
@@ -114,7 +113,7 @@ private define sccs_create (file)
    flush ("Note: file is write protected.");
 }
 
-% If it is checked out, check it it. 
+% If it is checked out, check it it.
 % If it is not checked out, check it out
 define sccs_check_in_and_out ()	%^S^C
 {
@@ -156,8 +155,8 @@ define sccs_open_file ()		% ^X^F
 
   % check whether the file exists; load it if it does
   % if not, try the SCCS version
-   
-   if (1 == file_status (file)) 
+
+   if (1 == file_status (file))
      {
 	() = find_file (file);
 	if(is_readonly()){

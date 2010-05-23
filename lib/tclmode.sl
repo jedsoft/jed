@@ -30,7 +30,7 @@
 %
 % Keybindings
 % -----------
-% ^C^Q     tcl_indent_region   
+% ^C^Q     tcl_indent_region
 % {        tcl_insert_bra
 % }        tcl_insert_ket
 % #        tcl_insert_comment
@@ -39,7 +39,7 @@
 % ------------
 % This mode does recognise evident syntax-errors which are common
 % to beginners (I am a beginner :-)):
-% 
+%
 % - The open brace should be opened on the same line of the command
 %   it belongs to and not on a line by itself as many do in C:
 %   Wrong:                      Right:
@@ -59,7 +59,7 @@
 %
 % If tclmode recognises such an error, it displays a "Warning: ...".
 % You can disable the Syntax Check by setting 'Tcl_Check_Syntax' to 0.
-% 
+%
 % Syntax-highlighting
 % -------------------
 % The syntax-coloring-types of jed aren't very adequate for tcl,
@@ -139,7 +139,6 @@ $2 = 1;
 () = define_keywords_n ($1, "tk_messageBoxtk_setPalette", 13, $2);
 () = define_keywords_n ($1, "tk_chooseColortk_getOpenFiletk_getSaveFiletk_optionsMenu", 14, $2);
 
-
 define tcl_indent_line ();	       %  forward declaration
 
 % Indentation and Syntax Check
@@ -165,9 +164,9 @@ define tcl_count_braces ()
 {
    variable c, open_count = 0, close_count = 0;
    variable escaped = 0;
-   
+
    push_spot();
-   
+
    for(bol (); not(eolp()); go_right_1()) {
       c = what_char ();
       switch(c) {
@@ -182,7 +181,7 @@ define tcl_count_braces ()
       }
       if(escaped) escaped--;
    }
-   
+
    pop_spot();
    return(open_count, close_count);
 }
@@ -221,12 +220,12 @@ define tcl_prev_line_rule ()
       % If we find first an unmatched '{', then the next line should be indented.
       (open_count, ) = tcl_count_braces ();
       indent += open_count * C_INDENT;
-      
+
       % Is the next a continuation line?
       if (tcl_is_continued_line ()) indent += C_CONTINUED_OFFSET;
       if (tcl_go_up() and tcl_is_continued_line()) indent -= C_CONTINUED_OFFSET;
    }
-   
+
    pop_spot ();
    return (indent);
 }
@@ -246,18 +245,18 @@ define tcl_indent_line ()
 {
    variable cursor, oldindent;
    variable indent;
-   
+
    % ---- Could be skipped in tcl_indent_region!
    cursor = what_column ();
    bol_skip_white ();
    oldindent = what_column ();
    % ----
-   
+
    indent  = tcl_prev_line_rule ();
    indent += tcl_cur_line_rule ();
-   
+
    % message(Sprintf("%d : %d", indent_prev, indent_cur, 2));
-   
+
    tcl_indent_to (indent);
    goto_column (cursor + indent - oldindent); % Could be skipped in tcl_indent_region!
 }
@@ -266,26 +265,26 @@ define tcl_indent_line ()
 define tcl_indent_region ()
 {
    check_region(1);
-   pop_mark_1 (); 
+   pop_mark_1 ();
    push_mark();
    tcl_indent_line(); % set initial line indentation before narrowing
    pop_spot();
-   
+
    push_spot();
    go_up_1 ();
    narrow();
    bob();
-   
+
    flush("Indenting region...");
    while (down_1 ()) {  % indent line by line (ie slowly)
       tcl_indent_line();
       % flush(Sprintf("Indenting line %d", what_line(), 1));
    }
    flush("Indenting region... Done.");
-   
+
    widen();
    pop_spot();
-   
+
 }
 
 define tcl_syntax_warning (msg)
@@ -322,7 +321,7 @@ define tcl_insert_comment ()
 	 tcl_syntax_warning("'#' should be on a separate line or after a ';'");
       }
       pop_spot();
-   }	
+   }
    insert("#");
 }
 
@@ -336,7 +335,6 @@ ifnot (keymap_p ($1))
      definekey_reserved("tcl_indent_region", "^Q", $1);
      definekey("indent_line", "\t", $1);
   }
-
 
 %!%+
 %\function{tcl_mode}

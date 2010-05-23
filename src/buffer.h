@@ -1,10 +1,10 @@
-/* Copyright (c) 1992, 1998, 2000, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
  * License.  See the file COPYING for more information.
  */
-#ifndef __JED_BUFFER_H_  
+#ifndef __JED_BUFFER_H_
 #define  __JED_BUFFER_H_
 
 #ifdef HAVE_STDLIB_H
@@ -28,7 +28,7 @@ typedef struct _Buffer Buffer;
 # include "menu.h"
 #endif
 
-/* 
+/*
 #define sprintf simple_sprintf
 extern char *simple_sprintf(char *, char *, ...);
 */
@@ -46,7 +46,7 @@ typedef struct Line
    /* The first n bits of the flags field represent an n bit integer that
     * is used by the syntax parsing routines.  The next m bits
     * control the various flags.  The last 8 bits specify the
-    * color of the line.  
+    * color of the line.
     *
     * Finally, assuming at least 32 bit integers, the last 16 bits may be
     * used for the syntax state of the line. For instance, if the line is in
@@ -61,7 +61,7 @@ typedef struct Line
 #define JED_LINE_IN_HTML		0x0008
 #define JED_LINE_HAS_EOL_COMMENT	0x0010
 #define JED_LINE_SYNTAX_BITS		0x001F
-    
+
 #define JED_LINE_HIDDEN			0x0020
 #define JED_LINE_IS_READONLY		0x0040
 #define JED_LINE_FLAG_BITS		0x0060
@@ -75,7 +75,6 @@ typedef struct Line
 
 #define LINE_HAS_NEWLINE(l) \
    ((l)->len && ((l)->data[(l)->len - 1] == '\n'))
-
 
 /* This is the price we pay for a linked list approach.  With straight
    buffer gap, this would be an integer.  Sigh. */
@@ -118,7 +117,6 @@ typedef struct Narrow_Type
    int is_region;
 } Narrow_Type;
 
-
 #if JED_HAS_SAVE_NARROW
 typedef struct _Jed_Save_Narrow_Type
 {
@@ -129,7 +127,7 @@ Jed_Save_Narrow_Type;
 #endif
 
 /* These are buffer local variables that slang can access */
-typedef struct 
+typedef struct
 {
    int tab;			       /* tab width */
    int case_search;
@@ -140,7 +138,7 @@ typedef struct
 extern Buffer_Local_Type Buffer_Local;
 
 typedef struct
-{   
+{
    SLang_Name_Type *mark_paragraph_hook;
    SLang_Name_Type *format_paragraph_hook;
    SLang_Name_Type *forward_paragraph_hook;
@@ -195,7 +193,7 @@ struct _Buffer
    struct _Buffer *next;	       /*  */
    struct _Buffer *prev;
    char *mode_string;		       /* (slstring) */
-   int hits;			       /* number of hits on buffer since 
+   int hits;			       /* number of hits on buffer since
 					* last autosave.  A hit is the number
 					* of times the buffer was hit on at top level  */
 
@@ -204,9 +202,9 @@ struct _Buffer
 
    Undo_Type *undo;		       /* pointer to undo ring */
    Buffer_Local_Type local_vars;
-   
+
 #define SPOT_ARRAY_SIZE 4
-     
+
    Jed_Mark_Array_Type *spot_array;
    Jed_Mark_Array_Type *mark_array;
    int vis_marks;		       /* number of visible marks */
@@ -263,7 +261,7 @@ extern char Default_Status_Line[80];
 
 /* Instead of autosaving saving the buffer, just save it.  This flag
  * is only used when SIGHUP or something like that hits.  It is also
- * used when exiting the editor.  It will cause the buffer to be silently 
+ * used when exiting the editor.  It will cause the buffer to be silently
  * saved.  It is possible that I need another flag for this.
  */
 #define AUTO_SAVE_JUST_SAVE		0x0080
@@ -289,8 +287,7 @@ extern char *Line_Read_Only_Error;
 #define CHECK_READ_ONLY\
     if (CBuf->flags & READ_ONLY) { msg_error(Read_Only_Error); return(1);}
 #endif
-    
-    
+
 #if JED_HAS_LINE_ATTRIBUTES
 #define CHECK_READ_ONLY_VOID\
     if (CBuf->flags & READ_ONLY) { msg_error(Read_Only_Error); return;}\

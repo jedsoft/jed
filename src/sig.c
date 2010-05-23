@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -66,8 +66,8 @@ static volatile int Signal_In_Progress = 0;
 
 /* Handle SIGHUP-like signals differently.  The reason is that we might get
  * such a signal when messing with a linked list pointer, etc.  We do not want
- * to exit at that point because the exit routines may need that pointer 
- * intact.  So, set a hook that should be called by the editor at a 
+ * to exit at that point because the exit routines may need that pointer
+ * intact.  So, set a hook that should be called by the editor at a
  * convenient moment.
  */
 static int Sig_Hup_Sig;
@@ -93,7 +93,7 @@ static void sig_hup_exit_jed (int sig)
 static void sig_exit_jed(int sig) /*{{{*/
 {
    char buf[48];
-   
+
    if (Signal_In_Progress)
      return;
 
@@ -112,7 +112,7 @@ static void sig_exit_jed(int sig) /*{{{*/
 static void my_interrupt(int sig) /*{{{*/
 {
    sig = errno;
-   
+
    SLKeyBoard_Quit = 1;
    if (Ignore_User_Abort == 0) SLang_set_error (SL_USER_BREAK);
    SLsignal_intr (SIGINT, my_interrupt);
@@ -145,7 +145,7 @@ void sig_sys_spawn_cmd(int sig) /*{{{*/
 static void background_read (int sig) /*{{{*/
 {
    sig = errno;
-   if (Stdin_Is_TTY == 0) 
+   if (Stdin_Is_TTY == 0)
      {
 	if (Signal_In_Progress)
 	  return;
@@ -175,11 +175,10 @@ void jed_reset_signals (void)
    /* return 0; */
 }
 
-
 void init_signals (void) /*{{{*/
 {
 #if !defined(VMS) || (__VMS_VER >= 70000000)
-   
+
 #ifdef SIGWINCH
    (void) SLsignal_intr(SIGWINCH, sigwinch_handler);
 #endif
@@ -210,7 +209,7 @@ void init_signals (void) /*{{{*/
 #ifdef SIGSYS
     SLsignal (SIGSYS, sig_exit_jed);
 #endif
-   
+
 #ifdef SIGTSTP
    if (Jed_Handle_SIGTSTP)
      {

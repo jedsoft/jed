@@ -20,21 +20,21 @@ define push_mode ()
      mode = ();
    else
      mode = strtrim (read_mini ("Push to mode:", Null_String, Null_String));
-   
+
    ifnot (strlen (mode))
      return;
-   
+
    if (is_defined (mode) <= 0)
      {
 	mode += "_mode";
 	if (is_defined (mode) <= 0)
 	  error ("Mode is not defined.");
      }
-   
+
    (old_mode,) = what_mode ();
    ifnot (strlen (old_mode))
      old_mode = "no";
-   
+
    old_mode = strtrans (old_mode, "-", "_");
    % Some modes may set modeline to two words.
    try_mode = strlow (strtrans (old_mode, " ", "_") + "_mode");
@@ -44,9 +44,9 @@ define push_mode ()
 	if (2 != is_defined (try_mode))
 	  verror ("Unable to get mode.  Tried %s.", try_mode);
      }
-   
+
    keymap = what_keymap ();
-   
+
    no_mode ();
    eval ("." + mode);		       %  RPN form
 
@@ -59,26 +59,18 @@ define pop_mode ()
 {
    variable var_name = "push-mode-stack";
    variable modes, keymap, mode;
-   
+
    modes = get_blocal_var (var_name);
    ifnot (strlen (modes))
      error ("mode stack is empty.");
-   
+
    mode = extract_element (modes, 0, ',');
    keymap = extract_element (mode, 1, '|');
    mode = extract_element (mode, 0, '|');
-   
+
    no_mode ();
    eval (mode);
    use_keymap (keymap);
    set_blocal_var (extract_element (modes, 1, ','), var_name);
 }
 
-   
-   
-   
-   
-   
-   
-   
-   

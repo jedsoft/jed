@@ -252,7 +252,6 @@ define str_replace_all (str, old, new)
 
 %}}}
 
-
 %{{{ Compatibility functions
 
 #ifnexists strbytelen
@@ -1171,7 +1170,7 @@ add_to_hook ("_jed_exit_hooks", &run_user_exit_hook);
 %\synopsis{Directory used to hold temporary files}
 %\usage{Jed_Tmp_Directory = "/tmp";}
 %\description
-% This variable is used by the \sfun{make_tmp_file} function to create 
+% This variable is used by the \sfun{make_tmp_file} function to create
 % temporary filenames.
 %\seealso{make_tmp_file, make_tmp_buffer_name, open_unique_filename}
 %!%-
@@ -1181,7 +1180,6 @@ Jed_Tmp_Directory = "/tmp";
 #endif
 
 %{{{ More functions
-
 
 %!%+
 %\function{pop_mark_0}
@@ -1470,8 +1468,8 @@ define get_blocal_var ()
 %\usage{define_blocal_var (name, value)}
 %\description
 %  This function may be used to create a buffer-local variable named
-%  \exmp{name} and set it to \exmp{value}.  A buffer-local variable is a 
-%  variable whose value is local to the current buffer. 
+%  \exmp{name} and set it to \exmp{value}.  A buffer-local variable is a
+%  variable whose value is local to the current buffer.
 %\notes
 %  The order of the \var{name} and \var{value} arguments to this
 %  function are the reverse from that of the \ifun{set_blocal_var}
@@ -1540,7 +1538,7 @@ define make_autosave_filename(dir, file)
    sprintf ("%s_$%s;1", dir, file);
 #elifdef UNIX
    file = expand_symlink (path_concat (dir, file));
-   return path_concat (path_dirname (file), 
+   return path_concat (path_dirname (file),
 		       sprintf ("#%s#", path_basename (file)));
 #else
 # ifdef IBMPC_SYSTEM
@@ -1585,7 +1583,7 @@ define emacs_escape_x()
 	  loop (pa - 1) (@exec_fun) (f);
 	set_prefix_argument (-1);
      }
-	
+
    forever
      {
 	% Look for a namespace signature
@@ -3186,7 +3184,7 @@ define command_line_hook () %{{{
 	     ++n; --i;
 	  }
 	  {
-	     (n && (file[0] == '+') 
+	     (n && (file[0] == '+')
 	      && (Int_Type == _slang_guess_type (file))
 	      && (atoi (file) >= 0)) :
 
@@ -3298,7 +3296,7 @@ foreach ([
 if (strlen(expand_jedlib_file("defaults.sl")))
   () = evalfile("defaults");
 #ifdef UNIX
-else 
+else
   {
      % Map /install/prefix/bin/jed to /install/prefix/etc/
      $1 = getenv ("JED_CONF_DIR");

@@ -16,29 +16,29 @@ private define get_changelog_date ()
 {
    variable tm, day, month, year;
    tm = localtime (_time ());
-   
+
    sprintf ("%d-%0d-%0d", 1900 + tm.tm_year, 1+tm.tm_mon, tm.tm_mday);
 }
 
 private define format_changelog_heading ()
 {
    variable date = get_changelog_date ();
-   
+
    return sprintf ("%s  %s", date, ChangeLog_User);
 }
 
 private define locate_changelog_file ()
 {
    variable file, dir;
-   
+
    (,dir,,) = getbuf_info ();
-   
+
    forever
      {
 	file = dircat (dir, ChangeLog_Filename);
 	if (1 == file_status (file))
 	  return file;
-	
+
 	% This may need modified for non-Unix systems...
 #ifdef UNIX
 	dir = expand_filename (dircat (dir, "../"));
@@ -65,13 +65,13 @@ private define locate_changelog_file ()
 private define get_changelog_file_item ()
 {
    variable dir, file;
-   
+
    (file, dir,,) = getbuf_info ();
    ifnot (strlen (file))
      return "";
    if (file == ChangeLog_Filename)
      return "";
-   
+
    return dircat (dir, file);
 }
 
@@ -98,7 +98,7 @@ public define changelog_add_change ()
    variable file = get_changelog_file_item ();
    variable function = get_changelog_function ();
    variable changelog = locate_changelog_file ();
-   
+
    if (strlen (file))
      {
 	% Make it with respect to the changelog directory
@@ -107,7 +107,7 @@ public define changelog_add_change ()
 	  i++;
 	file = file [[i:]];
      }
-   
+
    () = read_file (changelog);
    set_buffer_no_backup ();
    pop2buf (whatbuf ());
@@ -127,7 +127,7 @@ public define changelog_add_change ()
    skip_chars (" \t\n*");
 
    variable create_new_entry = 1;
-   
+
    if (looking_at (file))
      {
 	go_right (strlen (file));
@@ -135,7 +135,7 @@ public define changelog_add_change ()
 	skip_chars (" :");
 	create_new_entry = (() == _get_point ());
      }
-   
+
    if (create_new_entry)
      {
 	goto_user_mark (m);
@@ -143,7 +143,7 @@ public define changelog_add_change ()
 	whitespace (ChangeLog_Indent_Amount);
 	vinsert ("* %s ", file);
      }
-   else 
+   else
      {
 	ifnot (re_fsearch ("^[ \t]*$"))
 	  {
@@ -154,7 +154,7 @@ public define changelog_add_change ()
 	go_up_1 ();
 	whitespace (8);
      }
-   
+
    if (strlen (function))
      vinsert ("(%s): ", function);
    else if (create_new_entry and strlen (file))

@@ -16,7 +16,7 @@ define rot13 ()
 	i = i | 0x20;
 	a[i] = char (i + 13);
      }
-   
+
    _for ('N', 'Z', 1)
      {
 	i = ();

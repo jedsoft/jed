@@ -16,7 +16,7 @@ private variable ISO_TeX_Chars =
 	   "!`,?`,\\c{c},\\c{C},\\~n,\\~N,{\\ae},{\\AE},",
 	   "{\\o},{\\O},{\\aa},{\\AA},{\\ss}");
 
-define iso2tex () 
+define iso2tex ()
 {
    variable i, str_old, str_new;
    variable save_case_search = CASE_SEARCH;
@@ -29,7 +29,7 @@ define iso2tex ()
 	i = ();
 	str_new = extract_element (ISO_TeX_Chars, i, ',');
 	str_old = char (ISO_Latin_Chars[i]);
-	
+
 	%bob ();  --- not needed since replace does not move the point
 	replace (str_old, str_new);
      }
@@ -37,12 +37,11 @@ define iso2tex ()
    CASE_SEARCH = save_case_search;
 }
 
-
-define tex2iso () 
+define tex2iso ()
 {
    variable i, str_old, str_new;
    variable save_case_search = CASE_SEARCH;
-   
+
    CASE_SEARCH = 1;
    push_spot ();
    _for (0, strlen (ISO_Latin_Chars) - 1, 1)
@@ -50,12 +49,11 @@ define tex2iso ()
 	i = ();
 	str_old = extract_element (ISO_TeX_Chars, i, ',');
 	str_new = char (ISO_Latin_Chars[i]);
-	
+
 	bob ();
 	replace (str_old, str_new);
      }
    pop_spot();
    CASE_SEARCH = save_case_search;
 }
-
 

@@ -15,7 +15,6 @@ menu_append_popup ($1, "&Help");
 
 menu_set_menu_bar_prefix ($1, "F10 key ==> ");
 
-
 #ifndef IBMPC_SYSTEM
 setkey ("select_menubar", "\e[21~");    %  F10
 # ifdef UNIX

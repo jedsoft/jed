@@ -1,10 +1,10 @@
-/* Copyright (c) 1992, 1998, 2000, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
  * License.  See the file COPYING for more information.
  */
-extern int (*X_Read_Hook) (void);	 
+extern int (*X_Read_Hook) (void);
 extern int (*X_Input_Pending_Hook) (void);
 extern void (*X_Suspend_Hook)(void);
 extern int (*X_Argc_Argv_Hook)(int, char **);

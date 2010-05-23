@@ -1,7 +1,5 @@
 % untabify region function
 
-
-
 define untab_convert_to_tabs ()
 {
    variable c;
@@ -26,7 +24,7 @@ define untab_convert_to_tabs ()
 %\usage{Void untab ();}
 %\description
 % This function may be used either to convert tabs to spaces or, if called
-% with a prefix argument, it will perform the opposite conversion from 
+% with a prefix argument, it will perform the opposite conversion from
 % spaces to tabs.  This function operates on a region.
 %!%-
 define untab ()
@@ -40,7 +38,7 @@ define untab ()
      }
    else
      {
-	while (fsearch ("\t")) 
+	while (fsearch ("\t"))
 	  {
 	     TAB;                       % on stack
 	     skip_white ();
@@ -53,7 +51,7 @@ define untab ()
 	     TAB = ();
 	  }
      }
-   
+
    widen ();
 }
 

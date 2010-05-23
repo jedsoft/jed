@@ -73,7 +73,7 @@ setkey (".1 ws_goto_mark_n","\e\e1");
 setkey (".1 ws_goto_mark_n","^Q1");
 setkey (".2 ws_goto_mark_n","\e\e2");
 setkey (".2 ws_goto_mark_n","^Q2");
-setkey (".3 ws_goto_mark_n","\e\e3");			   
+setkey (".3 ws_goto_mark_n","\e\e3");
 setkey (".3 ws_goto_mark_n","^Q3");
 setkey (".4 ws_goto_mark_n","\e\e4");
 setkey (".4 ws_goto_mark_n","^Q4");
@@ -197,7 +197,7 @@ ifnot (is_defined("_Ws_Bookmarks"))
 }
 
 %  ws_set_bookmark () and ws_goto_bookmark () are implemented to provide
-%  a more Wordstar-ish way of copying and moving blocks, and of moving 
+%  a more Wordstar-ish way of copying and moving blocks, and of moving
 %  around generally.
 
 define ws_set_bookmark ()
@@ -205,11 +205,11 @@ define ws_set_bookmark ()
    _Ws_Bookmarks[10] = create_user_mark ();
    Ws_Bookmark_Exist = 1;
 }
-   
+
 define ws_goto_bookmark ()
 {
    variable mrk = _Ws_Bookmarks[10];
-   
+
    sw2buf (user_mark_buffer (mrk));
    goto_user_mark (mrk);
 }
@@ -329,9 +329,9 @@ define ws_repeat_search ()	% ^L
 %  {
 % variable p = _get_point ();
 % push_mark ();
-% skip_chars ("\n\t !\"#$%&'()*+,-./:;<=>?@[\]^`{|}~"); 
+% skip_chars ("\n\t !\"#$%&'()*+,-./:;<=>?@[\]^`{|}~");
 % if (_get_point () == p) {
-%   skip_chars ("^\n\t !\"#$%&'()*+,-./:;<=>?@[\]^`{|}~"); 
+%   skip_chars ("^\n\t !\"#$%&'()*+,-./:;<=>?@[\]^`{|}~");
 % }
 % del_region ();
 %  }
@@ -341,7 +341,7 @@ define ws_delete_word ()	% ^T
   variable p = _get_point ();
   push_mark ();
   skip_chars ("a-zA-Z0-9");
-  if (_get_point() == p) skip_chars (" \n\t"); 
+  if (_get_point() == p) skip_chars (" \n\t");
   if (_get_point() == p) go_right_1 ();
   del_region ();
 }
@@ -351,7 +351,7 @@ define ws_bdelete_word ()	% ESC-O
   variable p = _get_point ();
   push_mark ();
   bskip_chars ("a-zA-Z0-9");
-  if (_get_point () == p) bskip_chars (" \n\t"); 
+  if (_get_point () == p) bskip_chars (" \n\t");
   if (_get_point () == p) go_left_1 ();
   del_region ();
 }
@@ -360,10 +360,10 @@ define ws_skip_word ()		% ^F
 {
   variable p = _get_point ();
   push_mark ();
-  skip_chars ("^\n\t !\"#$%&'()*+,-./:;<=>?@[\]^`{|}~"); 
+  skip_chars ("^\n\t !\"#$%&'()*+,-./:;<=>?@[\]^`{|}~");
   if (_get_point () == p) {
     skip_chars ("\n\t !\"#$%&'()*+,-./:;<=>?@[\]^`{|}~");
-    skip_chars ("^\n\t !\"#$%&'()*+,-./:;<=>?@[\]^`{|}~"); 
+    skip_chars ("^\n\t !\"#$%&'()*+,-./:;<=>?@[\]^`{|}~");
   }
   pop_mark_0 ();
 }
@@ -419,17 +419,17 @@ define ws_end_block ()
 {
    if (WS_Mark_Pushed != 1)
      {
-	loop (WS_Mark_Pushed) pop_mark_0 (); 
+	loop (WS_Mark_Pushed) pop_mark_0 ();
 	WS_Mark_Pushed = 0;
 	error ("Begin Block First!");
      }
-   
-   ifnot (markp()) 
+
+   ifnot (markp())
      {
 	WS_Mark_Pushed = 0;
 	error ("Wordstar Error.");
      }
-   
+
    WS_Mark_Pushed = 2;
    pop_mark_0 ();           % pops visible mark from begin block
    push_mark ();
@@ -449,7 +449,6 @@ define ws_write_region ()
   ws_copy_block_to_buffer ();
   pop_mark_1 (); write_region ();
 }
-  
 
 define ws_copy_block ()
 {
@@ -463,17 +462,17 @@ define ws_comment_region ()
 {
   variable cbeg, cmid, cend;
   variable c, c1, celm, extra, smode, mode;
-  
+
   if (WS_Mark_Pushed != 2) {
     error ("Block Undefined!");
   }
-  
+
   (smode, mode) = what_mode ();
 
   ifnot (strcmp(smode,"Text")) {	% Text mode
     return;
   }
-  
+
   ifnot (strcmp(smode,"TeX")) {	% TeX mode
     cbeg = "%  ";
     cmid = "%  ";
@@ -485,13 +484,13 @@ define ws_comment_region ()
     cmid = " -*-"; % Null_String;
     cend = " -->";
   }
-  
+
   ifnot (strcmp(smode,"C")) {	% C mode
     cbeg = "/* ";
     cmid = " * ";
     cend = " */";
   }
-  
+
   ifnot (strcmp(smode,"SL")) {	% Slang mode
     cbeg = "%  ";
     cmid = "%  ";
@@ -503,17 +502,17 @@ define ws_comment_region ()
     cmid = "C  ";
     cend = Null_String;
   }
-  
+
   % the remaining is almost the same as c_comment_region ()
-  
+
   check_region (1);
   exchange_point_and_mark ();
   c = what_column ();
-  
-  narrow ();
-  bob (); 
 
-  USER_BLOCK0 
+  narrow ();
+  bob ();
+
+  USER_BLOCK0
     {
       extra = ();
       celm = ();
@@ -526,15 +525,15 @@ define ws_comment_region ()
 	  trim ();
 	  whitespace (c1 - what_column () + extra);
 	}
-      else 
+      else
 	{
 	  if (eolp ()) goto_column (c);
 	  insert (celm);
 	}
     }
-   
+
   X_USER_BLOCK0 (cbeg, 0);
-   
+
   while (down_1 ())
     {
       if (down_1 ()) {  % check for last but one
@@ -543,7 +542,7 @@ define ws_comment_region ()
       }
     }
   widen ();
-  
+
   if (looking_at(cmid))
     {
       deln (3);
@@ -565,7 +564,7 @@ define ws_comment_block ()	% ^K;
 
 define ws_move_block ()		% ^KV
 % Warning - doesn't work across buffers
-{ 
+{
    ws_copy_block_to_buffer ();
    ws_set_bookmark ();
    insbuf (WS_Block_Buffer);
@@ -576,7 +575,7 @@ define ws_move_block ()		% ^KV
 
 define ws_insert_file ()	% ^KR
 {
-  variable file = 
+  variable file =
     read_with_completion ("File:", Null_String, Null_String, 'f');
   ws_set_bookmark ();
   insert_file (file);
@@ -614,17 +613,17 @@ define ws_filter_region ()	% ^K/, Joe extension
    variable cmd, tmp_file;
    cmd = read_mini ("Pipe to command:", Last_Process_Command, Null_String);
    ifnot (strlen (cmd)) return;
-   
+
    Last_Process_Command = cmd;
 
    ws_copy_block_to_buffer ();
    pop_mark_1 ();
    tmp_file = make_tmp_file ("/tmp/jedpipe");
    cmd = strcat (cmd, " > ", tmp_file, " 2>&1");
-   
+
    ifnot (dupmark ()) error ("Mark not set.");
-   
-   if (pipe_region (cmd)) 
+
+   if (pipe_region (cmd))
      {
 	error ("Process returned a non-zero exit status.");
      }
@@ -639,7 +638,7 @@ define ws_uppercase_region()	% ^KU
   pop_mark_1 ();
   xform_region('u');
 }
-   
+
 define ws_lowercase_region()	% ^KL
 {
   ws_copy_block_to_buffer ();
@@ -663,14 +662,12 @@ define ws_goto_mark_n (n)
    message ("done.");
 }
 
-
 define ws_set_mark_n (n)	% ^K0
 {
   _Ws_Bookmarks[n] = create_user_mark ();
   _Ws_Bookmarks_Exist[n] = 1;
   vmessage ("Bookmark %d set.", n);
 }
-   
 
 define ws_save_buffer ()  % !!! buggy !!!
 {
@@ -700,9 +697,9 @@ define ws_goto_end_block ()	% ^QK
 
 define ws_goto_prev ()		% ^QP
 {
-   if (Ws_Bookmark_Exist != 1) 
+   if (Ws_Bookmark_Exist != 1)
      error ("No previous location!");
-   
+
     ws_goto_bookmark ();
 }
 

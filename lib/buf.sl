@@ -1,12 +1,10 @@
 %%   Buffer routines for Jed.  Functions included here are:
-%%    
+%%
 %%     save_buffers  : saves buffers that are associated with a file
 %%                     with no user intervention
 %%     recover_file  : restore buffer from autosave file.
 %%
 %%
-
-
 
 %!%+
 %\function{save_buffers}
@@ -19,26 +17,24 @@
 define save_buffers ()
 {
    variable file, dir, flags, buf, ch;
-   
+
    loop (buffer_list())
-     { 
+     {
 	buf = ();
 	ch = int(buf);
 	if ((ch == 32) or (ch == '*')) continue;  %% internal buffer or special
-      
+
 	(file, dir,, flags) = getbuf_info (buf);
-      
+
 	ifnot (strlen(file)) continue;        %% no file assciated with it
 	if (flags & 1)
 	  {
 	     setbuf(buf);
 	     () = write_buffer(dircat (dir, file));
 	  }
-     }  
+     }
 }
 
-      
-     
 %% write region to file
 define write_region()
 {
@@ -47,7 +43,6 @@ define write_region()
    file = read_file_from_mini("File:");
    write_region_to_file(file);
 }
-
 
 define append_region ()
 {
@@ -61,7 +56,7 @@ define append_region ()
 define recover_file ()
 {
    variable flags, file, dir, as, buf;
-   
+
    (file, dir,, flags) = getbuf_info();
    ifnot (strlen(file)) error("Buffer not associated with a file.");
    as = make_autosave_filename (dir, file);
@@ -69,7 +64,7 @@ define recover_file ()
     {
        error (as + " not readable.");
     }
-    
+
    buf = whatbuf();
    as;
    if (file_time_compare(as, dircat (dir, file)))
@@ -77,7 +72,7 @@ define recover_file ()
         " more recent. Use it";
      }
    else " not recent. Use it";
-   
+
    if (get_yes_no(() + ()) > 0)
      {
 	what_line();
@@ -85,10 +80,9 @@ define recover_file ()
 	erase_buffer();
 	() = insert_file(as);
 	goto_line();
-     } 
+     }
 }
-	   
-  
+
 %!%+
 %\function{next_buffer}
 %\synopsis{Cycle through the list of buffers}
@@ -124,8 +118,8 @@ public define next_buffer ()
 %\description
 %   Asks for a new filename and saves the buffer under this name.
 %   Asks before overwriting an existing file, if not called with
-%   force_overwrite=1. 
-%   Sets readonly flag to 0, becouse if we are able to write, 
+%   force_overwrite=1.
+%   Sets readonly flag to 0, becouse if we are able to write,
 %   we can also modify.
 %\seealso{save_buffer, write_buffer}
 %!%-
@@ -134,14 +128,14 @@ define save_buffer_as ()
    variable force_overwrite = 0;
    if (_NARGS)
      force_overwrite = ();
-   
+
    variable file = read_file_from_mini(sprintf("Save %s to:", whatbuf()));
    ifnot (strlen(file))
      return;
 
    if (file_status(file) == 2) % directory
      file = path_concat (file, extract_element(whatbuf(), 0, ' '));
-   
+
    if ((force_overwrite == 0)
        and (1 == file_status (file)))
      {

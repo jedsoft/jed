@@ -9,7 +9,6 @@ extern void    jGtkWidenEd( int, int, int );
 extern void    jgtk_updMiniWinWidgetWinXRef( int );
 extern void    jgtk_updEdWidgetWinXRef( Window_Type *, int, int );
 
-
 extern void    jgtk_updOWEdWin( Window_Type *, int, int, int, int );
 extern void    jgtk_delEdWin( Window_Type *, Window_Type *, int, int, int, int, int );
 extern void    jgtk_splitEdWin( Window_Type *, Window_Type *, int, int, int, int, int );

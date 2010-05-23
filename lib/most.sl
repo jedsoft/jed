@@ -1,11 +1,11 @@
 %%
 %%  Most/more/less file viewing
-%%  
+%%
 
 define most_edit ()
 {
    set_readonly(0);
-   getbuf_info(); pop(); pop(); pop(); 
+   getbuf_info(); pop(); pop(); pop();
    file_type(); runhooks("mode_hook");
    set_status_line("", 0);
 }
@@ -27,19 +27,19 @@ define most_help ()
 {
    message (
 	    "SPC:pg dn, DEL:pg up, /:search forw, ?:search back, q:quit, e:edit, h:this help"
-	    ); 
+	    );
 }
 
 variable Most_Map = "Most";
 
 ifnot (keymap_p (Most_Map))
-{  
+{
    make_keymap (Most_Map);
-   _for ('A', 'z', 1) 
+   _for ('A', 'z', 1)
      {
 	undefinekey (char (), Most_Map);
      }
-   
+
    definekey ("page_up", char (127), Most_Map);   %  delete
    definekey ("page_down", char (' '),  Most_Map);
    definekey ("most_exit_most", char ('q'),  Most_Map);
@@ -53,7 +53,6 @@ ifnot (keymap_p (Most_Map))
    definekey ("eob", char ('B'), Most_Map);
    definekey ("bob", char ('T'), Most_Map);
 }
-
 
 %!%+
 %\function{most_mode}
@@ -82,16 +81,15 @@ define most_mode ()
    set_status_line (" MOST : press 'h' for help.   %b    (%p)", 0);
    Most_N_Windows = nwindows ();
 }
-  
+
 variable Most_Search_Dir = 1;
 
-     
 define most_find_n ()
 {
    variable r;
    ifnot (strlen (LAST_SEARCH))
      error ("Find What?");
-   
+
    if (Most_Search_Dir > 0)
      {
 	r = right (1);
@@ -102,7 +100,7 @@ define most_find_n ()
      {
 	if (bsearch (LAST_SEARCH)) return;
      }
-   
+
    error ("Not Found.");
 }
 
@@ -132,7 +130,7 @@ define run_most (arg)
    definekey ("exit_jed", "q", Most_Map);
    definekey ("exit_jed", "Q", Most_Map);
    definekey ("most_exit_most", ":Q", Most_Map);
-   help_for_help_string = 
+   help_for_help_string =
    "Most Mode: SPC- next screen, DEL- prev screen, Q Quit, :n next file, :Q edit";
 }
 
@@ -140,12 +138,12 @@ define most_next_file ()
 {
    variable f, file, dir = 1;
 
-   forever 
+   forever
      {
 	Most_Current_Arg += dir;
 	if (Most_Current_Arg == __argc) Most_Current_Arg = Most_Min_Arg;
 	if (Most_Current_Arg < Most_Min_Arg) Most_Current_Arg = __argc - 1;
-     
+
 	file = __argv[Most_Current_Arg];
 	flush (strcat ("Next File (Use Arrow keys to select): ", file));
 	(,f) = get_key_binding ();
@@ -156,7 +154,7 @@ define most_next_file ()
 		  dir = 1;
 		  continue;
 	       }
-	     
+
 	     if (f == "next_line_cmd")
 	       {
 		  dir = -1;
@@ -165,7 +163,7 @@ define most_next_file ()
 	     break;
 	  }
 	else beep ();
-     } 
+     }
    () = find_file (file);
    message (Null_String);
    most_mode ();

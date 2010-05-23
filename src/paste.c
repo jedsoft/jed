@@ -1,11 +1,11 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
  * License.  See the file COPYING for more information.
  */
-    
+
 #include "config.h"
 #include "jed-feat.h"
 /*{{{ Include Files */
@@ -29,16 +29,16 @@
 Buffer *Paste_Buffer;
 static Buffer *Rectangle_Buffer;
 
-/* This is used by the narrow command so that multiple windows are 
+/* This is used by the narrow command so that multiple windows are
  * handled properly. The assumption is that we are dealing with a canonical
  * region */
-      
+
 static void touch_windows(void) /*{{{*/
 {
    Window_Type *w;
    Line *l;
    unsigned int n;
-   
+
    w = JWindow;
    JWindow = JWindow->next;
    while (JWindow != w)
@@ -49,7 +49,7 @@ static void touch_windows(void) /*{{{*/
 	     l = CBuf->marks->line;
 	     n = CBuf->marks->n;
 	     while ((l != NULL) && (l != JWindow->mark.line)) l = l->next, n++;
-	     if (l == NULL) 
+	     if (l == NULL)
 	       jed_init_mark (&JWindow->mark, 0);
 	     touch_window();
 	  }
@@ -64,7 +64,7 @@ static void touch_windows(void) /*{{{*/
 static int line_in_buffer(Line *line) /*{{{*/
 {
    Line *l;
-   
+
    l = CBuf->beg;
    while (l != NULL) if (l == line) return(1); else l = l->next;
    return(0);
@@ -107,7 +107,7 @@ int jed_init_mark_for_line (Mark *m, Line *l, unsigned int flags) /*{{{*/
 {
    Line *ll;
    unsigned int n;
-   
+
    n = 1;
    ll = CBuf->beg;
    while ((ll != NULL) && (ll != l))
@@ -117,7 +117,7 @@ int jed_init_mark_for_line (Mark *m, Line *l, unsigned int flags) /*{{{*/
      }
    if (ll == NULL)
      return -1;
-   
+
    m->line = l;
    m->point = 0;
    m->n = n + CBuf->nup;
@@ -132,17 +132,17 @@ int jed_init_mark_for_line (Mark *m, Line *l, unsigned int flags) /*{{{*/
 static Mark *create_mark (unsigned int flags) /*{{{*/
 {
    Mark *m;
-   
+
    if (NULL == (m = (Mark *) jed_malloc0 (sizeof(Mark))))
      exit_error("create-mark: malloc error", 0);
-   
+
    jed_init_mark (m, flags);
-   
+
    return m;
 }
 
 /*}}}*/
-#endif   
+#endif
 /* with prefix argument, pop marks */
 int set_mark_cmd (void) /*{{{*/
 {
@@ -153,22 +153,22 @@ int set_mark_cmd (void) /*{{{*/
 	Repeat_Factor = NULL;
 	return(1);
      }
-   
+
    if (CBuf->marks == NULL)
      {
 	jed_push_mark ();
      }
 
    m = CBuf->marks;
-   
+
    jed_init_mark (m, m->flags);
-   
-   if ((m->flags & VISIBLE_MARK) == 0) 
+
+   if ((m->flags & VISIBLE_MARK) == 0)
      {
 	m->flags |= VISIBLE_MARK;
 	CBuf->vis_marks++;
      }
-   
+
    /* if (m != CBuf->marks) m->next = CBuf->marks;
     CBuf->marks = m; */
    if (Last_Key_Function == (FVOID_STAR) set_mark_cmd) message("Mark Set.");
@@ -181,7 +181,7 @@ static Mark *allocate_mark (Jed_Mark_Array_Type **ap, Mark **mp, unsigned int fl
 {
    Jed_Mark_Array_Type *a, *b;
    Mark *m;
-   
+
    a = *ap;
    if ((a == NULL)
        || (a->num_marks == JED_MAX_MARK_ARRAY_SIZE))
@@ -194,7 +194,7 @@ static Mark *allocate_mark (Jed_Mark_Array_Type **ap, Mark **mp, unsigned int fl
 	a = b;
 	*ap = a;
      }
-   
+
    m = &a->marks[a->num_marks];
    jed_init_mark (m, flags);
 
@@ -210,13 +210,13 @@ static void deallocate_mark (Jed_Mark_Array_Type **ap, Mark **mp) /*{{{*/
 {
    Jed_Mark_Array_Type *a;
    Mark *m;
-   
+
    m = *mp;
    *mp = m->next;
-   
+
    a = *ap;
    a->num_marks -= 1;
-   
+
    if (a->num_marks == 0)
      {
 	*ap = a->next;
@@ -246,10 +246,10 @@ int jed_goto_mark(Mark *m) /*{{{*/
 {
    Line *l;
    int ret = -1;
-   
+
    l = m->line;
    LineNum = m->n;
-	
+
    if (LineNum <= CBuf->nup) bob();
    else if (LineNum > CBuf->nup + Max_LineNum) eob();
    else
@@ -267,7 +267,7 @@ int jed_goto_mark(Mark *m) /*{{{*/
 int jed_pop_mark (int go) /*{{{*/
 {
    Mark *m;
-   
+
    m = CBuf->marks;
    if (m == NULL) return(0);
 
@@ -280,7 +280,7 @@ int jed_pop_mark (int go) /*{{{*/
      }
 
    deallocate_mark (&CBuf->mark_array, &CBuf->marks);
-   
+
    return 1;
 }
 
@@ -298,10 +298,10 @@ int mark_spot() /*{{{*/
 static int pop_spot_go (int go) /*{{{*/
 {
    Mark *m;
-   
+
    m = CBuf->spots;
    if (m == NULL) return(0);
-   
+
    if (go) jed_goto_mark (m);
 
    deallocate_mark (&CBuf->spot_array, &CBuf->spots);
@@ -323,15 +323,15 @@ int exchange_point_mark(void) /*{{{*/
    int save_point;
    unsigned int save_n;
    Mark *m;
-   
+
    if ((m = CBuf->marks) == NULL) return(0);
-   
+
    save_point = Point;
    save_line = CLine;
    save_n = LineNum + CBuf->nup;
-   
+
    jed_goto_mark (m);
-   
+
    m->point = save_point; m->line = save_line; m->n = save_n;
    return(1);
 }
@@ -345,7 +345,7 @@ int exchange_point_mark(void) /*{{{*/
  /*returns 0 if the mark is not set and gives error.  Exchanges point and mark
   * to produce valid region.  A valid region is one with mark
   * earlier in the buffer than point.  Always call this if using a region
-  * which reqires point > mark.  Also, push spot first then pop at end. 
+  * which reqires point > mark.  Also, push spot first then pop at end.
   */
 int check_region(int *push) /*{{{*/
 {
@@ -383,11 +383,11 @@ static int widen_buffer_lines (Buffer *b) /*{{{*/
 {
    Narrow_Type *n;
    Buffer *save = CBuf;
-   
+
    if (NULL == (n = b->narrow)) return(0);
-   
+
    /* make sure buffer ends in final newline */
-   
+
    switch_to_buffer(b);
    push_spot();
    eob();
@@ -403,17 +403,17 @@ static int widen_buffer_lines (Buffer *b) /*{{{*/
      }
 
    pop_spot();
-   
+
    if (n->end != NULL) n->end->prev = b->end;
    if (n->beg != NULL) n->beg->next = b->beg;
    b->end->next = n->end;
    b->beg->prev = n->beg;
    b->beg = n->beg1;
    if (n->end != NULL) b->end = n->end1;
-   
+
    Max_LineNum += n->ndown + n->nup;
    LineNum += n->nup;
-   
+
    /* adjust absolute offsets */
    b->nup -= n->nup;
    b->ndown -= n->ndown;
@@ -435,12 +435,12 @@ int widen_buffer (Buffer *b) /*{{{*/
    unsigned int line_flags;
 #endif
    Buffer *save;
-   
+
    if (b->narrow == NULL) return 0;
 
    if (b->narrow->is_region == 0)
      return widen_buffer_lines (b);
-   
+
    flags = b->flags;
    b->flags &= ~(READ_ONLY);
 
@@ -454,7 +454,7 @@ int widen_buffer (Buffer *b) /*{{{*/
    push_spot ();
    eob ();
    widen_buffer_lines (CBuf);
-   
+
 #if JED_HAS_LINE_ATTRIBUTES
    line_flags = CLine->flags;
    CLine->flags &= ~JED_LINE_IS_READONLY;
@@ -463,7 +463,7 @@ int widen_buffer (Buffer *b) /*{{{*/
 #if JED_HAS_LINE_ATTRIBUTES
    CLine->flags = line_flags;
 #endif
-   
+
    pop_spot ();
    (void) jed_up (1);
 #if JED_HAS_LINE_ATTRIBUTES
@@ -478,7 +478,7 @@ int widen_buffer (Buffer *b) /*{{{*/
 
    pop_spot ();
    if (save != CBuf) switch_to_buffer (save);
-   
+
    b->flags = flags;
    return 1;
 }
@@ -493,7 +493,7 @@ int narrow_to_region (void) /*{{{*/
 #if JED_HAS_LINE_ATTRIBUTES
    unsigned int line_flags;
 #endif
-     
+
    if (0 == check_region (&Number_One))/* spot pushed */
      return 0;
 
@@ -503,12 +503,12 @@ int narrow_to_region (void) /*{{{*/
    CBuf->flags &= ~(READ_ONLY);
    /* A hack to avoid locking file */
    CBuf->flags |= BUFFER_NON_LOCKING;
-   
+
    push_spot ();
-   
+
    line = CLine;
    pnt = Point;
-   
+
    jed_pop_mark (1);
    /* Special case if region is empty */
    if ((CLine == line) && (pnt == Point))
@@ -520,17 +520,17 @@ int narrow_to_region (void) /*{{{*/
 	line_flags = CLine->flags;
 	CLine->flags &= ~JED_LINE_IS_READONLY;
 #endif
-	
+
 	(void) jed_insert_newline ();
-	
+
 #if JED_HAS_LINE_ATTRIBUTES
 	if (CLine->prev != NULL) CLine->prev->flags = line_flags;
 #endif
-	
+
 	jed_push_mark ();
 
 	(void) jed_insert_newline ();
-	
+
 #if JED_HAS_LINE_ATTRIBUTES
 	CLine->flags = line_flags;
 #endif
@@ -557,7 +557,7 @@ int narrow_to_region (void) /*{{{*/
 
 	jed_push_mark ();
 	pop_spot ();
-	
+
 #if JED_HAS_LINE_ATTRIBUTES
 	line_flags = CLine->flags;
 	CLine->flags &= ~JED_LINE_IS_READONLY;
@@ -573,10 +573,10 @@ int narrow_to_region (void) /*{{{*/
 #endif
 	if (narrow_to_lines ())
 	  CBuf->narrow->is_region = 1;
-	
+
 	pop_spot ();
      }
-   
+
    /* mark_undo_boundary (CBuf); */
    CBuf->flags = flags;
    return 1;
@@ -609,10 +609,10 @@ int narrow_to_lines () /*{{{*/
 {
    Line *beg;
    Narrow_Type *nt;
-   
+
    if (NULL == (nt = (Narrow_Type *) jed_malloc0 (sizeof(Narrow_Type))))
      return 0;
-   
+
    if (!check_region(&Number_One)) return(0);       /* spot pushed */
 
    /* unmark_undo_boundary (CBuf); */
@@ -622,35 +622,34 @@ int narrow_to_lines () /*{{{*/
    jed_push_mark();			       /* popped and used in touch_windows! */
    beg = CLine;
    nt->nup = LineNum - 1;
-   
+
    pop_spot();  /* eor now */
-   
+
    nt->ndown = Max_LineNum - LineNum;
 
    Max_LineNum = LineNum = LineNum - nt->nup;
    CBuf->nup += nt->nup;
    CBuf->ndown += nt->ndown;
-   
-   
+
    nt->next = CBuf->narrow;
    CBuf->narrow = nt;
    nt->beg = beg->prev;
    nt->end = CLine->next;
    nt->beg1 = CBuf->beg;
    nt->end1 = CBuf->end;
-   
+
    nt->is_region = 0;
    CBuf->beg = beg;
    CBuf->end = CLine;
    beg->prev = NULL;
    CLine->next = NULL;
-   
+
    if (CLine->len && (CLine->data[CLine->len - 1] == '\n'))
      {
 	/* I do not think that this will affect undo. */
 	CLine->len--;
      }
-   
+
    pop_spot();
    touch_windows();
    return(1);
@@ -678,12 +677,12 @@ int copy_region_to_buffer(Buffer *b) /*{{{*/
    Line *first, *last;
    Buffer *save_buf;
 
-   if (b->flags & READ_ONLY) 
+   if (b->flags & READ_ONLY)
      {
 	msg_error(Read_Only_Error);
 	return (0);
      }
-   
+
    if (!check_region(&Number_One)) return(0);  /* spot pushed */
    last = CLine;
    last_point = Point;
@@ -713,7 +712,7 @@ int copy_region_to_buffer(Buffer *b) /*{{{*/
 	  }
 	else (void) jed_quick_insert (first->data + first_point, n);
      }
-   else 
+   else
      {
 	n = first->len - first_point;
 	if (-1 == jed_quick_insert(first->data + first_point, n))
@@ -752,8 +751,8 @@ static int jed_check_readonly_region (void)
    int beg_point, end_point;
    Line *beg, *end;
 
-   if (CBuf->flags & READ_ONLY) 
-     { 
+   if (CBuf->flags & READ_ONLY)
+     {
 	msg_error(Read_Only_Error);
 	return -1;
      }
@@ -765,12 +764,12 @@ static int jed_check_readonly_region (void)
    (void) exchange_point_mark ();
    beg = CLine; beg_point = Point;
    (void) exchange_point_mark ();
-   
+
    while (1)
      {
-	if (beg->flags & JED_LINE_IS_READONLY) 
+	if (beg->flags & JED_LINE_IS_READONLY)
 	  {
-	     if ((beg == end) 
+	     if ((beg == end)
 		 && (end_point == 0)
 		 && (beg_point == 0))
 	       return 0;
@@ -786,33 +785,32 @@ static int jed_check_readonly_region (void)
    return 0;
 }
 
-   
 int delete_region (void) /*{{{*/
 {
    int beg_point, end_point;
    Line *beg, *end;
-   
+
    if (0 != jed_check_readonly_region ())
      return -1;
 
    /* make this go through standard ins/del routines to ensure undo */
-   
+
    end = CLine; end_point = Point;
    push_spot();
    jed_pop_mark(1);
    beg = CLine; beg_point = Point;
    pop_spot();
-   
-   if (end != beg) 
+
+   if (end != beg)
      {
 	bol ();
-   
+
 	if (-1 == jed_del_nbytes (end_point))
 	  return -1;
 
 	/* go back because we do not want to mess with Line structures
 	   changing on us --- shouldn't happen anyway */
-	
+
 	while (jed_up (1) && (CLine != beg))
 	  {
 	     bol ();
@@ -896,7 +894,7 @@ int open_rectangle() /*{{{*/
 {
    int c1, n, c2, tmpm;
    Line *save_line;
-   
+
    CHECK_READ_ONLY
    if (!check_region(&Number_One)) return(0); /* push_spot(); performed */
 
@@ -910,7 +908,7 @@ int open_rectangle() /*{{{*/
 	n = -n;
 	c1 = c2;
      }
-   
+
    Suspend_Screen_Update = 1;
    while(1)
      {
@@ -932,15 +930,15 @@ static int copy_or_kill_rectangle (int kill) /*{{{*/
 {
    Line *save_line, *line, *beg;
    int c1, c2, dc, tmp;
-   
+
    if (!check_region(&Number_One)) return(0);       /* spot pushed */
    /* delete Rectangle buffer */
    if (Rectangle_Buffer != NULL) delete_buffer(Rectangle_Buffer);
-   
+
    Rectangle_Buffer = make_buffer (" <rect>", NULL, NULL);
    c2 = calculate_column();
    save_line = CLine;
-   
+
    jed_pop_mark(1);
    c1 = calculate_column();
    if (c1 == c2)
@@ -956,9 +954,9 @@ static int copy_or_kill_rectangle (int kill) /*{{{*/
 	c2 = tmp;
 	goto_column(&c1);
      }
-   
+
    dc = c2 - c1;
-   
+
    /* go through the region copying rectanglar blocks to Rectanglebuffer */
 
    line = beg = NULL;
@@ -983,13 +981,13 @@ static int copy_or_kill_rectangle (int kill) /*{{{*/
 	     col2 = col1;
 	     p2 = p1;
 	  }
-	
+
 	nspaces = (unsigned int) (dc - (col2 - col1));
 	nbytes = (unsigned int) (p2 - p1);
 	len1 = len = nbytes + nspaces;
-	
-	/* Need to allocate at least 2 bytes, since a single byte is a 
-	 * signature of a line with a single character whose value is a 
+
+	/* Need to allocate at least 2 bytes, since a single byte is a
+	 * signature of a line with a single character whose value is a
 	 * newline character.  See make_line1 for details.
 	 */
 	if (len <= 1)
@@ -1073,7 +1071,7 @@ int blank_rectangle (void) /*{{{*/
 	goto_column (&c2);
 	pnt = Point;
 	goto_column (&c1);
-	
+
 	if (-1 == jed_del_nbytes (pnt - Point))
 	  break;
 
@@ -1107,7 +1105,7 @@ static void free_user_mark (SLtype type, VOID_STAR um_alias) /*{{{*/
    Mark *m, *m1;
    Buffer *b;
    User_Mark_Type *um;
-   
+
    (void) type;
    um = (User_Mark_Type *) um_alias;
    m1 = &um->m;
@@ -1121,17 +1119,17 @@ static void free_user_mark (SLtype type, VOID_STAR um_alias) /*{{{*/
 	b = um->b;
 	m = b->user_marks;
 #if JED_HAS_LINE_MARKS
-	if (m1->flags & JED_LINE_MARK) 
+	if (m1->flags & JED_LINE_MARK)
 	  touch_screen ();
 #endif
 	if (m == m1)	b->user_marks = m1->next;
-	else 
+	else
 	  {
 	     while (m->next != m1) m = m->next;
 	     m->next = m1->next;
 	  }
      }
-   
+
    SLfree ((char *)um);
 }
 
@@ -1140,7 +1138,7 @@ static void free_user_mark (SLtype type, VOID_STAR um_alias) /*{{{*/
 void free_user_marks (Buffer *b) /*{{{*/
 {
    Mark *m = b->user_marks;
-   
+
    while (m != NULL)
      {
 	m->flags |= MARK_INVALID;
@@ -1163,7 +1161,7 @@ static int mark_valid (Mark *m) /*{{{*/
 /*}}}*/
 
 static SLang_MMT_Type *pop_valid_user_mark (User_Mark_Type **ump)
-{   
+{
    SLang_MMT_Type *mmt;
    User_Mark_Type *um;
 
@@ -1173,36 +1171,33 @@ static SLang_MMT_Type *pop_valid_user_mark (User_Mark_Type **ump)
      return NULL;
 
    um = (User_Mark_Type *) SLang_object_from_mmt (mmt);
-   
+
    if (0 == mark_valid (&um->m))
      {
 	SLang_free_mmt (mmt);
 	return NULL;
      }
-   
+
    *ump = um;
    return mmt;
 }
 
-   
-   
 int jed_move_user_object_mark (SLang_MMT_Type *mmt) /*{{{*/
 {
    User_Mark_Type *um;
    Mark *m;
-   
+
    um = (User_Mark_Type *) SLang_object_from_mmt (mmt);
    m = &um->m;
-   
+
    if (!mark_valid (m)) return 0;
-   
+
    if (CBuf != um->b)
-     {	
+     {
 	msg_error ("Mark not in buffer.");
 	return 0;
      }
-   
-   
+
    m->line = CLine;
    m->point = Point;
    m->n = LineNum + CBuf->nup;
@@ -1214,7 +1209,7 @@ int jed_move_user_object_mark (SLang_MMT_Type *mmt) /*{{{*/
 void move_user_mark (void) /*{{{*/
 {
    SLang_MMT_Type *mmt;
-   
+
    if (NULL == (mmt = SLang_pop_mmt (JED_MARK_TYPE)))
      return;
 
@@ -1265,10 +1260,10 @@ SLang_MMT_Type *jed_make_user_object_mark (void) /*{{{*/
    User_Mark_Type *um;
    SLang_MMT_Type *mmt;
    Mark *m;
-   
+
    if (NULL == (um = (User_Mark_Type *) jed_malloc0 (sizeof(User_Mark_Type))))
      return NULL;
-     
+
    if (NULL == (mmt = SLang_create_mmt (JED_MARK_TYPE, (VOID_STAR) um)))
      {
 	SLfree ((char *) um);
@@ -1276,13 +1271,13 @@ SLang_MMT_Type *jed_make_user_object_mark (void) /*{{{*/
      }
 
    m = &um->m;
-   
+
    jed_init_mark (m, 0);
-   
+
    m->next = CBuf->user_marks;
-   
+
    CBuf->user_marks = m;
-   
+
    um->b = CBuf;
 
    return mmt;
@@ -1290,11 +1285,10 @@ SLang_MMT_Type *jed_make_user_object_mark (void) /*{{{*/
 
 /*}}}*/
 
-
 void create_user_mark (void) /*{{{*/
 {
    SLang_MMT_Type *mmt;
-   
+
    if (NULL != (mmt = jed_make_user_object_mark ()))
      {
 	if (-1 == SLang_push_mmt (mmt))
@@ -1328,9 +1322,9 @@ user_mark_bin_op_result (int op, SLtype a, SLtype b,
    (void) a; (void) b;
    switch (op)
      {
-      default: 
+      default:
 	return 0;
-	
+
       case SLANG_GT:
       case SLANG_GE:
       case SLANG_LT:
@@ -1342,7 +1336,6 @@ user_mark_bin_op_result (int op, SLtype a, SLtype b,
      }
    return 1;
 }
-
 
 static int
 user_mark_bin_op (int op,
@@ -1379,7 +1372,7 @@ user_mark_bin_op (int op,
 	ba = bb = NULL;
 	pa = pb = 0;
 	la = lb = 0;
-	
+
 	if ((*a != NULL)
 	    && (NULL != (ua = (User_Mark_Type *) SLang_object_from_mmt (*a))))
 	  {
@@ -1403,19 +1396,19 @@ user_mark_bin_op (int op,
 	     b += db;
 	     continue;
 	  }
-	
+
 	switch (op)
 	  {
 	   case SLANG_GT:
 	     ic[n] = ((la > lb)
 		      || ((la == lb) && (pa > pb)));
 	     break;
-	     
+
 	   case SLANG_GE:
 	     ic[n] = ((la > lb)
 		      || ((la == lb) && (pa >= pb)));
 	     break;
-	     
+
 	   case SLANG_LT:
 	     ic[n] = ((la < lb)
 		      || ((la == lb) && (pa < pb)));
@@ -1425,7 +1418,7 @@ user_mark_bin_op (int op,
 	     ic[n] = ((la < lb)
 		      || ((la == lb) && (pa <= pb)));
 	     break;
-	     
+
 	   case SLANG_EQ:
 	     ic[n] = ((ba == bb) && (la == lb) && (pa == pb));
 	     break;
@@ -1433,7 +1426,7 @@ user_mark_bin_op (int op,
 	   case SLANG_NE:
 	     ic[n] = ((ba != bb) || (la != lb) || (pa != pb));
 	     break;
-	     
+
 	   default:
 	     return 0;
 	  }
@@ -1445,9 +1438,6 @@ user_mark_bin_op (int op,
    return 1;
 }
 
-
-
-
 /*}}}*/
 
 #if JED_HAS_LINE_MARKS
@@ -1455,7 +1445,7 @@ void jed_create_line_mark (int *color) /*{{{*/
 {
    SLang_MMT_Type *mmt;
    User_Mark_Type *um;
-   
+
    if (NULL == (mmt = jed_make_user_object_mark ()))
      return;
 
@@ -1480,10 +1470,10 @@ static int user_mark_sget (SLtype type, SLFUTURE_CONST char *name)
    Buffer *buf;
 
    (void) type;
-   
+
    if (NULL == (mmt = pop_valid_user_mark (&um)))
      return -1;
-   
+
    buf = um->b;
 
    status = -1;
@@ -1492,28 +1482,27 @@ static int user_mark_sget (SLtype type, SLFUTURE_CONST char *name)
    else
      SLang_verror (SL_NOT_IMPLEMENTED,
 		   "Mark_Type.%s is invalid", name);
-   
+
    SLang_free_mmt (mmt);
    return status;
 }
 
-
 int register_jed_classes (void) /*{{{*/
 {
    SLang_Class_Type *cl;
-   
+
    cl = SLclass_allocate_class ("Mark_Type");
    if (cl == NULL) return -1;
    (void) SLclass_set_destroy_function (cl, free_user_mark);
-   
+
    (void) SLclass_set_sget_function (cl, user_mark_sget);
 
    if (-1 == SLclass_register_class (cl, JED_MARK_TYPE, sizeof (User_Mark_Type), SLANG_CLASS_TYPE_MMT))
      return -1;
-   
+
    if (-1 == SLclass_add_binary_op (JED_MARK_TYPE, JED_MARK_TYPE, user_mark_bin_op, user_mark_bin_op_result))
      return -1;
-   
+
    return 0;
 }
 
@@ -1530,19 +1519,19 @@ void jed_widen_whole_buffer (Buffer *b) /*{{{*/
 static void restore_saved_narrow (void) /*{{{*/
 {
    Mark *beg, *end;
-   
+
    Jed_Save_Narrow_Type *save_narrow;
-   
+
    if (NULL == (save_narrow = CBuf->save_narrow))
      return;
-   
+
    push_spot ();
    /* remove current restriction */
    jed_widen_whole_buffer (CBuf);
-   
+
    beg = save_narrow->beg;
    end = save_narrow->end;
-   
+
    while (beg != NULL)
      {
 	jed_goto_mark (beg);
@@ -1551,7 +1540,7 @@ static void restore_saved_narrow (void) /*{{{*/
 	if (end->flags & NARROW_REGION_MARK)
 	  narrow_to_region ();
 	else narrow_to_lines ();
-	
+
 	beg = beg->next;
 	end = end->next;
      }
@@ -1562,7 +1551,7 @@ static void restore_saved_narrow (void) /*{{{*/
 static void free_mark_chain (Mark *m) /*{{{*/
 {
    Mark *next;
-	
+
    while (m != NULL)
      {
 	next = m->next;
@@ -1575,12 +1564,12 @@ static void free_mark_chain (Mark *m) /*{{{*/
 void jed_free_saved_narrow (Buffer *b) /*{{{*/
 {
    Jed_Save_Narrow_Type *save_narrow;
-   
+
    save_narrow = b->save_narrow;
    if (save_narrow == NULL) return;
-   
+
    b->save_narrow = save_narrow->next;
-   
+
    free_mark_chain (save_narrow->beg);
    free_mark_chain (save_narrow->end);
    SLfree ((char *)save_narrow);
@@ -1590,7 +1579,7 @@ void jed_free_saved_narrow (Buffer *b) /*{{{*/
 void jed_push_narrow (void) /*{{{*/
 {
    Jed_Save_Narrow_Type *save_narrow;
-   
+
    if (NULL == (save_narrow = (Jed_Save_Narrow_Type *) jed_malloc0 (sizeof (Jed_Save_Narrow_Type))))
      {
 	exit_error ("push_narrow: malloc error.", 0);
@@ -1598,27 +1587,27 @@ void jed_push_narrow (void) /*{{{*/
    save_narrow->beg = save_narrow->end = NULL;
    save_narrow->next = CBuf->save_narrow;
    CBuf->save_narrow = save_narrow;
-   
+
    push_spot ();
    while (CBuf->narrow != NULL)
      {
 	Mark *m;
-	
+
 	bob ();
 	m = create_mark (0);
 	m->next = save_narrow->beg;
 	save_narrow->beg = m;
-	
+
 	eob ();
 	m = create_mark (CBuf->narrow->is_region ? NARROW_REGION_MARK : 0);
 	m->next = save_narrow->end;
 	save_narrow->end = m;
-	
+
 	widen_buffer (CBuf);
      }
-   
+
    restore_saved_narrow ();
-   
+
    pop_spot ();
 }
 
@@ -1636,7 +1625,7 @@ int jed_count_narrows (void) /*{{{*/
 {
    int n = 0;
    Narrow_Type *nt = CBuf->narrow;
-   
+
    while (nt != NULL)
      {
 	n++;
@@ -1655,15 +1644,13 @@ unsigned int jed_count_lines_in_region (void)
    m = CBuf->marks;
    if (m == NULL)
      return 0;
-   
+
    n0 = m->n - CBuf->nup;
    n1 = LineNum;
-   
+
    if (n0 > n1)
      return 1 + (n0 - n1);
-   
+
    return 1 + (n1 - n0);
 }
 
-	
-   

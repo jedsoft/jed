@@ -1,4 +1,4 @@
-% Main menu function autoloaded by menus.sl 
+% Main menu function autoloaded by menus.sl
 
 #ifndef VMS
 private define add_files_popup_with_callback (parent, popup, dir, pattern, fun)
@@ -13,13 +13,13 @@ private define add_files_popup_with_callback (parent, popup, dir, pattern, fun)
    i = where (array_map (Int_Type, &string_match, files, pattern, 1));
    if (length (i) == 0)
      return;
-   
+
    files = files[i];
    files = files[array_sort (files)];
 
    menu_append_popup (parent, popup);
    popup = parent + "." + popup;
-   
+
    foreach (files)
      {
 	variable file = ();
@@ -53,7 +53,7 @@ private define browse_docs_callback (file)
 #endif
    () = read_file (file);
 #ifdef UNIX
-   if (is_compressed) 
+   if (is_compressed)
      auto_compression_mode (state);
 #endif
    pop2buf (whatbuf ());
@@ -65,7 +65,6 @@ private define close_file (clientdata)
 {
    delbuf (whatbuf ());
 }
-
 
 $1 = "Global.&File";
 menu_append_item ($1, "&Open", "find_file");
@@ -140,7 +139,6 @@ menu_append_item ($1, "Se&t Bookmark", "bkmrk_set_mark");
 menu_append_item ($1, "Got&o Bookmark", "bkmrk_goto_mark");
 menu_append_item ($1, "&Goto Line", "goto_line_cmd");
 
-
 private define change_buffer_callback (popup)
 {
    loop (buffer_list ())
@@ -152,7 +150,6 @@ private define change_buffer_callback (popup)
 	menu_append_item (popup, b, &sw2buf, b);
      }
 }
-
 
 $1 = "Global.&Buffers";
 menu_append_popup ($1, "&Toggle");
@@ -216,7 +213,7 @@ if (is_defined ("x_server_vendor"))
 foreach (strtok (Color_Scheme_Path, ","))
 {
    $2 = ();
-   add_files_popup_with_callback ($1, "&Color Schemes", 
+   add_files_popup_with_callback ($1, "&Color Schemes",
 				  $2, "\\C^.*\\.sl$",
 				  &set_color_scheme);
 }
@@ -224,7 +221,6 @@ foreach (strtok (Color_Scheme_Path, ","))
 #endif
 menu_append_separator ($1);
 menu_append_item ($1, "&Redraw", "redraw");
-
 
 ifnot (_jed_secure_mode)
 {
@@ -245,7 +241,6 @@ menu_append_item ($1, "&Mail", "mail");
 menu_append_item ($1, "Shell &Window", "shell");
 #endif
 }
-
 
 menu_append_item ($1, "C&alendar", "calendar");
 menu_append_item ($1, "&Function", "emacs_escape_x");

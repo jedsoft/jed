@@ -35,17 +35,17 @@ define ispell ()
 {
    variable ibuf, buf, file, letters, num_win, old_buf;
    variable word, cmd, p, num, n, new_word;
-   
-#ifdef OS2   
+
+#ifdef OS2
    file = make_tmp_file("jedt");
-#else   
+#else
    file = make_tmp_file("/tmp/jed_ispell");
-#endif   
+#endif
    letters = "\a"R;
-   
+
    ibuf = " *ispell*";
    buf = whatbuf();
-   
+
    skip_chars(letters); bskip_chars(letters); push_mark(); % push_mark();
 
    n = _get_point ();
@@ -55,20 +55,20 @@ define ispell ()
 	pop_mark_0 (); %pop_mark_0 ();
 	return;
      }
-   
+
    %word = bufsubstr();
 #ifdef MSDOS MSWINDOWS WIN32
-   () = system(sprintf("echo %s | %s > %s", 
+   () = system(sprintf("echo %s | %s > %s",
 		       bufsubstr(), Ispell_Program_Name, file));
 #else
    if (pipe_region(sprintf ("%s > '%s'", Ispell_Program_Name, file)))
        error ("ispell process returned a non-zero exit status.");
 #endif
-   
+
    setbuf(ibuf); erase_buffer();
    () = insert_file(file);
    () = delete_file(file);
-   
+
    %%
    %% parse output
    %%
@@ -77,15 +77,15 @@ define ispell ()
      {
 	del_through_eol ();
      }
-   
+
    if (looking_at_char('*') or looking_at_char('+'))
      {
 	message ("Correct");   % '+' ==> is derived from
 	bury_buffer (ibuf);
 	return;
      }
-   
-   if (looking_at_char('#')) 
+
+   if (looking_at_char('#'))
      {
       	bury_buffer (ibuf);
 	return (message("No clue."));
@@ -108,12 +108,12 @@ define ispell ()
 	trim(); newline();
 	vinsert ("(%d) ", n);
 	++n;
-     } 
-   
+     }
+
    bob();
    num_win = nwindows();
    pop2buf(buf);
-   old_buf = pop2buf_whatbuf(ibuf);   
+   old_buf = pop2buf_whatbuf(ibuf);
 
    set_buffer_modified_flag(0);
    variable ok = 0;

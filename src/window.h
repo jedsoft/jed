@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -21,12 +21,12 @@ typedef struct Window_Type
    int trashed;			       /* true if one or more lines in window were changed */
 #define MINIBUFFER_WINDOW	0x01
    int flags;			       /* Note that trashed should be a bit here */
-   
+
    void *private_data;		       /* used by the callback functions */
 }
 Window_Type;
 
-/* The mini window exists at all times.  When active, it is part of the 
+/* The mini window exists at all times.  When active, it is part of the
  * window list.  When inactive, it is not part of the list.
  */
 extern Window_Type *JMiniWindow;
@@ -49,7 +49,6 @@ extern int (*jed_window_geom_change_cb) (void);
 
 extern void touch_screen_for_buffer(Buffer *);
 extern void touch_window_hard(Window_Type *, int);
-
 
 extern int is_line_visible (int);
 extern int split_window(void);
@@ -74,7 +73,6 @@ extern int jed_get_scroll_column (void);
 extern int jed_num_windows (void);
 
 extern int jed_init_window_intrinsics (void);
-
 
 #if JED_HAS_SUBPROCESSES
 extern void move_window_marks (int);

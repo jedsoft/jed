@@ -148,7 +148,7 @@ private define compile_parse_errors_dir (next_error_fun, next_line_fun)
 	cbuf = whatbuf ();
 	sw2buf (obuf);
      }
-  
+
    pop2buf (cbuf);
 }
 
@@ -217,7 +217,7 @@ public define compile ()
 {
    variable b, n;
    variable cmd = NULL;
-   
+
    if (_NARGS != 0)
      cmd = ();
 
@@ -248,7 +248,6 @@ if (is_defined ("get_process_input"))
 {
    () = evalfile ($1);
 }
-
 
 % The current implementation for the database uses an associative array.
 private variable Compiler_Database = Assoc_Type [Any_Type, NULL];
@@ -370,7 +369,7 @@ compile_add_compiler ("rgbds", "^\\*ERROR\\*.*[\t ]\\(.+\\)(\\(\\d+\\))");
 %      vc               (Microsoft Visual C)
 %#v-
 %\notes
-%  The primary purpose of this variable is to select a compiler prior to 
+%  The primary purpose of this variable is to select a compiler prior to
 %  loading compile.sl.  Once compile.sl has been loaded, the value of this
 %  variable has no effect.  To switch compilers, the \var{compile_select_compiler}
 %  function must be used.

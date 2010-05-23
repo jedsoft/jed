@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -85,7 +85,7 @@ static int init_intrinsics (void)
    if ((-1 == SLadd_intrin_fun_table (Jed_WinCommon_Table, "MSWINDOWS"))
        || (-1 == SLdefine_for_ifdef ("MOUSE")))
      return -1;
-   
+
    return 0;
 }
 
@@ -133,8 +133,6 @@ void sys_pause (int ms)
 void init_signals()
 {
 }
-
-
 
 /* Delete the file NAME.  returns 0 on failure, 1 on sucess
  * Under OS/2 and DOS, unlink()[UNIX] and remove()[ANSI] are equivalent.
@@ -195,7 +193,7 @@ int sys_findfirst (char *thefile)
      {
  	fixup_name(file);
 
-	/* The windows file system is case-insensitive, so if one 
+	/* The windows file system is case-insensitive, so if one
 	 * searches for makefi*, the OS will return Makefile.in
 	 * between the others, so check for wrong values and reject
 	 * them
@@ -229,7 +227,6 @@ int sys_findnext(char *file)
    hsearch = INVALID_HANDLE_VALUE;
    return 0;
 }
-
 
 /* returns 0 if file does not exist, 1 if it is not a dir, 2 if it is */
 int sys_chmod (SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *uid, gid_t *gid)
@@ -298,8 +295,7 @@ static void x_warp_pointer (void)
 {
 }
 
-
-static void 
+static void
 x_region_2_cutbuffer (void)
 {
    int i, x, nbytes;
@@ -421,12 +417,12 @@ static Popen_Type Popen_Buf[MAX_POPEN];
 static char *get_helper_app (void)
 {
    char *s;
-   
+
    if (1 == SLang_execute_function ("_win32_get_helper_app_name"))
      {
 	if (-1 == SLang_pop_slstring (&s))
 	  return NULL;
-	
+
 	return s;
      }
    msg_error ("call to _win32_get_helper_app_name failed");
@@ -448,14 +444,14 @@ char *w32_build_command (char **argv, unsigned int num)
 
    for (i = 0; i < num; i++)
      len += 1 + strlen (argv[i]);
-   
+
    cmd = SLmalloc (len + 1);
    if (cmd == NULL)
      {
 	SLang_free_slstring (helper);
 	return NULL;
      }
-   
+
    len = strlen (helper);
    if (len)
      {
@@ -463,7 +459,7 @@ char *w32_build_command (char **argv, unsigned int num)
 	cmd[len] = ' ';
 	len++;
      }
-   
+
    for (i = 0; i < num; i++)
      {
 	strcpy (cmd + len, argv[i]);
@@ -593,9 +589,9 @@ int w32_pclose(FILE *fp)
 	     DWORD d = 0;
 	     /* send EOF */
 	     (void) fputs ("\x1a", fp); (void) fflush (fp);
-#ifndef __BORLANDC__		  
+#ifndef __BORLANDC__
 	     if (fclose(fp) == EOF) return -1;
-#else		  
+#else
  /* [JMS] Something odd with Borland C possibly, as the fclose attempt seems */
  /* [JMS] to fail every time, resulting in a 'too many popens' error as */
  /* [JMS] the failure causes the function to abort without removing the */

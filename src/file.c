@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -61,7 +61,7 @@ extern unsigned int sleep (unsigned int);
 #include <io.h>
 #include <sys/types.h>
 #include <sys/stat.h>
- 
+
  typedef struct HOLDFEA *PHOLDFEA;
  PHOLDFEA QueryEAs (char *name);
  int WriteEAs (char *name, PHOLDFEA pHoldFEA);
@@ -139,8 +139,7 @@ int vms_stupid_open(char *file)
    VMS_write_rfm_fixed = 0;
 
    strcpy(rfm_buf, "rfm=");
-   
-   
+
    if (0 == stat(file, &s))
      {
 	strcpy(rat_buf, "rat");
@@ -155,8 +154,8 @@ int vms_stupid_open(char *file)
 	switch(c)
 	  {
 	   case FAB$C_UDF:  rfm = "udf"; break;
-	   case FAB$C_FIX:  
-	     rfm = "fix"; 
+	   case FAB$C_FIX:
+	     rfm = "fix";
 	     if (s.st_fab_rat & (FAB$M_CR | FAB$M_CR))
 	       VMS_write_rfm_fixed = 1;
 	     break;
@@ -170,12 +169,12 @@ int vms_stupid_open(char *file)
 	mode = s.st_mode & 0777;
      }
    else strcpy (rat_buf, "rat=cr");
-   
+
    strcat(rfm_buf, rfm);
-   
+
    if (vms_max_rec_size <= 0) vms_max_rec_size = 255;
    sprintf(mrs_buf, "mrs=%d", vms_max_rec_size);
-      
+
    if (*rfm == 's')		       /* stream */
      {
 	ret = creat(file, mode, rfm_buf);
@@ -209,15 +208,15 @@ static int sys_open (char *file, int acces) /*{{{*/
 #endif
 
    flags = file_status (file);
-   if ((flags < 0) || (flags > 1)) 
+   if ((flags < 0) || (flags > 1))
      return -1;			       /* directory? */
-   
+
 #ifdef VMS
    /* on VMS I cheat since I do not want to deal with RMS at this point */
    VMS_write_rfm_fixed = 0;
    safe_strcpy(neew, file, sizeof (neew));
    p = neew; while (*p) if (*p == ';') *p = 0; else p++;
-   
+
    switch (acces)
      {
       case _JED_OPEN_READ:
@@ -244,13 +243,13 @@ static int sys_open (char *file, int acces) /*{{{*/
    switch (acces)
      {
       case _JED_OPEN_READ:
-	flags = O_RDONLY; 
+	flags = O_RDONLY;
 	break;
-      case _JED_OPEN_WRITE: 
+      case _JED_OPEN_WRITE:
 	flags = O_WRONLY | O_CREAT | O_TRUNC;
 	break;
-      case _JED_OPEN_APPEND: 
-	flags = O_WRONLY | O_CREAT | O_APPEND; 
+      case _JED_OPEN_APPEND:
+	flags = O_WRONLY | O_CREAT | O_APPEND;
 	break;
       case _JED_OPEN_CREATE_EXCL:
 	flags = O_WRONLY | O_CREAT | O_EXCL;
@@ -258,13 +257,13 @@ static int sys_open (char *file, int acces) /*{{{*/
 	perms = 0600;
 #endif
 	break;
-	
+
       default:
 	return -1;
      }
-   
+
    flags |= O_BINARY;
-   
+
    return open(file, flags, perms);
 #endif /* VMS */
 }
@@ -274,7 +273,7 @@ static int sys_open (char *file, int acces) /*{{{*/
 char *file_type (SLFUTURE_CONST char *file) /*{{{*/
 {
    char *p, *psave;
-   
+
    if ((file == NULL)
        || (*file == 0))
      return NULL;
@@ -289,7 +288,6 @@ char *file_type (SLFUTURE_CONST char *file) /*{{{*/
 }
 
 /*}}}*/
-
 
 void jed_set_buffer_ctime (Buffer *b)
 {
@@ -308,7 +306,7 @@ void jed_set_buffer_ctime (Buffer *b)
 	return;
      }
    b->c_time = sys_file_mod_time (file);
-   
+
    SLang_free_slstring (file);
 }
 
@@ -349,13 +347,13 @@ int jed_file_is_readonly (char *file, int respect_perms)
 	  {
 	     /* file does not exist.  Can we write to the directory? */
 	     char *dir;
-	     
+
 	     if (-1 == jed_dirfile_to_dir_file (file, &dir, NULL))
 	       return -1;
 
 # if defined(IBMPC_SYSTEM)
-	     /* knock of slash since some primitive systems cannot handle the 
-	      * final slash in a path name. 
+	     /* knock of slash since some primitive systems cannot handle the
+	      * final slash in a path name.
 	      */
 	       {
 		  unsigned int len = strlen (dir);
@@ -371,7 +369,7 @@ int jed_file_is_readonly (char *file, int respect_perms)
 #endif
 		)
 	       ro = 1;
-	     
+
 	     SLfree (dir);
 	  }
      }
@@ -416,7 +414,7 @@ void set_file_modes (void) /*{{{*/
 	CBuf->flags |= AUTO_SAVE_BUFFER;
 	CBuf->hits = 0;
 
-	if (type == NULL) 
+	if (type == NULL)
 	  type = file_type (CBuf->file);
      }
 
@@ -428,7 +426,7 @@ void set_file_modes (void) /*{{{*/
 
    if (type != NULL)
      {
-	if (1 != jed_va_run_hooks ("_jed_set_mode_hooks", 
+	if (1 != jed_va_run_hooks ("_jed_set_mode_hooks",
 				   JED_HOOKS_RUN_UNTIL_NON_0, 1, type))
 	  (void) SLang_run_hooks("mode_hook", 1, type);
      }
@@ -445,7 +443,7 @@ int read_file(char *file) /*{{{*/
    status = jed_va_run_hooks ("_jed_read_file_hooks", JED_HOOKS_RUN_UNTIL_NON_0, 1, file);
    if (status < 0)
      return -1;
-   
+
    if (status > 0)
      /* FIXME!! Is this true?  What if no lines have been read. */
      n = Max_LineNum;
@@ -478,7 +476,7 @@ int insert_file_pointer(VFILE *vp) /*{{{*/
    int n = 0;
    unsigned int num;
    unsigned char *vbuf;
-   
+
    Suspend_Screen_Update = 1;
    while(NULL != (vbuf = (unsigned char *) vgets(vp, &num)))
      {
@@ -520,7 +518,7 @@ int insert_file(char *file) /*{{{*/
 #else
 #ifdef VMS
 # define BUFSIZE 0x3FFF
-#else 
+#else
 # define BUFSIZE 512
 #endif
 #endif
@@ -529,7 +527,6 @@ static int Output_Buffer_Size = BUFSIZE;
 static char Output_Buffer[BUFSIZE];
 static char *Output_Bufferp;
 static char *Output_Bufferp_max;
-
 
 /* definitely perform the write.  Return number of chars written */
 static int jed_write1(int fd, char *b, unsigned int n) /*{{{*/
@@ -540,7 +537,7 @@ static int jed_write1(int fd, char *b, unsigned int n) /*{{{*/
 #ifdef VMS
    register char *bmax;
 #endif
-   
+
    while (total < n)
      {
 	int dlen;
@@ -548,9 +545,9 @@ static int jed_write1(int fd, char *b, unsigned int n) /*{{{*/
 #ifdef VMS
 	if (VMS_write_rfm_fixed)
 	  {
-	  }   
-	/* VMS wants to terminate a record with a cr so adjust for this 
-	 * unfortunate fact.  The len - 1 stuff is so *bmax does not peek 
+	  }
+	/* VMS wants to terminate a record with a cr so adjust for this
+	 * unfortunate fact.  The len - 1 stuff is so *bmax does not peek
 	 * beyond its boundary.
 	 */
 	bmax = b + (len - 1);
@@ -587,7 +584,7 @@ static int jed_write1(int fd, char *b, unsigned int n) /*{{{*/
 	     jed_verror ("Write Failed: (%d bytes attemped, errno = %d)", len, errno);
 	     return total;
 	  }
-	
+
 	total += (unsigned int) dlen;
 	b += dlen;
      }
@@ -603,13 +600,12 @@ static int jed_write1(int fd, char *b, unsigned int n) /*{{{*/
    asm pop ds
    asm jc L1
    asm mov num, ax		       /* number of bytes written */
-   L1: 
+   L1:
    return(num);
 #endif
 }
 
 /*}}}*/
-
 
 /* RMS wants to start a NEW record after a write so just forget it! */
 /* maybe do write-- return number of chars possibly written */
@@ -618,7 +614,7 @@ static int jed_write(int fd, char *b, unsigned int n) /*{{{*/
    int num, max, nl_flag = 0;
    unsigned int nsave = n;
    int cr_flag = CBuf->flags & ADD_CR_ON_WRITE_FLAG;
-   
+
 #ifdef MAP_CR_TO_NL_FLAG
    if (CBuf->flags & MAP_CR_TO_NL_FLAG)
      {
@@ -626,7 +622,7 @@ static int jed_write(int fd, char *b, unsigned int n) /*{{{*/
 	char *p, *pmax, ch;
 	p = Output_Bufferp;
 	pmax = Output_Bufferp_max;
-	
+
 	while (b < bmax)
 	  {
 	     ch = *b++;
@@ -647,7 +643,7 @@ static int jed_write(int fd, char *b, unsigned int n) /*{{{*/
 		  *p++ = '\n';
 	       }
 	     else *p++ = ch;
-	     
+
 	     if (p == pmax)
 	       {
 		  num = (int) (Output_Bufferp_max - Output_Bufferp);
@@ -660,7 +656,7 @@ static int jed_write(int fd, char *b, unsigned int n) /*{{{*/
 	Output_Bufferp = p;
 	return nsave;
      }
-#endif		  
+#endif
    /* amount of space left in buffer */
    /* copy whats in b to the output buffer */
    while (n > 0)
@@ -677,13 +673,13 @@ static int jed_write(int fd, char *b, unsigned int n) /*{{{*/
 		  Output_Bufferp = Output_Buffer;
 		  continue;
 	       }
-#endif		  
+#endif
 	     max = num;
 	     SLMEMCPY(Output_Bufferp, b, max);
 	     Output_Bufferp += max;
 	  }
 
-	else if (cr_flag && 
+	else if (cr_flag &&
 		 (*(b + (n - 1)) == '\n') && (VFile_Mode == VFILE_TEXT))
 	  {
 	     max = n - 1;
@@ -701,7 +697,7 @@ static int jed_write(int fd, char *b, unsigned int n) /*{{{*/
 	     SLMEMCPY(Output_Bufferp, b, max);
 	     Output_Bufferp += max;
 	  }
-	
+
 	if (Output_Bufferp == Output_Bufferp_max)
 	  {
 	     Output_Bufferp = Output_Buffer;
@@ -731,7 +727,7 @@ int write_region_to_fp (int fp) /*{{{*/
 #ifndef VMS
    char nl = '\n';
 #endif
-   
+
    Output_Bufferp = Output_Buffer;
    Output_Bufferp_max = Output_Buffer + BUFSIZE;
    Output_Buffer_Size = BUFSIZE;
@@ -742,8 +738,8 @@ int write_region_to_fp (int fp) /*{{{*/
 	Output_Buffer_Size = vms_max_rec_size;
      }
    else VMS_write_rfm_fixed = 0;
-#endif   
-   
+#endif
+
    if (!check_region(&Number_One)) return(-1);
    last = CLine; last_pnt = Point;
 
@@ -759,7 +755,7 @@ int write_region_to_fp (int fp) /*{{{*/
 	  {
 	     msg_error(err);
 	  }
-	
+
 	/* This goes here inside the loop because it is possible for external
 	   events to set error_buffer */
 	pnt = 0;
@@ -783,19 +779,17 @@ int write_region_to_fp (int fp) /*{{{*/
 	eob(); if (Point) jed_write(fp, &nl, 1);
      }
 #endif
-   
 
    /* Now flush output buffer if necessary */
-   
+
    len = (int) (Output_Bufferp - Output_Buffer);
    if (!SLang_get_error () && len) if (len != jed_write1(fp, Output_Buffer, len))
      {
 	msg_error(err);
      }
-   
+
    Output_Bufferp = Output_Buffer;
 
-   
    pop_spot();
    VFile_Mode = VFILE_TEXT;
    if (SLang_get_error ()) return(-1);
@@ -833,7 +827,7 @@ static int jed_close (int fp, int use_fsync) /*{{{*/
      {
 #ifdef EINTR
 #ifndef IBMPC_SYSTEM
-	if (errno == EINTR) 
+	if (errno == EINTR)
 	  {
 	     if (-1 == jed_handle_interrupt ())
 	       {
@@ -862,9 +856,9 @@ static int write_region_internal (char *file, int omode, int use_fsync) /*{{{*/
    if (-1 == jed_lock_file (file))
      return -1;
 #endif
-   if (!check_region(&Number_Zero)) 
+   if (!check_region(&Number_Zero))
      return -1;
-   
+
    num_lines = jed_count_lines_in_region ();
 
    switch (omode)
@@ -874,7 +868,7 @@ static int write_region_internal (char *file, int omode, int use_fsync) /*{{{*/
 	n = jed_va_run_hooks ("_jed_write_region_hooks",
 			      JED_HOOKS_RUN_UNTIL_NON_0, 1, file);
 	break;
-	
+
       default:
 	n = jed_va_run_hooks ("_jed_append_region_hooks",
 			      JED_HOOKS_RUN_UNTIL_NON_0, 1, file);
@@ -899,7 +893,7 @@ static int write_region_internal (char *file, int omode, int use_fsync) /*{{{*/
 	else if (-1 == jed_close (fd, use_fsync))
 	  n = -1;
      }
-   
+
 #if JED_HAS_EMACS_LOCKING
    if (n != -1) jed_unlock_file (file);
 #endif
@@ -913,26 +907,25 @@ int write_region (char *file)
    return write_region_internal (file, _JED_OPEN_WRITE, 1);
 }
 
-
 /* returns -1 on failure and number of lines on success */
 static int write_file_internal (char *file, int omode, int use_fsync) /*{{{*/
 {
    Mark *m;
    int n;
    int fnl;
-      
+
 #ifdef VMS
    register Line *l;
    register int len = 0, max = 0;
 #endif
-   
+
    push_spot();
-   
+
 #if JED_HAS_SAVE_NARROW
    jed_push_narrow ();
    jed_widen_whole_buffer (CBuf);
 #endif
-   
+
 #ifdef VMS
    l = CBuf->beg;
    while (l != NULL)
@@ -943,12 +936,12 @@ static int write_file_internal (char *file, int omode, int use_fsync) /*{{{*/
      }
    vms_max_rec_size = max;
 #endif
-   
+
    bob();
    jed_push_mark();  m = CBuf->marks;
    eob();
    fnl = Require_Final_Newline;
-   if (CBuf->flags & BINARY_FILE) 
+   if (CBuf->flags & BINARY_FILE)
      {
 	VFile_Mode = VFILE_BINARY;
 	Require_Final_Newline = 0;
@@ -958,17 +951,16 @@ static int write_file_internal (char *file, int omode, int use_fsync) /*{{{*/
 #endif
      }
 
-
    n = write_region_internal (file, omode, use_fsync);
 
    Require_Final_Newline = fnl;
    VFile_Mode = VFILE_TEXT;
    if (m == CBuf->marks) jed_pop_mark(0);
-   
+
 #if JED_HAS_SAVE_NARROW
    jed_pop_narrow ();
-#endif   
-   
+#endif
+
    pop_spot();
    return(n);
 }
@@ -978,7 +970,7 @@ static int write_file_internal (char *file, int omode, int use_fsync) /*{{{*/
 int append_to_file(char *file) /*{{{*/
 {
    int status;
-   
+
    status = write_region_internal (file, _JED_OPEN_APPEND, 1);
    check_buffers();
    return status;
@@ -993,8 +985,7 @@ static int make_autosave_filename(char *save, unsigned int buflen, char *dir, ch
    char *s;
 
    if (*file == 0) return(0);
-      
-   
+
    if (1 == SLang_run_hooks ("make_autosave_filename", 2, dir, file))
      {
 	if (SLang_pop_slstring(&s)) return(0);
@@ -1036,11 +1027,11 @@ int jed_copy_file (char *from, char *to) /*{{{*/
 
    if (1 != sys_chmod (from, 0, &mode, &uid, &gid))
      return -1;		       /* from does not exist as regular file */
-   
+
    /* Need file modification times so that they can be preserved. */
    if (-1 == stat (from, &st))
      return -1;
-   
+
    fp0 = fopen (from, "rb");
    if (fp0 == NULL) return -1;
 
@@ -1063,12 +1054,12 @@ int jed_copy_file (char *from, char *to) /*{{{*/
    fp1 = fopen (to, "wb");
 #endif
 
-   if (fp1 == NULL) 
+   if (fp1 == NULL)
      {
 	(void) fclose (fp0);
 	return -1;
      }
-   
+
    (void) chmod (to, 0600);
 
    ret = 0;
@@ -1085,14 +1076,14 @@ int jed_copy_file (char *from, char *to) /*{{{*/
 	  }
      }
    while (readlen == sizeof (buf));
-   
+
    fclose (fp0);
 
    if (EOF == fclose (fp1))
      {
 	ret = -1;
      }
-   
+
    (void) sys_chmod (to, 1, &mode, &uid, &gid);
 
 #ifdef HAVE_UTIME
@@ -1107,7 +1098,7 @@ int jed_copy_file (char *from, char *to) /*{{{*/
 /*}}}*/
 #endif				       /* NOT VMS */
 
-#ifndef VMS   
+#ifndef VMS
 static int perform_backup (char *from, char *to, int try_force_rename) /*{{{*/
 {
    int ret = -1;
@@ -1115,7 +1106,7 @@ static int perform_backup (char *from, char *to, int try_force_rename) /*{{{*/
 #ifdef REAL_UNIX_SYSTEM
    /* If the file has hardlinks, then backup by copying. */
    struct stat st;
-   
+
    if (0 == stat (from, &st))
      {
 	if (st.st_nlink > 1)
@@ -1146,7 +1137,7 @@ static int perform_backup (char *from, char *to, int try_force_rename) /*{{{*/
 unsigned long sys_file_mod_time(char *file) /*{{{*/
 {
    struct stat buf;
-   
+
    if (stat(file, &buf) < 0) return 0;
 
    return (unsigned long) buf.st_mtime;
@@ -1193,7 +1184,7 @@ int write_file_with_backup(char *dirfile) /*{{{*/
      (void) make_autosave_filename(autosave_file, sizeof (autosave_file), dir, file);
 
    do_mode = sys_chmod(dirfile, 0, &mode, &uid, &gid);
-   if ((do_mode != 0) && (do_mode != 1)) 
+   if ((do_mode != 0) && (do_mode != 1))
      {
 	SLfree (dir);
 	SLfree (file);
@@ -1201,17 +1192,17 @@ int write_file_with_backup(char *dirfile) /*{{{*/
 	return -1;
      }
 
-   /* IF do_mode == 0, then the file does not exist.  This means that 
+   /* IF do_mode == 0, then the file does not exist.  This means that
     * there is nothing to backup.  If do_mode == 1, the file is a regular
     * file which we do want to backup.
     */
 
 #ifndef VMS
-   
+
 # ifdef __os2__
    EAs = QueryEAs (dirfile);
 # endif
-   
+
    backup_went_ok = 0;
    if (do_mode
        && ((CBuf->flags & NO_BACKUP_FLAG) == 0)
@@ -1226,8 +1217,8 @@ int write_file_with_backup(char *dirfile) /*{{{*/
 #endif				       /* NOT VMS */
 
    n = write_file_internal (dirfile, _JED_OPEN_WRITE, 1);
-   /* This is for NFS time problems.  Even if the write failed, modify the 
-    * buffer's ctime because otherwise what is on the disk (a partial file) 
+   /* This is for NFS time problems.  Even if the write failed, modify the
+    * buffer's ctime because otherwise what is on the disk (a partial file)
     * will appear newer than the buffer.
     */
    CBuf->c_time = sys_file_mod_time(dirfile);
@@ -1248,11 +1239,11 @@ int write_file_with_backup(char *dirfile) /*{{{*/
 	     WriteEAs (dirfile, EAs);
 #endif
 	  }
-	
+
 	/* Since we wrote the buffer to the file, it is not modified. */
 	if (CBuf == find_file_buffer (dirfile))
 	  CBuf->flags &= ~FILE_MODIFIED;
-	
+
 	mark_buffer_modified (CBuf, 0, 1);
      }
 #ifndef VMS
@@ -1299,15 +1290,15 @@ void auto_save_buffer(Buffer *b) /*{{{*/
 
    old_buf = CBuf;
    switch_to_buffer(b);
-   
-   if (b->flags & BINARY_FILE)  VFile_Mode = VFILE_BINARY; 
+
+   if (b->flags & BINARY_FILE)  VFile_Mode = VFILE_BINARY;
    else VFile_Mode = VFILE_TEXT;
 
    if (b->flags & AUTO_SAVE_BUFFER)
      {
 	if (make_autosave_filename(tmp, sizeof (tmp), dir, file))
 	  {
-	     flush_message("autosaving..."); 
+	     flush_message("autosaving...");
 	     (void) sys_delete_file(tmp);
 	     (void) write_file_internal (tmp, _JED_OPEN_CREATE_EXCL, 0);
 	     message("autosaving...done");
@@ -1317,7 +1308,7 @@ void auto_save_buffer(Buffer *b) /*{{{*/
 
    SLfree (file);
    SLfree (dir);
-   
+
    switch_to_buffer(old_buf);
    VFile_Mode = vfm;
 }
@@ -1352,7 +1343,7 @@ static int is_link(char *f, char *f1) /*{{{*/
    unsigned int l;
    int is_dir = 0;
    char work[JED_MAX_PATH_LEN];
-   
+
    l = strlen(f);
    if (l == 0) return 0;
    l--;
@@ -1363,13 +1354,12 @@ static int is_link(char *f, char *f1) /*{{{*/
 	f = work;
 	f[l] = 0;
      }
-   
 
-   if (( lstat(f, &s) == -1 ) 
+   if (( lstat(f, &s) == -1 )
        /* || ((s.st_mode & S_IFMT)  S_IFLNK)) */
        || (((s.st_mode & S_IFMT) & S_IFLNK) == 0))
      return(0);
-   
+
    l = JED_MAX_PATH_LEN - 1;
    if (is_dir)
      {
@@ -1377,22 +1367,22 @@ static int is_link(char *f, char *f1) /*{{{*/
 	*f1++ = '.'; *f1++ = '.'; *f1++ = '/';
 	l -= 4;			       /* 1 for final slash */
      }
-	     
+
    if (-1 == (int) (l = readlink(f, f1, l))) return 0;
    if (is_dir) f1[l++] = '/';
    f1[l] = 0;
-   
-   /* If the link is an absolute pathname (starts with /) then the 
+
+   /* If the link is an absolute pathname (starts with /) then the
     * ../ prefix should not go there.
     */
    if (is_dir && (*f1 == '/'))
      {
 	char ch;
-	
+
 	f = f1 - 3;
 	while (0 != (ch = *f1++))
 	  *f++ = ch;
-	
+
 	*f = 0;
      }
 
@@ -1404,7 +1394,6 @@ static int is_link(char *f, char *f1) /*{{{*/
 /*}}}*/
 #endif
 
-
 #ifdef REAL_UNIX_SYSTEM
 static char *expand_link_2(char *f) /*{{{*/
 {
@@ -1415,7 +1404,7 @@ static char *expand_link_2(char *f) /*{{{*/
    while ((d != NULL) && is_link(d, lnk))
      {
 	char *w, *w1, ch;
-	
+
 	if (*lnk == '/')	       /* absolute */
 	  safe_strcpy (work, lnk, sizeof (work));
 	else
@@ -1435,7 +1424,7 @@ static char *expand_link_2(char *f) /*{{{*/
 	     if (ch == '/') while (*w1 == '/') w1++;
 	  }
 	*w = 0;
-	
+
 	SLfree (d);
 	max_num--;
 	if (max_num == 0)
@@ -1445,7 +1434,7 @@ static char *expand_link_2(char *f) /*{{{*/
 	  }
 	d = jed_standardize_filename(work);
      }
-   
+
    return (d);
 }
 /*}}}*/
@@ -1455,7 +1444,7 @@ static char *expand_link_2(char *f) /*{{{*/
 static char *expand_link_1(char *f) /*{{{*/
 {
    char *d = SLmake_string (f);
-   
+
    if (d == NULL)
      return d;
 
@@ -1464,16 +1453,16 @@ static char *expand_link_1(char *f) /*{{{*/
    while (1)
      {
 	char *new_d, *d1;
-	
+
 	if (*f == '/')
 	  f++;
 
 	while (*f && (*f != '/'))
 	  f++;
-	
+
 	if (*f == 0)
 	  break;
-	
+
 	*f++ = 0;
 
 	new_d = expand_link_2 (d);
@@ -1491,7 +1480,7 @@ static char *expand_link_1(char *f) /*{{{*/
 	  return NULL;
 	d = d1;
      }
-   
+
    /* Now get filename component */
    f = expand_link_2 (d);
    SLfree (d);
@@ -1507,28 +1496,28 @@ char *jed_expand_link (char *f)
 #else
    char *f1, *f2;
    unsigned int len;
-   
+
    /* Look for, e.g., /usr/local//tmp/foo and extract /tmp/foo.
-    * Do this before attempting to expand a link since links could 
+    * Do this before attempting to expand a link since links could
     * contain such constructs where they have a different meaning.
-    * 
+    *
     * Do this only if // occurs because ../ constructs should be preserved
     * if a subdir is a link to another.  That is consider:
-    * 
+    *
     *    /path/a/b/../c.txt
-    * 
+    *
     * jed_standardize_filename will convert this to
-    *  
+    *
     *    /path/a/c.txt
-    * 
+    *
     * However, if b is a symlink to /tmp/a/b then we really want the file
     * /tmp/a/c.txt.
     */
-#if 1   
+#if 1
    len = strlen (f);
    if (NULL == (f = SLmake_nstring (f, len)))
      return NULL;
-   
+
    f2 = f + len;
    while (f2 > f)
      {
@@ -1578,7 +1567,6 @@ char *jed_expand_link (char *f)
 #endif
 }
 
-
 /*}}}*/
 
 void visit_file (char *dir, char *file) /*{{{*/
@@ -1590,12 +1578,12 @@ void visit_file (char *dir, char *file) /*{{{*/
    if (file == NULL)
      return;
 
-   ff = file; 
-   while (*ff) 
+   ff = file;
+   while (*ff)
      {
 	if (*ff == ';')
 	  {
-	     *ff = 0; 
+	     *ff = 0;
 	     break;
 	  }
 	ff++;
@@ -1622,7 +1610,7 @@ void visit_file (char *dir, char *file) /*{{{*/
 /*}}}*/
 
 char *jed_dir_file_merge(SLFUTURE_CONST char *dir, SLFUTURE_CONST char *file) /*{{{*/
-/* 
+/*
  * returns result of merging dir with file. If file is empty, dir is
  * considered to be whole file.
  */
@@ -1632,21 +1620,19 @@ char *jed_dir_file_merge(SLFUTURE_CONST char *dir, SLFUTURE_CONST char *file) /*
    if ((file == NULL) || (*file == 0))
      return jed_standardize_filename (dir);
 
-   
    dirfile = SLmalloc (strlen (dir) + strlen (file) + 2);
    if (dirfile == NULL)
      return NULL;
    strcpy (dirfile, dir);
    fixup_dir (dirfile);
    strcat (dirfile, file);
-	
+
    file = jed_standardize_filename (dirfile);
    SLfree (dirfile);
    return (char *) file;
 }
 
 /*}}}*/
-
 
 int file_status(SLFUTURE_CONST char *file) /*{{{*/
 /*
@@ -1671,19 +1657,19 @@ int file_status(SLFUTURE_CONST char *file) /*{{{*/
 
 /* Returns 0 if unchanged, 1 if changed, or -1 if it does not exist
  * and buffer is unmodified.
- * 
+ *
  * What does it mean for the file to be changed on the disk if the buffer
  * corresponds to a symlink?  That is, imagine editing foo.c which is a
  * symlink to bar.c.  If bar.c changes, then foo.c shold be flagged as
- * changed.  But, what if the link foo.c is changed such that it nolonger 
- * points to bar.c?  Now the buffer foo.c is nolonger connected with 
+ * changed.  But, what if the link foo.c is changed such that it nolonger
+ * points to bar.c?  Now the buffer foo.c is nolonger connected with
  * bar.c.
- * 
+ *
  * To handle both situations, do not use the dirfile field of the buffer
  * structure, since that corresponds to bar.c and not the link foo.c.
  * Since the file_changed_on_disk function uses stat and not lstat, if foo.c
  * is a link to bar.c, then bar.c will be checked.
- * 
+ *
  * If the file has changed, be sure to update the buffers dirfile field and
  * update the inode info.  If another buffer has the same inode info, then
  * the user has shot himself in the foot by making foo.c a hardlink.
@@ -1695,7 +1681,7 @@ int file_changed_on_disk (Buffer *buf, char *dirfile) /*{{{*/
    /* If we are saving this to a different file, then skip the test --
     * unless dirfile is a link.
     */
-   if ((buf->canonical_dirfile != NULL) 
+   if ((buf->canonical_dirfile != NULL)
 #if JED_FILE_PRESERVE_CASE
        && (0 != strcmp (buf->canonical_dirfile, dirfile))
 #else
@@ -1709,7 +1695,7 @@ int file_changed_on_disk (Buffer *buf, char *dirfile) /*{{{*/
 	if ((-1 == lstat(dirfile, &s))
 	    || (0 == ((s.st_mode & S_IFMT) & S_IFLNK)))
 	  return 0;
-#else	
+#else
 	return 0;
 #endif
      }
@@ -1753,7 +1739,7 @@ int file_changed_on_disk (Buffer *buf, char *dirfile) /*{{{*/
 	* then c_time will be 0.  But if t>0, then this would indicate that an
 	* external process created/modified the file.
 	*/
-	
+
 	if (buf->c_time == 0)	       /* new buffer, writing to existing file */
 	  return 0;
 #endif
@@ -1767,19 +1753,19 @@ int file_changed_on_disk (Buffer *buf, char *dirfile) /*{{{*/
 int file_time_cmp(char *file1, char *file2) /*{{{*/
 {
    unsigned long t1, t2;
-   
+
    t1 = sys_file_mod_time(file1);
    t2 = sys_file_mod_time(file2);
-    /*These times are modification  times from 1970.  Hence, the bigger 
-     * number represents the more recent change.  Let '>' denote 
+    /*These times are modification  times from 1970.  Hence, the bigger
+     * number represents the more recent change.  Let '>' denote
      * 'more recent than'.  This function returns:
      *	   1:  file1 > file2
      *	   0:  file 1 == file2
-     *	   -1: otherwise. 
+     *	   -1: otherwise.
      *	So:
      */
    if (t1 == t2) return(0);
-   if (t1 > t2) return(1); 
+   if (t1 > t2) return(1);
    return(-1);
 }
 
@@ -1839,7 +1825,7 @@ int read_file_pointer(int fp) /*{{{*/
    VFILE *vp;
 
    if (SLang_get_error () || (vp = vstream(fp, MAX_LINE_LEN, VFile_Mode)) == NULL) return(-1);
-   
+
    if (NULL != (vbuf = (unsigned char *) vgets(vp, &num)))
      {
 	n++;
@@ -1847,10 +1833,10 @@ int read_file_pointer(int fp) /*{{{*/
 	if (CLine->space < num)
 #endif
 	  remake_line(CLine->len + num + 1);
-	
+
 	SLMEMCPY((char *) CLine->data, (char *) vbuf, (int) num);
 	CLine->len = num;
-   
+
 	while(NULL != (vbuf = (unsigned char *) vgets(vp, &num)))
 	  {
 	     n++;
@@ -1862,7 +1848,7 @@ int read_file_pointer(int fp) /*{{{*/
 	if (vp->cr_flag) CBuf->flags |= ADD_CR_ON_WRITE_FLAG;
 	else CBuf->flags &= ~ADD_CR_ON_WRITE_FLAG;
      }
-   
+
    if (vp->buf != NULL) SLfree(vp->buf);
    SLfree ((char *)vp);
    return n;
@@ -1875,12 +1861,12 @@ int read_file_pointer(int fp) /*{{{*/
 int jed_get_inode_info (char *dirfile, int *device, int *inode)
 {
    struct stat st;
-   
+
    *inode = *device = -1;
    if ((dirfile == NULL)
        || (-1 == stat (dirfile, &st)))
      return -1;
-   
+
    *inode = st.st_ino;
    *device = st.st_dev;
 
@@ -1895,7 +1881,7 @@ void jed_set_umask (int mask)
    static int default_umask;
 #endif
 
-   if (mask == 0) 
+   if (mask == 0)
      {
 #ifdef REAL_UNIX_SYSTEM
 	if (default_umask != 0)
@@ -1906,7 +1892,7 @@ void jed_set_umask (int mask)
      {
 #ifdef REAL_UNIX_SYSTEM
 	int u;
-	
+
 	u = umask (mask & 07777);
 	if (default_umask == 0) default_umask = u;
 #endif
@@ -1925,7 +1911,7 @@ int jed_dirfile_to_dir_file (char *dirfile, char **dirp, char **filep)
    len = (unsigned int) (file - dirfile);
    if (NULL == (dir = SLmake_nstring (dirfile, len)))
      return -1;
-   
+
    if (filep != NULL)
      {
 	if (NULL == (file = SLmake_string (file)))
@@ -1939,7 +1925,6 @@ int jed_dirfile_to_dir_file (char *dirfile, char **dirp, char **filep)
    *dirp = dir;
    return 0;
 }
-
 
 char *jed_get_canonical_pathname (char *file)
 {

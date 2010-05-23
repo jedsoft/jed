@@ -1,5 +1,5 @@
 /*-------------------------------*- C -*--------------------------------*/
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -21,16 +21,16 @@
  * 1) Write a lock file into the mail spool directory
  *	file = "/usr/mail/spool/username"
  *	lock = "/usr/mail/spool/username.lock"
- * 
+ *
  *    * Requires sgid (possible security hole) or a world-writeable
  *       spool directory (minor security hole - but not serious)
  *
  * 2) use fcntl () call.
- *    
+ *
  *    * Should always work provided the fcntl call supports file locking.
  *      This code was inspired by the Pine mailer implementation of flock.
- * 
- * Depending on your system, you may need to define or comment out 
+ *
+ * Depending on your system, you may need to define or comment out
  * the following line:
 \*----------------------------------------------------------------------*/
 
@@ -76,7 +76,6 @@ static void usage (void)
    exit (-1);
 }
 
-
 #ifdef USE_LOCK_FILE
 static char Lock_File [JED_MAX_PATH_LEN];
 #endif
@@ -100,7 +99,7 @@ static int my_close (int fd)
    while (-1 == close(fd))
      {
 #ifdef EINTR
-	if (errno == EINTR) 
+	if (errno == EINTR)
 	  {
 	     errno = 0;
 	     sleep (1);
@@ -109,9 +108,8 @@ static int my_close (int fd)
 #endif
 	return -1;
      }
-   return 0;   
+   return 0;
 }
-
 
 #ifdef USE_LOCK_FILE
 static int lock_mail_file (char *file, int attempts)
@@ -139,7 +137,7 @@ static int lock_mail_file (char *file, int attempts)
 	     fprintf (stderr, "Attempt %d: can\'t lock <%s>",
 		      attempts, Lock_File);
 	  }
-	else if (time((time_t *) NULL) - s.st_ctime > 60) 
+	else if (time((time_t *) NULL) - s.st_ctime > 60)
 	  {
 	     unlock_mail_file ();
 	  }
@@ -154,16 +152,16 @@ static int lock_mail_file (char *file, int attempts)
 static void our_flock (int fd)
 {
    struct flock f;
-   
+
    f.l_type = F_WRLCK;
-   
+
    f.l_pid = 0;			       /* not used for setting locks*/
-   
+
    /* set up rest of structure to lock whole file */
-   
+
    f.l_whence = 0;		       /* from beginning of file */
    f.l_start = f.l_len = 0;	       /* entire file */
-   
+
    /* we are going to block */
    if (fcntl (fd, F_SETLKW, (int) &f) == -1)
      {
@@ -178,14 +176,14 @@ static void mv_mail (char *from, char *to)
    int fdfrom, fdto;
    int n;
    int flags;
-   
+
 #ifdef USE_LOCK_FILE
    flags = O_RDONLY;
 #else
    flags = O_RDWR;
 #endif
 
-   if ((fdfrom = open (from, flags, 0666)) < 0) 
+   if ((fdfrom = open (from, flags, 0666)) < 0)
      exit_error ("Unable to open input file.", 1);
 
 #ifndef USE_LOCK_FILE
@@ -205,18 +203,17 @@ static void mv_mail (char *from, char *to)
 
    if (-1 == my_close (fdto))
      exit_error ("File system full.  write failed.", 1);
-   
+
    my_close (fdfrom);
 #ifndef TEST_DONT_UNLINK
    if ( unlink (from) )
-     {	
+     {
 	if ((fdfrom = open (from, O_WRONLY | O_CREAT | O_TRUNC, 0600)) >= 0)
 	  close (fdfrom);
      }
 #endif
-   unlock_mail_file ();   
+   unlock_mail_file ();
 }
-
 
 int main (int argc, char **argv)
 {
@@ -228,7 +225,7 @@ int main (int argc, char **argv)
 #ifdef USE_LOCK_FILE
    if (lock_mail_file (in, 60))
      exit_error ("Unable to lock file.", 0);
-#endif   
+#endif
    mv_mail (in, out);
    return (0);
 }

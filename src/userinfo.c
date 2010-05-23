@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1999, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1999-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -84,15 +84,14 @@ static int set_realname (char *name)
    return set_user_info (&User_Info.realname, name);
 }
 
-
 static int is_fqdn (char *h) /*{{{*/
 {
    char *p;
-   
+
    p = strchr (h, '.');
    if ((p == NULL) || (p == h))
      return 0;
-   
+
    if ((unsigned int)((p - h) + 1) == strlen (h))
      return 0;
 
@@ -133,27 +132,27 @@ static int get_domainname (char *dom, unsigned int domlen)
 
 	b = buf;
 
-	if (*b == '#') 
+	if (*b == '#')
 	  continue;
-	
+
 	b = skip_whitespace_chars (b);
 
 	if (0 != strncmp ("domain", b, 6))
 	  continue;
-	
+
 	b += 6;
 	if ((*b != ' ') && (*b != '\t'))
 	  continue;
 
 	b = skip_whitespace_chars (b);
-	
+
 	d = b;
 	b = skip_non_whitespace_chars (b);
-	
+
 	if (b == d) continue;
 
 	*b = 0;
-	
+
 	strncpy (dom, d, domlen);
 	dom[domlen-1] = 0;
 	fclose (fp);
@@ -179,7 +178,7 @@ static char *combine_host_and_domain (char *a, char *b)
 
    if (*b == '.') b++;
    sprintf (c, "%s.%s", a, b);
-   
+
    cc = SLang_create_slstring (c);
    SLfree (c);
    return cc;
@@ -203,7 +202,6 @@ static char *get_hostname (void)
 #endif
    char buf[256], *b;
    char domain_name[256];
-
 
 #ifdef JED_HOSTNAME
    if (is_fqdn (JED_HOSTNAME))
@@ -271,7 +269,6 @@ static char *get_hostname (void)
    return SLang_create_slstring (b);
 }
 
-
 static int get_hostname_info (void)
 {
    char *host;
@@ -287,7 +284,7 @@ static int get_hostname_info (void)
 	SLang_free_slstring (host);
 	return 0;
      }
-   
+
    if (SLang_get_error ())
      return -1;
 
@@ -302,7 +299,7 @@ static int get_username_info (void)
 #endif
 
 #if HAS_PASSWORD_CODE
-   /* I cannot use getlogin under Unix because some implementations 
+   /* I cannot use getlogin under Unix because some implementations
     * truncate the username to 8 characters.  Besides, I suspect that
     * it is equivalent to the following line.
     */
@@ -318,23 +315,23 @@ static int get_username_info (void)
        && ((name = getenv("USER")) == NULL)
        && ((name = getenv("LOGNAME")) == NULL))
      name = "unknown";
-   
+
    if (-1 == set_username (name))
      return -1;
-   
+
    name = getenv ("NAME");
 #if HAS_PASSWORD_CODE
-   if ((name == NULL) 
+   if ((name == NULL)
        && (pw != NULL)
        && (pw->pw_gecos != NULL))
      name = pw->pw_gecos;
 #endif
    if (name == NULL)
      name = "";
-   
+
    if (-1 == set_realname (name))
      return -1;
-   
+
    return 0;
 }
 
@@ -342,10 +339,10 @@ static int get_user_info (void)
 {
    if (-1 == get_hostname_info ())
      return -1;
-   
+
    if (-1 == get_username_info ())
      return -1;
-   
+
    return 0;
 }
 
@@ -372,7 +369,7 @@ static void get_passwd_cmd (char *name) /*{{{*/
      pwent = getpwuid (getuid ());
    else
      pwent = getpwnam (name);
-   
+
    if (pwent != NULL)
      {
 	password = pwent->pw_passwd;
@@ -385,7 +382,7 @@ static void get_passwd_cmd (char *name) /*{{{*/
    if (password == NULL) password = "";
    if (dir == NULL) dir = "";
    if (shell == NULL) shell = "";
-   
+
    (void) SLang_push_string (dir);
    (void) SLang_push_string (shell);
    (void) SLang_push_string (password);
@@ -440,6 +437,6 @@ int jed_init_userinfo (void)
 
    if (-1 == SLadd_intrin_fun_table (User_Intrinsics, NULL))
      return -1;
-   
+
    return 0;
 }

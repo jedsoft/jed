@@ -1,4 +1,5 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
+ *
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -38,7 +39,6 @@ static HMOU Mouse_Handle = -1;
 #define	MOUSE_BN2 (MOUSE_MOTION_WITH_BN2_DOWN | MOUSE_BN2_DOWN)
 #define	MOUSE_BN3 (MOUSE_MOTION_WITH_BN3_DOWN | MOUSE_BN3_DOWN)
 
-
 #define	MOUSE_NOMOVE  (MOUSE_BN1_DOWN | MOUSE_BN2_DOWN | MOUSE_BN3_DOWN)
 #define	MOUSE_DRAGGED (MOUSE_MOTION_WITH_BN1_DOWN | MOUSE_MOTION_WITH_BN2_DOWN | MOUSE_MOTION_WITH_BN3_DOWN)
 #define	MOUSE_MOVED   (MOUSE_MOTION | MOUSE_DRAGGED)
@@ -53,28 +53,27 @@ static int buttonDown [3] = {0, 0, 0};
 static int buttonMask [3];
 USHORT noButtons;
 
-
 static void os2_add_event (int x, int y, int type, int but)
 {
    char buf[4];
    int b, s, id;
    JMouse_Type jm;
-   
+
    Mouse_X = jm.x = x;
    Mouse_Y = jm.y = y;
 
    b = but & 0xF;
    s = but >> 4;
-   
+
    if (b == 1) jm.button = JMOUSE_BUTTON_1;	       /* left */
    else if (b == 2) jm.button = JMOUSE_BUTTON_3;    /* right */
    else jm.button = JMOUSE_BUTTON_2;		       /* middle */
-   
+
    if (s & 0x8) 		       /* alt key--- use as middle */
      {
 	jm.button = JMOUSE_BUTTON_2;
      }
-   
+
    if (s & 0x3)	jm.state = JMOUSE_SHIFT;
    else if (s & 0x4) jm.state = JMOUSE_CTRL;
    else jm.state = 0;
@@ -85,10 +84,9 @@ static void os2_add_event (int x, int y, int type, int but)
      return;
 
    buf[0] = 27; buf[1] = 0; buf[2] = (char) id;
-   
+
    ungetkey_string (buf, 3);
 }
-
 
 static void os2_mouse_handler (void *Args)
 {
@@ -103,7 +101,7 @@ static void os2_mouse_handler (void *Args)
    wait_flag = MOU_NOWAIT;
 
    DosSetPriority( PRTYS_THREAD, PRTYC_NOCHANGE, PRTYD_MINIMUM, 0 ) ;
-   
+
    while (Mouse_Handle) {
 
       Error = MouReadEventQue (&event_info, &wait_flag, Mouse_Handle);
@@ -120,7 +118,7 @@ static void os2_mouse_handler (void *Args)
 	   /* mouse moved so show it. */
 	   show_mouse (1);
 	}
-   
+
       for(i = 0; i < noButtons; i++) {
 	 if(MouseButtonPressed (event_info, buttonMask[i])) {
 	    if (!buttonDown [i]) {
@@ -140,7 +138,7 @@ static void os2_mouse_handler (void *Args)
 		    continue;
 		 }
 	    }
-	    
+
 	 } else {
 	    if (buttonDown [i]) {
 	       os2_add_event (x, y, JMOUSE_UP, i + 1);
@@ -154,15 +152,12 @@ static void os2_mouse_handler (void *Args)
    _endthread ();
 }
 
-
-
 static int os2_get_mouse_event (void)
 {
    return 0;
 }
 
 /* Mouse routines for OS/2 */
-
 
 static void show_mouse (int show)
 {
@@ -196,8 +191,6 @@ static void os2_close_mouse ()
 #endif
    Os2_Mouse_ThreadID = 0;
 }
-
-
 
 static void move_mouse (int x, int y)
 {
@@ -285,17 +278,17 @@ static int os2_open_mouse ()
 
    Mouse_X = Jed_Num_Screen_Cols / 2 + 1;
    Mouse_Y = Jed_Num_Screen_Rows / 2 + 1;
-   
+
    MouDrawPtr (Mouse_Handle);
    MouGetNumButtons (&noButtons, Mouse_Handle);
    if (noButtons == 3)
      buttonMask [2] = MOUSE_BN3;
-   
+
    buttonMask [0] = MOUSE_BN1;
    buttonMask [1] = MOUSE_BN2;
-   
+
    MouFlushQue(Mouse_Handle);		/* flush mouse queue		*/
-   
+
    move_mouse (Mouse_X, Mouse_Y);
    if (not_first_time == 0)
      {

@@ -37,14 +37,14 @@ define jed_easy_help(file)
    ifnot (strcmp(hlpbuf, whatbuf())) return;
    EZhelp_Last_Buffer = whatbuf();
    err = strcat("Help file not found: ", file);
-   ERROR_BLOCK 
+   ERROR_BLOCK
      {
 	ezhelp_quit();
      }
-   
+
    sw2buf(hlpbuf);
    (hlpfile, dir, hlpbuf, flags) = getbuf_info();
-   
+
    if (strcmp(hlpfile, file))
      {
 	hlpfile = expand_jedlib_file(file);
@@ -59,5 +59,4 @@ define jed_easy_help(file)
    use_keymap(hlpbuf);
    set_status_line(" u:Page Up, d:Page Down, s:Search, q:Quit Help  (%p)", 0);
 }
-
 

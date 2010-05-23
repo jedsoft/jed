@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -30,14 +30,14 @@ typedef struct Syntax_Table_Type
 #define PREPROCESS_COLOR_WHOLE_LINE	0x20
 #define PREPROCESS_IGNORE_WHITESPACE	0x40
 #define SINGLE_LINE_STRINGS		0x80
-   /* Comments.  Each mode can have at most 2 comment styles: one for 
+   /* Comments.  Each mode can have at most 2 comment styles: one for
     * multiline comments, and one for single line comments.
-    * A single line comments ends at the end of the line.  Since some 
-    * comments must be followed by whitespace or a word delimeter, an 
+    * A single line comments ends at the end of the line.  Since some
+    * comments must be followed by whitespace or a word delimeter, an
     * flag will be set for them.  For example, in BASIC, 'rem' denotes
     * a comment but 'remote' does not.  Sigh.
-    * 
-    * Languages such as m4 are especially problematic.  m4 uses 'dnl' to 
+    *
+    * Languages such as m4 are especially problematic.  m4 uses 'dnl' to
     * start an end-of-line comment.  However, it must occur as an isolated
     * word such that
     *    dnlsilly is not a comment
@@ -45,7 +45,7 @@ typedef struct Syntax_Table_Type
     */
    char *comment_start;
    unsigned int comment_start_len;
-   
+
    unsigned int comment_stop_len;
    char *comment_stop;
 
@@ -59,8 +59,8 @@ typedef struct Syntax_Table_Type
    unsigned short char_syntax[256];     /* syntax type for characters */
    unsigned char matching_delim[256];  /* matching pairs */
 #define MAX_KEYWORD_LEN 48
-#define MAX_KEYWORD_TABLES 3	       /* must be less than 10 for a 
-					* 1-1 correspondence with keyword colors 
+#define MAX_KEYWORD_TABLES 3	       /* must be less than 10 for a
+					* 1-1 correspondence with keyword colors
 					*/
    char *keywords[MAX_KEYWORD_TABLES][MAX_KEYWORD_LEN];
    struct Syntax_Table_Type *next;     /* pointer to next table */
@@ -72,7 +72,6 @@ typedef struct Syntax_Table_Type
    unsigned char fortran_comment_chars[256];
 }
 Syntax_Table_Type;
-
 
 #define WORD_SYNTAX		0x001
 #define NUMBER_SYNTAX		0x002

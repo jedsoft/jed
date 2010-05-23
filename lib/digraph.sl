@@ -144,7 +144,7 @@ define digraph_cmd ()
 #ifndef IBMPC_SYSTEM
    accent = convert_string (accent);
 #endif
-   i = is_substr (letters, 
+   i = is_substr (letters,
 		  char (get_mini_response (sprintf ("Enter [%s] to get [%s]",
 						    letters, accent))));
 

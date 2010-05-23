@@ -19,7 +19,6 @@ define brief_home ()
    bol ();
 }
 
-
 define brief_end ()
 {
    if (eolp ())
@@ -132,8 +131,8 @@ define brief_delete ()
         if (Brief_Use_Rectangle)
           {
 	     kill_rect ();
-          } 
-	else 
+          }
+	else
 	  {
 	     del_region ();
           }
@@ -141,7 +140,6 @@ define brief_delete ()
      }
    del ();
 }
-
 
 define brief_set_mark_cmd ()
 {
@@ -160,8 +158,8 @@ unsetkey ("^K");
 unsetkey ("^X");
 unsetkey ("^W");
 unsetkey ("^F");
-	
-%setkey ("bdelete_word", "^@");       %  Ctrl Bksp  
+
+%setkey ("bdelete_word", "^@");       %  Ctrl Bksp
 setkey ("brief_home", "\xE0G");	       %  Home
 setkey ("brief_home", "Ow");	       %  Home
 setkey ("brief_end", "\xE0O");	       %  End
@@ -171,33 +169,33 @@ setkey ("brief_line_to_mow", "^C");
 setkey ("brief_line_to_eow", "^B");
 setkey ("brief_delete","\xE0S");       %  Delete
 setkey ("brief_delete","\xOn");        %  Delete
-setkey ("undo", "\eOR");	       %  Keypad Star  
-setkey ("bskip_word", "\xE0s");	       %  Ctrl Left  
-setkey ("bskip_word", "^@s");	       %  Ctrl Left  
-setkey ("skip_word", "\xE0t");	       %  Ctrl Right  
-setkey ("skip_word", "^@t");	       %  Ctrl Right  
-setkey ("bob", "\xE0\d132");	       %  Ctrl Pgup  
-setkey ("bob", "^@\d132");	       %  Ctrl Pgup  
-setkey ("eob", "\xE0v");	       %  Ctrl Pgdn  
-setkey ("eob", "^@v");	       %  Ctrl Pgdn  
-setkey ("goto_top_of_window", "\xE0w");%  Ctrl Home  
-setkey ("goto_top_of_window", "^@w");%  Ctrl Home  
-setkey ("goto_bottom_of_window", "\xE0u");%  Ctrl End  
-setkey ("goto_bottom_of_window", "^@u");%  Ctrl End  
-setkey ("brief_yank", "\xE0R");	       %  Insert  
-setkey ("brief_yank", "Op");	       %  Insert  
-setkey ("brief_copy_region", "\eOm");	       % Keypad Plus    
-setkey ("brief_kill_region", "\eOS");	       % Keypad Minus    
-setkey ("find_file", "^@");	       %  Alt E    
-setkey ("help_prefix", "^@#");	       %  Alt H  
-setkey ("write_buffer", "^@");       %  Alt O  
-setkey ("save_buffer", "^@");	       %  Alt W  
-setkey ("exit_jed", "^@-");	       %  Alt X  
-setkey ("replace_cmd", "^@@");	       %  Key F6  
-setkey ("brief_search_cmd", "^@?");     %  Key F5  
-setkey ("brief_reverse_search", "^@l");    %  Alt F5  
-setkey ("brief_search_cmd", "^@X"); %  Shift F5  
-setkey ("brief_toggle_case_search", "^@b");%  Ctrl F5  
+setkey ("undo", "\eOR");	       %  Keypad Star
+setkey ("bskip_word", "\xE0s");	       %  Ctrl Left
+setkey ("bskip_word", "^@s");	       %  Ctrl Left
+setkey ("skip_word", "\xE0t");	       %  Ctrl Right
+setkey ("skip_word", "^@t");	       %  Ctrl Right
+setkey ("bob", "\xE0\d132");	       %  Ctrl Pgup
+setkey ("bob", "^@\d132");	       %  Ctrl Pgup
+setkey ("eob", "\xE0v");	       %  Ctrl Pgdn
+setkey ("eob", "^@v");	       %  Ctrl Pgdn
+setkey ("goto_top_of_window", "\xE0w");%  Ctrl Home
+setkey ("goto_top_of_window", "^@w");%  Ctrl Home
+setkey ("goto_bottom_of_window", "\xE0u");%  Ctrl End
+setkey ("goto_bottom_of_window", "^@u");%  Ctrl End
+setkey ("brief_yank", "\xE0R");	       %  Insert
+setkey ("brief_yank", "Op");	       %  Insert
+setkey ("brief_copy_region", "\eOm");	       % Keypad Plus
+setkey ("brief_kill_region", "\eOS");	       % Keypad Minus
+setkey ("find_file", "^@");	       %  Alt E
+setkey ("help_prefix", "^@#");	       %  Alt H
+setkey ("write_buffer", "^@");       %  Alt O
+setkey ("save_buffer", "^@");	       %  Alt W
+setkey ("exit_jed", "^@-");	       %  Alt X
+setkey ("replace_cmd", "^@@");	       %  Key F6
+setkey ("brief_search_cmd", "^@?");     %  Key F5
+setkey ("brief_reverse_search", "^@l");    %  Alt F5
+setkey ("brief_search_cmd", "^@X"); %  Shift F5
+setkey ("brief_toggle_case_search", "^@b");%  Ctrl F5
 setkey ("brief_toggle_regexp", "^@c"); %  Ctrl F6
 
 setkey ("page_down", "^D");
@@ -205,35 +203,34 @@ setkey ("page_up", "^E");
 setkey ("brief_delete_to_bol", "^K");
 setkey ("isearch_forward", "^S");
 
-setkey ("brief_set_mark_cmd", "^@");       %  Alt A  
-setkey ("list_buffers", "^@0");	       %  Alt B  
-setkey ("brief_set_column_mark", "^@.");%  Alt C    
-setkey ("delete_line", "^@ ");	       %  Alt D  
-setkey ("goto_line_cmd", "^@\"");      %  Alt G  
-setkey ("toggle_overwrite", "^@");   %  Alt I  
-setkey ("bkmrk_goto_mark", "^@$");     %  Alt J  
-setkey ("kill_line", "^@%");	       %  Alt K  
-setkey ("set_mark_cmd", "^@2");	       %  Alt M  
-setkey ("switch_to_buffer", "^@1");    %  Alt N  
-setkey ("insert_file", "^@");	       %  Alt R  
-setkey ("brief_search_cmd", "^@");  %  Alt S  
-setkey ("replace_cmd", "^@");	       %  Alt T  
+setkey ("brief_set_mark_cmd", "^@");       %  Alt A
+setkey ("list_buffers", "^@0");	       %  Alt B
+setkey ("brief_set_column_mark", "^@.");%  Alt C
+setkey ("delete_line", "^@ ");	       %  Alt D
+setkey ("goto_line_cmd", "^@\"");      %  Alt G
+setkey ("toggle_overwrite", "^@");   %  Alt I
+setkey ("bkmrk_goto_mark", "^@$");     %  Alt J
+setkey ("kill_line", "^@%");	       %  Alt K
+setkey ("set_mark_cmd", "^@2");	       %  Alt M
+setkey ("switch_to_buffer", "^@1");    %  Alt N
+setkey ("insert_file", "^@");	       %  Alt R
+setkey ("brief_search_cmd", "^@");  %  Alt S
+setkey ("replace_cmd", "^@");	       %  Alt T
 setkey ("undo", "^@");	       %  Alt U
 
-setkey ("brief_line_mark", "^@&");    %  Alt L  
+setkey ("brief_line_mark", "^@&");    %  Alt L
 
-
-setkey (".0 brief_set_bkmrk_cmd", "^@\d129");%  Alt 0  
-setkey (".1 brief_set_bkmrk_cmd", "^@x");%  Alt 1  
-setkey (".2 brief_set_bkmrk_cmd", "^@y");%  Alt 2  
-setkey (".3 brief_set_bkmrk_cmd", "^@z");%  Alt 3  
-setkey (".4 brief_set_bkmrk_cmd", "^@{");%  Alt 4  
-setkey (".5 brief_set_bkmrk_cmd", "^@|");%  Alt 5  
-setkey (".6 brief_set_bkmrk_cmd", "^@}");%  Alt 6  
-setkey (".7 brief_set_bkmrk_cmd", "^@~");%  Alt 7  
-setkey (".8 brief_set_bkmrk_cmd", "^@");%  Alt 8  
-setkey (".9 brief_set_bkmrk_cmd", "^@\d128");%  Alt 9  
-setkey ("delete_word", "^@");	       %  Alt Bksp  
+setkey (".0 brief_set_bkmrk_cmd", "^@\d129");%  Alt 0
+setkey (".1 brief_set_bkmrk_cmd", "^@x");%  Alt 1
+setkey (".2 brief_set_bkmrk_cmd", "^@y");%  Alt 2
+setkey (".3 brief_set_bkmrk_cmd", "^@z");%  Alt 3
+setkey (".4 brief_set_bkmrk_cmd", "^@{");%  Alt 4
+setkey (".5 brief_set_bkmrk_cmd", "^@|");%  Alt 5
+setkey (".6 brief_set_bkmrk_cmd", "^@}");%  Alt 6
+setkey (".7 brief_set_bkmrk_cmd", "^@~");%  Alt 7
+setkey (".8 brief_set_bkmrk_cmd", "^@");%  Alt 8
+setkey (".9 brief_set_bkmrk_cmd", "^@\d128");%  Alt 9
+setkey ("delete_word", "^@");	       %  Alt Bksp
 setkey ("goto_match", "^Q[");
 setkey ("goto_match", "^Q\e");
 setkey ("goto_match", "^Q]");

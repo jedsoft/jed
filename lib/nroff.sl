@@ -1,14 +1,14 @@
 % nroff.sl -*- SLang -*-
-% 
+%
 % Primitive nroff editing mode -- just enough to define paragraphs
 % to prevent <period>CMD from wrapping
-% 
+%
 
 define nroff_parsep ()
 {
    bol ();
    (looking_at_char('.') or looking_at_char('\\') or (skip_white(), eolp()));
-} 
+}
 
 $1 = "nroff";
 create_syntax_table ($1);
@@ -22,7 +22,6 @@ define_syntax (".a-zA-Z", 'w', $1);
 % A few standard keywords -- uppercase only, nothing fancy
 () = define_keywords ($1, ".B.I", 2);
 () = define_keywords ($1, ".BR.DT.IP.PP.RB.RI.RE.RS.SB.SH.TH.TP.fi.nf", 3);
-
 
 %!%+
 %\function{nroff_mode}

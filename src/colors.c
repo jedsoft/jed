@@ -1,4 +1,4 @@
-/* Copyright (c) 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 2002-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -21,7 +21,7 @@
 #include "display.h"
 #include "misc.h"
 
-typedef struct 
+typedef struct
 {
    char *name;			       /* slstring for new objects */
    int color;
@@ -49,7 +49,7 @@ static Color_Object_Map_Type Color_Name_Map [JMAX_COLORS] =
    {"dollar",		JDOLLAR_COLOR, NULL, NULL},
 #if JED_HAS_LINE_ATTRIBUTES
    {"...",		JDOTS_COLOR, NULL, NULL},
-#endif   
+#endif
 #if JED_HAS_MENUS
    {"menu_char",	JMENU_CHAR_COLOR, NULL, NULL},
    {"menu_shadow",	JMENU_SHADOW_COLOR, NULL, NULL},
@@ -82,7 +82,6 @@ static Color_Object_Map_Type Color_Name_Map [JMAX_COLORS] =
    {NULL, -1, NULL, NULL}
 };
 
-
 int jed_get_color_obj (char *name) /*{{{*/
 {
    Color_Object_Map_Type *map, *map_max;
@@ -111,7 +110,7 @@ int jed_get_color_obj (char *name) /*{{{*/
 
    if (0 == strcmp (name, "keyword0"))
      return JKEY_COLOR;
-	
+
    return -1;
 }
 
@@ -125,7 +124,7 @@ static int add_color_object (char *name)
    obj = jed_get_color_obj (name);
    if (obj != -1)
      return obj;
-   
+
    map = Color_Name_Map + FIRST_USER_COLOR;
    map_max = Color_Name_Map + JMAX_COLORS;
    while (map < map_max)
@@ -137,12 +136,12 @@ static int add_color_object (char *name)
 	  }
 	if (NULL == (name = SLang_create_slstring (name)))
 	  return -1;
-	
+
 	map->name = name;
 	map->color = (int) (map - Color_Name_Map);
 	return map->color;
      }
-   
+
    jed_vmessage (0, "*** Warning: no colors available for %s ***", name);
    return -1;
 }
@@ -151,7 +150,7 @@ int jed_set_color (int obj, char *fg, char *bg) /*{{{*/
 {
    Color_Object_Map_Type *map;
 
-   if ((obj < 0) || (obj >= JMAX_COLORS)) 
+   if ((obj < 0) || (obj >= JMAX_COLORS))
      return -1;
 
    tt_set_color (obj, NULL, fg, bg);
@@ -165,7 +164,7 @@ int jed_set_color (int obj, char *fg, char *bg) /*{{{*/
      }
    SLang_free_slstring (map->fg); map->fg = fg;
    SLang_free_slstring (map->bg); map->bg = bg;
-   
+
    return 0;
 }
 
@@ -192,7 +191,7 @@ static void get_color (char *obj)
     * the "normal" color will be used for the object.
     */
    if (i == -1)
-     i = JNORMAL_COLOR;		       
+     i = JNORMAL_COLOR;
 
    map = Color_Name_Map + i;
    (void) SLang_push_string (map->fg == NULL ? "default" : map->fg);
@@ -218,7 +217,6 @@ static void set_color_object (int *obj, char *fg, char *bg)
    (void) jed_set_color(*obj, fg, bg);
 }
 
-
 #if JED_HAS_COLOR_COLUMNS
 static void set_column_colors (int *color, int *c0p, int *c1p) /*{{{*/
 {
@@ -231,10 +229,10 @@ static void set_column_colors (int *color, int *c0p, int *c1p) /*{{{*/
 
    c0 = *c0p - 1;
    c1 = *c1p;
-   
+
    if (c0 < 0) c0 = 0;
    if (c1 <= c0) return;
-   
+
    if ((NULL == (p = CBuf->column_colors))
        || (c1 > (int) CBuf->num_column_colors))
      {
@@ -246,9 +244,9 @@ static void set_column_colors (int *color, int *c0p, int *c1p) /*{{{*/
 	CBuf->num_column_colors = num;
 	SLMEMSET ((char *) p, 0, num);
      }
-   
+
    CBuf->coloring_style = 1;
-	
+
    pmax = p + c1;
    p += c0;
    while (p < pmax) *p++ = ch;
@@ -270,7 +268,6 @@ static int get_line_color (void)
 {
    return (int)JED_GET_LINE_COLOR(CLine);
 }
-
 
 static SLang_Intrin_Fun_Type Color_Intrinsics [] = /*{{{*/
 {
@@ -309,7 +306,7 @@ int jed_init_color_intrinsics (void)
 
    if (-1 == SLadd_intrin_fun_table (Color_Intrinsics, NULL))
      return -1;
-   
+
    return 0;
 }
 

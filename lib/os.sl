@@ -156,7 +156,7 @@ define dfa_build_highlight_table (x);
 define dfa_set_init_callback (x,y);
 #endif
 
-#ifdef WIN32 
+#ifdef WIN32
 MSDOS_Has_Long_File_Names = 1;
 variable W32shell_Perform_Globbing;
 #else

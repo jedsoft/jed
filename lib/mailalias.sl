@@ -142,19 +142,19 @@ define mailrc_xAlias (alias)	%{{{
    variable n;
 
    alias = strtrim (alias);
-   
-   if (not(strlen(alias)) 
+
+   if (not(strlen(alias))
        or is_substr (alias, char ('@')))
      return alias;
 
    % look for "alias name"
    name = "alias " + alias + " ";
-   
+
    bob ();
 
    % Convert all tabs to spaces
    replace ("\t", " ");
-   
+
    n = bol_fsearch (name);
    ifnot (n)
      {
@@ -163,9 +163,9 @@ define mailrc_xAlias (alias)	%{{{
 	n = bol_fsearch (name);
 	ifnot (n) return alias;
      }
-   
+
    go_right (n);
-   
+
    addr = "";
 
    % hand-rolled functions, regular expressions are too inconsistent

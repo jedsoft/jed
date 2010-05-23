@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -17,7 +17,7 @@
 #include <sys\stat.h>
 
 /* FIXME!!!
- * This file basically parses a command line looking for redirections, 
+ * This file basically parses a command line looking for redirections,
  * and dups stdout and stderr when appropriate, then it spawns the suprocess.
  * For Win32, we should use CreateProcess instead of spawnvp because spawnvp
  * appears to be broken when using MINGW32.
@@ -304,7 +304,7 @@ int main(int argc, char **argv)
    int ret;
 
    Error_Buffer[0] = 0;
-   
+
    ret = 1;
 
    if (argc == 1)

@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -63,7 +63,7 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 #endif
- 
+
 #ifndef O_RDONLY
 # ifdef VMS
 #  include <file.h>
@@ -87,11 +87,11 @@ VFILE *vopen(SLFUTURE_CONST char *file, unsigned int size, unsigned int fmode) /
 
 #ifdef O_BINARY
    mode = O_BINARY;
-#else 
+#else
    mode = 0;
 #endif
-      
-   while ((fd = open(file, mode | O_RDONLY, 0)) < 0) 
+
+   while ((fd = open(file, mode | O_RDONLY, 0)) < 0)
      {
 #ifdef EINTR
 	if (errno == EINTR)
@@ -120,7 +120,7 @@ void vclose(VFILE *v) /*{{{*/
 VFILE *vstream(int fd, unsigned int size, unsigned int mode) /*{{{*/
 {
    VFILE *v;
-   
+
    if (NULL == (v = (VFILE *) SLmalloc(sizeof(VFILE)))) return(NULL);
    v->bmax = v->bp = v->buf = NULL;
    v->fd = fd;
@@ -144,7 +144,7 @@ char *vgets(VFILE *vp, unsigned int *num) /*{{{*/
    unsigned int n, max, fmode = vp->mode;
    int doread = 0;
    n = vp->size;
-   
+
    *num = 0;
    if (NULL == vp->buf)
      {
@@ -153,7 +153,7 @@ char *vgets(VFILE *vp, unsigned int *num) /*{{{*/
 #else
 	if (!n) n = 64 * 1024;
 #endif
-	
+
 	if (NULL == (neew = SLmalloc(n + 1)))
 	  return NULL;
 
@@ -166,9 +166,9 @@ char *vgets(VFILE *vp, unsigned int *num) /*{{{*/
    if ((vp->eof != NULL) && (bp >= vp->eof)) return (NULL);
    bp1 = vp->buf;
    bmax = vp->bmax;
-   
+
    while (1)
-     {	
+     {
 	if (doread)
 	  {
 	     max = (int) (vp->bmax - bp);
@@ -212,7 +212,7 @@ char *vgets(VFILE *vp, unsigned int *num) /*{{{*/
 #endif
 		       return NULL;
 		    }
-		  
+
 		  max -= nread;
 		  bp += nread;
 	       }
@@ -224,10 +224,10 @@ char *vgets(VFILE *vp, unsigned int *num) /*{{{*/
 	     bp = bp1;
 	  }
 	else bp1 = bp;
-	   
+
 	/* extract a line */
 	if (vp->eof != NULL) bmax = vp->eof;
-	
+
 	n = (unsigned int) (bmax - bp);
 #if defined(__MSDOS__)
 	if (n)
@@ -254,12 +254,12 @@ char *vgets(VFILE *vp, unsigned int *num) /*{{{*/
 #endif /* __WIN32__ */
 	     if (*bp != '\n') bp++;
 	  }
-	
+
 	if (bp < bmax)
 	  {
 	     vp->bp = ++bp;
 	     *num = (unsigned int) (bp - bp1);
-	     
+
 	     /* if it is text, replace the carriage return by a newline
 	        and adjust the number read by 1 */
 	     bp -= 2;
@@ -277,11 +277,11 @@ char *vgets(VFILE *vp, unsigned int *num) /*{{{*/
 	     bpmax++;
 	     vp->bp = bpmax;
 	     *num = (unsigned int) (bpmax - bp1);
-	     
+
 	     if ((fmode == VFILE_TEXT) && (*num > 1))
 	       {
 		  bpmax -= 2;
-		  if (*bpmax == '\r') 
+		  if (*bpmax == '\r')
 		    {
 		       vp->cr_flag = 1;
 		       *bpmax = '\n'; (*num)--;
@@ -295,11 +295,10 @@ char *vgets(VFILE *vp, unsigned int *num) /*{{{*/
 	  {
 	     *num = (unsigned int) (bp - bp1);
 	     vp->bp = bp;
-	     
-	     
+
 #if defined(IBMPC_SYSTEM)
 	     /* kill ^Z at EOF if present */
-	     if ((fmode == VFILE_TEXT) && (*num) && (26 == *(bp - 1))) 
+	     if ((fmode == VFILE_TEXT) && (*num) && (26 == *(bp - 1)))
 	       {
 		  *num -= 1;
 		  if (!*num) bp1 = NULL;
@@ -307,7 +306,7 @@ char *vgets(VFILE *vp, unsigned int *num) /*{{{*/
 #endif
 	     return(bp1);
 	  }
-	
+
 	doread = 1;
 
 	bp = bp1;
@@ -319,14 +318,14 @@ char *vgets(VFILE *vp, unsigned int *num) /*{{{*/
 	     bp = bp1;
 	     bp1 = vp->buf;
 	  }
-	else 
+	else
 	  {
 	     bp = bmax;
 	     vp->bmax += 2 * (int) (vp->bmax - vp->buf);
 	     neew = SLrealloc (vp->buf, 1 + (unsigned int) (vp->bmax - vp->buf));
-	     if (neew == NULL) 
+	     if (neew == NULL)
 	       return NULL;
-	     
+
 	     bp = neew + (int) (bmax - vp->buf);
 	     bmax = vp->bmax = neew + (int) (vp->bmax - vp->buf);
 	     bp1 = vp->buf = neew;

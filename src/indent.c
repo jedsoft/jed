@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -32,7 +32,7 @@
  *
  * "UTF-8 WORD UNsafe" indicates that the routine is not safe when non-ASCII
  * characters are given the word syntax.
- * 
+ *
  * ASCII means character codes 0-127.
  */
 Syntax_Table_Type *Default_Syntax_Table;
@@ -90,7 +90,7 @@ static unsigned char *find_string_end (Syntax_Table_Type *table,
 	if (*p++ == ch)
 	  return p;
      }
-   
+
    return NULL;
 }
 
@@ -110,7 +110,7 @@ int _jed_is_eol_comment_start (Syntax_Table_Type *table, Line *l,
    if (p >= pmax)
      return 0;
 
-   /* Most of the time, num_eol_comments is going to be <= 1, so just 
+   /* Most of the time, num_eol_comments is going to be <= 1, so just
     * use table->whatever.
     */
    wsc = table->flags & EOL_COMMENT_NEEDS_WHITESPACE;
@@ -119,7 +119,7 @@ int _jed_is_eol_comment_start (Syntax_Table_Type *table, Line *l,
      {
 	if (*p != table->eol_comment_starts[i][0])
 	  continue;
-	
+
 	if (p + table->eol_comment_lens[i] > pmax)
 	  continue;
 
@@ -135,7 +135,7 @@ int _jed_is_eol_comment_start (Syntax_Table_Type *table, Line *l,
 					table->eol_comment_lens[i]))
 	       continue;
 	  }
-	
+
 	if ((table->char_syntax[*p] & WORD_SYNTAX) || wsc)
 	  {
 	     unsigned char *p1;
@@ -159,7 +159,7 @@ int _jed_is_eol_comment_start (Syntax_Table_Type *table, Line *l,
 		  else if (table->char_syntax[ch1] & WORD_SYNTAX)
 		    continue;
 	       }
-	     
+
 	     if (p > l->data)
 	       {
 		  ch1 = *(p-1);
@@ -180,12 +180,12 @@ int _jed_is_eol_comment_start (Syntax_Table_Type *table, Line *l,
 	       }
 	  }
 
-	if (com != NULL) 
+	if (com != NULL)
 	  *com = i;
 
 	return 1;
      }
-   
+
    return 0;
 }
 
@@ -280,7 +280,7 @@ static int parse_to_point1 (Syntax_Table_Type *table,
 	     if (_jed_is_eol_comment_start (table, l, p, pmax, NULL))
 	       return JED_LINE_HAS_EOL_COMMENT;
 	  }
-#endif	
+#endif
 	if (syntax[ch] & (STRING_SYNTAX))
 	  {
 	     p = find_string_end (table, p + 1, pmax, ch);
@@ -302,7 +302,7 @@ static int parse_to_point1 (Syntax_Table_Type *table,
 	       return JED_LINE_IN_HTML;
 	     continue;
 	  }
-#if 0	
+#if 0
 	if (0 == (syntax[ch] & COMMENT_SYNTAX))
 	  {
 	     p++;
@@ -365,7 +365,7 @@ static void goto_effective_eol (Syntax_Table_Type *table) /*{{{*/
     */
    p = CLine->data;
    pmax = CLine->data + CLine->len;
-   
+
    syntax = table->char_syntax;
 
    while (p < pmax)
@@ -379,7 +379,7 @@ static void goto_effective_eol (Syntax_Table_Type *table) /*{{{*/
 	      * or in part of another word. Only one way to find out.
 	      */
 	     jed_position_point (p + table->eol_comment_lens[i]);
-	     if (JED_LINE_HAS_EOL_COMMENT == parse_to_point1 (table, CLine, 
+	     if (JED_LINE_HAS_EOL_COMMENT == parse_to_point1 (table, CLine,
 							      p + table->eol_comment_lens[i]))
 	       {
 		  jed_position_point (p);
@@ -526,7 +526,7 @@ static int goto_comment_end (Syntax_Table_Type *table)
 	       }
 	     p++;
 	  }
-	
+
 	if (0 == jed_down (1))
 	  {
 	     eol ();
@@ -536,10 +536,10 @@ static int goto_comment_end (Syntax_Table_Type *table)
 }
 
 /* Note that this routine may be called with p corresponding to Point = -1.
- * This will happen when the end quote character is at the beginning of a 
+ * This will happen when the end quote character is at the beginning of a
  * line.
  */
-static int goto_string_begin (Syntax_Table_Type *table, 
+static int goto_string_begin (Syntax_Table_Type *table,
 			      unsigned char ch, unsigned char *p)
 {
    unsigned char *pmin;
@@ -563,7 +563,7 @@ static int goto_string_begin (Syntax_Table_Type *table,
 		  return 0;
 	       }
 	  }
-	
+
 	if ((table->flags & SINGLE_LINE_STRINGS)
 	    || (0 == jed_up (1)))
 	  {
@@ -948,7 +948,7 @@ static int forward_goto_match (unsigned char ch) /*{{{*/
 			    pmax = CLine->data + CLine->len;
 			    continue;
 			 }
-		       
+
 		       if (_jed_is_eol_comment_start (table, CLine, p, pmax, NULL))
 			 {
 			    p = pmax;
@@ -972,7 +972,7 @@ static int forward_goto_match (unsigned char ch) /*{{{*/
 			     */
 			    if ((p >= pmax) || ((int)*p != in_string))
 			      in_string = 0;
-			    else 
+			    else
 			      p++;     /* skip second quote */
 			 }
 		    }
@@ -1078,7 +1078,7 @@ static int parse_to_point (void) /*{{{*/
 #if JED_HAS_LINE_ATTRIBUTES
    jed_syntax_parse_buffer (0);
 #endif
-   
+
    switch (parse_to_point1 (table, CLine, CLine->data + Point))
      {
       case JED_LINE_IN_COMMENT:
@@ -1138,16 +1138,16 @@ void blink_match (void) /*{{{*/
 	if ((matchp == Point) && jed_up(1))
 	  {
 	     bol ();
-	     safe_strcat (buf, 
-			  make_line_string(strbuf, sizeof(strbuf)), 
+	     safe_strcat (buf,
+			  make_line_string(strbuf, sizeof(strbuf)),
 			  sizeof (buf));
 	     jed_down(1);
 	  }
 
-	safe_strcat(buf, 
-		    make_line_string(strbuf, sizeof (strbuf)), 
+	safe_strcat(buf,
+		    make_line_string(strbuf, sizeof (strbuf)),
 		    sizeof(buf));
-	
+
 	/* Apparantly there are some who think that it is a bug to see
 	 * ^J in the mini-buffer.  Sigh.
 	 */
@@ -1207,7 +1207,7 @@ static void define_syntax (int *what, char *name) /*{{{*/
       case '%':
 	if (SLang_pop_slstring (&s2)) break;
 	if (SLang_pop_slstring (&s1)) break;
-	
+
 	table->char_syntax[(unsigned char) *s1] |= COMMENT_SYNTAX;
 
 	if ((*s2 == 0) || (*s2 == '\n'))
@@ -1364,7 +1364,7 @@ static void set_fortran_comment_style (char *table_name, char *str)
 
    if (NULL == (table = jed_find_syntax_table (table_name, 1)))
      return;
-   
+
    reverse = 0;
    if ((*str == '^') && (str[1] != 0))
      {
@@ -1406,14 +1406,14 @@ static void clear_syntax_table (Syntax_Table_Type *t)
      SLang_free_slstring (t->eol_comment_starts[i]);
    SLang_free_slstring (t->comment_start);
    SLang_free_slstring (t->comment_stop);
-   
+
 #if JED_HAS_DFA_SYNTAX
    if (t->init_dfa_callback != NULL)
      SLang_free_function (t->init_dfa_callback);
    if (t->hilite != NULL)
      jed_dfa_free_highlight_table (t->hilite);
 #endif
-   
+
    for (i = 0; i < MAX_KEYWORD_TABLES; i++)
      {
 	unsigned int j;
@@ -1448,7 +1448,6 @@ static Syntax_Table_Type *allocate_syntax_table (char *name)
    return table;
 }
 
-
 static void create_syntax_table (char *name) /*{{{*/
 {
    Syntax_Table_Type *table;
@@ -1465,7 +1464,6 @@ static void create_syntax_table (char *name) /*{{{*/
    table->next = Syntax_Tables;
    Syntax_Tables = table;
 }
-
 
 void init_syntax_tables (void) /*{{{*/
 {
@@ -1628,7 +1626,7 @@ void jed_syntax_parse_buffer (int do_all)
 	min_line_num = 1;
 	max_line_num = Max_LineNum;
      }
-   
+
    if (color_region_hook != NULL)
      {
 	(void) SLang_start_arg_list ();
@@ -1669,11 +1667,11 @@ static char *what_syntax_table (void)
    if ((NULL == (s = CBuf->syntax_table))
        && (NULL == (s = Default_Syntax_Table)))
      return NULL;
-   
+
    return s->name;		       /* not thread safe */
 }
 
-static SLang_Intrin_Fun_Type Intrinsics [] = 
+static SLang_Intrin_Fun_Type Intrinsics [] =
 {
    MAKE_INTRINSIC("parse_to_point", parse_to_point, INT_TYPE, 0),
    MAKE_INTRINSIC_SI("set_syntax_flags", set_syntax_flags, VOID_TYPE),

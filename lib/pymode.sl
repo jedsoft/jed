@@ -1,4 +1,4 @@
-% Python mode 
+% Python mode
 % File: pymode.sl v1.3.1
 %
 % For editing source code written in the Python programming language.
@@ -25,13 +25,13 @@
 %
 
 % Changes from v1.0:
-% 
+%
 % Major improvements, mostly done by Brien Barton:
 %
 % - execution of python code from JED
 % - DFA syntax support
 % - improved indent - dedent.
-%  
+%
 
 % Changes from v1.1:
 %
@@ -66,8 +66,6 @@ definekey ("py_electric_colon", ":", $1);
 #ifdef MSWINDOWS
 definekey ("py_help_on_word", "^@;", $1);
 #endif
-
-
 
 % Set the following to your favourite indentation level
 custom_variable("Py_Indent_Level", 4);
@@ -126,24 +124,24 @@ private define py_indent_calculate()
 {  % return the indentation of the previous python line
    variable col = 0;
    variable subblock = 0;
-    
+
    EXIT_BLOCK
      {
 	pop_spot ();
 	return col;
      }
-    
+
    % check if current line starts a sub-block
    subblock = py_line_starts_subblock();
-   
+
    % go to previous non blank line
    push_spot_bol ();
    ifnot (re_bsearch ("[^ \t\n]"))
      return;
    bol_skip_white();
-    
+
    col = what_column() - 1;
-    
+
    variable indent;
    if ( get_blocal_var("py_use_tab") )
       indent = TAB;
@@ -159,19 +157,19 @@ private define py_indent_calculate()
 define py_indent_line()
 {
    variable col;
-    
+
    col = py_indent_calculate();
    bol_trim ();
    py_whitespace( col );
 }
 
-define py_comment_line() 
+define py_comment_line()
 {
    bol();
    insert("##");
 }
 
-define py_electric_colon() 
+define py_electric_colon()
 {
    variable i;
    insert(":");
@@ -194,7 +192,7 @@ define py_electric_colon()
 define py_comment_region()
 {
    variable n;
-    
+
    check_region (1);
    n = what_line ();
    pop_mark_1 ();
@@ -206,7 +204,7 @@ define py_comment_region()
    pop_spot();
 }
 
-define py_comment() 
+define py_comment()
 {
    push_spot();
    if (markp()) {
@@ -217,7 +215,7 @@ define py_comment()
    pop_spot();
 }
 
-define py_uncomment_line() 
+define py_uncomment_line()
 {
    bol_skip_white();
    while (looking_at("#")) del();
@@ -226,7 +224,7 @@ define py_uncomment_line()
 define py_uncomment_region()
 {
    variable n;
-   
+
    check_region (1);
    n = what_line ();
    pop_mark_1 ();
@@ -248,16 +246,16 @@ define py_uncomment() {
    pop_spot();
 }
 
-define py_backspace_key() 
-{ 
-   variable col;                                                    
-                                   
-   col = what_column(); 
-   push_spot(); 
-   bskip_white(); 
-   if (bolp() and (col > 1)) 
-     { 
-	pop_spot();                                                     
+define py_backspace_key()
+{
+   variable col;
+
+   col = what_column();
+   push_spot();
+   bskip_white();
+   if (bolp() and (col > 1))
+     {
+	pop_spot();
 	if ( blooking_at("\t") )
 	  {
 	     go_left (1);
@@ -265,19 +263,19 @@ define py_backspace_key()
 	  }
 	else
 	  {
-	     bol_trim (); 
-	     col--;                                                         
-	     if (col mod Py_Indent_Level == 0) 
-	       col--; 
+	     bol_trim ();
+	     col--;
+	     if (col mod Py_Indent_Level == 0)
+	       col--;
 	     py_whitespace ( (col / Py_Indent_Level) * Py_Indent_Level );
 	  }
-     } 
-   else 
+     }
+   else
      {
-	pop_spot(); 
-	call("backward_delete_char_untabify"); 
-     } 
-} 
+	pop_spot();
+	call("backward_delete_char_untabify");
+     }
+}
 
 define py_shift_line_right()
 {
@@ -316,7 +314,7 @@ define py_shift_line_left()
 {
    variable times = prefix_argument(1);
    bol_skip_white();
-   if (what_column() > Py_Indent_Level*times) 
+   if (what_column() > Py_Indent_Level*times)
      {
 	if ( get_blocal_var("py_use_tab") )
 	  {
@@ -335,7 +333,7 @@ define py_shift_line_left()
 define py_shift_region_left()
 {
    variable times = prefix_argument(1);
-  
+
    check_region (1);
    variable n = what_line ();
    pop_mark_1 ();
@@ -371,56 +369,56 @@ define file_path(fullname)
    substr(fullname, 1, strlen(fullname)-strlen(filename));
 }
 
-define py_exec_region() 
-{ 
-   % Run python interpreter on current region. 
-   % Display output in *shell-output* buffer window. 
-   variable oldbuf, thisbuf, file, line, start_line; 
-   variable tmpfile = "_python.tmp"; 
-   variable error_regexp = "^  File \"\\([^\"]+\\)\", line \\(\\d+\\).*"; 
-   variable py_source = buffer_filename(); 
+define py_exec_region()
+{
+   % Run python interpreter on current region.
+   % Display output in *shell-output* buffer window.
+   variable oldbuf, thisbuf, file, line, start_line;
+   variable tmpfile = "_python.tmp";
+   variable error_regexp = "^  File \"\\([^\"]+\\)\", line \\(\\d+\\).*";
+   variable py_source = buffer_filename();
    change_default_dir(file_path(py_source));
-   thisbuf = whatbuf(); 
-   % Check if 1st line starts in column 1 
-   exchange_point_and_mark(); 
-   bol_skip_white(); 
-   start_line = what_line(); 
-   if (what_column() > 1) { 
-      % Workaround in case block is indented 
-      write_string_to_file("if 1:\n", tmpfile); bol(); 
-      start_line--;   % offset for this extra line 
-   } 
-   exchange_point_and_mark(); 
-   append_region_to_file(tmpfile); 
-   oldbuf = pop2buf_whatbuf("*shell-output*"); erase_buffer (); 
-#ifdef UNIX 
+   thisbuf = whatbuf();
+   % Check if 1st line starts in column 1
+   exchange_point_and_mark();
+   bol_skip_white();
+   start_line = what_line();
+   if (what_column() > 1) {
+      % Workaround in case block is indented
+      write_string_to_file("if 1:\n", tmpfile); bol();
+      start_line--;   % offset for this extra line
+   }
+   exchange_point_and_mark();
+   append_region_to_file(tmpfile);
+   oldbuf = pop2buf_whatbuf("*shell-output*"); erase_buffer ();
+#ifdef UNIX
    ()=run_shell_cmd(sprintf("python %s 2>&1", tmpfile));
-#else 
+#else
    ()=run_shell_cmd(sprintf("python %s", tmpfile));
-#endif 
-   () = delete_file(tmpfile); 
- 
-   % try to restore any window that got replaced by the shell-output 
-   if (strlen(oldbuf) and (strcmp(oldbuf, "*shell-output*") != 0) 
-       and (strcmp(thisbuf, oldbuf) != 0)) { 
-      splitwindow(); sw2buf(oldbuf); pop2buf("*shell-output*"); 
-   } 
-   eob(); 
-   %  Check for error message 
-   while (re_bsearch(error_regexp) != 0) { 
-      %  Make sure error occurred in the file we were executing 
-      file = regexp_nth_match(1); 
-      line = integer(regexp_nth_match(2)); 
-      if (strcmp(file, tmpfile) == 0) { 
-	 %  Move to line in source that generated the error 
-	 pop2buf(thisbuf); 
-	 goto_line(line + start_line - 1); 
-	 break; 
-      } else { 
-	 %  Error is in another file, try previous error message 
-	 continue; 
-      } 
-   } 
+#endif
+   () = delete_file(tmpfile);
+
+   % try to restore any window that got replaced by the shell-output
+   if (strlen(oldbuf) and (strcmp(oldbuf, "*shell-output*") != 0)
+       and (strcmp(thisbuf, oldbuf) != 0)) {
+      splitwindow(); sw2buf(oldbuf); pop2buf("*shell-output*");
+   }
+   eob();
+   %  Check for error message
+   while (re_bsearch(error_regexp) != 0) {
+      %  Make sure error occurred in the file we were executing
+      file = regexp_nth_match(1);
+      line = integer(regexp_nth_match(2));
+      if (strcmp(file, tmpfile) == 0) {
+	 %  Move to line in source that generated the error
+	 pop2buf(thisbuf);
+	 goto_line(line + start_line - 1);
+	 break;
+      } else {
+	 %  Error is in another file, try previous error message
+	 continue;
+      }
+   }
    % if there is no output, then close the shell-window and
    % put a message up. This is how emacs works. <jimbag>
    if( bobp() and eobp() ) {
@@ -428,10 +426,9 @@ define py_exec_region()
       onewindow();
       message( "No output." );
    }
-} 
+}
 
-
-define py_exec() 
+define py_exec()
 {
    % Run python interpreter on current region if one is defined, otherwise
    % on the whole buffer.
@@ -453,7 +450,7 @@ define py_reindent() {
    variable level = -1;
    variable current_indent = -1;
    variable errmsg, i, col, ignore, oldlevel;
-   
+
    indent_level[*] = -1;
    bob();
    do {
@@ -469,7 +466,7 @@ define py_reindent() {
 	    indent_level[level] = -1;  % clear current level setting
 	    level--;
 	 }
-      } 
+      }
       if ((indent_level[level] != -1) and (indent_level[level] != col)) {
 	 % Indent is wrong.  Hopefully it's a continuation line.
 	 level = oldlevel;	% reset level
@@ -506,7 +503,6 @@ define py_help_on_word()
    message( strcat("Help on ", tag) );
    msw_help( getenv("PYLIBREF"), tag, 0);
 }
-
 
 #endif
 
@@ -575,7 +571,7 @@ private define setup_dfa_callback (name)
    dfa_define_highlight_rule("[\\(\\[{}\\]\\),:\\.\"`'=;]", "delimiter", name);
    dfa_define_highlight_rule("[\\+\\-\\*/%<>&\\|\\^~]", "operator", name); % 1 char
    dfa_define_highlight_rule("<<|>>|==|<=|>=|<>|!=", "operator", name);	  % 2 char
-   
+
    % Flag badly formed numeric literals or identifiers.  This is more effective
    % if you change the error colors so they stand out.
    dfa_define_highlight_rule("[1-9][0-9]*[lL]?[0-9A-Za-z\\.]+", "error", name);	% bad decimal
@@ -596,7 +592,7 @@ dfa_set_init_callback (&setup_dfa_callback, "python");
 %\usage{python_mode ()}
 %\description
 % A major mode for editing python files.
-% 
+%
 % The following keys have python specific bindings:
 %#v+
 % DELETE deletes to previous indent level
@@ -608,16 +604,16 @@ dfa_set_init_callback (&setup_dfa_callback, "python");
 % ^C|  executes the region
 % ^C\t reindents the region
 % :    colon dedents appropriately
-%#v- 
+%#v-
 % Hooks: \var{python_mode_hook}
-% 
+%
 %\seealso{Py_Indent_Level}
 %\seealso{set_mode, c_mode}
 %!%-
 define python_mode ()
 {
    variable python = "python";
-   
+
    create_blocal_var("py_use_tab");
    set_blocal_var(Py_Indent_Level == TAB, "py_use_tab");
    push_spot();

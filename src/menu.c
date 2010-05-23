@@ -1,5 +1,5 @@
 /* Drop-down menus (tty) */
-/* Copyright (c) 1999, 2000, 2002-2009 John E. Davis
+/* Copyright (c) 1999-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -75,13 +75,13 @@ struct _Menu_Bar_Type
    char *name;
    int type;			       /* =MENU_NODE */
    unsigned int flags;
-   
+
    /* Private data */
    /* These 5 must match Menu_Popup_Type */
    Menu_Node_Type **subnodes;
    unsigned int num_subnodes;
-   unsigned int max_subnodes;   
-   struct _Menu_Popup_Type *parent;   
+   unsigned int max_subnodes;
+   struct _Menu_Popup_Type *parent;
    unsigned int active_node;
 
    SLang_Name_Type *init_callback;
@@ -121,7 +121,7 @@ typedef struct
    char *name;
    int type;
    unsigned int flags;
-   
+
    char *keystring;
 }
 Menu_Keystring_Fun_Type;
@@ -155,7 +155,6 @@ static void free_menu_popup_subnodes (Menu_Popup_Type *m)
    m->max_subnodes = 0;
 }
 
-
 static void free_menu_popup_private_data (Menu_Popup_Type *m)
 {
    free_menu_popup_subnodes (m);
@@ -180,11 +179,11 @@ static void free_menu_bar_private_data (Menu_Bar_Type *m)
    else
      {
 	Menu_Bar_Type *prev;
-	
+
 	prev = Menu_Bar_Root;
 	while (prev->next != m)
 	  prev = prev->next;
-	
+
 	prev->next = m->next;
      }
 
@@ -265,28 +264,27 @@ static Menu_Node_Type *create_menu_node (char *name, int node_type,
      return NULL;
 
    m->type = node_type;
-   
+
    if (NULL == (m->name = SLang_create_slstring (name)))
      {
 	SLfree ((char *)m);
 	return NULL;
      }
-   
+
    return m;
 }
-
 
 static Menu_Popup_Type *create_menu_popup (char *name, unsigned int num_items)
 {
    Menu_Popup_Type *m;
-   
+
    m = (Menu_Popup_Type *) create_menu_node (name, MENU_NODE_POPUP, sizeof (Menu_Popup_Type));
    if (m == NULL)
      return NULL;
 
    if (num_items == 0)
      num_items = 5;
-   
+
    if (NULL == (m->subnodes = (Menu_Node_Type **)SLmalloc (num_items * sizeof (Menu_Node_Type *))))
      {
 	free_menu_node ((Menu_Node_Type *) m);
@@ -295,7 +293,6 @@ static Menu_Popup_Type *create_menu_popup (char *name, unsigned int num_items)
    m->max_subnodes = num_items;
    return m;
 }
-
 
 static Menu_Bar_Type *create_menu_bar (char *name, unsigned int num_items)
 {
@@ -323,12 +320,12 @@ static Menu_Bar_Type *create_menu_bar (char *name, unsigned int num_items)
    Menu_Bar_Root = m;
 
    m->num_refs = 1;
-   
+
    prefix = DEFAULT_MENU_PREFIX;
    if ((Global_Menu_Bar != NULL)
        && (Global_Menu_Bar->prefix_string != NULL))
      prefix = Global_Menu_Bar->prefix_string;
-   
+
    prefix = SLang_create_slstring (prefix);
    if (prefix == NULL)
      {
@@ -348,7 +345,6 @@ void jed_delete_menu_bar (Menu_Bar_Type *m)
    free_menu_node ((Menu_Node_Type *)m);
 }
 
-
 static int menu_name_eqs (char *a, char *b, char *bmax)
 {
    while (*a)
@@ -356,11 +352,11 @@ static int menu_name_eqs (char *a, char *b, char *bmax)
 	if ((b == bmax)
 	    || (*a != *b))
 	  return 0;
-	
+
 	a++;
 	b++;
      }
-   
+
    return (b == bmax);
 }
 
@@ -383,12 +379,11 @@ static Menu_Bar_Type *menu_find_menu_bar (char *name, int do_error)
      }
 
    if (do_error)
-     SLang_verror (SL_INTRINSIC_ERROR, 
-		   "Unable to a find menu bar called %s", 
+     SLang_verror (SL_INTRINSIC_ERROR,
+		   "Unable to a find menu bar called %s",
 		   name);
    return NULL;
 }
-
 
 static Menu_Node_Type *find_subnode (Menu_Popup_Type *m, char *name)
 {
@@ -396,20 +391,19 @@ static Menu_Node_Type *find_subnode (Menu_Popup_Type *m, char *name)
 
    if (m == NULL)
      return NULL;
-   
+
    l = m->subnodes;
    lmax = l + m->num_subnodes;
-   
+
    while (l < lmax)
      {
 	if (0 == strcmp (name, (*l)->name))
 	  return *l;
-	
+
 	l++;
      }
    return NULL;
 }
-
 
 static int check_subnode_space (Menu_Popup_Type *m, unsigned int dn)
 {
@@ -435,7 +429,7 @@ static int check_subnode_space (Menu_Popup_Type *m, unsigned int dn)
 	item_columns = (int *)SLrealloc ((char *)b->item_columns, num * sizeof(int));
 	if (item_columns == NULL)
 	  return -1;
-	
+
 	for (i = m->max_subnodes; i < num; i++)
 	  item_columns [i] = 0;
 	b->item_columns = item_columns;
@@ -446,12 +440,12 @@ static int check_subnode_space (Menu_Popup_Type *m, unsigned int dn)
 }
 
 /* This function assumes that there is enough space to insert one item */
-static void insert_node_to_popup (Menu_Popup_Type *p, Menu_Node_Type *m, 
+static void insert_node_to_popup (Menu_Popup_Type *p, Menu_Node_Type *m,
 				  unsigned int where)
 {
    unsigned int len;
    unsigned int n;
-   
+
    n = p->num_subnodes;
 
    if (where > n)
@@ -481,7 +475,7 @@ static void append_node_to_popup (Menu_Popup_Type *p, Menu_Node_Type *m)
    insert_node_to_popup (p, m, p->num_subnodes);
 }
 #endif
-   
+
 static Menu_Popup_Type *insert_popup_menu (Menu_Popup_Type *m, char *name, int where)
 {
    Menu_Popup_Type *p;
@@ -495,9 +489,9 @@ static Menu_Popup_Type *insert_popup_menu (Menu_Popup_Type *m, char *name, int w
    p = create_menu_popup (name, 5);
    if (p == NULL)
      return NULL;
-   
+
    p->parent = m;
-   
+
    insert_node_to_popup (m, (Menu_Node_Type *)p, where);
    return p;
 }
@@ -506,7 +500,6 @@ static Menu_Popup_Type *append_popup_menu (Menu_Popup_Type *m, char *name)
 {
    return insert_popup_menu (m, name, m->num_subnodes);
 }
-
 
 static Menu_Node_Type *insert_separator (Menu_Popup_Type *m, int where)
 {
@@ -529,8 +522,7 @@ static Menu_Node_Type *append_separator (Menu_Popup_Type *m)
    return insert_separator (m, m->num_subnodes);
 }
 
-
-static Menu_SLang_Fun_Type *insert_slang_fun_item (Menu_Popup_Type *m, char *name, 
+static Menu_SLang_Fun_Type *insert_slang_fun_item (Menu_Popup_Type *m, char *name,
 						   SLang_Name_Type *nt, SLang_Any_Type *cd,
 						   int where)
 {
@@ -544,7 +536,7 @@ static Menu_SLang_Fun_Type *insert_slang_fun_item (Menu_Popup_Type *m, char *nam
 	free_slangfun_private_data (l);
 	l->slang_fun = nt;
 	l->client_data = cd;
-	
+
 	return l;
      }
 
@@ -570,7 +562,7 @@ static Menu_SLang_Fun_Type *append_slang_fun_item (Menu_Popup_Type *m, char *nam
    return insert_slang_fun_item (m, name, nt, cd, m->num_subnodes);
 }
 
-static Menu_Keystring_Fun_Type *insert_keystring_item (Menu_Popup_Type *m, char *name, 
+static Menu_Keystring_Fun_Type *insert_keystring_item (Menu_Popup_Type *m, char *name,
 						       char *k, int where)
 {
    Menu_Keystring_Fun_Type *l;
@@ -579,7 +571,7 @@ static Menu_Keystring_Fun_Type *insert_keystring_item (Menu_Popup_Type *m, char 
      {
 	if (l->type != MENU_NODE_KEYSTRING)
 	  return NULL;
-	
+
 	if (NULL == (k = SLang_create_slstring (k)))
 	  return NULL;
 
@@ -587,7 +579,6 @@ static Menu_Keystring_Fun_Type *insert_keystring_item (Menu_Popup_Type *m, char 
 	l->keystring = k;
 	return l;
      }
-
 
    if (-1 == check_subnode_space (m, 1))
      return NULL;
@@ -641,7 +632,7 @@ static Menu_Node_Type *get_selected_menu_item (Menu_Popup_Type *p)
 static int unselect_active_node (Menu_Popup_Type *b)
 {
    Menu_Node_Type *m;
-   
+
    if (NULL == (m = get_selected_menu_item (b)))
      return -1;
 
@@ -727,7 +718,7 @@ static int select_prev_active_node (Menu_Popup_Type *b, unsigned int active_node
 	     active_node = num_subnodes;
 	     if (wrapped)
 	       return -1;
-	     
+
 	     wrapped = 1;
 	  }
 	active_node--;
@@ -745,10 +736,8 @@ static int select_prev_active_node (Menu_Popup_Type *b, unsigned int active_node
    return 0;
 }
 
-
-
 static int set_node_selection (Menu_Popup_Type *p, Menu_Node_Type *m)
-{  
+{
    unsigned int i, imax;
    Menu_Node_Type **subnodes;
 
@@ -772,15 +761,14 @@ static int set_node_selection (Menu_Popup_Type *p, Menu_Node_Type *m)
    return -1;
 }
 
-   
 static unsigned int get_active_node_flags (Menu_Popup_Type *p)
 {
    Menu_Node_Type *m;
-   
+
    m = get_selected_menu_item (p);
    if (m == NULL)
      return 0;
-   
+
    return m->flags;
 }
 
@@ -790,21 +778,21 @@ static int menu_delete_node (Menu_Popup_Type *p, Menu_Node_Type *m)
 
    if ((p == NULL) || (m == NULL))
      return -1;
-   
+
    imax = p->num_subnodes;
    for (i = 0; i < imax; i++)
      {
 	if (p->subnodes[i] != m)
 	  continue;
-	
+
 	if (i == p->active_node)
 	  p->active_node = 0;
-	
+
 	while (++i < imax)
 	  p->subnodes[i-1] = p->subnodes[i];
-	
+
 	p->num_subnodes -= 1;
-	
+
 	(void) unselect_active_node (p);
 	free_menu_node (m);
 	return 0;
@@ -828,7 +816,6 @@ static int menu_delete_nodes (Menu_Popup_Type *p)
    return 0;
 }
 
-
 static int copy_menu (Menu_Popup_Type *dest, Menu_Node_Type *src)
 {
    Menu_Node_Type **l, **lmax;
@@ -850,11 +837,11 @@ static int copy_menu (Menu_Popup_Type *dest, Menu_Node_Type *src)
 	p = (Menu_Popup_Type *) src;
 	l = p->subnodes;
 	lmax = l + p->num_subnodes;
-	
+
 	p = append_popup_menu (dest, src->name);
 	if (p == NULL)
 	  return -1;
-	
+
 	while (l < lmax)
 	  {
 	     if (-1 == copy_menu (p, *l))
@@ -866,11 +853,11 @@ static int copy_menu (Menu_Popup_Type *dest, Menu_Node_Type *src)
 	  }
 	m = (Menu_Node_Type *)p;
 	break;
-	
+
       case MENU_NODE_SEPARATOR:
 	m = append_separator (dest);
 	break;
-	
+
       case MENU_NODE_FUN_SLANG:
 	sl = (Menu_SLang_Fun_Type *) src;
 	/* Need a s-lang fun for this !!! */
@@ -883,11 +870,11 @@ static int copy_menu (Menu_Popup_Type *dest, Menu_Node_Type *src)
 	if (m == NULL)
 	  SLang_free_anytype (any);
 	break;
-	
+
       case MENU_NODE_KEYSTRING:
 	m = (Menu_Node_Type *) append_keystring_item (dest, src->name, ((Menu_Keystring_Fun_Type *)src)->keystring);
 	break;
-	
+
       case MENU_NODE_MENUBAR:
 	SLang_verror (SL_INTRINSIC_ERROR, "Unable to copy a menu-bar");
 	return -1;
@@ -898,14 +885,13 @@ static int copy_menu (Menu_Popup_Type *dest, Menu_Node_Type *src)
 		      "Menu Type %d not supported", src->type);
 	return -1;
      }
-   
+
    if (m == NULL)
      return -1;
-   
+
    m->flags = src->flags;
    return 0;
 }
-
 
 /*
  *  SLsmg MenuBar interface
@@ -923,7 +909,7 @@ static void simulate_box (int r, int c, unsigned int dr, unsigned int dc)
 
    if ((dr < 1) || (dc < 2)) return;
 
-   dr--; 
+   dr--;
    dc--;
    SLsmg_gotorc (r, c);
    SLsmg_write_string ("+");
@@ -933,7 +919,7 @@ static void simulate_box (int r, int c, unsigned int dr, unsigned int dc)
    SLsmg_write_string ("+");
    simulate_hline (dc-1);
    SLsmg_write_string ("+");
-   
+
    rmax = r + dr;
    for (rr = r + 1; rr < rmax; rr++)
      {
@@ -977,7 +963,7 @@ static void draw_name (char *name, int color0, int color1, unsigned int field_wi
    if (s < smax)
      {
 	unsigned char *s1;
-	
+
 	name_width--;
 	s++;			       /* skip & */
 	SLsmg_set_color (color1);
@@ -994,7 +980,6 @@ static void draw_name (char *name, int color0, int color1, unsigned int field_wi
      SLsmg_write_nstring ("", field_width - name_width);
 }
 
-	  
 static int draw_menu_bar (Menu_Bar_Type *b)
 {
    Menu_Node_Type **m;
@@ -1042,7 +1027,7 @@ static int draw_menu_bar (Menu_Bar_Type *b)
 
    SLsmg_set_color (JMENU_COLOR);
    SLsmg_erase_eol ();
-   
+
    return active;
 }
 
@@ -1109,7 +1094,7 @@ static int draw_keystring (Menu_Keystring_Fun_Type *k, int color0, int color1, u
 	  {
 	     char *s;
 	     SLang_Key_Type *this_key = key;
-	     
+
 	     key = key->next;
 
 	     if (this_key->type != type)
@@ -1134,17 +1119,17 @@ static int draw_keystring (Menu_Keystring_Fun_Type *k, int color0, int color1, u
 	       }
 	  }
      }
-   
+
    if (best_keystring == NULL)
      {
 	if (best_key == NULL)
 	  return 0;
-	
+
 	best_keystring = SLang_make_keystring (best_key->str);
 	if (best_keystring == NULL)
 	  return 0;
      }
-   
+
    best_len = strlen (best_keystring);
    if (best_len > 4)
      return 0;
@@ -1166,10 +1151,10 @@ static int draw_popup_menu (Menu_Popup_Type *p, int r, int c)
 
    if (r == 0)
      r = 1;
-   
+
    dr = p->num_subnodes + 2;
    dc = p->min_width + 5 + 4;	       /* allow room for keystring */
-   
+
    if (c + (int)dc >= Jed_Num_Screen_Cols)
      {
 	if ((int)dc > Jed_Num_Screen_Cols)
@@ -1207,13 +1192,13 @@ static int draw_popup_menu (Menu_Popup_Type *p, int r, int c)
 
    l = p->subnodes;
    lmax = l + p->num_subnodes;
-   
+
    if (p->num_subnodes + 2 > dr)
      {
 	unsigned int page;
 	unsigned int nr = dr - 2;
 	unsigned int col;
-	
+
 	col = c + dc - 4;
 	page = p->active_node / nr;
 	if (page)
@@ -1229,7 +1214,7 @@ static int draw_popup_menu (Menu_Popup_Type *p, int r, int c)
 	else
 	  l = lmax - nr;
      }
-   
+
    p->visible_node_offset = (int) (l - p->subnodes);
 
    c++;
@@ -1251,7 +1236,7 @@ static int draw_popup_menu (Menu_Popup_Type *p, int r, int c)
 
 	color0 = JMENU_POPUP_COLOR;
 	color1 = JMENU_CHAR_COLOR;
-	
+
 	if (m->flags & MENU_SELECTION)
 	  {
 	     active_row = r;
@@ -1279,7 +1264,7 @@ static int draw_popup_menu (Menu_Popup_Type *p, int r, int c)
 	       SLsmg_draw_hline (dc-1);
 	     SLsmg_write_nchars (" ", 1);
 	     break;
-	     
+
 	   case MENU_NODE_POPUP:
 	     SLsmg_write_nchars (" ", 1);
 	     draw_name (m->name, color0, color1, dc);
@@ -1300,10 +1285,10 @@ static int draw_popup_menu (Menu_Popup_Type *p, int r, int c)
 	l++;
 	r++;
      }
-   
+
    if (p_active != NULL)
      return draw_popup_menu (p_active, p_active->row, p_active->column);
-   
+
    SLsmg_gotorc (active_row, active_col);
    return 0;
 }
@@ -1330,7 +1315,7 @@ static Menu_Bar_Type *get_active_menubar (void)
 
 	if (b == NULL)
 	  return NULL;
-	
+
      }
    /* Active_Popup = (Menu_Popup_Type *) b; */
    return b;
@@ -1358,7 +1343,7 @@ int jed_redraw_menus (void)
 	SLsmg_erase_eol ();
 	return 0;
      }
-   
+
    active = draw_menu_bar (b);
    if (active == -1)
      return 0;
@@ -1377,7 +1362,6 @@ int jed_redraw_menus (void)
    return 1;
 }
 
-
 /* Keyboard Interface */
 
 static int find_active_popup (void)
@@ -1386,9 +1370,9 @@ static int find_active_popup (void)
 
    if (Active_Menu_Bar == NULL)
      return -1;
-   
+
    p = (Menu_Popup_Type *) Active_Menu_Bar;
-   
+
    while (1)
      {
 	Active_Popup = p;
@@ -1404,18 +1388,17 @@ static int find_active_popup (void)
 	  return select_menu_cmd ();
      }
 }
-	
-	
+
 static int next_menubar_cmd (void)
 {
    unsigned int flags;
    Menu_Popup_Type *p;
-   
+
    if (NULL == (p = (Menu_Popup_Type *) Active_Menu_Bar))
      return -1;
 
    flags = get_active_node_flags (p) & MENU_ACTIVE;
-   
+
    /* (void) unselect_active_node ((Menu_Popup_Type *)Active_Menu_Bar); */
    (void) select_next_active_node (p, p->active_node, flags);
    (void) find_active_popup ();
@@ -1426,7 +1409,7 @@ static int prev_menubar_cmd (void)
 {
    unsigned int flags;
    Menu_Popup_Type *p;
-   
+
    if (NULL == (p = (Menu_Popup_Type *) Active_Menu_Bar))
      return -1;
 
@@ -1456,7 +1439,7 @@ static int down_menu_cmd (void)
 {
    if (Active_Popup == NULL)
      return -1;
-   
+
    /* unselect_active_node (Active_Popup); */
    select_next_active_node (Active_Popup, Active_Popup->active_node, 0);
    return 1;
@@ -1466,7 +1449,7 @@ static int up_menu_cmd (void)
 {
    if (Active_Popup == NULL)
      return -1;
-   
+
    /* unselect_active_node (Active_Popup); */
    select_prev_active_node (Active_Popup, Active_Popup->active_node, 0);
    return 1;
@@ -1496,7 +1479,7 @@ static int execute_keystring (char *s)
 
    if (NULL != (f = (int (*)(void)) (SLang_find_key_function(s, CBuf->keymap))))
      return (*f) ();
-   
+
    if ((*s == '.')
        || !SLang_execute_function(s))
      SLang_load_string(s);
@@ -1518,11 +1501,11 @@ static char *get_full_popup_name (Menu_Popup_Type *p)
 	len += 1 + strlen (parent->name);
 	parent = parent->parent;
      }
-   
+
    name = SLmalloc (len + 1);
    if (name == NULL)
      return NULL;
-   
+
    s = (name + len) - strlen (p->name);
    strcpy (s, p->name);
    parent = p->parent;
@@ -1535,7 +1518,7 @@ static char *get_full_popup_name (Menu_Popup_Type *p)
 	strncpy (s, parent->name, len);
 	parent = parent->parent;
      }
-   
+
    return name;
 }
 
@@ -1559,7 +1542,6 @@ static int run_popup_callback (Menu_Popup_Type *p, SLang_Name_Type *cb)
    return 0;
 }
 
-   
 static int prepare_popup (Menu_Popup_Type *p)
 {
    SLang_Name_Type *cb;
@@ -1570,17 +1552,16 @@ static int prepare_popup (Menu_Popup_Type *p)
 	if (-1 == run_popup_callback (p, cb))
 	  return -1;
      }
-   
+
    if (NULL != (cb = p->tweak_popup_callback))
      {
 	if (-1 == run_popup_callback (p, cb))
 	  return -1;
      }
-   
+
    p->flags |= MENU_POPUP_PREPARED;
    return 0;
 }
-
 
 static int select_menu_cmd (void)
 {
@@ -1639,7 +1620,7 @@ static int select_menu_cmd (void)
 	if (c->c_fun != NULL)
 	  return -1;
 	return c->c_fun ();
-	
+
      }
    return 0;
 }
@@ -1663,46 +1644,46 @@ static Menu_Node_Type *find_subnode_via_char (Menu_Popup_Type *p, char ch)
 
    if (p == NULL)
      return NULL;
-   
+
    two = 2;
 
    while (two)
      {
 	l = p->subnodes;
 	lmax = l + p->num_subnodes;
-   
+
 	while (l < lmax)
 	  {
 	     Menu_Node_Type *m;
 	     char *s;
-	     
+
 	     m = *l++;
-	     
+
 	     if (m->type == MENU_NODE_SEPARATOR)
 	       continue;
-	     
+
 	     if (m->flags & MENU_ITEM_UNAVAILABLE)
 	       continue;
 
 	     s = strchr (m->name, '&');
 	     if (s == NULL)
 	       continue;
-	
+
 	     if (s[1] == ch)
 	       return m;
 	  }
-	
+
 	ch = (char) CHANGE_CASE(ch);
 	two--;
      }
-   
+
    return NULL;
 }
 
 static int select_via_char_cmd (void)
 {
    Menu_Node_Type *m;
-   
+
    m = find_subnode_via_char (Active_Popup, (char) SLang_Last_Key_Char);
    if (m == NULL)
      return -1;
@@ -1711,7 +1692,6 @@ static int select_via_char_cmd (void)
    return select_menu_cmd ();
 }
 
-   
 static SLKeyMap_List_Type *Menu_Keymap;
 
 static SLKeymap_Function_Type Menu_Keymap_Functions [] =
@@ -1744,7 +1724,7 @@ static int init_menu_keymap (void)
      return -1;
 
    Menu_Keymap->functions = Menu_Keymap_Functions;
-   
+
    simple[1] = 0;
    for (ch = 0; ch < 256; ch++)
      {
@@ -1759,7 +1739,6 @@ static int init_menu_keymap (void)
 	SLkm_define_key (simple, (FVOID_STAR) select_via_char_cmd, Menu_Keymap);
      }
 
-   
    SLkm_define_key (" ", (FVOID_STAR) back_menu_cmd, Menu_Keymap);
    SLkm_define_key ("^?", (FVOID_STAR) back_menu_cmd, Menu_Keymap);
    SLkm_define_key ("^H", (FVOID_STAR) back_menu_cmd, Menu_Keymap);
@@ -1791,7 +1770,7 @@ static int init_menu_keymap (void)
 # endif
 #else				       /* IBMPC_SYSTEM */
 #include "doskeys.h"
-   
+
    SLkm_define_key (PC_UP, (FVOID_STAR) up_menu_cmd, Menu_Keymap);
    SLkm_define_key (PC_UP1, (FVOID_STAR) up_menu_cmd, Menu_Keymap);
    SLkm_define_key (PC_DN, (FVOID_STAR) down_menu_cmd, Menu_Keymap);
@@ -1811,7 +1790,6 @@ static int init_menu_keymap (void)
 #endif
    return 0;
 }
-
 
 SLang_Key_Type *jed_menu_do_key (void)
 {
@@ -1836,14 +1814,14 @@ SLang_Key_Type *jed_menu_do_key (void)
 	  ch = 127;
      }
    ungetkey (&ch);
-   
+
    return SLang_do_key (Menu_Keymap, jed_getkey);
 }
 
 static int exec_menubar_callback (Menu_Bar_Type *b, SLang_Name_Type **ntp)
 {
    SLang_Name_Type *nt;
-   
+
    nt = *ntp;
    if (nt == NULL)
      return 0;
@@ -1853,7 +1831,7 @@ static int exec_menubar_callback (Menu_Bar_Type *b, SLang_Name_Type **ntp)
 
    if (-1 == SLang_push_string (b->name))
      return -1;
-   
+
    if (-1 == SLexecute_function (nt))
      {
 	if (Active_Menu_Bar == b)      /* disable callback */
@@ -1866,7 +1844,6 @@ static int exec_menubar_callback (Menu_Bar_Type *b, SLang_Name_Type **ntp)
 
    return 0;
 }
-
 
 void jed_notify_menu_buffer_changed (void)
 {
@@ -1883,7 +1860,6 @@ void jed_notify_menu_buffer_changed (void)
      SLang_set_error (err);
 }
 
-
 int jed_select_menu_bar (void)
 {
    Menu_Popup_Type *p;
@@ -1896,17 +1872,17 @@ int jed_select_menu_bar (void)
 	 */
 	return -1;
      }
-   
+
    if (NULL == (Active_Menu_Bar = get_active_menubar ()))
      return -1;
-   
+
    p = (Menu_Popup_Type *) Active_Menu_Bar;
    Active_Popup = p;
 
    l = p->subnodes;
    lmax = l + p->num_subnodes;
 
-   /* Reset each sub-node to its default value.  This is necessary 
+   /* Reset each sub-node to its default value.  This is necessary
     * to ensure that keyboard macros will work when one switches from
     * one node to another via next/prev_menubar_cmd functions.
     */
@@ -1922,13 +1898,13 @@ int jed_select_menu_bar (void)
      }
 
    p->active_node = 0;
-   
+
    if (-1 == exec_menubar_callback (Active_Menu_Bar, &Active_Menu_Bar->select_callback))
      {
 	jed_exit_menu_bar ();
 	return -1;
      }
-   
+
    (void) get_selected_menu_item (p);
    touch_screen ();
    Jed_Menus_Active = 1;
@@ -1937,7 +1913,7 @@ int jed_select_menu_bar (void)
 
 /* Interpreter interface */
 
-static Menu_Node_Type *find_menu_node1 (Menu_Popup_Type *m, 
+static Menu_Node_Type *find_menu_node1 (Menu_Popup_Type *m,
 					char *name,
 					int stop_at_last_popup)
 {
@@ -1950,11 +1926,11 @@ static Menu_Node_Type *find_menu_node1 (Menu_Popup_Type *m,
 
    l = m->subnodes;
    lmax = l + m->num_subnodes;
-   
+
    while (l < lmax)
      {
 	Menu_Popup_Type *p;
-	
+
 	p = (Menu_Popup_Type *) *l++;
 
 	if (0 == menu_name_eqs (p->name, name, name_end))
@@ -1963,13 +1939,13 @@ static Menu_Node_Type *find_menu_node1 (Menu_Popup_Type *m,
 	if (*name_end == 0)
 	  {
 	     if (stop_at_last_popup
-		 && ((p->type != MENU_NODE_POPUP) 
+		 && ((p->type != MENU_NODE_POPUP)
 		     || (p->type != MENU_NODE_MENUBAR)))
 	       return (Menu_Node_Type *)m;
 
 	     return (Menu_Node_Type *)p;
 	  }
-	     
+
 	if (p->type == MENU_NODE_POPUP)
 	  return find_menu_node1 (p, name_end + 1, stop_at_last_popup);
 
@@ -1978,8 +1954,6 @@ static Menu_Node_Type *find_menu_node1 (Menu_Popup_Type *m,
 
    return NULL;
 }
-
-   
 
 static Menu_Node_Type *find_menu_node (char *name, int stop_at_last_popup)
 {
@@ -2006,7 +1980,7 @@ static Menu_Node_Type *find_menu_node (char *name, int stop_at_last_popup)
 static Menu_Popup_Type *find_menu_popup (char *name)
 {
    Menu_Popup_Type *m;
-   
+
    m = (Menu_Popup_Type *) find_menu_node (name, 0);
    if (m == NULL)
      return m;
@@ -2014,7 +1988,7 @@ static Menu_Popup_Type *find_menu_popup (char *name)
    if ((m->type != MENU_NODE_POPUP)
        && (m->type != MENU_NODE_MENUBAR))
      {
-	SLang_verror (SL_INVALID_PARM, 
+	SLang_verror (SL_INVALID_PARM,
 		      "%s is not a menu node", name);
 	return NULL;
      }
@@ -2061,9 +2035,9 @@ static void set_buffer_menu_bar_cmd (char *name)
    b = menu_find_menu_bar (name, 1);
    if (b == NULL)
      return;
-   
+
    jed_delete_menu_bar (CBuf->menubar);
-   
+
    CBuf->menubar = b;
    b->num_refs += 1;
 }
@@ -2073,17 +2047,17 @@ static int pop_where_to_insert (Menu_Popup_Type *p, unsigned int *where)
    if (SLang_peek_at_stack () == SLANG_STRING_TYPE)
      {
 	char *s;
-	
+
 	if (-1 == SLang_pop_slstring (&s))
 	  return -1;
 	*where = find_where_to_insert (p, s);
 	SLang_free_slstring (s);
 	return 0;
      }
-   
+
    if (-1 == SLang_pop_uinteger (where))
      return -1;
-   
+
    return 0;
 }
 
@@ -2103,7 +2077,6 @@ static void insert_popup_menu_cmd (char *dest, char *menu)
    insert_popup_menu (m, menu, where);
 }
 
-   
 static void append_popup_menu_cmd (char *dest, char *menu)
 {
    Menu_Popup_Type *m;
@@ -2168,10 +2141,10 @@ static void insert_menu_item_cmd_internal (int is_fun, int do_append)
 
    if (-1 == SLang_pop_slstring (&menu))
      goto free_and_return;
-   
+
    if (NULL == (m = find_menu_popup (menu)))
      goto free_and_return;
-   
+
    if (do_append)
      where = m->num_subnodes;
    else if (-1 == pop_where_to_insert (m, &where))
@@ -2191,7 +2164,7 @@ static void insert_menu_item_cmd_internal (int is_fun, int do_append)
 
    free_and_return:
 
-   if (client_data != NULL) 
+   if (client_data != NULL)
      SLang_free_anytype (client_data);
    SLang_free_slstring (str);
    SLang_free_slstring (menu);
@@ -2218,7 +2191,7 @@ static void menu_delete_item_cmd (char *menu)
    child = find_menu_node (menu, 0);
    if ((parent == NULL) || (child == NULL))
      {
-	SLang_verror (SL_INVALID_PARM, 
+	SLang_verror (SL_INVALID_PARM,
 		      "Menu %s does not exist", menu);
 	return;
      }
@@ -2238,10 +2211,10 @@ static void menu_delete_items_cmd (char *menu)
 static void set_object_available_cmd (char *name, int *flag)
 {
    Menu_Node_Type *m;
-   
+
    if (NULL == (m = find_menu_node (name, 0)))
      return;
-   
+
    if (*flag) m->flags &= ~MENU_ITEM_UNAVAILABLE;
    else
      m->flags |= MENU_ITEM_UNAVAILABLE;
@@ -2275,7 +2248,7 @@ static int pop_popup_callback (Menu_Popup_Type **pp, int type,
 	SLang_free_slstring (popup);
 	return -1;
      }
-   
+
    if (type && (p->type != type))
      {
 	SLang_verror (SL_INVALID_PARM, "%s does not specify the proper menu type", popup);
@@ -2283,7 +2256,7 @@ static int pop_popup_callback (Menu_Popup_Type **pp, int type,
 	SLang_free_slstring (popup);
 	return -1;
      }
-   
+
    SLang_free_slstring (popup);
 
    *ntp = nt;
@@ -2311,13 +2284,12 @@ static void set_init_menubar_callback (void)
 {
    Menu_Bar_Type *b;
    SLang_Name_Type *nt;
-   
+
    if (-1 == pop_menubar_callback (&b, &nt))
      return;
 
    b->init_callback = nt;
 }
-
 
 static void set_select_popup_callback (void)
 {
@@ -2349,30 +2321,29 @@ static void copy_menu_cmd (char *destname, char *srcname)
    dest = find_menu_popup (destname);
    if (dest == NULL)
      return;
-   
+
    src = find_menu_node (srcname, 0);
    if (src == NULL)
      return;
-   
+
    (void) copy_menu (dest, src);
 }
 
 static void set_menu_bar_prefix_string (char *menubar, char *s)
 {
    Menu_Bar_Type *b;
-   
+
    if (NULL == (b = menu_find_menu_bar (menubar, 1)))
      return;
 
    s = SLang_create_slstring (s);
    if (s == NULL)
      return;
-   
+
    SLang_free_slstring (b->prefix_string);
    b->prefix_string = s;
 }
 
-   
 static void popup_menu_cmd (char *menu)
 {
    char *popup;
@@ -2393,27 +2364,26 @@ static void popup_menu_cmd (char *menu)
      {
 	Menu_Node_Type *m;
 	char *next_popup;
-	
+
 	next_popup = strchr (popup, '.');
 	if (next_popup != NULL)
 	  *next_popup++ = 0;
 
 	if (NULL == (m = find_subnode (Active_Popup, popup)))
 	  {
-	     SLang_verror (SL_INVALID_PARM, 
+	     SLang_verror (SL_INVALID_PARM,
 			   "Unable to find a popup menu called %s", menu);
 	     break;
 	  }
 	set_node_selection (Active_Popup, m);
 	if (-1 == select_menu_cmd ())
 	  break;
-	
+
 	popup = next_popup;
      }
-   
+
    SLfree (menu);
 }
-
 
 static SLang_Intrin_Fun_Type Menu_Table[] =
 {
@@ -2456,19 +2426,19 @@ int jed_init_menus (void)
 static int select_menu_via_rc (int type, int r, int c)
 {
    Menu_Popup_Type *p;
-   
+
    p = Active_Popup;
    while (p != (Menu_Popup_Type *)Active_Menu_Bar)
      {
-	if ((r >= p->row) 
+	if ((r >= p->row)
 	    && (r < p->max_row)
 	    && (c >= p->column)
 	    && (c < p->max_col))
 	  break;
-	
+
 	p = p->parent;
      }
-   
+
    if ((p == NULL) || (p->type == MENU_NODE_MENUBAR))
      {
 	unsigned int i;
@@ -2476,7 +2446,7 @@ static int select_menu_via_rc (int type, int r, int c)
 
 	if (Active_Popup == NULL)
 	  return -1;
-	
+
 	if (r != 0)
 	  {
 	     if (type != JMOUSE_DRAG)
@@ -2485,7 +2455,7 @@ static int select_menu_via_rc (int type, int r, int c)
 	     if (Active_Popup->type != MENU_NODE_MENUBAR)
 	       return 0;
 	  }
-	
+
 	unselect_active_node ((Menu_Popup_Type *) Active_Menu_Bar);
 
 	i = Active_Menu_Bar->num_subnodes;
@@ -2500,14 +2470,14 @@ static int select_menu_via_rc (int type, int r, int c)
 	     p = (Menu_Popup_Type *)Active_Menu_Bar->subnodes[i];
 	     if (p->type == MENU_NODE_SEPARATOR)
 	       continue;
-		  
+
 	     if (p->flags & MENU_ITEM_UNAVAILABLE)
 	       continue;
 
 	     if (-1 == set_node_selection ((Menu_Popup_Type *) Active_Menu_Bar,
 					   (Menu_Node_Type *) p))
 	       return -1;
-	     
+
 	     if (-1 == find_active_popup ())
 	       return -1;
 
@@ -2516,17 +2486,17 @@ static int select_menu_via_rc (int type, int r, int c)
 	  }
 	return -1;
      }
- 
+
    if (p == Active_Popup)
      {
 	r -= (p->row + 1);
 	r += p->visible_node_offset;
 	if ((r >= (int)p->num_subnodes) || (r < 0))
 	  return 0;
-	
+
 	if (-1 == set_node_selection (p, p->subnodes[r]))
 	  return 0;
-	
+
 	if ((type != JMOUSE_DRAG)
 	    || ((p->subnodes[r]->type == MENU_NODE_POPUP)
 		&& (c + 1 >= p->max_col)))
@@ -2534,14 +2504,14 @@ static int select_menu_via_rc (int type, int r, int c)
 
 	return 0;
      }
-   
+
    while (Active_Popup != p)
      back_menu_cmd ();
 
    return 0;
 }
 
-int jed_menu_handle_mouse (unsigned int type, 
+int jed_menu_handle_mouse (unsigned int type,
 			   int x, int y, int button, int shift)
 {
    (void) shift; (void) button;
@@ -2566,20 +2536,19 @@ int jed_menu_handle_mouse (unsigned int type,
 static int xterm_mouse_cmd (void)
 {
    int x, y, b;
-   
+
    b = my_getkey ();
    x = (unsigned char) my_getkey () - 32;
    y = (unsigned char) my_getkey () - 32;
-   
+
    /* We need to trigger on the button release event */
-   
+
    b -= 32;
    if ((b & 3) != 3)
      return -1;
-   
+
    return jed_menu_handle_mouse (JMOUSE_UP, x, y, 0, 0);
 }
-
 
 #endif 				       /* !IBMPC_SYSTEM */
 #endif				       /* HAS_MOUSE */

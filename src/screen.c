@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -208,7 +208,7 @@ static void display_line (Line *line, int sy, int sx)
 	  write_syntax_highlight (sy, line, len);
 	else
 	  {
-	     if ((is_mini == 0) 
+	     if ((is_mini == 0)
 		 && Jed_Highlight_WS & HIGHLIGHT_WS_TRAILING)
 	       {
 		  unsigned char *pmin = line->data;
@@ -547,7 +547,6 @@ Line *find_top (void)
    return jed_find_top_to_recenter (cline);
 }
 
-
 static void init_smg_for_buffer (int *rowp, int *colp)
 {
    SLsmg_Tab_Width = Buffer_Local.tab;
@@ -556,7 +555,7 @@ static void init_smg_for_buffer (int *rowp, int *colp)
    else
      SLsmg_Newline_Behavior = 0;
    (void) SLsmg_embedded_escape_mode (CBuf->flags & SMG_EMBEDDED_ESCAPE);
-   
+
    *rowp = SLsmg_get_row ();
    *colp = SLsmg_get_column ();
    SLsmg_gotorc (0, 0);
@@ -567,7 +566,6 @@ void point_column (int n)
    SLuchar_Type *p, *pmax;
    int row, col;
 
-   
    /* Compensate for the prompt */
    if (IN_MINI_WINDOW)
      n -= Mini_Info.effective_prompt_len;
@@ -576,7 +574,7 @@ void point_column (int n)
    pmax = p + CLine->len;
    if (LINE_HAS_NEWLINE (CLine))
      pmax--;
-   
+
    init_smg_for_buffer (&row, &col);
    n = (int) SLsmg_strbytes (p, pmax, (unsigned int) n);
    SLsmg_gotorc (row, col);
@@ -832,7 +830,7 @@ static void finish_status(int col_flag)
 
 	   case 'v':
 	     SLsmg_write_string (Jed_Version_String);
-	     if (Jed_UTF8_Mode) 
+	     if (Jed_UTF8_Mode)
 	       str = "U";
 	     else
 	       str = NULL;
@@ -1340,7 +1338,6 @@ int Mini_Ghost = 0;
 
 char Message_Buffer[256];
 
-
 static void do_dialog(char *b)
 {
    char *quit = "Quit!";
@@ -1398,16 +1395,16 @@ void clear_message (void) /*{{{*/
 void message (char *msg)
 {
    if (Executing_Keyboard_Macro) return;
-   if (msg == NULL) 
+   if (msg == NULL)
      {
 	if (Batch)
 	  return;
 	msg = "";
      }
-   
+
    if (Batch) fprintf(stdout, "%s\n", msg);
 
-   if (*msg == 0) 
+   if (*msg == 0)
      Mini_Ghost = 1;
 
    strncpy(Message_Buffer, msg, sizeof(Message_Buffer));
@@ -1530,9 +1527,9 @@ static void set_hscroll(int col)
      }
 }
 #endif
-/* Let "|" denote the window edges, 
+/* Let "|" denote the window edges,
  *   "." denote text, "*" denotes the current location
- * 
+ *
  *  .........|....*..........|....
  *  <---- col --->
  *  <-- wc -><-------sw------>
@@ -1548,7 +1545,7 @@ static void set_hscroll(int col)
  *    col+whs-sw < col-whs
  *    whs-sw < -whs
  *    2whs < sw ==> whs < sw/2
- * 
+ *
  * As a special case, if col < sw, then set wc=0.
  */
 static void set_hscroll(int col)
@@ -1583,7 +1580,7 @@ static void set_hscroll(int col)
    col--;			       /* use 0 origin */
    if (2*whs > sw)
      whs = sw/2;
-     
+
    wc_min = col - sw + 1;
    if (wc_min < 0) wc_min = 0;
    wc_max = col - 1;
@@ -1651,7 +1648,7 @@ static void update_top_screen_line (void)
 }
 
 /* if flag is non-zero, do not touch the message/error buffers */
-/* This routine is a mess and it, do_dialog, and the Mini_Ghost flag needs 
+/* This routine is a mess and it, do_dialog, and the Mini_Ghost flag needs
  * to be totally redesigned.
  */
 void update(Line *line, int force, int flag, int run_update_hook)
@@ -1916,7 +1913,7 @@ void jed_resize_display (void)
    dealloc_display ();
    alloc_display ();
    SLsmg_reinit_smg ();
-   
+
    /* Add support for a resize-hook here */
    /* (void) jed_va_run_hooks ("_jed_resize_display_hooks", JED_HOOKS_RUN_ALL, 0); */
 

@@ -4,7 +4,7 @@
 define mime_parse_this_qp ()
 {
    variable str;
-   
+
    str = strcat ("0x", char (what_char ()));
    del ();
    str = strcat (str, char (what_char ()));
@@ -22,10 +22,10 @@ define mime_rfc1522_parse_buffer ()
    variable qpre;
    variable len;
    variable charset, str;
-   
+
    % Look for things like =?iso-8859-1?Q?=E1end?=
    qpre = "=\\?\\([-_a-zA-Z0-9]+\\)\\?Q\\?\\([^ \t]+\\)\\?=";
-   
+
    push_spot ();
    bob ();
    while (len = re_fsearch (qpre), len)
@@ -39,7 +39,7 @@ define mime_rfc1522_parse_buffer ()
 	push_mark ();
 	insert (str);
 	narrow_to_region ();
-	
+
 	bob ();
 	replace ("_", " ");
 	while (fsearch ("="))
@@ -64,14 +64,8 @@ define mime_qp_parse_buffer ()
 	     del ();
 	     continue;
 	  }
-	
+
 	mime_parse_this_qp ();
      }
 }
 
-
-	     
-			   
-	     
-	     
-	

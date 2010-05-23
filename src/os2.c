@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -266,7 +266,6 @@ int sys_input_pending(int *tsecs, int proc)
 {
    int count = *tsecs * 5;
 
- 
 #if JED_HAS_SUBPROCESSES
    if ((proc >= 0) && (Batch || Input_Buffer_Len)) return(Input_Buffer_Len);
 #else
@@ -481,7 +480,7 @@ int sys_findfirst(char *theFile)
    /* OS/2 HPFS has the same problem as Windows: the filesystem is
     * case-insensitive so if one searches for makefi*, it will return
     * Makefile.in between the others, so check for wrong values and reject
-    * them 
+    * them
     */
    if (Jed_Filename_Case_Sensitive
        && (0 != strncmp (file, Found_File, Found_FLen))

@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -21,7 +21,7 @@
 #include <direct.h>
 #include <conio.h>
 #include <io.h>
- /* for some reason _bios_keybrd seems to work better than kbhit() 
+ /* for some reason _bios_keybrd seems to work better than kbhit()
   * even though the documentation indicates they do the same thing.
   */
 #define kbhit() _bios_keybrd(_NKEYBRD_READY)
@@ -56,7 +56,7 @@ static void read_and_buffer_keys (void)
    unsigned char keybuf[16];
    unsigned int shift;
    unsigned int num;
-   
+
 #ifdef __WATCOMC__
    scan = _bios_keybrd(_NKEYBRD_READ);
    shift = _bios_keybrd(_NKEYBRD_SHIFTSTATUS) & 0xF;
@@ -64,24 +64,22 @@ static void read_and_buffer_keys (void)
    scan = (unsigned int) BIOSKEY(0);
    shift = BIOSKEY(2) & 0xF;
 #endif
-   
+
    num = jed_scan_to_key (scan & 0xFFFF, shift, keybuf);
    buffer_keystring (keybuf, num);
 }
-
-
 
 /* Here I also map keys to edt keys */
 
 unsigned char sys_getkey()
 {
    int wit = 300;
-   
-   if ( 
+
+   if (
 #ifdef __WATCOMC__
        (!_bios_keybrd(_NKEYBRD_READY))
 #else
-       (!kbhit()) 
+       (!kbhit())
 #endif
        ) while (!sys_input_pending(&wit, 0))
 	{
@@ -91,18 +89,17 @@ unsigned char sys_getkey()
 		update((Line *) NULL, 0, 1, 0);
 	     }
 	}
-   
+
 #ifdef HAS_MOUSE
    /* This can only be set by the mouse */
    if (JMouse_Hide_Mouse_Hook != NULL) (*JMouse_Hide_Mouse_Hook) (0);
    if (Input_Buffer_Len)
      return my_getkey ();
 #endif
-   
+
    read_and_buffer_keys ();
    return my_getkey ();
 }
-
 
 void sys_pause (int ms)
 {
@@ -115,11 +112,11 @@ void sys_pause (int ms)
 int sys_input_pending(int *tsecs, int unused)
 {
    int count = *tsecs * 5;
-   
+
    (void) unused;
    if (Batch || Input_Buffer_Len) return(Input_Buffer_Len);
    if (kbhit()) return 1;
-   
+
    while (count > 0)
      {
 	sys_pause (20);		       /* 20 ms or 1/50 sec */
@@ -131,10 +128,9 @@ int sys_input_pending(int *tsecs, int unused)
 	    ) break;
 	count--;
      }
-   
+
    return (count);
 }
-
 
 /* returns 0 if file does not exist, 1 if it is not a dir, 2 if it is */
 int sys_chmod(SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *dum1, gid_t *dum2)
@@ -142,9 +138,9 @@ int sys_chmod(SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *dum1, gi
    struct stat buf;
    int m;
    *dum1 = *dum2 = 0;
-   
+
    file = msdos_pinhead_fix_dir (file);
-   
+
    if (what)
      {
 	chmod(file, *mode);
@@ -191,7 +187,6 @@ int i386_access (char *file, int mode)
    return 0;
 }
 
-
 #ifndef __WATCOMC__
 # ifdef __GO32__
 static int cbreak;
@@ -208,7 +203,7 @@ void reset_tty()
    setcbrk(cbreak);
 # endif
 #endif
-   
+
 #ifdef HAS_MOUSE
    if (X_Close_Mouse_Hook != NULL) (*X_Close_Mouse_Hook) ();
 #endif
@@ -223,14 +218,13 @@ int init_tty()
    cbreak = getcbrk();
    setcbrk(0);
 #endif
-   
+
 #ifdef HAS_MOUSE
    if (X_Open_Mouse_Hook != NULL) (*X_Open_Mouse_Hook) ();
 #endif
-   
+
    return 0;
 }
-
 
 #ifndef __WATCOMC__
 static struct ffblk Dos_DTA;
@@ -261,22 +255,20 @@ static void dta_fixup_name (char *file)
 #else
    strcpy (Found_File, fileinfo.name);
 #endif
-   
+
 #if JED_FILENAME_LOWERCASE
    lowercase_filename (Found_File);
 #endif
-   
+
    strcpy(file, Found_Dir);
    strcat(file, Found_File);
-   
+
 #ifndef __WATCOMC__
    if (Dos_DTA.ff_attrib & FA_DIREC) strcat(file, "\\");
 #else
    if (fileinfo.attrib & _A_SUBDIR) strcat(file, "\\");
 #endif
 }
-
-
 
 int sys_findfirst(char *file)
 {
@@ -286,13 +278,13 @@ int sys_findfirst(char *file)
    Found_File = extract_file( Found_Dir );
 
    f = Found_File;
-   
+
    while (*f && (*f != '*')) f++;
    if (! *f)
      {
 	f = Found_File;
 	while (*f && (*f != '.')) f++;
-	if (*f) strcat(Found_Dir, "*"); 
+	if (*f) strcat(Found_Dir, "*");
 	else strcat(Found_Dir, "*.*");
      }
 
@@ -306,7 +298,7 @@ int sys_findfirst(char *file)
 	return 0;
      }
    *Found_File++ = 0;
-   
+
    dta_fixup_name(file);
    return(1);
 }
@@ -327,7 +319,7 @@ int sys_findnext(char *file)
 
 void i386_check_kbd()
 {
-   while (kbhit()) 
+   while (kbhit())
      {
 	read_and_buffer_keys ();
      }

@@ -111,7 +111,7 @@ private define get_buffer_mode_name (buf)
    setbuf (buf);
    return get_mode_name ();
 }
-   
+
 private define get_buflist(scope)
 {
    variable cbuf = whatbuf ();
@@ -126,7 +126,7 @@ private define get_buflist(scope)
 	scope -= 3;
      }
    variable i;
-   
+
    % prune hidden buffers, unless editing one
    if (cbuf[0] != ' ')
      {
@@ -170,9 +170,9 @@ private variable Dab_Context_Type = struct
    scan_mark, completion_list,
      patterns, pattern_index,
      buffer_list, buffer_list_index,
-     match_methods, match_methods_index, 
+     match_methods, match_methods_index,
      word_chars, search_dir,
-     start_mark, completion, 
+     start_mark, completion,
      prefix_mark,
      start_buffer,     % buffer being edited and where completion is to take place
 };
@@ -194,8 +194,8 @@ private define enter_buffer (c, buf)
    else if (buf != c.start_buffer)
      %  start search at EOB, otherwise a completion at the current point in this buffer may
      %  be missed.
-     eob ();			       
-   
+     eob ();
+
 }
 
 private define leave_buffer (c)
@@ -222,13 +222,12 @@ private define dab_lowercase_match (prefix, word)
    return strlow (word);
 }
 
-
 private define create_completion_context () % (buflist = whatbuf())
 {
    % List of buffers to scan for completions
    variable c = @Dab_Context_Type;
    variable buffer_list;
-   
+
    c.start_buffer = whatbuf();
 
    if (_NARGS)
@@ -249,7 +248,7 @@ private define create_completion_context () % (buflist = whatbuf())
 	% 		  	      Dabbrev_Default_Buflist;
 	buffer_list = get_buflist(buflist_scope);
      }
-   
+
    if (strlen (buffer_list) == 0)
      c.buffer_list = String_Type[0];
    else
@@ -285,16 +284,16 @@ private define create_completion_context () % (buflist = whatbuf())
    c.completion_list[""] = 1;
 
    c.match_methods = [&dab_exact_match];
-   
+
    variable cs = NULL;
    if (blocal_var_exists("Dabbrev_Case_Search"))
      cs = get_blocal_var("Dabbrev_Case_Search");
    else
      cs = mode_get_mode_info ("dabbrev_case_search");
-   
+
    if (cs == NULL)
      cs = Dabbrev_Case_Search;
-   
+
    if (cs == 0)
      {
 	if (strlow (pattern) == pattern)
@@ -308,8 +307,6 @@ private define create_completion_context () % (buflist = whatbuf())
    return c;
 }
 
-  
-
 private define dab_search (c, search_dir, match_method, pattern)
 {
    variable cs = CASE_SEARCH;
@@ -319,8 +316,8 @@ private define dab_search (c, search_dir, match_method, pattern)
      }
    CASE_SEARCH = 0;
    variable found, word_chars = c.word_chars, prefix_mark = c.prefix_mark;
-   
-   forever 
+
+   forever
      {
 	do
 	  {
@@ -329,12 +326,12 @@ private define dab_search (c, search_dir, match_method, pattern)
 		  go_right(1);
 		  found = fsearch (pattern);
 	       }
-	     else 
+	     else
 	       found = bsearch (pattern);
 
 	     ifnot (found)
 	       return NULL;
-	     
+
 	     % test whether at begin of a word
 	     push_spot();
 	     bskip_chars(word_chars);
@@ -343,7 +340,7 @@ private define dab_search (c, search_dir, match_method, pattern)
 	     pop_spot();
 	  }
 	while ((m != create_user_mark ()) or (m == prefix_mark));
-	
+
 	variable len = strlen (pattern);
 	push_spot ();
 	push_mark ();
@@ -352,7 +349,7 @@ private define dab_search (c, search_dir, match_method, pattern)
 	skip_chars (word_chars);
 	variable word = bufsubstr ();
 	pop_spot ();
-	
+
 	word = (@match_method) (pattern, word);
 
 	if (word != NULL)
@@ -376,13 +373,13 @@ private define dab_process_buffer (c, buf, pattern)
      {
 	leave_buffer (c);
      }
-   
+
    variable dir = c.search_dir;
    while (dir < 2)
      {
 	variable match_methods_index = c.match_methods_index;
 	variable match_methods_index_max = length (c.match_methods);
-	
+
 	while (match_methods_index < match_methods_index_max)
 	  {
 	     variable match_method = c.match_methods[match_methods_index];
@@ -410,7 +407,6 @@ private define dab_process_buffer (c, buf, pattern)
    c.scan_mark = NULL;
    return NULL;
 }
-
 
 private define dab_expand (c)
 {
@@ -449,14 +445,14 @@ private define dab_expand (c)
 %\description
 % Takes the current stem (part of word before the cursor)
 % and scans the current buffer for words that begin with this stem.
-% The current word is expanded by the non-stem part of the finding. 
+% The current word is expanded by the non-stem part of the finding.
 % Subsequent calls to dabbrev replace the last completion with the next
 % guess.
 %
-% The search for completions takes place over a list of buffers specified 
+% The search for completions takes place over a list of buffers specified
 % by the \var{Dabbrev_Default_Buflist} variable unless \var{dabbrev} has
-% been called with an argument.  The optional argument may either be an 
-% integer whose value is interpreted as for \var{Dabbrev_Default_Buflist}, 
+% been called with an argument.  The optional argument may either be an
+% integer whose value is interpreted as for \var{Dabbrev_Default_Buflist},
 % or a string containing a newline separated list of buffer names to search.
 %
 % The scan proceeds as follows:
@@ -508,7 +504,6 @@ private define before_key_hook (fun)
    del_region();
 }
 
-   
 public define dabbrev()  %(buflist=whatbuf())
 {
    variable type, fun, key, args = __pop_args(_NARGS);
@@ -517,7 +512,7 @@ public define dabbrev()  %(buflist=whatbuf())
 
    if (Completion_Context == NULL)
      Completion_Context = create_completion_context (__push_args (args));
-   
+
    Completion = dab_expand (Completion_Context);
 
    if (Completion != NULL)

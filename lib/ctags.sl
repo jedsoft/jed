@@ -1,7 +1,7 @@
 % tags.sl	-*- SLang -*-
 %
 % read a tags file produced by ctags/etags programs
-% 
+%
 % Public Functions:
 %   ctags_forward
 %      Go forward to the previous tag
@@ -13,7 +13,7 @@
 %      Like ctags_find, except popup in a separate window
 %
 % Public Variables:
-% 
+%
 %   Tags_file:  The name of the tags file to use.   The default is
 %   "tags".
 %
@@ -72,7 +72,7 @@ private define goto_position ()
    s.mark = create_user_mark ();
    buf = whatbuf ();
 }
-   
+
 private define back_position ()
 {
    if (Position_Stack_Ptr == NULL)
@@ -92,7 +92,7 @@ private define forw_position ()
    if (s == NULL)
      verror ("Can't go forward");
    Position_Stack_Ptr = s;
-   goto_position ();   
+   goto_position ();
 }
 
 % ctags format:
@@ -144,7 +144,6 @@ private define _ctags_find (tag, sinfo)
    return sinfo;
 }
 
-
 % etags format:
 %  ^L
 %  filename,some-number
@@ -189,7 +188,7 @@ private define goto_tag (s, tag)
 private define tags_find (find_method, tag)
 {
    variable s = Struct_Type[0];
-   forever 
+   forever
      {
 	variable s1 = struct
 	  {
@@ -203,7 +202,7 @@ private define tags_find (find_method, tag)
 
    if (length (s) == 0)
      verror ("Unable to find %s.  Perhaps your tags file needs updated.", tag);
-   
+
    return s;
 }
 
@@ -215,12 +214,12 @@ private define locate_tags_file (tags_file)
      {
 	if (1 == file_status (tags_file))
 	  return tags_file;
-	
+
 	return NULL;
      }
 
    (,dir,,) = getbuf_info ();
-   
+
    forever
      {
 	variable file = dircat (dir, tags_file);
@@ -270,11 +269,11 @@ private define find_tags_file ()
      }
 
    setbuf (tbuf);
-   
+
    erase_buffer ();
    if (insert_file (file) < 0)
      error ("File tags not found!");
-   
+
    variable flags;
 
    (file,,tbuf,flags) = getbuf_info ();
@@ -314,7 +313,7 @@ define ctags_find ()
      tag = ();
    else
      tag = get_tag_at_point ();
-   
+
    tag = strtrim (tag);
    ifnot (strlen (tag))
      return;
@@ -323,13 +322,13 @@ define ctags_find ()
    variable cpos = create_position ();
 
    find_tags_file ();
-   
+
    bob ();
    variable find_method = &_ctags_find;
 
    if (looking_at_char (014))	% if first char is ^L (etags)
      find_method = &etags_find;
-   
+
    variable s = tags_find (find_method, tag);
    goto_tag (s[0], tag);
 
@@ -390,7 +389,7 @@ private define popup_window_containing_buffer_position (m1)
      }
    pop2buf (m1buf);
    goto_user_mark (m1);
-   
+
    % Now go back to the original window.
    % If there are several windows that contain m0buf, find the one we
    % started from.

@@ -8,7 +8,7 @@ set_status_line(" : Jed %v : %b     =(%m%a%n%o)=    (%p)   %t", 1);
 define left_justify_line ()
 {
    push_spot(); bol_trim(); pop_spot();
-}  
+}
 
 define insert_other_window()
 {
@@ -42,7 +42,6 @@ setkey("re_search_forward",	"^FWF");
 setkey("kbd_quit",		"^G");
 setkey("indent_line",		"\t");
 setkey("yp_kill_word",		"^J");
-
 
 setkey("set_mark_cmd",		"^K^B");
 setkey("insert_file",		"^K^I");
@@ -143,6 +142,5 @@ setkey("compile_previous_error","^(k2)");
 
 setkey("yp_yank_pop",		"\ey");
 setkey("yp_bkill_word",		"\e^?");
-
 
 runhooks ("keybindings_hook", _Jed_Emulation);

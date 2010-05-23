@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -19,7 +19,6 @@
 #include "ins.h"
 #include "cmds.h"
 #include "misc.h"
-
 
 /*}}}*/
 
@@ -70,21 +69,21 @@ int jed_expand_abbrev (SLwchar_Type ch) /*{{{*/
 	tbl = Global_Abbrev_Table;
 	if (tbl == NULL) return 0;
      }
-   
+
    if (tbl->word_chars[(unsigned char) ch]) return 0;   /* not a delimiter */
 
    p = CLine->data + (Point - 1);
-   
+
    while ((p >= CLine->data) && (tbl->word_chars[*p]))
      {
 	p--;
      }
    p++;
-   
+
    len = (unsigned int) ((CLine->data + Point) - p);
    if (len == 0)
      return 0;
-   
+
    ch1 = *p;
    a = tbl->abbrevs;
    amax = a + tbl->len;
@@ -100,7 +99,7 @@ int jed_expand_abbrev (SLwchar_Type ch) /*{{{*/
 	     a++;
 	     continue;
 	  }
-	
+
 	Point -= len;
 
 	(void) jed_del_nbytes (len);
@@ -129,7 +128,7 @@ int jed_expand_abbrev (SLwchar_Type ch) /*{{{*/
 static Abbrev_Table_Type *find_table (char *name, int err) /*{{{*/
 {
    Abbrev_Table_Type *tbl;
-   
+
    if (0 == strcmp (name, "Global"))
      {
 	if (Global_Abbrev_Table != NULL)
@@ -137,13 +136,13 @@ static Abbrev_Table_Type *find_table (char *name, int err) /*{{{*/
 
 	/* Fall through for error */
      }
-   
+
    tbl = Abbrev_Tables;
    while (tbl != NULL)
      {
 	if (0 == strcmp (tbl->name, name))
 	  return tbl;
-	
+
 	tbl = tbl->next;
      }
    if (err)
@@ -157,7 +156,7 @@ static Abbrev_Table_Type *find_table (char *name, int err) /*{{{*/
 void create_abbrev_table (char *name, char *word_chars) /*{{{*/
 {
    Abbrev_Table_Type *tbl;
-   
+
    tbl = find_table (name, 0);
    if (tbl == NULL)
      {
@@ -179,7 +178,7 @@ void create_abbrev_table (char *name, char *word_chars) /*{{{*/
      }
 
    if (*word_chars == 0) word_chars = Jed_Word_Range;
-   
+
    SLmake_lut ((unsigned char *) tbl->word_chars, (unsigned char *) word_chars, 0);
 }
 
@@ -203,12 +202,11 @@ static void free_abbrev_table (Abbrev_Table_Type *t)
    SLfree ((char *) t);
 }
 
-   
 void delete_abbrev_table (char *name) /*{{{*/
 {
    Abbrev_Table_Type *tbl;
    Buffer *b;
-   
+
    tbl = find_table (name, 1);
    if (tbl == NULL) return;
    if (tbl == Global_Abbrev_Table)
@@ -224,7 +222,7 @@ void delete_abbrev_table (char *name) /*{{{*/
 	  }
 	else Abbrev_Tables = tbl->next;
      }
-   
+
    b = CBuf;
    do
      {
@@ -254,15 +252,15 @@ void define_abbrev (char *table, char *abbrev, char *expans) /*{{{*/
    if (n >= tbl->max_len)
      {
 	unsigned int max_len = tbl->max_len + 32;
-	
+
 	/* SLrealloc handles NULL via malloc */
 	if (NULL == (a = (Abbrev_Type *) SLrealloc ((char *) a, max_len * sizeof (Abbrev_Type))))
 	  return;
-	
+
 	tbl->abbrevs = a;
 	tbl->max_len = max_len;
      }
-   
+
    /* Before actually creating an abbrev, make sure we can do it without
     * failure.
     */
@@ -296,10 +294,10 @@ void define_abbrev (char *table, char *abbrev, char *expans) /*{{{*/
 	  }
 	a++;
      }
-   
+
    if (a == amax)
      tbl->len++;
-   
+
    a->string = expans;
    a->abbrev = abbrev;
    a->flags = flags;
@@ -311,7 +309,7 @@ void define_abbrev (char *table, char *abbrev, char *expans) /*{{{*/
 void use_abbrev_table (char *name) /*{{{*/
 {
    Abbrev_Table_Type *tbl;
-   
+
    if (NULL != (tbl = find_table (name, 1)))
      CBuf->abbrev_table = tbl;
 }
@@ -329,29 +327,29 @@ static void push_word (Abbrev_Table_Type *tbl) /*{{{*/
 {
    char buf[256], *b, *w;
    int i, in_range;
-   
+
    b = buf;
    w = tbl->word_chars;
-   
+
    if (w[(unsigned char) '-'] != 0) *b++ = '-';
    in_range = 0;
-   
+
    for (i = 33; i < 256; i++)
      {
 	if ((i != '-') && (0 != w[i]))
 	  {
 	     if (i == '\\') *b++ = (char) i;
 	     *b = (char) i;
-	     if (in_range == 0) 
+	     if (in_range == 0)
 	       {
 		  *(b + 1) = '-';
 		  b += 2;  *b = 0;
 		  in_range = 1;
 	       }
 	  }
-	else 
+	else
 	  {
-	     if (in_range) 
+	     if (in_range)
 	       {
 		  if (*b == 0) b--; else b++;
 		  in_range = 0;
@@ -372,7 +370,7 @@ void what_abbrev_table (void) /*{{{*/
    if (tbl == NULL)
      {
 	tbl = Global_Abbrev_Table;
-   
+
 	if (tbl == NULL)
 	  {
 	     (void) SLang_push_string ("");
@@ -380,7 +378,7 @@ void what_abbrev_table (void) /*{{{*/
 	     return;
 	  }
      }
-   
+
    (void) SLang_push_string (tbl->name);
    push_word (tbl);
 }
@@ -396,13 +394,13 @@ void dump_abbrev_table (char *name) /*{{{*/
 
    a = tbl->abbrevs;
    amax = a + tbl->len;
-   
+
    while (a < amax)
      {
 	if ((-1 == jed_insert_string (a->abbrev))
 	    || (-1 == jed_insert_byte ('\t'))
 	    || (-1 == jed_insert_string (a->string))
-	    || ((a->flags & ABBREV_LEAVE_POINT) 
+	    || ((a->flags & ABBREV_LEAVE_POINT)
 		&& (-1 == jed_insert_byte (8)))
 	    || (-1 == jed_insert_newline ()))
 	  return;

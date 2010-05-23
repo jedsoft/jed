@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -29,7 +29,7 @@ static CRITICAL_SECTION Critical_Section;
 
 static int Is_GUI;
 
-/* Note: The console version of jed uses Input_Events[0] for the 
+/* Note: The console version of jed uses Input_Events[0] for the
  * handle to the keyboard.  So, we start numbering at 1.  This is ugly.
  */
 HANDLE Input_Events[MAX_PROCESSES + 1];
@@ -56,7 +56,7 @@ typedef struct
    HANDLE rd, wd;		       /* read/write handles */
    HANDLE hprocess;		       /* real process handle */
    HANDLE hthread;
-   
+
    int output_type;
 # define PROCESS_USE_BUFFER	1
 # define PROCESS_USE_SLANG	2
@@ -68,7 +68,6 @@ typedef struct
 					* the one associated with the process
 					*/
 
-   
    Buffer *buffer;		       /* buffer associated with process */
    SLang_Name_Type *slang_fun;	       /* function to pass output to */
    SLang_MMT_Type *umark;	       /* marks point of last output */
@@ -147,7 +146,7 @@ static void close_rd_and_wd(Process_Type *p)
 static void get_process_status (Process_Type *p)
 {
    int i;
-   
+
    /* Call slang to let it know what happened.  Do it first before we
     * really shut it down to give the hook a chance to query the state of
     * it before it returns.
@@ -173,14 +172,14 @@ static void get_process_status (Process_Type *p)
      }
 
    Num_Subprocesses--;
-   
+
    while (i <= Num_Subprocesses)
      {
 	Input_Events[i] = Input_Events[i + 1];
 	Subprocess_Id[i] = Subprocess_Id[i + 1];
 	i++;
      }
-   
+
    SLang_free_function (p->slang_fun);
    SLang_free_function (p->status_change_fun);
    memset((char *) p, 0, sizeof(Process_Type));
@@ -242,7 +241,7 @@ static DWORD thread_func (DWORD fd)
 	EnterCriticalSection(&Critical_Section);
 	i = PROCESS_BUFSIZE - p->input_bufsize - 1;
 	LeaveCriticalSection(&Critical_Section);
-	
+
 	/* Check if there is free space in process buffer */
 	if (i > 0)
 	  {
@@ -275,18 +274,17 @@ static DWORD thread_func (DWORD fd)
      }
 }
 
-
 void read_process_input(int input_event_number)
 {
    Buffer *b = CBuf, *pbuf;
    int otype, n, status;
    Process_Type *p;
    char buf[PROCESS_BUFSIZE];
-   
+
    /* Should never happen */
    if (NULL == (p = get_process (Subprocess_Id[input_event_number])))
      return;
-   
+
    EnterCriticalSection(&Critical_Section);
    ResetEvent(p->input_event);
    n = p->input_bufsize;
@@ -295,21 +293,21 @@ void read_process_input(int input_event_number)
    *p->input_buf = 0;
    status = p->status_changed;
    LeaveCriticalSection(&Critical_Section);
-   
+
    if (n > 0)
      {
 	otype = p->output_type;
 	pbuf = p->buffer;
-	
+
 	if (pbuf != NULL)
 	  {
 	     if (0 == (p->process_flags & USE_CURRENT_BUFFER))
 	       switch_to_buffer (pbuf);
 	     pbuf->locked++;
 	  }
-	
+
 	if (otype & PROCESS_SAVE_POINT) push_spot ();
-	
+
 	if (otype & PROCESS_USE_BUFFER)
 	  {
 	     if (0 == (otype & PROCESS_AT_POINT)) eob ();
@@ -322,10 +320,10 @@ void read_process_input(int input_event_number)
 	     SLang_push_string (buf);
 	     SLexecute_function (p->slang_fun);    /* function to pass output to */
 	  }
-	
+
 	if (otype & PROCESS_SAVE_POINT) pop_spot ();
 	else if (otype & PROCESS_USE_BUFFER) move_window_marks (0);
-	
+
 	if (p->buffer != NULL)
 	  {
 	     if ((b != CBuf) && (0 == (p->process_flags & USE_CURRENT_BUFFER)))
@@ -333,7 +331,7 @@ void read_process_input(int input_event_number)
 	     pbuf->locked--;
 	  }
      }
-   
+
    if (status)
      {
 	p->status_changed--;
@@ -348,13 +346,11 @@ static int make_handle_inheritable (HANDLE p, HANDLE *h)
 
    if (FALSE == DuplicateHandle (p, *h, p, &x, 0, TRUE, DUPLICATE_SAME_ACCESS))
      return -1;
-   
+
    CloseHandle (*h);
    *h = x;
    return 0;
 }
-
-   
 
 static int open_process (char *cmd)
 {
@@ -373,7 +369,7 @@ static int open_process (char *cmd)
    p = &Processes[pd];
 
    SLMEMSET ((char *) p, 0, sizeof (Process_Type));
-   
+
    /* Create stdin/out/err handles */
    pid = GetCurrentProcess ();
 
@@ -390,14 +386,14 @@ static int open_process (char *cmd)
    if ((-1 == make_handle_inheritable (pid, &h_stdin))
        || (-1 == make_handle_inheritable (pid, &h_stdout))
        || (FALSE == DuplicateHandle (pid, h_stdout, pid, &h_stderr, 0, TRUE, DUPLICATE_SAME_ACCESS)))
-     {	
+     {
 	CloseHandle (h_stdin);
 	CloseHandle (h_stdout);
 	CloseHandle (x_stdin);
 	CloseHandle (x_stdout);
 	return -1;
      }
-   
+
    if (NULL == (mmt = jed_make_user_object_mark ()))
      {
 	CloseHandle (h_stderr);
@@ -421,13 +417,13 @@ static int open_process (char *cmd)
     */
    if (Is_GUI)
      si.wShowWindow = SW_MINIMIZE;
-   else 
+   else
      si.wShowWindow = SW_HIDE;
 
    si.hStdInput = h_stdin;
    si.hStdOutput = h_stdout;
    si.hStdError = h_stderr;
-   
+
    if (FALSE == CreateProcess(NULL, cmd, NULL, NULL, TRUE,
 			      CREATE_NEW_PROCESS_GROUP | CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi))
      {
@@ -439,10 +435,10 @@ static int open_process (char *cmd)
 	CloseHandle (x_stdin);
 	CloseHandle (x_stdout);
 	SLang_free_mmt(mmt);
-	
+
 	return -1;
      }
-   
+
    CloseHandle(h_stdin);
    CloseHandle(h_stdout);
    CloseHandle(h_stderr);
@@ -452,23 +448,23 @@ static int open_process (char *cmd)
    p->wd = x_stdin;
 
    p->hprocess = pi.hProcess;
-	
+
    Num_Subprocesses += 1;
-	
+
    CBuf->subprocess = pd + 1;
-	
+
    /* Processing options */
    p->buffer = CBuf;
    p->output_type = PROCESS_USE_BUFFER;
    p->umark = mmt;
    p->input_bufsize = 0;
    SLang_inc_mmt (mmt);	       /* tell slang we are keeping a copy */
-   
+
    /* If we wait on this event, it will block until set */
    if (NULL == (p->input_event = CreateEvent(NULL, TRUE, FALSE, NULL)))
      {
      }
-   
+
    /* Note that Input_Events[0] is used by the console version.  So, make
     * sure that we start at 1.
     */
@@ -477,14 +473,14 @@ static int open_process (char *cmd)
 
    p->hthread =
      CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)thread_func, (LPVOID) pd, 0, &id_thread);
-   
+
    return pd;
 }
 
 int jed_send_process (int *fd, char *str)
 {
    DWORD d;
-   
+
    Process_Type *p = get_process (*fd);
    if ((p == NULL) || (p->wd == INVALID_HANDLE_VALUE)) return -1;
    WriteFile(p->wd, str, strlen(str), &d, NULL);
@@ -495,7 +491,7 @@ void jed_send_process_eof (int *fd)
 {
    Process_Type *p = get_process (*fd);
    if (p == NULL) return;
-   
+
    if (p->wd != INVALID_HANDLE_VALUE)
      {
 	CloseHandle(p->wd);
@@ -515,13 +511,13 @@ static int set_process (Process_Type *p, char *what, char *s, SLang_Name_Type *f
 		  p->output_type = PROCESS_AT_POINT | PROCESS_USE_BUFFER;
 		  return 0;
 	       }
-	     
+
 	     if (0 == strcmp (s, "@"))
 	       {
 		  p->output_type = PROCESS_SAVE_POINT | PROCESS_USE_BUFFER;
 		  return 0;
 	       }
-	     
+
 	     if (*s == 0)
 	       {
 		  p->output_type = PROCESS_USE_BUFFER;
@@ -531,7 +527,7 @@ static int set_process (Process_Type *p, char *what, char *s, SLang_Name_Type *f
 	     if (NULL == (f = SLang_get_function (s)))
 	       return -1;
 	  }
-	
+
 	p->output_type = PROCESS_USE_SLANG;
 	p->slang_fun = f;
 	return 0;
@@ -545,7 +541,7 @@ static int set_process (Process_Type *p, char *what, char *s, SLang_Name_Type *f
 	p->status_change_fun = f;
 	return 0;
      }
-   
+
    jed_verror ("set_process: %s not supported", what);
    return -1;
 }
@@ -570,13 +566,13 @@ void jed_set_process (void)
      }
    else if (-1 == SLang_pop_slstring (&s))
      return;
-   
+
    if ((0 == SLang_pop_slstring (&what))
        && (0 == SLang_pop_integer (&pd))
        && (NULL != (p = get_process (pd)))
        && (0 == set_process (p, what, s, f)))
      f = NULL;
-     
+
    SLang_free_slstring (what);
    SLang_free_slstring (s);
    SLang_free_function (f);
@@ -585,16 +581,16 @@ void jed_set_process (void)
 void jed_set_process_flags (int *fd, int *oflags)
 {
    Process_Type *p;
-   if (NULL == (p = get_process (*fd))) 
+   if (NULL == (p = get_process (*fd)))
      return;
-   
+
    p->process_flags = *oflags;
 }
- 
+
 int jed_get_process_flags (int *fd)
 {
    Process_Type *p;
-   if (NULL == (p = get_process (*fd))) 
+   if (NULL == (p = get_process (*fd)))
      return -1;
 
    return p->process_flags;
@@ -604,7 +600,7 @@ void jed_get_process_mark (int *fd)
 {
    Process_Type *p;
    if (NULL == (p = get_process (*fd))) return;
-   
+
    SLang_push_mmt (p->umark);
 }
 
@@ -675,13 +671,12 @@ void jed_query_process_at_exit (int *pid, int *query)
 
    if (NULL == (p = get_process (*pid)))
      return;
-   
+
    p->quietly_kill_on_exit = (*query == 0);
 }
 
-   
 int jed_processes_ok_to_exit (void)
-{     
+{
    Process_Type *p, *pmax;
    int num;
    char buf[64];
@@ -692,7 +687,7 @@ int jed_processes_ok_to_exit (void)
    num = 0;
    p = Processes;
    pmax = p + MAX_PROCESSES;
-   
+
    while (p < pmax)
      {
 	if ((p->flags & PROCESS_ALIVE)
@@ -700,10 +695,10 @@ int jed_processes_ok_to_exit (void)
 	  num++;
 	p++;
      }
-   
+
    if (num == 0)
      return 1;
-   
+
    sprintf (buf, "%d Subprocesses exist.  Exit anyway", num);
    return jed_get_y_n (buf);
 }

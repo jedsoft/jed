@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002-2009 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -11,7 +11,7 @@
 /*{{{ Include Files */
 
 #include <stdio.h>
-#include <string.h> 
+#include <string.h>
 
 #include "buffer.h"
 #include "window.h"
@@ -71,7 +71,7 @@ Window_Type *jed_create_minibuffer_window (void)
    w = alloc_window (Jed_Num_Screen_Rows-1, 0, 1, 1, Jed_Num_Screen_Cols);
    if (w == NULL)
      return NULL;
-   
+
    w->flags |= MINIBUFFER_WINDOW;
 
    if ((jed_create_mini_window_cb != NULL)
@@ -95,7 +95,6 @@ static void free_window (Window_Type *w)
    SLfree ((char *) w);
 }
 
-
 void window_buffer(Buffer *b) /*{{{*/
 {
    if (JWindow == NULL)
@@ -107,7 +106,7 @@ void window_buffer(Buffer *b) /*{{{*/
      }
 
    touch_window();
-   
+
    jed_init_mark_for_buffer (&JWindow->beg, b, 0);
    jed_init_mark_for_buffer (&JWindow->mark, b, 0);
    JWindow->hscroll_column = 1;
@@ -122,7 +121,7 @@ void move_window_marks (int all) /*{{{*/
 {
    Window_Type *w = JWindow;
    if (w == NULL) return;
-   do 
+   do
      {
 	if (w->buffer == CBuf)
 	  {
@@ -151,7 +150,7 @@ int other_window (void) /*{{{*/
    switch_to_buffer(JWindow->buffer);
    if (JWindow->mark.line != NULL)
      (void) jed_goto_mark (&JWindow->mark);
-   
+
    if (jed_enter_window_cb != NULL)
      (void) (*jed_enter_window_cb)(JWindow);
 
@@ -203,7 +202,7 @@ int split_window (void) /*{{{*/
      {
 	/* The screen row below (not above) the current window containing
 	 * the current line was found.  Switch to that buffer to avoid
-	 * the cursor jumping.  This is not necessary but it has a more 
+	 * the cursor jumping.  This is not necessary but it has a more
 	 * appealing visual effect.
 	 */
 	row += 1;
@@ -233,7 +232,7 @@ int one_window (void) /*{{{*/
    while (w != JWindow)
      {
 	next = w->next;
-	if (w != JMiniWindow) 
+	if (w != JMiniWindow)
 	  {
 	     if (w->buffer != b) touch_window_hard (w, 0);
 	     free_window (w);
@@ -294,7 +293,7 @@ int enlarge_window (void) /*{{{*/
 	JWindow = JWindow->next;
      }
    while (w != JWindow);
-   
+
    if ((jed_window_geom_change_cb != NULL)
        && (-1 == (*jed_window_geom_change_cb) ()))
      exit_error ("window_geom_change callback failed", 0);
@@ -335,7 +334,6 @@ static void adjust_windows (int height) /*{{{*/
 
 /*}}}*/
 
-
 void jed_update_window_sizes (int height, int width) /*{{{*/
 {
    Window_Type *w;
@@ -344,7 +342,7 @@ void jed_update_window_sizes (int height, int width) /*{{{*/
 
    if (height < 5) height = 5;
    if (width < 5) width = 5;
-   
+
    if (height != Jed_Num_Screen_Rows)
      adjust_windows(height);
 
@@ -393,7 +391,7 @@ int delete_window (void) /*{{{*/
 {
    Window_Type *tthis, *prev, *next;
    int nr1;
-   
+
    tthis = JWindow;
    next = tthis->next;
    if ((MiniBuffer_Active && ((tthis == JMiniWindow) || (tthis == next->next)))
@@ -403,7 +401,7 @@ int delete_window (void) /*{{{*/
    if (nr1 != Jed_Num_Screen_Rows)
      {
 	/* Not the bottom window.  Move to the window below this one */
-	while (JWindow->sy + 1 != nr1) 
+	while (JWindow->sy + 1 != nr1)
 	  other_window();
 	JWindow->sy = tthis->sy;
      }
@@ -416,7 +414,7 @@ int delete_window (void) /*{{{*/
 
    JWindow->rows += tthis->rows + 1;
    touch_window();
-   
+
    prev = next;
    while(prev->next != tthis) prev = prev->next;
    prev->next = next;
@@ -430,7 +428,7 @@ int delete_window (void) /*{{{*/
 void touch_screen_for_buffer(Buffer *b) /*{{{*/
 {
    Window_Type *w;
-   
+
    w = JWindow;
    do
      {
@@ -448,25 +446,25 @@ int is_line_visible (int lnum) /*{{{*/
 {
    int n = JWindow->rows;
    Line *l, *beg = JWindow->beg.line;
-   
+
    push_spot ();
    goto_line (&lnum);
    l = CLine;
    pop_spot ();
-   
+
 #if JED_HAS_LINE_ATTRIBUTES
    if (l->flags & JED_LINE_HIDDEN) return 0;
 #endif
-   
+
    while (n && (beg != NULL))
      {
 	if (l == beg) return 1;
-	
+
 #if JED_HAS_LINE_ATTRIBUTES
 	if (0 == (beg->flags & JED_LINE_HIDDEN))
 #endif
 	  n--;
-	
+
 	beg = beg->next;
      }
    return 0;
@@ -525,7 +523,7 @@ static int window_info_intrin(int *what)
       case 'c': n = JWindow->hscroll_column; break;
       case 't': n = JWindow->sy + 1; break;
       case 'w': n = JWindow->width; break;
-      default: 
+      default:
 	SLang_set_error (SL_INVALID_PARM);
      }
    return (n);

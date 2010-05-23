@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -79,11 +79,11 @@
 int Num_Subprocesses;
 int Max_Subprocess_FD;
 
-/* This also servers as a lookup table for actual system pids to the 
+/* This also servers as a lookup table for actual system pids to the
  * pseudo-pids used here.  See, e.g., jed_get_child_status for usage in this
  * fashion.
  */
-int Subprocess_Read_fds [MAX_PROCESSES][3];   
+int Subprocess_Read_fds [MAX_PROCESSES][3];
 /* 0 is actual fd, 1 is our rep, 2 will be set to 1 if an EIO is present */
 
 volatile int Child_Status_Changed_Flag;/* if this is non-zero, editor
@@ -101,7 +101,7 @@ typedef struct /*{{{*/
 #define PROCESS_EXITED		4
 #define PROCESS_SIGNALLED	8
    int return_status;		       /* This value depends on the flags */
-   
+
    int status_changed;		       /* non-zero if status changed. */
    int rd, wd;			       /* read/write descriptors */
    int is_pty;
@@ -119,16 +119,16 @@ typedef struct /*{{{*/
 					* the one associated with the process
 					*/
 
-   SLang_Name_Type *status_change_fun; /* call this if process status changes 
+   SLang_Name_Type *status_change_fun; /* call this if process status changes
 					* The function should be declared like
 					* define fun (pid, flags, status);
 					* The flags parameter corresponds to
-					* the flags field in this struct and 
+					* the flags field in this struct and
 					* the pid is NOT the pid of this struct.
 					* status depends upon flags.
 					*/
    int quietly_kill_on_exit;
-} 
+}
 /*}}}*/
 Process_Type;
 
@@ -204,15 +204,14 @@ static int signal_safe_dup2 (int fd1, int fd2)
    return 0;
 }
 
-
 static Process_Type *get_process (int fd) /*{{{*/
 {
    Process_Type *p;
-   
+
    if ((fd >= 0) && (fd < MAX_PROCESSES)
        && (p = &Processes[fd], p->flags != 0))
      return p;
-   
+
    jed_verror ("process '%d' does not exist.", fd);
    return NULL;
 }
@@ -223,7 +222,7 @@ static void call_slang_status_change_hook (Process_Type *p) /*{{{*/
 {
    Buffer *cbuf = CBuf;
    if ((p->status_change_fun == NULL) || (p->buffer == NULL)) return;
-   
+
    cbuf->locked++;
    if (0 == (p->process_flags & USE_CURRENT_BUFFER))
      switch_to_buffer (p->buffer);
@@ -270,22 +269,22 @@ int jed_signal_fg_process (int *fd, int *sig) /*{{{*/
 #endif
 
 static void close_rd_and_wd (Process_Type *p) /*{{{*/
-{   
-   if (p->rd != -1) 
+{
+   if (p->rd != -1)
      {
 	signal_safe_close (p->rd);
 	p->rd = -1;
      }
    if (p->wd != -1)
      {
-	if (p->is_pty == 0) signal_safe_close (p->wd); 
+	if (p->is_pty == 0) signal_safe_close (p->wd);
 	p->wd = -1;
      }
 }
 
 /*}}}*/
 
-/* This routine is called to clean up after the process has exited.  
+/* This routine is called to clean up after the process has exited.
  * After getting the exit status, we call a slang hook and if the
  * process is dead, adjust the process arrays to delete the process.
  */
@@ -293,8 +292,8 @@ static void get_process_status (Process_Type *p) /*{{{*/
 {
    int i;
    int fd, slfd;
-   
-   /* Call slang to let it know what happened.  Do it first before we 
+
+   /* Call slang to let it know what happened.  Do it first before we
     * really shut it down to give the hook a chance to query the state of
     * it before it returns.
     */
@@ -303,7 +302,7 @@ static void get_process_status (Process_Type *p) /*{{{*/
 
    /* Process is dead.  So perform clean up. */
    close_rd_and_wd (p);
-   
+
    if (p->buffer != NULL) p->buffer->subprocess = 0;
    slfd = (int) (p - Processes);
 
@@ -318,12 +317,12 @@ static void get_process_status (Process_Type *p) /*{{{*/
    /* Adjust the array of read descriptors */
 
    i = 0;
-   
+
    while (i < Num_Subprocesses)
      {
 	if (Subprocess_Read_fds[i][1] == slfd)
 	  break;
-	  
+
 	i++;
      }
    fd = Subprocess_Read_fds [i][0];
@@ -336,15 +335,14 @@ static void get_process_status (Process_Type *p) /*{{{*/
 	Subprocess_Read_fds[i][2] = Subprocess_Read_fds[i + 1][2];
 	i++;
      }
-   
-   
+
    if (Max_Subprocess_FD == fd)
      {
 	i = 0;
 	fd = -1;
 	while (i < Num_Subprocesses)
 	  {
-	     if (Subprocess_Read_fds[i][0] > fd) 
+	     if (Subprocess_Read_fds[i][0] > fd)
 	       fd = Subprocess_Read_fds[i][0];
 	     i++;
 	  }
@@ -357,22 +355,22 @@ static void get_process_status (Process_Type *p) /*{{{*/
 int jed_close_process (int *fd) /*{{{*/
 {
    Process_Type *p;
-   
+
    if (NULL == (p = get_process (*fd))) return -1;
-   
+
    close_rd_and_wd (p);
-   
+
    kill (-p->pid, SIGINT);
-   
-   /* This is probably a bad idea.  It is better to check to see if it still 
+
+   /* This is probably a bad idea.  It is better to check to see if it still
     * around and the set a flag indicating that the user wants it killed.
     */
-   
+
    /* Did we kill it? Make sure. */
    kill (-p->pid, SIGKILL);
 
    if (p->buffer != NULL) p->buffer->subprocess = 0;
-   
+
    /* This next function wraps things up --- no need to.  Let handler do it. */
    /* get_process_status (p); */
    return 0;
@@ -392,7 +390,7 @@ void jed_kill_process (int fd) /*{{{*/
 void jed_get_child_status (void) /*{{{*/
 {
    Process_Type *p, *pmax;
-   
+
    Ignore_User_Abort++;
    if (SLang_get_error ())
      {
@@ -404,11 +402,11 @@ void jed_get_child_status (void) /*{{{*/
     * or anything in this function for that matter.
     */
    Child_Status_Changed_Flag--;
-   
+
    get_process_input (&Number_Zero);
    p = Processes;
    pmax = p + MAX_PROCESSES;
-   
+
    while (p < pmax)
      {
 	if (p->flags && p->status_changed)
@@ -431,7 +429,7 @@ static void child_signal_handler (int sig) /*{{{*/
    int status;
    int found;
    int save_errno = errno;
-   
+
    (void) sig;
 
    do
@@ -445,7 +443,7 @@ static void child_signal_handler (int sig) /*{{{*/
 	while (p < pmax)
 	  {
 	     int pid;
-	     
+
 	     if ((pid = p->pid) <= 0)
 	       {
 		  p++;
@@ -508,23 +506,23 @@ static int get_master_slave_fds (int *slave_read, int *slave_write,
    if (want_pty)
      {
 	int master;
-	
+
 	if (-1 == pty_open_master_pty (&master, slave_tty_name))
 	  return -1;
 
 	*master_read = *master_write = master;
 	*slave_read = *slave_write = -1;
-	
+
 	*is_pty = 1;
      }
    else
      {
 #endif
 	int fds0[2], fds1[2];
-   
+
 	if (-1 == pipe (fds0))
 	  return -1;
-	
+
 	if (-1 == pipe (fds1))
 	  {
 	     signal_safe_close (fds0[0]);
@@ -542,7 +540,6 @@ static int get_master_slave_fds (int *slave_read, int *slave_write,
 #endif
    return 0;
 }
-
 
 static void my_setenv (char *what, char *value)
 {
@@ -564,7 +561,6 @@ static void my_unsetenv (char *what)
 #endif
 }
 
-   
 #ifdef __os2__
 static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 {
@@ -583,7 +579,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 	msg_error ("Access to shell denied.");
 	return -1;
      }
-   
+
    pd = 0; while ((pd < MAX_PROCESSES) && Processes[pd].flags) pd++;
    if (pd == MAX_PROCESSES) return -1;
    p = &Processes[pd];
@@ -592,7 +588,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 
    if (NULL == (mmt = jed_make_user_object_mark ()))
      return -1;
-   
+
    if (-1 == get_master_slave_fds (&slave_read, &slave_write,
 				   &master_read, &master_write,
 				   slave_tty_name, &p->is_pty, want_pty))
@@ -602,10 +598,10 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
      }
 
    SLsignal_intr (SIGCHLD, child_signal_handler);
-   
+
      {
 	char ch;
-	
+
 	/* At this point the slave tty is in raw mode.  Make sure that
 	 * the read to synchronize with the parent blocks.
 	 */
@@ -614,7 +610,6 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 
 	signal_safe_fcntl (slave_read, F_SETFL, val);
 
-	
 	org_fd[0] = dup(0);
 	org_fd[1] = dup(1);
 	org_fd[2] = dup(2);
@@ -622,7 +617,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 	signal_safe_close (0);
 	signal_safe_close (1);
 	signal_safe_close (2);
-	
+
 	signal_safe_dup2(slave_read, 0);	/* stdin */
 	signal_safe_dup2 (slave_write, 1);	/* stdout */
 	signal_safe_dup2 (slave_write, 2);	/* stderr */
@@ -630,10 +625,10 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 	signal_safe_close (slave_read);
 	signal_safe_close (slave_write);
 	setvbuf (stdout, NULL, _IONBF, 0);
-	
+
 	for (i=1 ; i<NSIG ; i++)
 	  sig_orig[i] = SLsignal(i, SIG_DFL);
-	
+
 	pid = spawnvp (P_SESSION | P_MINIMIZE | P_BACKGROUND, pgm, argv);
 
 	for (i=1 ; i<NSIG ; i++)
@@ -644,36 +639,34 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 	signal_safe_dup2(org_fd[0], 0);
 	signal_safe_dup2(org_fd[1], 1);
 	signal_safe_dup2(org_fd[2], 2);
-	signal_safe_close (org_fd[0]); 
-	signal_safe_close (org_fd[1]); 
-	signal_safe_close (org_fd[2]); 
+	signal_safe_close (org_fd[0]);
+	signal_safe_close (org_fd[1]);
+	signal_safe_close (org_fd[2]);
 	signal_safe_close (slave_read);
 	signal_safe_close (slave_write);
-	
+
 	if (pid < 0)
 	  {
 	     signal_safe_close (master_read);
-	     signal_safe_close (master_write); 
+	     signal_safe_close (master_write);
 	     p->flags = 0;
 	     SLang_free_mmt (mmt);
 	     return -1;
-	     
+
 	  }
 	p->pid = pid;
      }
 
-   
-
    p->flags = PROCESS_RUNNING;
    p->rd = master_read;
    p->wd = master_write;
-   
+
    Subprocess_Read_fds[Num_Subprocesses][0] = master_read;
    Subprocess_Read_fds[Num_Subprocesses][1] = pd;
    Subprocess_Read_fds[Num_Subprocesses][2] = 0;
    if (master_read > Max_Subprocess_FD) Max_Subprocess_FD = master_read;
    Num_Subprocesses += 1;
-   
+
    val = signal_safe_fcntl (master_read, F_GETFL, 0);
    val |= O_NONBLOCK;
    signal_safe_fcntl (master_read, F_SETFL, val);
@@ -685,7 +678,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
    p->output_type = PROCESS_USE_BUFFER;
    p->umark = mmt;
    SLang_inc_mmt (mmt);	       /* tell slang we are keeping a copy */
-   
+
    return pd;
 }
 /*}}}*/
@@ -707,7 +700,7 @@ static int init_child_parent_sync (void)
 
    if (SIG_ERR == SLsignal (SIGUSR1, sigusr_handler))
      return -1;
-   
+
    /* Get a copy of the current signal mask */
    while ((-1 == sigprocmask (SIG_BLOCK, NULL, &Zero_Signal_Mask))
 	  && (errno == EINTR))
@@ -722,7 +715,7 @@ static int init_child_parent_sync (void)
    while ((-1 == sigprocmask (SIG_BLOCK, &new_mask, &Old_Signal_Mask))
 	  && (errno == EINTR))
      ;
-   
+
    SigUsr_Flag = 0;
    return 0;
 }
@@ -730,7 +723,7 @@ static int init_child_parent_sync (void)
 static void wait_for_parent (void)
 {
    /* Suspend this process and wait for a signal.  All signals are allowed
-    * here.  
+    * here.
     */
    while (SigUsr_Flag == 0)
      sigsuspend (&Zero_Signal_Mask);
@@ -740,20 +733,20 @@ static void tell_parent_to_go (pid_t pid)
 {
    SigUsr_Flag = 0;
    kill (pid, SIGUSR1);
-   
+
    while ((-1 == sigprocmask (SIG_SETMASK, &Old_Signal_Mask, NULL))
 	  && (errno == EINTR))
      ;
 }
 
 static void tell_child_to_go (pid_t pid)
-{   
+{
    SigUsr_Flag = 0;
    kill (pid, SIGUSR1);
 
    /* Now wait for the child to setup the pty */
    while (SigUsr_Flag == 0)
-     sigsuspend (&Zero_Signal_Mask);   
+     sigsuspend (&Zero_Signal_Mask);
 
    while ((-1 == sigprocmask (SIG_SETMASK, &Old_Signal_Mask, NULL))
 	  && (errno == EINTR))
@@ -761,9 +754,9 @@ static void tell_child_to_go (pid_t pid)
 }
 
 static int set_non_blocking_io (int fd)
-{   
+{
    int val;
-   
+
    val = signal_safe_fcntl (fd, F_GETFL, 0);
    return signal_safe_fcntl (fd, F_SETFL, val | O_NONBLOCK);
 }
@@ -774,7 +767,7 @@ static void sigtrap_handler (int sig)
    (void) sig;
 }
 #endif
-   
+
 static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 {
    int pd;
@@ -789,7 +782,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 	msg_error ("Access to shell denied.");
 	return -1;
      }
-   
+
    pd = 0; while ((pd < MAX_PROCESSES) && Processes[pd].flags) pd++;
    if (pd == MAX_PROCESSES) return -1;
    p = &Processes[pd];
@@ -798,7 +791,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 
    if (NULL == (mmt = jed_make_user_object_mark ()))
      return -1;
-   
+
    if (-1 == get_master_slave_fds (&slave_read, &slave_write,
 				   &master_read, &master_write,
 				   slave_tty_name, &p->is_pty, want_pty))
@@ -818,7 +811,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 	if (p->is_pty == 0)
 	  {
 	     signal_safe_close (slave_read);
-	     signal_safe_close (master_write); 
+	     signal_safe_close (master_write);
 	     signal_safe_close (slave_write);
 	  }
 	p->flags = 0;
@@ -826,37 +819,37 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 	return -1;
      }
    p->pid = pid;
-   
+
    /* Make the child its own process group leader.  Do it here too because
     * we are not sure which one will run first.  We have to do this because
-    * if not, a ^G will be sent to ALL child subprocesses possibly killing 
+    * if not, a ^G will be sent to ALL child subprocesses possibly killing
     * them unless they catch the signal.  This call means that the INTR signal
     * will not be sent to any child processes sent by this fork.
     */
-   if (p->is_pty == 0) 
+   if (p->is_pty == 0)
      setpgid(pid, pid);
 
    if (pid == 0)
      {
 	/* child code */
 	wait_for_parent ();
-	
+
 	if (p->is_pty == 0)
 	  signal_safe_close (master_write);	       /* close write end of 0 */
 	signal_safe_close (master_read);	       /* close read end of 1 */
 
-#ifdef USE_PTY	
+#ifdef USE_PTY
 	/* Call set setsid so that the child will become the session leader.
 	 * This has the side effect that we will loose the controlling
 	 * terminal.  For this reason, the pty slave is opened after setsid
-	 * and then for good luck, the controlling terminal is set 
+	 * and then for good luck, the controlling terminal is set
 	 * via the TIOCSCTTY ioctl.
 	 */
 	if (p->is_pty)
 	  {
 	     if (-1 == setsid ())
 	       fprintf (stderr, "child: setsid failed.\n");
-	
+
 	     if (-1 == pty_open_slave_pty (slave_tty_name, &slave_read))
 	       {
 		  tell_parent_to_go (jed_pid);
@@ -885,7 +878,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 	my_setenv ("TERM", "unknown");
 	my_unsetenv ("TERMCAP");
 
-	for (i = 0; i < 32; i++) 
+	for (i = 0; i < 32; i++)
 	  {
 #ifdef SIGTRAP
 	/* Under Linux, subprocesses fail if run under the debugger because
@@ -906,9 +899,9 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 	     _exit (1);
 	  }
      }
-   
+
    /* parent */
-   if (p->is_pty == 0) 
+   if (p->is_pty == 0)
      {
 	signal_safe_close (slave_read);
 	signal_safe_close (slave_write);
@@ -917,13 +910,13 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
    p->flags = PROCESS_RUNNING;
    p->rd = master_read;
    p->wd = master_write;
-   
+
    Subprocess_Read_fds[Num_Subprocesses][0] = master_read;
    Subprocess_Read_fds[Num_Subprocesses][1] = pd;
    Subprocess_Read_fds[Num_Subprocesses][2] = 0;
    if (master_read > Max_Subprocess_FD) Max_Subprocess_FD = master_read;
    Num_Subprocesses += 1;
-   
+
    CBuf->subprocess = pd + 1;
 
    /* Processing options */
@@ -931,7 +924,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
    p->output_type = PROCESS_USE_BUFFER;
    p->umark = mmt;
    SLang_inc_mmt (mmt);	       /* tell slang we are keeping a copy */
-   
+
    set_non_blocking_io (master_read);
    set_non_blocking_io (master_write);
 
@@ -946,7 +939,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 static int flag_fd_as_eio_error (int fd)
 {
    unsigned int i, n;
-   
+
    n = Num_Subprocesses;
    for (i = 0; i < n; i++)
      {
@@ -959,15 +952,15 @@ static int flag_fd_as_eio_error (int fd)
    return -1;
 }
 
-/* This function is only called when we are reading characters from the 
+/* This function is only called when we are reading characters from the
  * keyboard.  Keyboard input has the highest priority and this is called only
  * if there is no input ready.
- * 
+ *
  * It might also get called by the hooks that it calls.  As a result, it must
  * be reentrant.
- * 
+ *
  * It is possible for the user to press Ctrl-G while this routine is executing.
- * This could cause slang hooks to fail.  It would probably be better to 
+ * This could cause slang hooks to fail.  It would probably be better to
  * block SIGINT for the duration of this routine.
  */
 void read_process_input (int fd) /*{{{*/
@@ -977,23 +970,23 @@ void read_process_input (int fd) /*{{{*/
    Buffer *b = CBuf, *pbuf;
    Process_Type *p;
    int otype, total;
-   
+
    /* Should never happen */
-   if (NULL == (p = get_process (fd))) 
+   if (NULL == (p = get_process (fd)))
      {
 	return;
      }
-   
+
    Ignore_User_Abort++;
    if (SLang_get_error ())
      {
 	Ignore_User_Abort--;
 	return;
      }
-   
+
    otype = p->output_type;
    pbuf = p->buffer;
-   
+
    if (pbuf != NULL)
      {
 	if (0 == (p->process_flags & USE_CURRENT_BUFFER))
@@ -1007,8 +1000,8 @@ void read_process_input (int fd) /*{{{*/
      {
 	total += n;
 	if (p->buffer == NULL) continue;
-	
-	if (otype & PROCESS_USE_BUFFER) 
+
+	if (otype & PROCESS_USE_BUFFER)
 	  {
 	     if (0 == (otype & PROCESS_AT_POINT)) eob ();
 	     (void) jed_insert_nbytes (buf, n);
@@ -1026,7 +1019,7 @@ void read_process_input (int fd) /*{{{*/
 	       }
 	  }
      }
-   
+
    if (n == -1)
      {
 #ifdef EIO
@@ -1037,14 +1030,14 @@ void read_process_input (int fd) /*{{{*/
 
    if (otype & PROCESS_SAVE_POINT) pop_spot ();
    else if (otype & PROCESS_USE_BUFFER) move_window_marks (0);
-   
+
    if (p->buffer != NULL)
      {
 	if ((b != CBuf) && (0 == (p->process_flags & USE_CURRENT_BUFFER)))
 	  switch_to_buffer (b);
      }
-   
-   /* Since it was locked, it cannot be deleted.  So pbuf is still a good 
+
+   /* Since it was locked, it cannot be deleted.  So pbuf is still a good
     * pointer
     */
    if (pbuf != NULL)
@@ -1059,20 +1052,19 @@ void read_process_input (int fd) /*{{{*/
 #endif
 	touch_screen ();
      }
-   
+
    Ignore_User_Abort--;
 }
-
 
 /*}}}*/
 
 static int write_to_process (int fd, char *buf, unsigned int len)
 {
    int n, ilen;
-   
-   if (len == 0) 
+
+   if (len == 0)
      return 0;
-   
+
    ilen = (int) len;
    n = 0;
    while (n < ilen)
@@ -1084,7 +1076,7 @@ static int write_to_process (int fd, char *buf, unsigned int len)
 	  {
 	     if (errno == EINTR)
 	       continue;
-	     
+
 #ifdef EAGAIN
 	     if (errno == EAGAIN)
 	       {
@@ -1107,7 +1099,7 @@ static int write_to_process (int fd, char *buf, unsigned int len)
 
 	n += dn;
      }
-  
+
    return n;
 }
 
@@ -1116,12 +1108,12 @@ int jed_send_process (int *fd, char *str) /*{{{*/
    unsigned int len;
    Process_Type *p = get_process (*fd);
    if ((p == NULL) || (p->wd == -1)) return -1;
-   
+
    len = strlen (str);
-   
+
    if (len != (unsigned int) write_to_process (p->wd, str, len))
      jed_verror ("write to process failed");
-   
+
    return len;
 }
 
@@ -1130,13 +1122,13 @@ int jed_send_process (int *fd, char *str) /*{{{*/
 void jed_send_process_eof (int *fd) /*{{{*/
 {
    Process_Type *p = get_process (*fd);
-   
-   if (p == NULL) 
+
+   if (p == NULL)
      return;
-   
+
    if (p->wd == -1)
      return;
-   
+
    if (p->is_pty)
      write_to_process (p->wd, "\004", 1);
    else
@@ -1145,7 +1137,6 @@ void jed_send_process_eof (int *fd) /*{{{*/
 	p->wd = -1;
      }
 }
-
 
 /*}}}*/
 
@@ -1161,13 +1152,13 @@ static int set_process (Process_Type *p, char *what, char *s, SLang_Name_Type *f
 		  p->output_type = PROCESS_AT_POINT | PROCESS_USE_BUFFER;
 		  return 0;
 	       }
-	     
+
 	     if (0 == strcmp (s, "@"))
 	       {
 		  p->output_type = PROCESS_SAVE_POINT | PROCESS_USE_BUFFER;
 		  return 0;
 	       }
-	     
+
 	     if (*s == 0)
 	       {
 		  p->output_type = PROCESS_USE_BUFFER;
@@ -1177,7 +1168,7 @@ static int set_process (Process_Type *p, char *what, char *s, SLang_Name_Type *f
 	     if (NULL == (f = SLang_get_function (s)))
 	       return -1;
 	  }
-	
+
 	p->output_type = PROCESS_USE_SLANG;
 	p->slang_fun = f;
 	return 0;
@@ -1191,7 +1182,7 @@ static int set_process (Process_Type *p, char *what, char *s, SLang_Name_Type *f
 	p->status_change_fun = f;
 	return 0;
      }
-   
+
    jed_verror ("set_process: %s not supported", what);
    return -1;
 }
@@ -1216,32 +1207,31 @@ void jed_set_process (void)
      }
    else if (-1 == SLang_pop_slstring (&s))
      return;
-   
+
    if ((0 == SLang_pop_slstring (&what))
        && (0 == SLang_pop_integer (&pd))
        && (NULL != (p = get_process (pd)))
        && (0 == set_process (p, what, s, f)))
      f = NULL;
-     
+
    SLang_free_slstring (what);
    SLang_free_slstring (s);
    SLang_free_function (f);
 }
 
-
 void jed_set_process_flags (int *fd, int *oflags)
 {
    Process_Type *p;
-   if (NULL == (p = get_process (*fd))) 
+   if (NULL == (p = get_process (*fd)))
      return;
-   
+
    p->process_flags = *oflags;
 }
- 
+
 int jed_get_process_flags (int *fd)
 {
    Process_Type *p;
-   if (NULL == (p = get_process (*fd))) 
+   if (NULL == (p = get_process (*fd)))
      return -1;
 
    return p->process_flags;
@@ -1251,7 +1241,7 @@ void jed_get_process_mark (int *fd) /*{{{*/
 {
    Process_Type *p;
    if (NULL == (p = get_process (*fd))) return;
-   
+
    SLang_push_mmt (p->umark);
 }
 
@@ -1268,15 +1258,15 @@ static int open_process_of_type (int nargs, int wantpty) /*{{{*/
 	msg_error ("There is already a process attached to this buffer.");
 	return -1;
      }
-   
+
    if ((n > 500) || (n < 0))
      {
 	msg_error ("Arguments out of range.");
 	return -1;
      }
-   
+
    n++;				       /* for argv0 since *np does not include
-					* it. 
+					* it.
 					*/
    argv[n] = NULL;
    while (n--)
@@ -1293,16 +1283,16 @@ static int open_process_of_type (int nargs, int wantpty) /*{{{*/
      {
 	jed_verror ("Unable to open %s process.", argv[0]);
      }
-   
+
    /* free up the argument strings */
    free_return:
-   
+
    while (n <= nargs)
      {
 	SLang_free_slstring (argv[n]);
 	n++;
      }
-   
+
    return fd;
 }
 
@@ -1318,11 +1308,10 @@ int jed_open_process_pipe (int *np)
    return open_process_of_type (*np, 0);
 }
 
-
 void jed_block_child_signal (int block) /*{{{*/
 {
    static sigset_t new_mask, old_mask;
-   
+
    if (block)
      {
 	sigemptyset (&new_mask);
@@ -1330,7 +1319,7 @@ void jed_block_child_signal (int block) /*{{{*/
 	(void) sigprocmask (SIG_BLOCK, &new_mask, &old_mask);
 	return;
      }
-   
+
    (void) sigprocmask (SIG_SETMASK, &old_mask, NULL);
 }
 
@@ -1340,7 +1329,7 @@ void jed_block_child_signal (int block) /*{{{*/
 FILE *jed_popen (char *cmd, char *type) /*{{{*/
 {
    FILE *pp;
-   
+
    jed_block_child_signal (1);
    pp = popen (cmd, type);
    if (pp == NULL)
@@ -1353,21 +1342,21 @@ FILE *jed_popen (char *cmd, char *type) /*{{{*/
 int jed_pclose (FILE *fp) /*{{{*/
 {
    int ret;
-   
+
    if (fp == NULL)
      return -1;
-   
+
    ret = pclose (fp);
    jed_block_child_signal (0);
-   
+
    return ret;
 }
 
 /*}}}*/
 
 #if 0
-/* These are my versions of popen/pclose.  For some reason, the popen/pclose 
- * do not work on SunOS when there are subprocesses.  I think it has 
+/* These are my versions of popen/pclose.  For some reason, the popen/pclose
+ * do not work on SunOS when there are subprocesses.  I think it has
  * something to do with the way pclose is waiting.
  * See Steven's book for more information.
  */
@@ -1389,10 +1378,10 @@ FILE *jed_popen(char *cmd, char *type) /*{{{*/
 
    if (pipe(pfd) < 0) return(NULL);	/* errno set by pipe() or fork() */
    if ((pid = fork()) < 0) return(NULL);
-   
-   if (pid == 0) 
+
+   if (pid == 0)
      {				       /* child */
-	if (*type == 'r') 
+	if (*type == 'r')
 	  {
 	     signal_safe_close(pfd[0]);
 	     if (pfd[1] != 1) signal_safe_dup2(pfd[1], 1);
@@ -1407,7 +1396,7 @@ FILE *jed_popen(char *cmd, char *type) /*{{{*/
 		  signal_safe_close(pfd[0]);
 	       }
 	  }
-	
+
 	/* POSIX requires that all streams open by previous popen
 	 * be closed.
 	 */
@@ -1419,21 +1408,21 @@ FILE *jed_popen(char *cmd, char *type) /*{{{*/
 	execl("/bin/sh", "sh", "-c", cmd, (char *) 0);
 	_exit(127);
      }
-   
+
    /* parent */
-   if (*type == 'r') 
+   if (*type == 'r')
      {
 	signal_safe_close(pfd[1]);
 	if (NULL == (fp = fdopen(pfd[0], type)))
 	  return(NULL);
-     } 
-   else 
+     }
+   else
      {
 	signal_safe_close(pfd[0]);
 	if (NULL == (fp = fdopen(pfd[1], type)))
 	  return(NULL);
      }
-   
+
    fd = fileno (fp);
    if (fd >= OPEN_MAX)
      {
@@ -1461,7 +1450,7 @@ int jed_pclose(FILE *fp) /*{{{*/
      return -1;
 
    Popen_Child_Pids [fd] = 0;
-   
+
    if (fclose(fp) == EOF) return(-1);
 
    /* This is the part that the SunOS pclose was apparantly screwing up. */
@@ -1472,17 +1461,16 @@ int jed_pclose(FILE *fp) /*{{{*/
 
 	(void) SLang_handle_interrupt ();
      }
-   
+
    ret = WEXITSTATUS(stat);
    if (WIFEXITED (stat))
      return ret;
-   
+
    return -1;
 }
 
 /*}}}*/
 #endif
-
 
 void jed_query_process_at_exit (int *pid, int *query)
 {
@@ -1490,13 +1478,12 @@ void jed_query_process_at_exit (int *pid, int *query)
 
    if (NULL == (p = get_process (*pid)))
      return;
-   
+
    p->quietly_kill_on_exit = (*query == 0);
 }
 
-   
 int jed_processes_ok_to_exit (void)
-{     
+{
    Process_Type *p, *pmax;
    int num;
    char buf[64];
@@ -1507,7 +1494,7 @@ int jed_processes_ok_to_exit (void)
    num = 0;
    p = Processes;
    pmax = p + MAX_PROCESSES;
-   
+
    while (p < pmax)
      {
 	if ((p->flags & PROCESS_ALIVE)
@@ -1515,10 +1502,10 @@ int jed_processes_ok_to_exit (void)
 	  num++;
 	p++;
      }
-   
+
    if (num == 0)
      return 1;
-   
+
    sprintf (buf, "%d Subprocesses exist.  Exit anyway", num);
    return jed_get_y_n (buf);
 }
@@ -1536,10 +1523,10 @@ int jed_fork_monitor (void)
 	fprintf (stderr, "Unable to fork: errno=%d\n", errno);
 	return -1;
      }
-   
+
    if (pid != 0)
      return 0;
-   
+
    pid = getppid ();
 
    for (i = 1; i < 32; i++)
@@ -1549,10 +1536,10 @@ int jed_fork_monitor (void)
    SLsignal (SIGTERM, SIG_DFL);
    SLsignal (SIGCONT, SIG_DFL);
    SLsignal (SIGTSTP, SIG_DFL);
-   
+
    for (i = 0; i < 256; i++)
      {
-	while ((-1 == close (i)) 
+	while ((-1 == close (i))
 	       && (errno == EINTR))
 	  ;
      }
@@ -1562,7 +1549,7 @@ int jed_fork_monitor (void)
 	if ((-1 == kill (pid, 0))
 	    && (errno == ESRCH))
 	  _exit (0);
-	
+
 	sleep (10);
      }
 }

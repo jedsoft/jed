@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -40,7 +40,7 @@ static int replace_chars (int n, char *neew) /*{{{*/
    char *old = NULL;
    int i;
 #endif
-   
+
    CHECK_READ_ONLY
    if (n < 0) return 0;
    len = strlen (neew);
@@ -59,7 +59,7 @@ static int replace_chars (int n, char *neew) /*{{{*/
 	  {
 	     if (NULL == (old = make_buffer_substring(&n))) return 0;
 	  }
-	else 
+	else
 	  {
 	     preserve_case = 0;
 	     jed_pop_mark (&Number_Zero);
@@ -68,11 +68,11 @@ static int replace_chars (int n, char *neew) /*{{{*/
 #endif
 
    delete_region ();
-#if USE_PRESERVE_CASE   
+#if USE_PRESERVE_CASE
    if (preserve_case)
      {
 	unsigned char ch;
-	
+
 	for (i = 0; i < len; i++)
 	  {
 	     ch = (unsigned char) old[i];
@@ -110,7 +110,6 @@ static int replace_bytes (unsigned int n, unsigned char *str)
    return (int) len;
 }
 
-
 /* This code implements a kill ring of sorts. It could be done in S-Lang but
  * S-Lang cannot handle strings with embedded NULL characters.  I do not
  * want to lose compatability with C or I would allow S-Lang strings to handle
@@ -121,7 +120,7 @@ static int replace_bytes (unsigned int n, unsigned char *str)
 
 # define MAX_KILL_ARRAY_SIZE 16
 int Kill_Array_Size = MAX_KILL_ARRAY_SIZE;
-  
+
 typedef struct /*{{{*/
 {
    unsigned char *buf;
@@ -136,10 +135,10 @@ Char_Array_Type Kill_Array [MAX_KILL_ARRAY_SIZE];
 void copy_region_to_kill_array (int *np) /*{{{*/
 {
    int n = *np;
-   
+
    if (n < 0) n = 0;
    n = n % MAX_KILL_ARRAY_SIZE;
-   
+
    SLfree ((char *) Kill_Array[n].buf);
    Kill_Array[n].buf = (unsigned char *) make_buffer_substring (&Kill_Array[n].len);
 }
@@ -159,7 +158,7 @@ void insert_from_kill_array (int *np) /*{{{*/
 
    if (n < 0) n = 0;
    n = n % MAX_KILL_ARRAY_SIZE;
-   
+
    if ((buf = Kill_Array[n].buf) == NULL) return;
    (void) jed_insert_nbytes (buf, Kill_Array[n].len);
 }
@@ -170,23 +169,23 @@ void append_region_to_kill_array (int *np) /*{{{*/
 {
    int n = *np, len, oldlen;
    unsigned char *buf, *newbuf;
-   
+
    if (n < 0) n = 0;
    n = n % MAX_KILL_ARRAY_SIZE;
 
    buf = (unsigned char *) make_buffer_substring (&len);
    if (buf == NULL) return;
-   
+
    oldlen = Kill_Array[n].len;
    newbuf = (unsigned char *) SLrealloc ((char *)Kill_Array[n].buf, oldlen + len + 1);
-   
+
    if (newbuf != NULL)
      {
 	SLMEMCPY ((char *) newbuf + oldlen, (char *) buf, len);
 	Kill_Array[n].buf = newbuf;
 	Kill_Array[n].len = oldlen + len;
      }
-   
+
    SLfree ((char *)buf);
 }
 
@@ -196,16 +195,16 @@ void prepend_region_to_kill_array (int *np) /*{{{*/
 {
    int n = *np, len, oldlen;
    unsigned char *buf, *newbuf;
-   
+
    if (n < 0) n = 0;
    n = n % MAX_KILL_ARRAY_SIZE;
 
    buf = (unsigned char *) make_buffer_substring (&len);
    if (buf == NULL) return;
-   
+
    oldlen = Kill_Array[n].len;
    newbuf = (unsigned char *) SLrealloc ((char *)Kill_Array[n].buf, oldlen + len + 1);
-   
+
    if (newbuf != NULL)
      {
 #if 0
@@ -222,7 +221,7 @@ void prepend_region_to_kill_array (int *np) /*{{{*/
 	Kill_Array[n].buf = newbuf;
 	Kill_Array[n].len = oldlen + len;
      }
-   
+
    SLfree ((char *)buf);
 }
 
@@ -320,7 +319,7 @@ static int replace_chars_intrinsic (int *np, char *s)
 static int replace_next(char *old, char *neew) /*{{{*/
 {
    int n;
-   
+
    if (search(old, 1, 0) == 0) return(0);
    n = strlen (old);
    (void) replace_bytes (n, (unsigned char *)neew);
@@ -333,7 +332,7 @@ static void replace_cmd(char *old, char *neew) /*{{{*/
 {
    CHECK_READ_ONLY_VOID
      push_spot ();
-   if (search(old, 1, 0)) 
+   if (search(old, 1, 0))
      while(replace_next(old, neew))
        ;
    pop_spot();
@@ -350,7 +349,7 @@ SLang_Intrin_Fun_Type Jed_Other_Intrinsics [] = /*{{{*/
    MAKE_INTRINSIC_S("bfind", backward_search_line, INT_TYPE),
    MAKE_INTRINSIC_S("ffind", forward_search_line, INT_TYPE),
    MAKE_INTRINSIC_S("bol_fsearch", bol_fsearch, INT_TYPE),
-   MAKE_INTRINSIC_S("bol_bsearch", bol_bsearch, INT_TYPE),   
+   MAKE_INTRINSIC_S("bol_bsearch", bol_bsearch, INT_TYPE),
    MAKE_INTRINSIC_1("bol_fsearch_char", bol_fsearch_char, INT_TYPE, SLANG_WCHAR_TYPE),
    MAKE_INTRINSIC_1("bol_bsearch_char", bol_bsearch_char, INT_TYPE, SLANG_WCHAR_TYPE),
    MAKE_INTRINSIC_1("fsearch_char", fsearch_char, INT_TYPE, SLANG_WCHAR_TYPE),

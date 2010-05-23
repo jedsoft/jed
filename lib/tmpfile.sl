@@ -28,7 +28,6 @@ define make_tmp_file (base)
 
 %}}}
 
-
 %!%+
 %\function{open_unique_filename}
 %\synopsis{Generate and unique filename and open the file}
@@ -44,7 +43,7 @@ define make_tmp_file (base)
 % If \exmp{base} represents an absolute path, then the file
 % will be opened in the correspondind directory.  Otherwise the value
 % of the \svar{Jed_Tmp_Directory} variable will be used.
-% 
+%
 % If this function fails, an exception will be thrown.
 %\notes
 % The value of the \exmp{fp} structure field is generated from the
@@ -63,7 +62,7 @@ define open_unique_filename (base, ext)
    if ((dir != ".")
        && (2 != file_status (dir)))
      throw IOError, "tmpfile directory $dir does not exist"$;
-   
+
    () = random (-1, 0);
 
    variable fmt = "%s%X%s";
@@ -91,7 +90,7 @@ define open_unique_filename (base, ext)
 		  () = remove (file);
 		  throw IOError, "fdopen failed: $err"$;
 	       }
-	     return struct 
+	     return struct
 	       {
 		  file = file, fp = fp, fd = fd
 	       };

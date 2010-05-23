@@ -1,5 +1,5 @@
 /* -*- C -*- */
-/* Copyright (c) 2007 John E. Davis
+/* Copyright (c) 2007-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -108,7 +108,6 @@
 #undef _LARGE_FILES
 #undef _LARGEFILE_SOURCE
 
-
 /* For antialiased fonts, set this to 1 */
 #undef XJED_HAS_XRENDERFONT
 
@@ -136,7 +135,7 @@
 # ifndef _ALL_SOURCE
 #  define _ALL_SOURCE
 # endif
-/* This may generate warnings but the fact is that without it, xlc will 
+/* This may generate warnings but the fact is that without it, xlc will
  * INCORRECTLY inline many str* functions. */
 # undef __STR__
 #endif
@@ -156,7 +155,6 @@
 #  define REALLY_HAVE_TERMIOS_H
 # endif
 #endif
-
 
 #define HAS_MOUSE 1
 

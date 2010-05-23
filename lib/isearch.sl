@@ -40,9 +40,9 @@ private define get_bound_key (search_func, default)
    return default;
 }
 
-custom_variable ("Isearch_Forward_Char", 
+custom_variable ("Isearch_Forward_Char",
 		 get_bound_key ("isearch_forward", 19));
-custom_variable ("Isearch_Backward_Char", 
+custom_variable ("Isearch_Backward_Char",
 		 get_bound_key ("isearch_backward", 18));
 custom_variable ("Isearch_Quit_Char",    '\e' );
 custom_variable ("Isearch_Abort_Char",     7  ); % ^G
@@ -119,10 +119,9 @@ private define isearch_del (str)
 	if (n)
 	  str = substr (str, 1, n-1);
      }
-   
+
    return str;
 }
-
 
 define isearch_dir (dir)
 {
@@ -294,7 +293,7 @@ define isearch_dir (dir)
 	  }
 
 	% test (*), see ^R switch above
-	% NOTE: This test used to include a check to make sure that the 
+	% NOTE: This test used to include a check to make sure that the
 	%       position stack was not empty.  Does it matter?  --JED
 	if ((dir < 0) and looking_at (str) and (c >= ' '))
 	  continue;

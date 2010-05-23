@@ -95,10 +95,10 @@ private define is_para_sep ()
    bol_skip_white ();
    ifnot (looking_at ("%"))
      return 1;
-   
+
    if (is_empty_comment_line ())
      return 1;
-   
+
    % Now look for special documentation marks.  The embedded tm docs begin
    % with %!%+ and end with %!%-
    bol ();
@@ -115,7 +115,7 @@ private define is_para_sep ()
 private define wrapok_hook ()
 {
    push_spot ();
-   EXIT_BLOCK 
+   EXIT_BLOCK
      {
 	pop_spot ();
      }
@@ -150,18 +150,18 @@ private define format_paragraph_hook ()
    bol_skip_white ();
    ifnot (looking_at ("%"))
      return;
-   
+
    bol();
    push_mark ();
    skip_white ();
    skip_chars ("%");
    variable prefix = bufsubstr ();
-   
+
    skip_white ();
    if (eolp ())
      return;
    variable indent_column = what_column ();
-   
+
    % Find start
    while (up_1 ())
      {
@@ -184,7 +184,7 @@ private define format_paragraph_hook ()
 	  }
      }
    narrow ();
-   
+
    bob ();
    do
      {
@@ -216,13 +216,13 @@ private define format_paragraph_hook ()
 % presence of comments.  However, the embedded documentation comment style
 % (using text-macro) means that this will need to be modified to be more
 % sophisticated.  Basically the modifications would require analysing the
-% text-macro context.  For example, wrapping is not appropriate in verbatim 
+% text-macro context.  For example, wrapping is not appropriate in verbatim
 % sections.
 #ifntrue
 define slmode_insert_space ()
 {
    variable cstr;
-   
+
    if (is_overwrite_mode ())
      {
 	call ("self_insert_cmd");
@@ -234,11 +234,10 @@ define slmode_insert_space ()
 	insert_single_space ();
      }
 
-
    % The following code attempts a wrapping mode in the presence of comments
    ifnot (cmode_is_slang_mode ()) return;
    if (not (eolp ()) or (what_column () <= WRAP)) return;
-   
+
    % we are at the end of line.
    cstr = "%!% ";
    bol ();
@@ -250,7 +249,7 @@ define slmode_insert_space ()
    eol ();
 }
 #endif
-   
+
 define slang_mode ()
 {
    set_mode("SLang", 2 | 8);

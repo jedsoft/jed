@@ -17,7 +17,7 @@ definekey ("matlab_uncomment",	"\e:",	$1);
 
 % Now create and initialize a simple syntax table.
 create_syntax_table ($1);
-define_syntax ("%", "", '%', $1);		% comments (doesn't work) 
+define_syntax ("%", "", '%', $1);		% comments (doesn't work)
 define_syntax ("#", "", '%', $1);		% comments -- Octave
 define_syntax ("([{", ")]}", '(', $1);		% parentheses
 define_syntax ('"', '"', $1);			% strings
@@ -72,22 +72,22 @@ define matlab_indent ()
       if (eolp() or looking_at(Matlab_Continue_Char)) continue;
       X_USER_BLOCK0 ();
       goal = what_column ();
-      
+
       if (looking_at("switch"))
 	goal += 2 * Matlab_Indent; % to account for 'case'
-      
+
       if (looking_at ("if ") or looking_at ("if(") or
-	  looking_at ("case") or 
+	  looking_at ("case") or
 	  looking_at ("otherwise") or
 	  looking_at ("while") or
-	  looking_at ("for ") or 
+	  looking_at ("for ") or
 	  looking_at ("else") or looking_at ("elseif") or
 	  looking_at ("unwind_protect_cleanup") or
 	  looking_at ("unwind_protect") or
 	  looking_at ("try") or looking_at ("catch") or
 	  looking_at ("function") )
 	 goal += Matlab_Indent;
-      
+
       break;
     }
 
@@ -98,7 +98,7 @@ define matlab_indent ()
 
   if (looking_at ("endswitch"))
     goal -= 2 * Matlab_Indent;
-  
+
   if (looking_at ("end") or
       looking_at ("endif") or
       looking_at ("case") or
@@ -107,10 +107,10 @@ define matlab_indent ()
       looking_at ("end_try_catch") or
       looking_at ("unwind_protect_cleanup") or
       looking_at ("end_unwind_protect") or
-      looking_at ("else") or 
+      looking_at ("else") or
       looking_at ("endfunction") )
     goal -= Matlab_Indent;
-  
+
   CASE_SEARCH = cs;		% done getting indent
   if (goal < 1) goal = 1;
   pop_spot ();
@@ -180,8 +180,8 @@ define matlab_comment ()
 %\synopsis{matlab_mode}
 %\description
 % Protoytype: Void matlab_mode ();
-% This is a mode that is dedicated to facilitate the editing of 
-% Matlab/Octave language files.  
+% This is a mode that is dedicated to facilitate the editing of
+% Matlab/Octave language files.
 % Functions that affect this mode include:
 %#v+
 %  function:             default binding:
@@ -200,6 +200,5 @@ define matlab_mode ()
   set_buffer_hook ("newline_indent_hook", "matlab_newline");
   run_mode_hooks("matlab_mode_hook");
 }
-
 
 % --- End of file matlab.sl ---

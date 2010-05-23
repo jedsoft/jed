@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -74,7 +74,6 @@
 # include "jprocess.h"
 #endif
 
-
 /*}}}*/
 
 Buffer *MiniBuffer;
@@ -87,7 +86,7 @@ int Ignore_Beep = 0;
 int MiniBuffer_Active = 0;
 
 /* Do not change this value without changing file_findfirst/next. */
-#define JED_MAX_COMPLETION_LEN JED_MAX_PATH_LEN   
+#define JED_MAX_COMPLETION_LEN JED_MAX_PATH_LEN
 
 static int (*complete_open)(char *);
 static int (*complete_next)(char *);
@@ -149,7 +148,7 @@ int bufferp(char *name) /*{{{*/
 int insert_buffer_name(char *name) /*{{{*/
 {
    Buffer *buf;
-   
+
    if (NULL != (buf = find_buffer(name)))
      {
 	insert_buffer(buf);
@@ -165,7 +164,7 @@ static Buffer *find_scratch_buffer (void) /*{{{*/
 {
    char *sname = "*scratch*";
    Buffer *scratch;
-   
+
    scratch = find_buffer (sname);
    if (NULL == scratch)
      scratch = make_buffer (sname, CBuf->dir, NULL);
@@ -173,7 +172,6 @@ static Buffer *find_scratch_buffer (void) /*{{{*/
 }
 
 /*}}}*/
-
 
 /* Try to find any other buffer but kill_buf such that the buffer is not
  * visible, not scratch and not buried.
@@ -184,7 +182,7 @@ static Buffer *find_non_visible_buffer (Buffer *kill_buf) /*{{{*/
 
    buf = kill_buf->next;
    scratch = find_scratch_buffer ();
-   
+
    while ((buf != kill_buf) &&
 	  ((*buf->name == ' ') || (buf->flags & BURIED_BUFFER)
 	   || (buf == scratch) || (buffer_visible(buf))))
@@ -198,21 +196,19 @@ static Buffer *find_non_visible_buffer (Buffer *kill_buf) /*{{{*/
 
 /*}}}*/
 
-
-
 int kill_buffer_cmd(char *name) /*{{{*/
 {
    Buffer *this_buf, *kill_buf, *scratch, *buf;
    Window_Type *w;
    int do_kill;
-   
+
    if (NULL == (kill_buf = find_buffer(name)))
      {
 	msg_error("Buffer does not exist.");
 	return(0);
      }
 
-   /* Do not allow the minibuffer to be deleted.  Otherwise, the whole 
+   /* Do not allow the minibuffer to be deleted.  Otherwise, the whole
     * minibuffer creation/selection needs to be cleaned up.
     */
    if (kill_buf == The_MiniBuffer)
@@ -220,7 +216,7 @@ int kill_buffer_cmd(char *name) /*{{{*/
 
    this_buf = CBuf;
    switch_to_buffer(kill_buf);
-   
+
 #if JED_HAS_SUBPROCESSES
    if (kill_buf->locked)
      {
@@ -229,7 +225,7 @@ int kill_buffer_cmd(char *name) /*{{{*/
 	return 0;
      }
 #endif
-   
+
    do_kill = 1;
    if ((*name != ' ') && (kill_buf->flags & BUFFER_MODIFIED))
      {
@@ -237,7 +233,7 @@ int kill_buffer_cmd(char *name) /*{{{*/
 		      name);
 
 	/* This does not go through keyboard macro routines
-	 * on purpose! 
+	 * on purpose!
 	 */
 	switch (my_getkey())
 	  {
@@ -247,7 +243,7 @@ int kill_buffer_cmd(char *name) /*{{{*/
 	  }
 	clear_message ();
      }
-   
+
    if (do_kill == 2)
      {
 	jed_save_buffer_as_cmd ();
@@ -257,12 +253,12 @@ int kill_buffer_cmd(char *name) /*{{{*/
 	     return(0);
 	  }
      }
-   
-   /* if it is the scratch buffer, just erase it since we are going to 
+
+   /* if it is the scratch buffer, just erase it since we are going to
       recreate it anyway. */
-   
+
    scratch = find_scratch_buffer ();
-   
+
    if (kill_buf == scratch)
      {
 	erase_buffer();
@@ -283,7 +279,7 @@ int kill_buffer_cmd(char *name) /*{{{*/
 	if (kill_buf == JWindow->buffer)
 	  {
 	     touch_window_hard (JWindow, 0);
-	     window_buffer(buf); 
+	     window_buffer(buf);
 	     buf = find_non_visible_buffer (kill_buf);
 	  }
 	JWindow = JWindow->next;
@@ -308,7 +304,7 @@ int jed_save_buffer_to_file (char *dir, char *file)
      {
 	file = CBuf->file;
 	if (*file == 0)
-	  {	     
+	  {
 	     msg_error ("Filename Required.");
 	     return -1;
 	  }
@@ -347,29 +343,29 @@ int jed_save_buffer_to_file (char *dir, char *file)
 	   case BUFFER_MODIFIED:
 	     prompt = "File changed on disk.  Save anyway?";
 	     break;
-	     
+
 	   case READ_ONLY:
 	     prompt = "No permission to write to file.  Try to save anyway?";
 	     break;
-	     
+
 	   case BUFFER_MODIFIED|READ_ONLY:
 	     prompt = "File changed on disk and no permission to write.  Save anyway?";
 	     break;
-	     
+
 	   case BUFFER_MODIFIED|OVERWRITE_MODE:
 	     prompt = "File exists and changed on disk.  Overwrite?";
 	     break;
-	     
+
 	   case READ_ONLY|OVERWRITE_MODE:
 	     prompt = "File exists and no permission to write.  Try to overwrite anyway?";
 	     break;
-	     
+
 	   case READ_ONLY|OVERWRITE_MODE|BUFFER_MODIFIED:
 	     prompt = "File changed on disk and no permission to write.  Overwrite anyway?";
 	     break;
 	  }
-	
-	if ((prompt != NULL) 
+
+	if ((prompt != NULL)
 	    && (1 != jed_get_yes_no(prompt)))
 	  {
 	     SLfree (canonical_file);
@@ -399,7 +395,6 @@ int jed_save_buffer_to_file (char *dir, char *file)
 	return -1;
      }
 
-	
    CBuf->flags |= AUTO_SAVE_BUFFER;
    CBuf->hits = 0;
 
@@ -414,11 +409,10 @@ int jed_save_buffer_to_file (char *dir, char *file)
 	SLfree (dirfile);
 	return -1;
      }
-   
+
    SLfree (dirfile);
    return 0;
 }
-
 
 int jed_save_buffer_as (char *filestr)
 {
@@ -426,7 +420,7 @@ int jed_save_buffer_as (char *filestr)
    int status;
 
    filestr = jed_standardize_filename (filestr);
-   
+
    if (-1 == jed_dirfile_to_dir_file (filestr, &dir, &file))
      {
 	SLfree (filestr);
@@ -434,7 +428,7 @@ int jed_save_buffer_as (char *filestr)
      }
 
    status = jed_save_buffer_to_file (dir, file);
-   
+
    SLfree (filestr);
    SLfree (dir);
    SLfree (file);
@@ -442,9 +436,9 @@ int jed_save_buffer_as (char *filestr)
    if (status == -1)
      return status;
 
-   /* This function is an intrinsic and is documented to return the 
+   /* This function is an intrinsic and is documented to return the
     * number of lines written out.
-    * 
+    *
     */
    return 0;
 }
@@ -453,7 +447,7 @@ int jed_save_buffer_cmd (void)
 {
    if ((CBuf->file == NULL) || (CBuf->file[0] == 0))
      return jed_save_buffer_as_cmd ();
-   
+
    return jed_save_buffer_to_file (CBuf->dir, CBuf->file);
 }
 
@@ -465,7 +459,7 @@ int show_memory() /*{{{*/
    unsigned long total = 0, core, used = 0;
    unsigned long max = 0;
    int i = 0;
-   
+
    hi.ptr = NULL;
    if (farheapcheck() == _HEAPCORRUPT) c = "corrupt"; else c = "ok";
    while (farheapwalk(&hi) == _HEAPOK)
@@ -505,7 +499,7 @@ int show_memory (void) /*{{{*/
    jed_vmessage (0, "avail space: %lu, tot phys space: %lu, avail phys space: %lu",
 		 mst.dwAvailPhys + mst.dwAvailPageFile, mst.dwTotalPhys, mst.dwAvailPhys);
 #endif
-   
+
    return 0;
 }
 
@@ -533,9 +527,9 @@ int show_memory() /*{{{*/
 {
    unsigned long mem;
    _go32_dpmi_meminfo info;
-   
+
    _go32_dpmi_get_free_memory_information(&info);
-   
+
    if ((long)info.available_physical_pages != -1L)
      mem = info.available_physical_pages * 4096UL;
    else mem = info.available_memory;
@@ -552,19 +546,19 @@ int show_memory() /*{{{*/
 int set_buffer(char *name) /*{{{*/
 {
    Buffer *buf;
-   
+
    if ((name == NULL) || (*name == 0))
      {
 	msg_error("set_buffer: Buffer name is NULL");
 	return (0);
      }
-   
+
     /* Last_Buffer = CBuf; */
-   
+
    if (NULL == (buf = find_buffer(name)))
      buf = make_buffer (name, CBuf->dir, NULL);
    switch_to_buffer(buf);
-   
+
    return 1;
 }
 
@@ -579,10 +573,10 @@ int jed_get_mini_response (char *s)
      {
 	if (EOF == fputs (s, stdout))
 	  exit_error ("Failed to write to stdout", 0);
-	
+
 	return jed_getkey ();
      }
-	    
+
    len = strlen (s);
    if (len > Jed_Num_Screen_Cols)
      s += (len - Jed_Num_Screen_Cols);
@@ -609,7 +603,6 @@ static char *strcat_malloc (char *a, char *b)
    return c;
 }
 
-
 int jed_get_y_n (char *question)
 {
    int ans;
@@ -632,35 +625,33 @@ int jed_get_y_n (char *question)
    return jed_get_yes_no (question);
 }
 
-
 int jed_vget_y_n (char *fmt, char *arg)
 {
    char msg [1024];
 
-   if (arg == NULL) 
+   if (arg == NULL)
      {
 	arg = fmt;
 	fmt = "%s";
      }
-   
+
    SLsnprintf (msg, sizeof (msg), fmt, arg);
-   
+
    return jed_get_y_n (msg);
 }
-
 
 int jed_get_yes_no (char *question) /*{{{*/
 {
    char *yn_quest;
    char *tmp;
    int n;
-   
+
    if (NULL == (yn_quest = strcat_malloc (question, "? (yes or no)")))
      return -1;
 
    while (1)
      {
-	if (NULL == (tmp = read_from_minibuffer(yn_quest, 0, NULL, &n))) 
+	if (NULL == (tmp = read_from_minibuffer(yn_quest, 0, NULL, &n)))
 	  {
 	     SLfree (yn_quest);
 	     return -1;
@@ -672,7 +663,7 @@ int jed_get_yes_no (char *question) /*{{{*/
 	     SLfree (yn_quest);
 	     return 1;
 	  }
-	
+
 	if (!strcmp(tmp, "no"))
 	  {
 	     SLfree(tmp);
@@ -695,11 +686,11 @@ int find_file_cmd (char *filestr)       /* filestr is const ! */ /*{{{*/
 
 #ifdef REAL_UNIX_SYSTEM
    char *dir1;
- 
+
    /* Handle the case where /foo/bar/../baz may not be the same as /foo/baz */
    if (-1 == jed_dirfile_to_dir_file (filestr, &dir, &file))
      return -1;
-   
+
    if (NULL == (dir1 = jed_expand_link (dir)))
      {
 	SLfree (dir);
@@ -740,7 +731,7 @@ int find_file_cmd (char *filestr)       /* filestr is const ! */ /*{{{*/
      }
 
    status = -1;
-   
+
    if (*file == 0)
      {
 	jed_verror (Expect_File_Error);
@@ -748,9 +739,9 @@ int find_file_cmd (char *filestr)       /* filestr is const ! */ /*{{{*/
      }
 
    check_buffers ();
-   
+
    /* search for the file in current buffer list */
-   
+
    if (NULL != (buf = find_file_buffer (dirfile)))
      {
 	if ((file_changed_on_disk (buf, dirfile) > 0)
@@ -779,20 +770,20 @@ int find_file_cmd (char *filestr)       /* filestr is const ! */ /*{{{*/
    switch_to_buffer(buf);
 
    status = read_file (dirfile);
-	
+
    switch (status)
      {
       case -2:
 	jed_verror ("File %s not readable.", dirfile);
 	status = -1;
 	break;
-	     
+
       case -1:
 	if (Batch == 0)
 	  message ("New file.");
 	status = 0;
 	break;
-	     
+
       default:
 	if (Batch == 0)
 	  jed_vmessage (0, "%d lines read", status);
@@ -827,12 +818,11 @@ int find_file_cmd (char *filestr)       /* filestr is const ! */ /*{{{*/
 
 /*}}}*/
 
-
 int find_file_in_window(char *file) /*{{{*/
 {
    int ret;
    Buffer *b = CBuf;
-   
+
    ret = find_file_cmd (file);
    if ((b != CBuf) && (*CBuf->name != ' ')) Last_Buffer = CBuf;
    window_buffer(CBuf);
@@ -841,13 +831,12 @@ int find_file_in_window(char *file) /*{{{*/
 
 /*}}}*/
 
-
 /* create a minibuffer with window and switch to it. */
 static void create_minibuffer(void) /*{{{*/
 {
    Window_Type *w;
    MiniBuffer = The_MiniBuffer;
-   
+
    /* We may get called before the keymap has been set up.  Make sure that
     * we have a keymap.
     */
@@ -857,7 +846,7 @@ static void create_minibuffer(void) /*{{{*/
 
    /* I want to make Mini_Window->next = Current Window so that scroll other
       window routines will scroll it. */
-   
+
    w = JWindow;
    do other_window(); while (JWindow->next != w);
    JWindow->next = JMiniWindow;
@@ -874,7 +863,7 @@ static void create_minibuffer(void) /*{{{*/
    jed_notify_menu_buffer_changed ();
 #endif
 
-   /* allow kill region to kill to beginning of minibuffer. 
+   /* allow kill region to kill to beginning of minibuffer.
     * Suggested by stefen@uni-paderborn.de */
    jed_push_mark ();
 }
@@ -913,7 +902,7 @@ int exit_minibuffer() /*{{{*/
 int select_minibuffer (void) /*{{{*/
 {
    Window_Type *w;
-   
+
     /* Try to find active minibuffer and go there */
    w = JWindow;
    while (MiniBuffer != NULL)
@@ -922,7 +911,7 @@ int select_minibuffer (void) /*{{{*/
 	other_window();
 	if (w == JWindow) exit_error("Internal Error:  no window!", 1);
      }
-   
+
     /* switchs to minibuffer too */
    create_minibuffer();
    return(0);
@@ -937,21 +926,21 @@ static int ledit(void) /*{{{*/
 {
    int n;
    char *tmp;
-   
+
    if (MiniBuffer == NULL) complete_open = NULL;
    if (NULL == (tmp = read_from_minibuffer(JED_PROMPT, 0, NULL, &n))) return(0);
 
    /* SLang_Error = 0; ??? Why?  0.99-16 and earlier */
    Suspend_Screen_Update = 1;
-   
+
    SLang_load_string(tmp);
    SLfree(tmp);
-   
+
    if (SLang_get_error () == SL_USER_BREAK)
      msg_error("Quit!");
 
    /* SLang_set_error (0); */
-   
+
    return(1);
 }
 
@@ -975,7 +964,6 @@ static int file_findnext (char *file)
    return sys_findnext (file);
 }
 
-
 static char *read_file_from_minibuffer(char *prompt, char *def, char *stuff) /*{{{*/
 {
    int n;
@@ -984,14 +972,14 @@ static char *read_file_from_minibuffer(char *prompt, char *def, char *stuff) /*{
    File_Expansion_Happened = 0;
    complete_open = file_findfirst;
    complete_next = file_findnext;
-   
+
    if ((stuff == NULL) || (*stuff == 0))
      {
 	if (*CBuf->dir == 0)
 	  buffer_filename (CBuf, NULL, CBuf->file);
 	stuff = CBuf->dir;
      }
-   
+
    if (NULL == (file = read_from_minibuffer (prompt, def, stuff, &n)))
      return NULL;
 
@@ -1010,7 +998,6 @@ static char *String_Completion_Str;
 static char *String_Completion_Str_Next;
 static int String_Completion_Str_Len;
 
-
 static int next_string_list (char *buf) /*{{{*/
 {
    register char *s = String_Completion_Str_Next;
@@ -1019,9 +1006,9 @@ static int next_string_list (char *buf) /*{{{*/
      {
 	while (*s && (*s != ',')) s++;
 	len = (int) (s - String_Completion_Str_Next);
-	
+
 	if (*s == ',') s++;
-	
+
 	if (!len
 	    || strncmp (buf, String_Completion_Str_Next, String_Completion_Str_Len))
 	  {
@@ -1048,7 +1035,6 @@ static int open_string_list (char *buf) /*{{{*/
 }
 
 /*}}}*/
-
 
 void read_object_with_completion(char *prompt, char *dflt, char *stuff, int *typep) /*{{{*/
 {
@@ -1085,13 +1071,13 @@ void read_object_with_completion(char *prompt, char *dflt, char *stuff, int *typ
      {
 	complete_open = NULL;
      }
-   
+
    safe_strcat (buf, stuff, sizeof (buf));
-   
+
    if (NULL != (tmp = read_from_minibuffer(prompt, dflt, buf, &n)))
      {
 	(void) SLang_push_string(tmp);
-	
+
 	SLfree(tmp);
 	if (str != NULL) SLfree (str);
      }
@@ -1102,9 +1088,9 @@ void read_object_with_completion(char *prompt, char *dflt, char *stuff, int *typ
 int insert_file_cmd (void) /*{{{*/
 {
    char *f, *file;
-   
+
    CHECK_READ_ONLY
-     
+
    if (NULL == (file = read_file_from_minibuffer("Insert file:", NULL, NULL)))
      return -1;
 
@@ -1115,7 +1101,7 @@ int insert_file_cmd (void) /*{{{*/
 	msg_error(Expect_File_Error);
 	return(1);
      }
-   
+
    if (insert_file(file) < 0) msg_error("Error inserting file.");
    SLfree (file);
    return(1);
@@ -1151,7 +1137,7 @@ int find_file (void) /*{{{*/
 int jed_save_buffer_as_cmd (void) /*{{{*/
 {
    char *tmp;
-   
+
    if (NULL == (tmp = read_file_from_minibuffer("Save as:", NULL, NULL))) return(0);
    (void) jed_save_buffer_as (tmp);
    SLfree(tmp);
@@ -1163,7 +1149,7 @@ int jed_save_buffer_as_cmd (void) /*{{{*/
 void switch_to_buffer_cmd (char *name) /*{{{*/
 {
    Buffer *tthis = CBuf;
-   
+
    set_buffer(name);
    window_buffer(CBuf);
    if ((CBuf != tthis) && (*CBuf->name != ' ')) Last_Buffer = tthis;
@@ -1189,9 +1175,9 @@ int get_buffer() /*{{{*/
    int n;
    complete_open = open_bufflist;
    complete_next = next_bufflist;
-   
+
    get_last_buffer ();
-   
+
    if (NULL == (tmp = read_from_minibuffer("Switch to buffer:", Last_Buffer->name, NULL, &n))) return(0);
    switch_to_buffer_cmd(tmp);
    SLfree(tmp);
@@ -1204,7 +1190,7 @@ int kill_buffer (void) /*{{{*/
 {
    char *tmp;
    int n;
-   
+
    complete_open = open_bufflist;
    complete_next = next_bufflist;
    tmp = read_from_minibuffer("Kill buffer:", (char *) CBuf->name, NULL, &n);
@@ -1237,7 +1223,6 @@ int evaluate_cmd() /*{{{*/
 
 /*}}}*/
 
-
 char *pop_to_buffer(char *name) /*{{{*/
 {
    Window_Type *w, *action, *use_this;
@@ -1245,20 +1230,20 @@ char *pop_to_buffer(char *name) /*{{{*/
    Line *line, *oldline;
    int p, oldp, lnum, oldlnum;
    Buffer *b, *oldb;
-   
+
    if (!strcmp(name, " <mini>"))
      {
 	select_minibuffer ();
 	return CBuf->name;
      }
-   
-   /* save position so we can pop back to it if buffer already exists in 
+
+   /* save position so we can pop back to it if buffer already exists in
       window */
    oldb = CBuf; oldline = CLine; oldp = Point; oldlnum = LineNum;
-   
+
    set_buffer(name);
    line = CLine; p = Point; lnum = LineNum;
-   
+
    use_this = NULL;
    if (MiniBuffer != NULL)
      {
@@ -1279,7 +1264,7 @@ char *pop_to_buffer(char *name) /*{{{*/
 		  if (w != action) use_this = w;
 	       }
 	     else if (w != JWindow) use_this = w;
-	     
+
 	     if (w->buffer == CBuf)
 	       {
 		  use_this = w;
@@ -1289,7 +1274,7 @@ char *pop_to_buffer(char *name) /*{{{*/
 	w = w->next;
      }
    while (w != JWindow);
-   
+
    b = CBuf;
    if (use_this != NULL)
      {
@@ -1304,7 +1289,7 @@ char *pop_to_buffer(char *name) /*{{{*/
      {
 	if (action != NULL) while(JWindow != action) other_window();
 	split_window();
-	/* 
+	/*
 	 * doing it this way makes screen update look better
 	 */
 	w = JWindow;
@@ -1315,7 +1300,7 @@ char *pop_to_buffer(char *name) /*{{{*/
 	while (JWindow->buffer != w->buffer);
 	JWindow->hscroll_column = 1;
      }
-   
+
    bname = CBuf->name;
    switch_to_buffer(b);
    b->line = CLine = line;
@@ -1352,19 +1337,19 @@ int shell_command(char *cmd) /*{{{*/
    FILE *pp;
    VFILE *vp;
    int status;
-   
+
    if (Jed_Secure_Mode)
      {
 	msg_error ("Access denied.");
 	return -1;
      }
-   
+
    if (NULL == (pp = jed_popen(cmd, "r")))
      {
 	msg_error(Process_Error);
 	return -1;
      }
-   
+
    if (NULL != (vp = vstream(fileno(pp), 0, VFILE_TEXT)))
      {
 	(void) insert_file_pointer(vp);
@@ -1372,9 +1357,9 @@ int shell_command(char *cmd) /*{{{*/
 	SLfree ((char *)vp);
      }
    else	msg_error("Malloc Error.");
-   
+
    status = jed_pclose (pp);
-   
+
 #if defined(WIFEXITED) && defined(WEXITSTATUS)
    if ((status != -1) && WIFEXITED(status))
      {
@@ -1389,30 +1374,30 @@ int pipe_region(char *cmd) /*{{{*/
 {
    FILE *pp;
    int n;
-   
+
    if (Jed_Secure_Mode)
      {
 	msg_error ("Access denied.");
 	return -1;
      }
-   
+
    if (NULL == (pp = jed_popen (cmd, "w")))
      {
 	msg_error(Process_Error);
 	return(-1);
      }
-   
+
    n = write_region_to_fp(fileno(pp));
    if (n == -1)
      msg_error ("pipe_region: write failed");
-   
+
    return jed_pclose (pp);
 }
 
 /*}}}*/
 #endif
 
-/* 
+/*
  * Try to open a .slc then a .sl
  */
 #ifdef SIXTEEN_BIT_SYSTEM
@@ -1420,7 +1405,6 @@ int pipe_region(char *cmd) /*{{{*/
 #else
 #define VFILE_BUF_SIZE 4096
 #endif
-
 
 static VFILE *jed_open_lib_file (SLFUTURE_CONST char *file, char **dirfile) /*{{{*/
 {
@@ -1457,7 +1441,7 @@ static VFILE *jed_open_lib_file (SLFUTURE_CONST char *file, char **dirfile) /*{{
      }
 
    if ((NULL != (type = file_type(file)))
-       && ((*type == 0) 
+       && ((*type == 0)
 	   || ((0 != strcmp (type, "sl")) && (0 != strcmp (type, "slc")))))
      type = NULL;
 
@@ -1488,7 +1472,7 @@ static VFILE *jed_open_lib_file (SLFUTURE_CONST char *file, char **dirfile) /*{{
 		  if (libfsl[vmsn] == '.') libfsl[vmsn] = 0;
 	       }
 #endif
-	     
+
 	     /* Try .sl and .slc */
 	     safe_strcat (libfsl, ".sl", sizeof (libfsl));
 	     safe_strcpy (libfslc, libfsl, sizeof (libfslc));
@@ -1502,7 +1486,7 @@ static VFILE *jed_open_lib_file (SLFUTURE_CONST char *file, char **dirfile) /*{{
 	       break;
 	  }
      }
-   
+
    if (free_lib)
      SLang_free_slstring ((char *) lib);
 
@@ -1535,7 +1519,7 @@ static char *jed_read_from_file(SLang_Load_Type *x) /*{{{*/
      {
 	if (s[n - 1] != '\n') s[n] = 0;
      }
-   
+
    return s;
 }
 
@@ -1556,7 +1540,7 @@ int jed_ns_load_file (SLFUTURE_CONST char *file, SLFUTURE_CONST char *ns)
 
    x = SLns_allocate_load_type (dirfile, ns);
    SLang_free_slstring (dirfile);
-   
+
    if (x == NULL)
      {
 	vclose (vp);
@@ -1619,14 +1603,14 @@ void jed_load_buffer (char *ns) /*{{{*/
      file = cbuf->name;
    else
      file = cbuf->file;
-   
+
    file = jed_dir_file_merge (CBuf->dir, file);
    if (file == NULL)
      return;
-	
+
    x = SLns_allocate_load_type (file, ns);
    SLfree (file);
-   
+
    if (x == NULL)
      return;
 
@@ -1637,7 +1621,7 @@ void jed_load_buffer (char *ns) /*{{{*/
    cbuf->flags |= READ_ONLY;
    SLang_load_object(x);
    SLdeallocate_load_type (x);
-   
+
    if (buffer_exists (cbuf))
      cbuf->flags = flags;
    else cbuf = NULL;
@@ -1656,7 +1640,7 @@ void jed_load_buffer (char *ns) /*{{{*/
 	eob();
 	return;
      }
-   
+
    bob();
    while (1)
      {
@@ -1687,17 +1671,17 @@ int mini_complete (void) /*{{{*/
    static char prev[JED_MAX_PATH_LEN];
    int n, last_key_char = SLang_Last_Key_Char;
    static int flag = 0;  /* when flag goes 0, we call open */
-   
+
    if (complete_open == NULL) return ins_char_cmd();
-   
+
    bol ();
    jed_push_mark();
    eob();
    if (NULL == (tmp = make_buffer_substring(&n))) return(1);
-   
+
    safe_strcpy(buf, tmp, sizeof (buf));
    SLfree(tmp);
-   
+
    if ((last_key_char == ' ') && ((long) Last_Key_Function == (long) mini_complete))
      {
 	if (flag)
@@ -1715,7 +1699,7 @@ int mini_complete (void) /*{{{*/
 	n = 0;
 	safe_strcpy (prev, buf, sizeof (prev));  /* save this search context */
      }
-   
+
    if (!n)
      {
 	if ((Repeat_Factor != NULL)
@@ -1735,7 +1719,7 @@ int mini_complete (void) /*{{{*/
 		       goto start_loop;
 		    }
 	       }
-	     
+
 	     if (SLang_get_error () || SLang_pop_slstring (&tmp))
 	       {
 		  msg_error ("Error encounter during expansion.  Disabling expansion hook.");
@@ -1749,13 +1733,13 @@ int mini_complete (void) /*{{{*/
 	     n = -1;
 	  }
      }
-   
+
    start_loop:
-   
+
    if (!n && flag)
      {
 	safe_strcpy(last, buf, sizeof (last));
-	
+
 	/* This do loop tests all values from complete_next and returns the
 	   smallest length match of initial characters of buf */
 	do
@@ -1767,7 +1751,7 @@ int mini_complete (void) /*{{{*/
 		  CBuf->flags |= BURIED_BUFFER;
 		  (void) jed_insert_string ("!!! Use Page Up/Down keys to scroll this window. !!!\n");
 	       }
-	     
+
 	     n++;
 	     pl = last;
 	     pb = buf;
@@ -1785,15 +1769,14 @@ int mini_complete (void) /*{{{*/
 		 }
 	     else  /* next statement */
 #endif
-	       while (*pl && (*pl == *pb)) 
+	       while (*pl && (*pl == *pb))
 	       {
 		  pl++;
 		  pb++;
 	       }
-	     
 
 	     *pl = 0;
-	     
+
 	     if (last_key_char == '\t')
 	       {
 		  if (complete_open == file_findfirst)
@@ -1810,19 +1793,19 @@ int mini_complete (void) /*{{{*/
 	       }
 	  }
 	while(0 != (flag = (*complete_next)(buf)));
-	
+
 #if JED_FILE_PRESERVE_CASE
-	/* OS/2 uses case-insensitive search on buffer-names. Set the 
+	/* OS/2 uses case-insensitive search on buffer-names. Set the
 	 * flag if there is an exact match, so that completion will
-	 * cycle without repeats through all the matches. 
+	 * cycle without repeats through all the matches.
 	 */
-	if (complete_open == open_bufflist) 
+	if (complete_open == open_bufflist)
 	  {
 	     safe_strcpy(buf, last, sizeof (buf));
 	     (*complete_open)(buf);
-	     do 
+	     do
 	       {
-		  if (!strcmp(buf, last)) 
+		  if (!strcmp(buf, last))
 		    {
 		       flag = 1; break;
 		    }
@@ -1831,16 +1814,16 @@ int mini_complete (void) /*{{{*/
 	  }
 #endif
      }
-   
+
    if ((n > 1) && (last_key_char == '\t') && (Last_Completion_Buffer == NULL))
      {
 	Last_Completion_Windows = jed_num_windows () - 1;   /* not including mini */
 	Last_Completion_Buffer = pop_to_buffer (Completion_Buffer);
 	bob ();
      }
-   
+
    while ((CBuf != MiniBuffer) || !IN_MINI_WINDOW) other_window ();
-   
+
    if (n)
      {
 	erase_buffer();
@@ -1849,17 +1832,16 @@ int mini_complete (void) /*{{{*/
 	  message("[Sole Completion.]");
      }
    else msg_error("No Match!");
-   
+
    return(1);
 }
 
 /*}}}*/
 
-
 void copy_region_cmd(char *name) /*{{{*/
 {
    Buffer *buf;
-   
+
    if (NULL != (buf = find_buffer(name)))
      {
 	copy_region_to_buffer(buf);
@@ -1891,7 +1873,7 @@ char *make_line_string(char *string, unsigned int buflen) /*{{{*/
 {
    unsigned char *tmp, *p1, *p2;
    unsigned int n;
-   
+
    if (CBuf->marks == NULL)
      {
 	p1 = CLine->data + Point;
@@ -1921,15 +1903,15 @@ char *make_buffer_substring(int *np) /*{{{*/
    Line *tthis, *beg;
    int n = 1, dn, thisp;
    unsigned char *buf;
-   
+
    if (!check_region(&n)) return (NULL);      /* spot pushed */
    /* Point now at end of the region */
-   
+
    beg = tthis = CBuf->marks->line;
    thisp = CBuf->marks->point;
    n = 0;
    jed_pop_mark(0);
-   
+
    while (tthis != CLine)
      {
 	n += tthis->len;
@@ -1937,13 +1919,13 @@ char *make_buffer_substring(int *np) /*{{{*/
      }
    n -= thisp;
    n += Point;
-   
+
    if (NULL == (buf = (unsigned char *) SLmalloc (n + 1)))
      {
 	pop_spot();
 	return (NULL);
      }
-   
+
    if (CLine == (tthis = beg))
      {
 	SLMEMCPY((char *)buf, (char *) (tthis->data + thisp), n);
@@ -1990,7 +1972,7 @@ int markp(void) /*{{{*/
 int dup_mark(void) /*{{{*/
 {
    if (CBuf->marks == NULL) return(0);
-   
+
    push_spot();
    jed_goto_mark(CBuf->marks);
    jed_push_mark();
@@ -2004,7 +1986,7 @@ void mini_read(char *prompt, char *def, char *stuff) /*{{{*/
 {
    char *buf;
    int n;
-   
+
    complete_open = NULL;
    if (NULL == (buf = read_from_minibuffer(prompt, def, stuff, &n)))
      SLang_push_string ("");
@@ -2017,9 +1999,9 @@ void make_buffer_list(void) /*{{{*/
 {
    int n = 0;
    Buffer *b;
-   
+
    b = CBuf;
-   
+
    do
      {
 	SLang_push_string(b->name);
@@ -2041,7 +2023,7 @@ static void jed_traceback (SLFUTURE_CONST char *s) /*{{{*/
 	(void) fputs (s, stderr);
 	return;
      }
-   
+
    n = CBuf->name;
    set_buffer("*traceback*");
    CBuf->flags |= BURIED_BUFFER;
@@ -2078,7 +2060,7 @@ void enter_function(char *name) /*{{{*/
 void exit_function(char *name) /*{{{*/
 {
    int n = FName_Stack->marks[depth];
-   
+
 }
 
 /*}}}*/
@@ -2107,11 +2089,11 @@ int jed_add_init_slang_hook (int (*hook)(void))
 
    if (hook == NULL)
      return 0;
-   
+
    h = (Init_SLang_Hook_Type *)SLmalloc (sizeof (Init_SLang_Hook_Type));
    if (h == NULL)
      return -1;
-   
+
    h->hook = hook;
    h->next = Init_SLang_Hooks;
    Init_SLang_Hooks = h;
@@ -2121,7 +2103,7 @@ int jed_add_init_slang_hook (int (*hook)(void))
 static int run_init_slang_hooks (void)
 {
    Init_SLang_Hook_Type *h;
-   
+
    h = Init_SLang_Hooks;
 
    while (h != NULL)
@@ -2137,14 +2119,14 @@ static int run_init_slang_hooks (void)
 	SLfree ((char *) Init_SLang_Hooks);
 	Init_SLang_Hooks = h;
      }
-   
+
    return 0;
 }
 
 static void slang_exit_error_handler (SLFUTURE_CONST char *fmt, va_list ap)
 {
    char buf [2048];
-   
+
    SLvsnprintf (buf, sizeof (buf), fmt, ap);
    exit_error (buf, 0);
 }
@@ -2162,7 +2144,7 @@ void jed_setup_minibuffer_keymap (void)
 
    if (NULL == (m = SLang_find_keymap ("Mini_Map")))
      {
-	if (NULL == (m = SLang_create_keymap("Mini_Map", Global_Map))) 
+	if (NULL == (m = SLang_create_keymap("Mini_Map", Global_Map)))
 	  exit_error("Unable to create minibuffer keymap", 0);
 
 	SLang_undefine_key("\r", m);
@@ -2176,9 +2158,9 @@ void jed_setup_minibuffer_keymap (void)
 void init_minibuffer() /*{{{*/
 {
    Buffer *tmp;
-   
+
    tmp = CBuf;
-   
+
    The_MiniBuffer = make_buffer (" <mini>", NULL, NULL);
    The_MiniBuffer->modes = 0;
    /* do some initializing */
@@ -2194,7 +2176,7 @@ void init_minibuffer() /*{{{*/
 #ifdef __GO32__
    SLang_Interrupt = i386_check_kbd;
 #endif
-   
+
 #if 0
    SLang_Enter_Function = enter_function;
    SLang_Exit_Function = exit_function;
@@ -2226,7 +2208,7 @@ void init_minibuffer() /*{{{*/
      {
 	exit_error("Unable to initialize S-Lang!", 0);
      }
-   
+
    /* use jed rouotines instead of default slang ones */
    SLang_Error_Hook = jed_error_hook;
    SLang_VMessage_Hook = vmsg_hook;

@@ -32,12 +32,11 @@ private define mini_use_this_line ()
    insert (Mini_Previous_Lines[Mini_Next_Line]);
 }
 
-
 define next_mini_command ()
 {
    variable line;
 
-   if (Mini_Next_Line == Mini_Last_Line) 
+   if (Mini_Next_Line == Mini_Last_Line)
      error ("End of list!");
 
    Mini_Next_Line++;
@@ -110,7 +109,7 @@ public define mini_exit_minibuffer ()
 		  if (Mini_Previous_Lines[il mod Max_Num_Lines] == line) delta++;
 		  if (delta)
 		    {
-		       if ((il + delta) > la) 
+		       if ((il + delta) > la)
 			 break;
 		       Mini_Previous_Lines[il mod Max_Num_Lines] = Mini_Previous_Lines[(il + delta) mod Max_Num_Lines];
 		    }
@@ -127,7 +126,6 @@ public define mini_exit_minibuffer ()
    call ("exit_mini");
 }
 
-
 public define mini_store_lines (lines)
 {
    foreach (lines)
@@ -140,8 +138,6 @@ public define mini_set_lines (lines)
    mini_store_lines (lines);
 }
 
-
-
 public define mini_get_lines (num_p)
 {
    variable n = Mini_Last_Line - Mini_First_Line;
@@ -151,9 +147,9 @@ public define mini_get_lines (num_p)
 
    if (n < 0)
      n += (Max_Num_Lines+1);
-   
+
    variable lines = String_Type [n];
-   
+
    n = Mini_Last_Line - Mini_First_Line;
    if (n < 0)
      {
@@ -162,14 +158,14 @@ public define mini_get_lines (num_p)
 	lines[[n:]] = Mini_Previous_Lines[[0:Mini_Last_Line]];
 	return lines;
      }
-   
+
    return Mini_Previous_Lines[[0:n-1]];
 }
 
 % This function is called from site.sl AFTER jed.rc has been read but
 % before other command line arguments have been parsed.
 public define mini_init_minibuffer ()
-{   
+{
    variable mini = "Mini_Map";
    ifnot (keymap_p (mini))
      make_keymap (mini);
@@ -186,7 +182,7 @@ public define mini_init_minibuffer ()
    definekey ("prev_mini_command", "\eOA", mini);
 #endif
    definekey ("mini_exit_minibuffer", "\r", mini);
-   
+
    definekey ("exit_mini", "\e\r", mini);
    definekey ("mini_complete", "\t", mini);
    definekey ("mini_complete", " ", mini);
@@ -195,5 +191,3 @@ public define mini_init_minibuffer ()
    eval (".() mini_init_minibuffer");
 }
 
-   
-   

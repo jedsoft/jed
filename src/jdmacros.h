@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -7,7 +7,7 @@
 #ifndef _JD_MACROS_H_
 #define _JD_MACROS_H_
 
-/* This file defines some macros that I use with programs that link to 
+/* This file defines some macros that I use with programs that link to
  * the slang library.
  */
 
@@ -19,7 +19,7 @@
 
 #ifdef HAVE_MEMORY_H
 # include <memory.h>
-#endif 
+#endif
 
 #ifndef SLMEMSET
 # ifdef HAVE_MEMSET

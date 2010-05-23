@@ -4,13 +4,13 @@ define filter_region ()
 
    check_region (1);		       %  spot pushed
    () = dupmark ();
-   
+
    ERROR_BLOCK
      {
 	pop_mark (0);
 	pop_spot ();
      }
-   
+
    do
      {
 	cmd = read_mini ("Filter command:", Null_String, Null_String);
@@ -25,7 +25,7 @@ define filter_region ()
 	() = delete_file (file);
      }
    () = pipe_region (sprintf ("%s > %s", cmd, file));
-   
+
    push_spot ();
    if (-1 == insert_file (file))
      {
@@ -35,7 +35,7 @@ define filter_region ()
    pop_spot ();
 
    del_region ();
-   
+
    EXECUTE_ERROR_BLOCK;
 }
 

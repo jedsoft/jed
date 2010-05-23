@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -146,7 +146,7 @@ static int wrap_line1(int format, int trim) /*{{{*/
      }
 
    jed_position_point (p);
-   if (trim) 
+   if (trim)
      (void)jed_trim_whitespace();
    (void) jed_insert_newline();
    jed_up(1);
@@ -171,7 +171,7 @@ static int is_paragraph_sep(void) /*{{{*/
    int ret;
    Jed_Buffer_Hook_Type *h = CBuf->buffer_hooks;
 
-   if ((h != NULL) 
+   if ((h != NULL)
        && (h->par_sep != NULL))
      {
 	if ((-1 == SLexecute_function(h->par_sep))
@@ -204,7 +204,7 @@ int backward_paragraph(void) /*{{{*/
      {
 	if (0 == SLexecute_function (h->backward_paragraph_hook))
 	  return 1;
-	
+
 	return -1;
      }
 
@@ -263,7 +263,7 @@ static int mark_paragraph (Line **begp, Line **endp)
 
 	if (-1 == SLexecute_function (h->mark_paragraph_hook))
 	  return -1;
-	
+
 	point = Point;
 	end = CLine;
 	if (Point && eobp ())
@@ -278,7 +278,7 @@ static int mark_paragraph (Line **begp, Line **endp)
 
 	return 0;
      }
-   
+
    if (is_paragraph_sep())
      {
 	pop_spot();
@@ -301,7 +301,6 @@ static int mark_paragraph (Line **begp, Line **endp)
    return 0;
 }
 
-
 /* format paragraph and if Prefix argument justify_hook is called. */
 int text_format_paragraph () /*{{{*/
 {
@@ -311,13 +310,13 @@ int text_format_paragraph () /*{{{*/
    Jed_Buffer_Hook_Type *h = CBuf->buffer_hooks;
 
    CHECK_READ_ONLY
-     
-     if ((h != NULL) 
+
+     if ((h != NULL)
 	 && (h->format_paragraph_hook != NULL))
        return SLexecute_function (h->format_paragraph_hook);
 
    push_spot();
-   
+
    get_current_indent(&indent_col);
    if (indent_col + 1 >= Buffer_Local.wrap_column)
      indent_col = 0;
@@ -340,7 +339,7 @@ int text_format_paragraph () /*{{{*/
 	  break;
      }
 
-   while ((CLine != beg) 
+   while ((CLine != beg)
 	  && (0 != jed_up (1)))
      ;
 

@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -2355,7 +2355,7 @@ jgtk_createEditorMiniWin( Window_Type *mw )
    /* printf( "################################################################\n" ); */
 
    /* Return( newMiniWin ); */
-   
+
    return 0;
 }
 
@@ -3515,7 +3515,6 @@ eventCallback( GtkWidget *w,
    return( True );
 }
 
-
 /************************************
 * bytes_to_wchars
 *
@@ -3590,7 +3589,6 @@ utf8nt_to_wchars(unsigned char *s, unsigned int len, unsigned int *ncharsp)
 # define SLSMGCHAR_SET_COLOR(sc, _color) \
    (sc).color = (_color)
 # define SLSMG_COUNT_CHARS(sc) ((sc).nchars)
-
 
 /************************************
 * gtkXDrawString
@@ -4273,7 +4271,6 @@ JX_write_string (char *s ) /*{{{*/
    unsigned int nbytes = strlen(s);
 
    /* printf( "File: %s, Line: %d: JX_write_string\n", __FILE__, __LINE__ ); */
-
 
    if (Jed_UTF8_Mode)
      w = utf8nt_to_wchars((unsigned char *)s, nbytes, &nchars);
@@ -6873,7 +6870,6 @@ static void
 jgtk_server_vendor (void )
 {
 }
-
 
 /************************************
 * x_set_meta_keys

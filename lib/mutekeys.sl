@@ -100,7 +100,7 @@ define mute_keymap_96 () % ` map
    "`aeiou";
    "`\d133\d138\d141\d149\d151";
 #else
-   "`AEIOUaeiou";   
+   "`AEIOUaeiou";
    "`\d192\d200\d204\d210\d217\d224\d232\d236\d242\d249";
 #endif
    mute_insert_accent ();
@@ -124,7 +124,7 @@ define mute_keymap_34 () % \" map
    "\"uaAeioyOU";
    "\"\d129\d132\d142\d137\d139\d148\d152\d153\d154";
 #else
-   "\"AEIOUaeiouys";   
+   "\"AEIOUaeiouys";
    "\"\d196\d203\d207\d214\d220\d228\d235\d239\d246\d252\d255\d223";
 #endif
    mute_insert_accent ();
@@ -136,7 +136,7 @@ define mute_keymap_168 () % \d168 map
    "\"uaAeioyOU";
    "\"\d129\d132\d142\d137\d139\d148\d152\d153\d154";
 #else
-   "\d168AEIOUaeiouy";   
+   "\d168AEIOUaeiouy";
    "\d168\d196\d203\d207\d214\d220\d228\d235\d239\d246\d252\d255";
 #endif
    mute_insert_accent ();

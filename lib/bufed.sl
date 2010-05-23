@@ -62,7 +62,7 @@ define bufed_get ()
 	pop_mark_1 ();
 	return Null_String;
      }
-   
+
    buf = bufsubstr ();
    ifnot (bufferp (buf)) buf = "";
    return buf;
@@ -73,11 +73,11 @@ define list_buffers ()
    variable i, j, tmp, this, name, flags, flag_chars, skip;
    variable umask;
    variable name_col, dir_col, mode_col;
-   
+
    name_col = 21;
    mode_col = 13;
    dir_col = 45;
-   
+
    skip = 0;
    if (prefix_argument(-1) == -1) skip = 1;
    tmp = "*BufferList*";
@@ -86,7 +86,7 @@ define list_buffers ()
    set_readonly(0);
    erase_buffer();
    TAB = 8;
-   
+
    flag_chars = "CBKN-UORDAM";
    insert ("  Flags");
    goto_column (mode_col);
@@ -94,7 +94,7 @@ define list_buffers ()
    goto_column (name_col);
    insert ("Buffer Name");
    goto_column(dir_col); insert("Dir/File\n");
-   
+
    loop (buffer_list())
      {
 	name = ();
@@ -112,7 +112,7 @@ define list_buffers ()
 	goto_column (mode_col);
 	vinsert ("0%03o", umask);
 	goto_column (name_col);
-	
+
 	% Since the buffername may contain whitespace, enclose it in quotes
 	insert_char ('"');
 	insert(()); %% buffer name
@@ -123,11 +123,11 @@ define list_buffers ()
 	  {
 	     eol(); insert_single_space();
 	  }
-	
+
 	insert(()); insert(());               %% dir/file
 	newline();
      }
-   
+
    insert("\nU:Undo O:Overwrite R:Readonly D:Disk File Changed, A:Autosave, M:Modified\n");
    insert("C:CRmode, B:Binary File, K:Not backed up, N:No autosave");
 
@@ -200,7 +200,6 @@ define bufed_update ()
      }
 }
 
-
 define bufed_pop2buf ()
 {
    variable buf = bufed_get ();
@@ -210,7 +209,7 @@ define bufed_pop2buf ()
    % if the buffer is already visible, scroll down
    buffer_visible (buf);	% leave on the stack
    pop2buf (buf);
-   if (() and not(eobp ())) 
+   if (() and not(eobp ()))
      call ("page_down");
 
    bufed_update ();
@@ -264,29 +263,29 @@ definekey ("bufed_help",	"?",	$1);
 %\description
 % Mode designed to aid in navigating through multiple buffers
 % patterned somewhat after dired.
-% 
+%
 % To invoke Bufed, do \var{M-x bufed} or bind to \var{C-x C-b} (emacs)
-% 
+%
 % \var{g}	Update the buffer listing.
-% 
+%
 % \var{k}	Kill the buffer described on the current line, like typing
 % 	\var{M-x kill_buffer} and supplying that buffer name.
-% 
+%
 % \var{s}	Save the buffer described on the current line.
-% 
+%
 % \var{f}, \var{SPC}, \var{CR}, \var{TAB}
-% 	Visit the buffer described on the current line. 
+% 	Visit the buffer described on the current line.
 % 	\var{f} and \var{SPC} will create a new window if required.
 % 	\var{CR} will use the current window.
 % 	\var{TAB} will revert to a single window.
-% 
+%
 % \var{Q}	Quit bufed mode.
 %!%-
 define bufed ()
 {
    variable mode = "bufed";
    variable this_buf;
-   
+
    this_buf = sprintf ("\"%s\"", whatbuf ());
    bufed_list ();
    () = fsearch (this_buf);

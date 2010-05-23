@@ -1,24 +1,24 @@
 % More emacs functions.  This file is autoloaded upon demand.
 
 define find_buffer_other_window ()
-{  
+{
    variable n, buf, trybuf = Null_String;
    variable ch;
-   
+
    n = buffer_list();
    loop (n)
-     { 
+     {
 	buf = ();
 	n--;
 	ch = buf[0];
-	if ((ch == ' ') or (ch == '*') or 
+	if ((ch == ' ') or (ch == '*') or
 	    not(strcmp (whatbuf (), buf)))
 	  continue;
 	trybuf = buf;
 	break;
      }
    loop (n) pop ();
-   
+
    trybuf = read_with_completion ("Switch to buffer:",
 				  trybuf, Null_String, 'b');
 
@@ -31,7 +31,7 @@ define find_file_other_window ()
 
    file = read_file_from_mini ("Find file:");
    ifnot (strlen(extract_filename(file))) return;
-   
+
    ifnot (read_file(file)) message ("New file.");
    pop2buf (whatbuf());
 }
@@ -42,17 +42,17 @@ define find_alternate_file ()
 
    file = read_file_from_mini ("Find alternate file:");
    ifnot (strlen(extract_filename(file))) return;
-   
+
    delbuf (whatbuf());
    ifnot (find_file (file)) message ("New file.");
 }
 
-define delete_blank_lines () 
+define delete_blank_lines ()
 {
    variable white = " \t\r\n";
    bskip_chars(white);
    eol_trim(); go_down_1(); eol_trim(); bol();
-   if (eolp()) 
+   if (eolp())
      {
 	go_down_1();
 	push_mark ();
@@ -62,22 +62,21 @@ define delete_blank_lines ()
      }
 }
 
-
-define forward_sexp () 
+define forward_sexp ()
 {
    skip_chars(" \t\n");
    if (looking_at_char ('(')
        or looking_at_char ('{')
        or looking_at_char ('['))
      {
-	if (find_matching_delimiter(what_char ()) == 1) 
+	if (find_matching_delimiter(what_char ()) == 1)
 	  go_right_1 ();
 	return;
      }
    skip_chars("^ \t\n()[]{}");
 }
 
-define backward_sexp () 
+define backward_sexp ()
 {
    bskip_chars(" \t\n");
    go_left_1 ();
@@ -88,11 +87,11 @@ define backward_sexp ()
 	() = find_matching_delimiter(0);
 	return;
      }
-   
+
    bskip_chars("^ \t\n()[]{}");
 }
 
-define kill_sexp () 
+define kill_sexp ()
 {
    variable kr = "yp_kill_region";
    push_mark();

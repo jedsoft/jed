@@ -9,8 +9,8 @@
 define sort_region_internal (line_break_str, delim)
 {
    check_region (0);
-   narrow (); 
-   
+   narrow ();
+
    bob ();
 
    do
@@ -22,7 +22,7 @@ define sort_region_internal (line_break_str, delim)
 	  {
 	     widen(); widen ();
 	  }
-	
+
 	bob ();
 	while (eol(), not(eobp()))
 	  {
@@ -31,21 +31,21 @@ define sort_region_internal (line_break_str, delim)
 	widen ();
      }
    while (down_1 ());
-   
+
    mark_buffer ();
    goto_column (32);
-   
+
    ERROR_BLOCK
      {
 	variable len = strlen (line_break_str);
 	bob ();
-	while (fsearch (line_break_str)) 
+	while (fsearch (line_break_str))
 	  {
 	     deln (len); newline ();
 	  }
 	widen ();
      }
-   
+
    sort ();
    EXECUTE_ERROR_BLOCK;
 }

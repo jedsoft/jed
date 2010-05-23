@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -43,7 +43,7 @@ Hook_List_Type;
 
 static Hook_List_Type *Hook_List;
 
-static Hook_Type *hook_already_exists (Hook_List_Type *h, 
+static Hook_Type *hook_already_exists (Hook_List_Type *h,
 				       SLang_Name_Type *nt)
 {
    Hook_Type *next;
@@ -56,7 +56,7 @@ static Hook_Type *hook_already_exists (Hook_List_Type *h,
 
 	next = next->next;
      }
-   
+
    return next;
 }
 
@@ -77,7 +77,7 @@ static void free_hook (Hook_List_Type *l, Hook_Type *h)
      p->next = n;
    else
      l->hooks = n;
-   
+
    if (n != NULL)
      n->prev = p;
 
@@ -111,7 +111,7 @@ static Hook_List_Type *new_hook_list (char *name)
 	SLfree ((char *) h);
 	return NULL;
      }
-   
+
    h->next = Hook_List;
    Hook_List = h;
    return h;
@@ -129,12 +129,11 @@ static Hook_List_Type *find_hook_list (char *name)
 	if ((ch == l->hooks_name[0])
 	    && (0 == strcmp (l->hooks_name, name)))
 	  break;
-	
+
 	l = l->next;
      }
    return l;
 }
-
 
 static int insert_hook_1 (char *hook, SLang_Name_Type *nt, int append)
 {
@@ -156,7 +155,7 @@ static int insert_hook_1 (char *hook, SLang_Name_Type *nt, int append)
 
    if (NULL == (h = (Hook_Type *) jed_malloc0 (sizeof (Hook_Type))))
      return -1;
-	
+
    h->nt = nt;
    h->is_valid = 1;
 
@@ -165,7 +164,7 @@ static int insert_hook_1 (char *hook, SLang_Name_Type *nt, int append)
      {
 	while (p->next != NULL)
 	  p = p->next;
-	
+
 	p->next = h;
 	h->prev = p;
      }
@@ -183,10 +182,10 @@ static int pop_hooks_info (char **s, SLang_Name_Type **nt)
 {
    if (NULL == (*nt = SLang_pop_function ()))
      return -1;
-   
+
    if (-1 == SLang_pop_slstring (s))
      return -1;
-   
+
    return 0;
 }
 
@@ -198,9 +197,9 @@ static int insert_hook (int append)
 
    if (-1 == pop_hooks_info (&name, &nt))
      return -1;
-   
+
    status = insert_hook_1 (name, nt, append);
-   
+
    SLang_free_slstring (name);
    return status;
 }
@@ -222,7 +221,7 @@ static void remove_hook_cmd (void)
 
    if (-1 == pop_hooks_info (&name, &nt))
      return;
-   
+
    if ((NULL == (l = find_hook_list (name)))
        || (NULL == (h = hook_already_exists (l, nt))))
      {
@@ -251,7 +250,7 @@ static int execute_fun_with_args (SLang_Name_Type *nt, unsigned int argc,
 int jed_hook_exists (char *name)
 {
    Hook_List_Type *l;
-   
+
    return ((NULL != (l = find_hook_list (name)))
 	   && (l->hooks != NULL));
 }
@@ -276,19 +275,19 @@ static int jed_run_hooks (char *name, int method, unsigned int argc, char **argv
 	     h = h->next;
 	     continue;
 	  }
-	
+
 	lock_hook (h);
 	status = execute_fun_with_args (h->nt, argc, argv);
 	next = h->next;
 	release_hook (l, h);
 	h = next;
-	     
+
 	if (status == -1)
 	  return -1;
-	
+
 	if (method == JED_HOOKS_RUN_ALL)
 	  continue;
-	
+
 	if (-1 == SLang_pop_integer (&status))
 	  return -1;
 
@@ -298,7 +297,7 @@ static int jed_run_hooks (char *name, int method, unsigned int argc, char **argv
 	       return 0;
 	     continue;
 	  }
-	
+
 	/* else method = JED_HOOKS_RUN_UNTIL_NON_0 */
 	if (status)
 	  return 1;
@@ -310,7 +309,6 @@ static int jed_run_hooks (char *name, int method, unsigned int argc, char **argv
    return 0;
 }
 
-
 static char **build_arg_list (unsigned int n, va_list ap)
 {
    char **s;
@@ -319,13 +317,12 @@ static char **build_arg_list (unsigned int n, va_list ap)
    s = (char **)SLmalloc ((n+1) * sizeof (char *));
    if (s == NULL)
      return NULL;
-   
+
    for (i = 0; i < n; i++)
      s[i] = va_arg(ap, char *);
    s[n] = NULL;
    return s;
 }
-
 
 int jed_va_run_hooks (char *name, int method, unsigned int nargs, ...)
 {
@@ -374,14 +371,14 @@ static void run_hooks_cmd (void)
 	SLang_verror (SL_USAGE_ERROR, "usage: expecting 2 or 3 arguments");
 	return;
      }
-   
+
    switch (method)
      {
       case JED_HOOKS_RUN_ALL:
       case JED_HOOKS_RUN_UNTIL_0:
       case JED_HOOKS_RUN_UNTIL_NON_0:
 	break;
-	
+
       default:
 	SLang_verror (SL_INVALID_PARM, "run method %d is not supported", method);
 	goto the_return;
@@ -397,8 +394,6 @@ static void run_hooks_cmd (void)
    SLang_free_array (at);
 }
 
-   
-   
 static SLang_Intrin_Fun_Type Hooks_Intrinsics [] =
 {
    MAKE_INTRINSIC_0("add_to_hook", add_hook_cmd, SLANG_VOID_TYPE),
@@ -421,6 +416,6 @@ int jed_init_user_hooks (void)
    if ((-1 == SLadd_intrin_fun_table (Hooks_Intrinsics, NULL))
        || (-1 == SLadd_iconstant_table (Hook_IConstants, NULL)))
      return -1;
-   
+
    return 0;
 }

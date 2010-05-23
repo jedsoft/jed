@@ -4,7 +4,7 @@
 define mark_next_nchars (n, dir)
 {
    variable h;
-   ERROR_BLOCK 
+   ERROR_BLOCK
      {
 	set_line_hidden (h); pop_mark_0 ();
      }
@@ -19,11 +19,9 @@ define mark_next_nchars (n, dir)
    EXECUTE_ERROR_BLOCK;
 }
 
-
-
-% The search function is to return: 0 if non-match found or the length of the 
+% The search function is to return: 0 if non-match found or the length of the
 % item matched.
-% search_fun takes the pattern to search for and returns the length of the 
+% search_fun takes the pattern to search for and returns the length of the
 % pattern matched.  If no match occurs, return -1.
 % rep_fun returns the length of characters replaced.
 
@@ -42,7 +40,7 @@ define replace_with_query (search_fun, pat, rep, query, rep_fun)
    variable replacement_length = strlen (rep);
 
    prompt =  sprintf ("Replace '%s' with '%s'? (y/n/!/+/q/h)", pat, rep);
-   
+
    while (pat_len = @search_fun (pat), pat_len >= 0)
      {
 	ifnot (query)
@@ -56,19 +54,19 @@ define replace_with_query (search_fun, pat, rep, query, rep_fun)
 	     continue;
 	  }
 
-	do 
+	do
 	  {
 	     message(prompt);
 	     mark_next_nchars (pat_len, -1);
-	     
+
 	     ch = getkey ();
 	     if (ch == 'r')
 	       {
 		  recenter (window_info('r') / 2);
 	       }
-	     
+
 	  } while (ch == 'r');
-	
+
 	switch(ch)
 	  { case 'u' and (undo_stack != NULL) :
 	     goto_user_mark (undo_stack.user_mark);
@@ -76,15 +74,15 @@ define replace_with_query (search_fun, pat, rep, query, rep_fun)
 	     () = @rep_fun (undo_stack.prev_string, undo_stack.rep_len);
 	     pop_spot ();
 	     undo_stack = undo_stack.next;
-	  }   
+	  }
 	  { case 'y' :
-	     tmp = @undo_stack_type; 
+	     tmp = @undo_stack_type;
 	     tmp.next = undo_stack;
 	     undo_stack = tmp;
 
 	     push_spot(); push_mark ();
 	     go_right (pat_len); undo_stack.prev_string = bufsubstr ();
-	     pop_spot (); 
+	     pop_spot ();
 	     undo_stack.user_mark = create_user_mark ();
 	     undo_stack.rep_len  = @rep_fun (rep, pat_len);
 	     if (pat_len == 0)
@@ -102,18 +100,17 @@ define replace_with_query (search_fun, pat, rep, query, rep_fun)
           { case 'q' : break; }
           {
 	     flush ("y:replace, n:skip, !:replace all, u: undo last, +:replace then quit, q:quit");
-	     () = input_pending (30); 
+	     () = input_pending (30);
 	  }
      }
 }
 
-
 define search_maybe_again (fun, str, dir, match_ok_fun)
 {
    variable ch, len;
-   
+
    while (len = @fun (str, dir), len >= 0)
-     {	
+     {
 	if (@match_ok_fun ())
 	  {
 	     if (EXECUTING_MACRO or DEFINING_MACRO) return 1;

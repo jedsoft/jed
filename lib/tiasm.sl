@@ -14,11 +14,11 @@ set_syntax_flags ($1, 1 | 2);
 set_fortran_comment_chars ($1, "*");
 
 % Type 0 keywords
-() = define_keywords_n ($1, 
+() = define_keywords_n ($1,
 			"andashbuddbdldaldilshmh1noppopsti",
 			3, 0);
 
-() = define_keywords_n ($1, 
+() = define_keywords_n ($1,
 			"addibeqdbledcmpildizlhu0lhu1pushretsrptbsubi",
 			4, 0);
 

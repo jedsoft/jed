@@ -7,7 +7,6 @@
 %  mailutils_get_keyword_value (kw)
 %  mailutils_set_keyword_value (field, value)
 
-
 %!%+
 %\function{mailutils_find_header_separator}
 %\synopsis{Searches for the header/body separator}
@@ -26,7 +25,6 @@ public define mailutils_find_header_separator ()
      return 0;
    return bol_fsearch ("\n");
 }
-
 
 %!%+
 %\function{mailutils_narrow_to_header}
@@ -66,7 +64,6 @@ private define mark_this_keywords_value ()
    go_left (1);
 }
 
-
 %!%+
 %\function{mailutils_get_keyword_value}
 %\synopsis{Obtain the value of a header keyword}
@@ -82,7 +79,7 @@ private define mark_this_keywords_value ()
 public define mailutils_get_keyword_value (kw)
 {
    push_spot ();
-   EXIT_BLOCK 
+   EXIT_BLOCK
      {
 	pop_spot ();
      }
@@ -91,14 +88,13 @@ public define mailutils_get_keyword_value (kw)
 
    variable exists = bol_fsearch (kw);
    widen_region ();
-   
+
    if (exists == 0)
      return NULL;
-   
+
    mark_this_keywords_value ();
    return strtrim (bufsubstr ());
 }
-
 
 %!%+
 %\function{mailutils_set_keyword_value}

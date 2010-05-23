@@ -1,5 +1,5 @@
 /* This is the interface to the GPM mouse under Linux */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006, 2008 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -46,7 +46,7 @@ int *stdscr;
 static void draw_mouse (void)
 {
    Gpm_Event event;
-   
+
    if (MouseX < 1)
      MouseX = 1;
    else if (MouseX >= Jed_Num_Screen_Cols)
@@ -59,11 +59,10 @@ static void draw_mouse (void)
 
    event.x = MouseX;
    event.y = MouseY;
-	
+
    GPM_DRAWPOINTER(&event);
    Mouse_Showing = 1;
 }
-
 
 static int mouse_handler_2 (void)
 {
@@ -71,22 +70,22 @@ static int mouse_handler_2 (void)
    Gpm_Event event;
    unsigned char buf[3];
    JMouse_Type jm;
-   
+
    if (Gpm_GetEvent (&event) <= 0) return -1;
-   if (Suspend_Mouse_Events) 
+   if (Suspend_Mouse_Events)
      {
-	if (Suspend_Mouse_Events == -1) 
+	if (Suspend_Mouse_Events == -1)
 	  Suspend_Mouse_Events = 0;
 	return -1;
      }
-   
+
    MouseX += event.dx;
    MouseY += event.dy;
-   
+
    draw_mouse ();
-   
+
    if (event.type & GPM_MOVE) return 0;
-   
+
    nbuttons = 0;
    if (event.buttons & GPM_B_LEFT)
      {
@@ -103,11 +102,11 @@ static int mouse_handler_2 (void)
 	b = JMOUSE_BUTTON_3;
 	nbuttons++;
      }
-   
+
    if (nbuttons != 1) return 0;
 
    jm.button = b;
-   
+
    if ((event.type & GPM_DOUBLE)
        && (event.type & GPM_DOWN)) jm.type = JMOUSE_DOUBLE_CLICK;
    else if ((event.type & GPM_TRIPLE)
@@ -116,7 +115,7 @@ static int mouse_handler_2 (void)
    else if (event.type & GPM_DOWN) jm.type = JMOUSE_DOWN;
    else if (event.type & GPM_UP) jm.type = JMOUSE_UP;
    else return 0;
-   
+
    if (event.modifiers & MOD_SHIFT)
      {
 	jm.state = JMOUSE_SHIFT;
@@ -126,18 +125,17 @@ static int mouse_handler_2 (void)
 	jm.state = JMOUSE_CTRL;
      }
    else jm.state = 0;
-   
+
    jm.x = MouseX;
    jm.y = MouseY;
-   
+
    b = jed_mouse_add_event (&jm);
    if (b == -1) return 0;
-   
+
    buf[0] = 27; buf[1] = 0; buf[2] = (char) b;
    ungetkey_string ((char *)buf, 3);
    return 1;
 }
-
 
 static int Warp_Pending;
 static void close_update (void)
@@ -174,12 +172,12 @@ static int insert_cutbuffer (void)
 static void region_to_cutbuffer (void)
 {
    int nbytes;
-   
+
    if (CutBuffer != NULL)
      {
 	SLfree (CutBuffer);
      }
-   
+
    CutBuffer = make_buffer_substring(&nbytes);
    CutBuffer_Len = nbytes;
 }
@@ -191,7 +189,7 @@ static void close_mouse (void)
 
    if (JMouse_Event_Hook == NULL) return;
    JMouse_Event_Hook = NULL;
-   
+
    Gpm_Close ();
 }
 
@@ -253,7 +251,7 @@ static int open_mouse (void)
    Suspend_Mouse_Events = -1;
    MouseX = Jed_Num_Screen_Cols / 2;
    MouseY = Jed_Num_Screen_Rows / 2;
-   
+
    status = Gpm_Open (&conn, 0);
    /* Uninstall the gpm signal handler */
    (void) SLsignal (SIGTSTP, sigtstp_fun);
@@ -265,16 +263,15 @@ static int open_mouse (void)
      {
 	if (-1 == SLadd_intrin_fun_table (gpm_mouse_table, "MOUSE"))
 	  return -1;
-	
+
 	not_first_time = 1;
      }
-   
+
    JMouse_Event_Hook = mouse_handler_2;
    X_Update_Close_Hook = close_update;
    JMouse_Hide_Mouse_Hook = hide_mouse;
    return gpm_fd;
 }
 
-   
 int (*X_Open_Mouse_Hook)(void) = open_mouse;
 void (*X_Close_Mouse_Hook)(void) = close_mouse;

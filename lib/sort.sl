@@ -7,17 +7,17 @@ define sort_using_function (sort_fun)
    end_line = what_line();
    pop_mark_1 ();
    beg = what_line();
-  
+
    n = end_line - beg; ++n;	       %/* number of lines */
    begc = what_column();
-  
+
    if (endc < begc)
      {
 	endc; endc = begc; begc = ();
      }
-   
+
    keys = String_Type [n];
-  
+
   %
   % extract keys and fill array
   %
@@ -31,7 +31,7 @@ define sort_using_function (sort_fun)
 	keys[i] = bufsubstr();
 	go_down_1 ();
      }
-   
+
    index = array_sort(keys, sort_fun);
 
    %
@@ -43,11 +43,11 @@ define sort_using_function (sort_fun)
 	eol();
 	newline();
      }
-   
+
    push_spot();
    for(i = 0; i < n; ++i)
      {
-	goto_line(index[i] + beg); 
+	goto_line(index[i] + beg);
 	line_as_string (); 	       %  on stack-- also we are at eol now
 	pop_spot();
 	bol(); insert(()); newline();

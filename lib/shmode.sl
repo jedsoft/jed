@@ -7,11 +7,11 @@ create_syntax_table ($1);
 define_syntax ("#", "", '%', $1);
 define_syntax ("([{", ")]}", '(', $1);
 
-% Unfortunately, the editor cannot currently correctly deal with multiple 
+% Unfortunately, the editor cannot currently correctly deal with multiple
 % string characters.  So, inorder to handle something like:
 %    echo "I'd rather be home"
-% make the '"' character the actual string character but also give '\'' 
-% a string syntax.  However, this will cause '"' to give problems but 
+% make the '"' character the actual string character but also give '\''
+% a string syntax.  However, this will cause '"' to give problems but
 % usually, '"' characters will be paired.
 define_syntax ('\'', '"', $1);
 define_syntax ('"', '"', $1);

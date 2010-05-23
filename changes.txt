@@ -28,6 +28,8 @@ Changes since 0.99-19
 11. Removed dead code that pertained to versions of slang prior to
     2.1.0.  Such versions have been unsupported for some time. (Mark
     Olesen).
+12. src/*.c,h, lib/*.sl: Removed excess whitespace from files, and
+    updated copyright year.
 
 
 {{{ Previous Versions 

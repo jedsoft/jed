@@ -1,5 +1,5 @@
 %  Initializes upper/lowercase lookup tables for Windows 1250 code page.
-%  Derived from dos852.sl by the code conversion utility. 
+%  Derived from dos852.sl by the code conversion utility.
 %  852 is the default code page for Czech in DOS, 1250 is the equivalent
 %  for Windows (ask Microsoft why the encoding is different).
 %  not complete! - Czech only (Petr Peringer <peringer@dcse.fee.vutbr.cz>)
@@ -14,7 +14,7 @@
 . 0xCF 0xEF define_case  % \v{D}
 . 0xCC 0xEC define_case  % \v{E}
 . 0xC9 0xE9 define_case  % \'E
-. 0xCD 0xED define_case  % \'I  
+. 0xCD 0xED define_case  % \'I
 . 0xD2 0xF2 define_case  % \v{N}
 . 0xD3 0xF3 define_case  % \'O
 . 0xD8 0xF8 define_case  % \v{R}

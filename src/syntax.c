@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -36,7 +36,7 @@ static unsigned char *write_using_color (unsigned char *p,
 		  p1++;
 		  continue;
 	       }
-	     
+
 	     if (p1 != p)
 	       {
 		  SLsmg_set_color (0);
@@ -66,10 +66,10 @@ static void color_columns (int row, register unsigned char *p, register unsigned
 
    if (p != pmax)
      (void) write_using_color (p, pmax, 0);
-   
+
    if (NULL == (c = CBuf->column_colors))
      return;
-   
+
    nx = CBuf->num_column_colors;
    color = 0;
    x1 = x0 = 0;

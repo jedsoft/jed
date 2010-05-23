@@ -17,7 +17,7 @@ private variable Auto_Compression_Mode = 0;
 private define check_is_compressed (file)
 {
    variable ext = path_extname (file);
-   
+
    variable i = where (ext == Compressed_File_Exts);
 
    if (length (i))
@@ -32,13 +32,13 @@ private define _write_compressed_region (file, append)
      return 0;
 
    variable i = check_is_compressed (file);
-     
+
    if (i == -1) return 0;
 
    variable cmd = sprintf ("%s > %s", Compress_File_Pgms[i], file);
    if (append)
      cmd = sprintf ("%s >> %s", Compress_File_Pgms[i], file);
-   
+
    variable status = pipe_region (cmd);
 
    if (status != 0)
@@ -75,7 +75,7 @@ private define insert_compressed_file (file)
 
    return 1;
 }
-   
+
 private define read_compressed_file (file)
 {
    if (insert_compressed_file (file))
@@ -85,7 +85,6 @@ private define read_compressed_file (file)
      }
    return 0;
 }
-
 
 add_to_hook ("_jed_insert_file_hooks", &insert_compressed_file);
 add_to_hook ("_jed_read_file_hooks", &read_compressed_file);
@@ -118,10 +117,10 @@ add_to_hook ("_jed_set_mode_hooks", &compressed_set_mode_hook);
 %\description
 % The \var{auto_compression_mode} function toggles the auto-compression-mode
 % on or off. When on, files whose names end with \exmp{.gz}, \exmp{.Z}, or
-% \exmp{.bz2} will automatically uncompressed when read in, and compressed 
+% \exmp{.bz2} will automatically uncompressed when read in, and compressed
 % when written out.
 %!%-
-   
+
 public define auto_compression_mode ()
 {
    if (_NARGS)

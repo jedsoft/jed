@@ -1,27 +1,25 @@
 % Interface to VMS Help
 
 variable VMSHelp_Topic_Len = 0;
-variable VMS_Help_Library = "SYS$HELP:HELPLIB.HLB"; 
+variable VMS_Help_Library = "SYS$HELP:HELPLIB.HLB";
 % change as necessary - routines work with any .HLB file.
 
 define vms_help ()
 {
    variable curr_buf, helptopic;
-   
+
    if (VMSHelp_Topic_Len) return;
 
    curr_buf = whatbuf();
-   
-   ERROR_BLOCK 
+
+   ERROR_BLOCK
      {
 	pop_mark_0 ();
 	sw2buf(curr_buf);
 	VMSHelp_Topic_Len = -0;
      }
-   
 
    helptopic = read_mini("VMS Help Topic:", Null_String, Null_String);
-   
 
    sw2buf ("*VMS-Help*");
    % set_readonly (0);
@@ -30,7 +28,7 @@ define vms_help ()
    push_mark();           % This mark is popped later
    VMSHelp_Topic_Len = -1;
    vms_get_help (VMS_Help_Library, helptopic);
-   
+
    EXECUTE_ERROR_BLOCK;
 }
 
@@ -51,22 +49,22 @@ define vms_help_newtopic (prompt)
    setbuf ("*VMS-Help*");
    pop_mark_1 ();
    % set_readonly (1);
-   
+
    VMSHelp_This_Topic = Null_String;
    if (VMSHelp_Topic_Len)
      {
 	msg = sprintf("Hit RET for '%s', PgDn/PgUp,  ", prompt);
 	recenter (1);
-	forever 
+	forever
 	  {
 	     ERROR_BLOCK
 	       {
 		  _clear_error ();
 	       }
-	     
+
 	     message (msg);
 	     update_sans_update_hook (1);
-	     
+
 	     ch = getkey ();
 	     if (ch == '\r') break;
 	     if (ch == '.')
@@ -74,13 +72,13 @@ define vms_help_newtopic (prompt)
 		  if (vms_help_grab_topic ()) break;
 		  continue;
 	       }
-	     
+
 	     if (ch == 127)
 	       {
 		  use_call = 1;
 		  fun = "page_up";
 	       }
-	     else 
+	     else
 	       {
 		  ungetkey (ch);
 		  (use_call, fun) = get_key_binding ();
@@ -91,10 +89,10 @@ define vms_help_newtopic (prompt)
 		    }
 		  if (fun == NULL) fun = "";
 	       }
-	     
+
 	     if (fun == "self_insert_cmd")
 	       {
-		  if (ch == ' ') fun = "page_down"; 
+		  if (ch == ' ') fun = "page_down";
 		  else
 		    {
 		       ungetkey(ch);
@@ -105,7 +103,7 @@ define vms_help_newtopic (prompt)
 	     if (use_call) call (fun); else eval (fun);
 	  }
      }
-   
+
    re_fsearch ("^[\t ]*\\cAdditional information available:"); pop();
    topic = strtrim(read_mini(prompt, VMSHelp_This_Topic, Null_String));
    % set_readonly (0);
@@ -115,5 +113,4 @@ define vms_help_newtopic (prompt)
    push_mark();
    topic;
 }
-
 

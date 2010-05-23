@@ -1,11 +1,11 @@
 #ifdef IBMPC_SYSTEM
 %  Initializes upper/lowercase lookup tables for DOS code page 437.
 %  437 is the original DOS character table. So if your DOS version
-%  does not support code pages, use this table. 437 is also the 
+%  does not support code pages, use this table. 437 is also the
 %  default code page for USA, United Kingdom, and International English.
 %  It is the alternate code page for Belgium, Brazil, Finland, France,
-%  Germany, Italy, Latin America, Netherlands, Spain, Sweden, and 
-%  Switzerland. 
+%  Germany, Italy, Latin America, Netherlands, Spain, Sweden, and
+%  Switzerland.
 %  Information from MSDOS 5.0 manual
 %
 .   0  64 1 { dup define_case } _for
@@ -28,5 +28,4 @@
 . "0-9a-zA-Z\d128-\d154\d160-\d165\d224-\d235" define_word
 
 #endif
-
 

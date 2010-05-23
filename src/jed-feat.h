@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -67,7 +67,7 @@
  * systems.
  *
  * Are filenames case sensitive? If this is set to 1 Ma* will not match
- * makefile, even on systems that are not case sensitive by default. 
+ * makefile, even on systems that are not case sensitive by default.
  */
 #define	JED_FILENAME_CASE_SENSITIVE	0
 
@@ -84,7 +84,7 @@
 #endif
 
 /* Set JED_HAS_IMPORT if you want the ability to import modules into jed via
- * the slang import statement.  This assumes that slang was compiled with 
+ * the slang import statement.  This assumes that slang was compiled with
  * such support.
  */
 #define JED_HAS_IMPORT	1

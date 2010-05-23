@@ -30,7 +30,6 @@ private define indent_line_to_col (col)
    insert_spaces (col - what_column());
 }
 
-
 % fortran indent routine
 define fortran_indent ()
 {
@@ -54,7 +53,7 @@ define fortran_indent ()
 	  goal += Fortran_Indent_Amount;
 	else if (looking_at("if ") or looking_at("if("))
 	  {
-	     % We want to check for 'then' so take care of continuations 
+	     % We want to check for 'then' so take care of continuations
 	     push_spot ();
 	     while (down_1 ())
 	       {
@@ -360,7 +359,6 @@ _for (0, 9, 1)
    definekey ("fortran_electric_label", string($2), $1);
 }
 
-
 % Set up syntax table
 $1 = "Fortran";
 create_syntax_table ($1);
@@ -415,7 +413,7 @@ set_fortran_comment_chars ($1, "^0-9 \t\n");
 % Mode designed for the purpose of editing FORTRAN files.
 % After the mode is loaded, the hook 'fortran_hook' is called.
 % Useful functions include
-% 
+%
 %  Function:                    Default Binding:
 %   fortran_continue_newline          ESC RETURN
 %     indents current line, and creates a continuation line on next line.
@@ -437,7 +435,7 @@ set_fortran_comment_chars ($1, "^0-9 \t\n");
 %     moves cursor to end of current subroutine/function
 %   fortran_mark_subprogram           ESC ^H
 %     mark the current subroutine/function
-% 
+%
 % Variables include:
 %   Fortran_Continue_Char   --- character used as a continuation character.
 %     By default, its value is "&"

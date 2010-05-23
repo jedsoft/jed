@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -28,9 +28,8 @@
 #include "ins.h"
 #include "cmds.h"
 
-/*	Need to pass strings by descriptor to LBR$OUTPUT_HELP;	*/        
+/*	Need to pass strings by descriptor to LBR$OUTPUT_HELP;	*/
 /*	string descriptors in SYS$LIBRARY:DESCRIP.H.		*/
-
 
 /*	Change definition of $DESCRIPTOR macro. In descrip.h,	*/
 /*	sizeof(string)-1 used, but sizeof() bites on strings	*/
@@ -44,7 +43,6 @@
   (x).dsc$b_dtype = DSC$K_DTYPE_T;\
   (x).dsc$b_class = DSC$K_CLASS_S;\
   (x).dsc$a_pointer = (y)
-
 
 /*--------------------------------------------------------------*/
 /*								*/
@@ -73,11 +71,10 @@ int vms_get_help(char *helpfile, char *helptopic) /*{{{*/
    int istat;
    unsigned int flags;
    struct dsc$descriptor_s topnam, filnam;
-   
+
    $STR_DESC(topnam,helptopic);
    $STR_DESC(filnam,helpfile);
 
-   
    flags = HLP$M_PROMPT;
 
    istat = LBR$OUTPUT_HELP(&output_help_to_buf,
@@ -94,7 +91,6 @@ int vms_get_help(char *helpfile, char *helptopic) /*{{{*/
 }
 
 /*}}}*/
-
 
 /*----------------------------------------------------------------------*/
 /*									*/
@@ -117,7 +113,6 @@ int output_help_to_buf(struct dsc$descriptor_s *string) /*{{{*/
 }
 
 /*}}}*/
-
 
 /*----------------------------------------------------------------------*/
 /*									*/
@@ -153,7 +148,7 @@ int input_new_helptopic(struct dsc$descriptor_s *newtopic, /*{{{*/
    newtopic->dsc$b_class = DSC$K_CLASS_S;
 
    if (dofree) SLfree(newtop);
-   
+
    return(1);	/* should add codes that LIB$GET_INPUT can return */
 }
 

@@ -10,25 +10,25 @@
 %
 %  To use this mode for editing a mail message from mutt, slrn, etc, set
 %  the editor variable to:
-%  
+%
 %     "jed %s -tmp --mailedit-mode"
-%     
+%
 %   Variables supported by the mode include:
 %
 %     MailEdit_Fcc
 %     MailEdit_Reply_To
 %     MailEdit_Max_Signature_Lines
 %     MailEdit_Quote_Chars,
-%     
+%
 %   The colors may be controlled by
-%   
+%
 %     MailEdit_Quote_Color
 %     MailEdit_Signature_Color
 %     MailEdit_To_Color
 %     MailEdit_Subject_Color
 %     MailEdit_From_Color
 %     MailEdit_Header_Color
-%   
+%
 %   via, e.g., set_color ("MailEdit_Header_Color", "red", "black");
 %
 %   The function mailedit_mode calls mailedit_mode_hook.
@@ -69,8 +69,6 @@ private define find_header_keyword_start ()
    bol ();
 }
 
-   
-
 % If the header does not exist, it will be created. */
 private define goto_header (header)
 {
@@ -101,7 +99,7 @@ private define add_xxx_header (header, value)
 
    if ((exists != NULL) and (exists != ""))
      return;
-   
+
    push_spot ();
    if (0 == goto_header (header))
      insert (value);
@@ -115,7 +113,7 @@ private define find_signature_start ()
    variable line = what_line ();
    ifnot (bol_bsearch ("-- \n"))
      return 0;
-   
+
    if (line - what_line () > MailEdit_Max_Signature_Lines)
      {
 	eob ();
@@ -171,7 +169,7 @@ private define count_quotes ()
 {
    bol_skip_white ();
    variable count = 0;
-   forever 
+   forever
      {
 	push_mark ();
 	skip_chars (MailEdit_Quote_Chars);
@@ -186,7 +184,7 @@ private define count_quotes ()
      }
    return count;
 }
-   
+
 private define skip_quotes ()
 {
    bol_skip_white ();
@@ -238,7 +236,7 @@ private define mark_paragraph ()
      }
    bol ();
    push_mark ();
-   
+
    % Now goto end
    pop_spot ();
    eol ();
@@ -284,11 +282,11 @@ private define format_header ()
    bob ();
    while (down_1 () and not (eobp ()))
      insert (" ");
-   
+
    eob ();
    ifnot (bolp ())
      newline ();
-   
+
    widen_region ();
    pop_spot ();
 }
@@ -297,10 +295,10 @@ private define format_paragraph_hook ()
 {
    if (in_header ())
      return format_header ();
-   
+
    if (in_signature ())
      return;
-   
+
    % In the body
    push_spot ();
 
@@ -326,7 +324,7 @@ private define format_paragraph_hook ()
    unset_buffer_hook ("format_paragraph_hook");
    call ("format_paragraph");
    set_buffer_hook ("format_paragraph_hook", &format_paragraph_hook);
-   
+
    push_spot ();
 
    eob ();
@@ -336,7 +334,7 @@ private define format_paragraph_hook ()
    if (nquotes)
      {
 	bob ();
-	do 
+	do
 	  {
 	     insert (quotes);
 	  }
@@ -344,7 +342,7 @@ private define format_paragraph_hook ()
      }
 
    pop_spot ();
-   widen_region ();   
+   widen_region ();
 }
 
 private define is_paragraph_separator ()
@@ -377,7 +375,7 @@ private define wrap_hook ()
      {
 #iftrue
 	indent_line ();
-#else	
+#else
 	go_up_1 ();
 	bol_skip_white ();
 	variable col = what_column ();
@@ -453,7 +451,7 @@ private define color_buffer (min_line, max_line)
 	     set_line_color (Quote_Color);
 	     return;
 	  }
-	
+
 	set_line_color (0);
 	return;
      }
@@ -469,7 +467,7 @@ private define color_buffer (min_line, max_line)
      signature_line = what_line ();
    else
      signature_line = max_line + 1;
-   
+
    goto_line (min_line);
    if (max_line < header_line)
      header_line = max_line + 1;
@@ -480,7 +478,7 @@ private define color_buffer (min_line, max_line)
 	     color_header_line ();
 	     %set_line_color (Header_Color);
 	     go_down_1 ();
-	  }   
+	  }
 	% skip header
 	go_down_1 ();
 	min_line = header_line;
@@ -496,7 +494,7 @@ private define color_buffer (min_line, max_line)
 	  set_line_color (Quote_Color);
 	else
 	  set_line_color (0);
-	
+
 	go_down_1 ();
      }
    min_line = signature_line;
@@ -515,7 +513,7 @@ private define newline_indent_hook ()
 	ifnot (bolp () or eolp ())
 	  {
 	     variable quotes = extract_quotes ();
-	     
+
 	     insert ("\n\n\n");
 	     insert (quotes);
 	     call ("format_paragraph");
@@ -560,7 +558,7 @@ public define mailedit_mode ()
      goto_user_mark (start_mark);
 
    set_buffer_modified_flag (0);
-   
+
    use_keymap ("mailedit");
    set_mode ("mailedit", 1);
    unset_buffer_hook ("");

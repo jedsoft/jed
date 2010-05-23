@@ -1,8 +1,8 @@
 %
-% JED mouse interface 
+% JED mouse interface
 %
 % These routines assume a 2 button mouse
-%  
+%
 %          left :  set point to mouse point
 %         right :  paste from cut buffer moving point to mouse point
 %     drag left :  mark a region and copy it to cut buffer
@@ -52,23 +52,23 @@ define mouse_point_mouse (force, same_window, push, status_fun)
 {
    variable n = nwindows ();
    variable top, bot, dy, col, want_col;
-   
+
    while (n)
      {
         top = window_info('t');
 	bot = window_info('r') + top;
 	if ((MOUSE_Y >= top) and (MOUSE_Y < bot))
-       	  { 
+       	  {
 	     if (push) push_visible_mark ();
 	     dy = MOUSE_Y - (top - 1 + window_line());
-	     if (dy > 0) 
-	       {       
+	     if (dy > 0)
+	       {
 	      	  dy -= down(dy);
 	     	  eol();
 	      	  if (force) loop (dy) newline();
-	       }                                                   
+	       }
 	     else go_up(- dy);
-	     
+
 	     eol();
 	     col = what_column ();
        	     want_col = window_info('c') + MOUSE_X - 1;
@@ -76,8 +76,8 @@ define mouse_point_mouse (force, same_window, push, status_fun)
 	     () = goto_column_best_try(want_col);
 	     return 1;
 	  }
-	
-	if (same_window) 
+
+	if (same_window)
 	  {
 	     if (push) push_visible_mark ();
        	     if (MOUSE_Y >= bot)
@@ -91,19 +91,19 @@ define mouse_point_mouse (force, same_window, push, status_fun)
 	     x_warp_pointer ();
       	     return 1;
       	  }
-	
+
       	if ((bot == MOUSE_Y) and (use_status_fun != NULL))
 	  {
 	     @status_fun ();
 	     return 0;
 	  }
-	
+
 	otherwindow();
 	n--;
      }
    error ("Mouse not in a window.");
 }
-      
+
 variable Mouse_Drag_Mode = 0;
 variable Mouse_Buffer = " *Mouse buffer*";
 variable Mouse_Delete_Region = 0;
@@ -111,29 +111,29 @@ define copy_kill_to_mouse_buffer ()
 {
    variable cbuf = whatbuf ();
    variable pnt, n;
-   % 
+   %
    % We are not going to copy to the pastebuffer if the region is nil
    %
-   n = what_line(); pnt = _get_point (); 
+   n = what_line(); pnt = _get_point ();
    push_spot();
    pop_mark_1 ();
-   if ((what_line() == n) and (_get_point () == pnt)) 
+   if ((what_line() == n) and (_get_point () == pnt))
      {
 	pop_spot();
 	return;
      }
    push_mark();
    pop_spot();
-   
+
    setbuf(Mouse_Buffer);
    erase_buffer ();
    setbuf (cbuf);
-   
+
    if (Mouse_Delete_Region) () = dupmark();
-   () = dupmark();		       %/* for cut buffer */  
+   () = dupmark();		       %/* for cut buffer */
    x_copy_region_to_cutbuffer ();
    copy_region(Mouse_Buffer);
-   if (Mouse_Delete_Region) 
+   if (Mouse_Delete_Region)
      {
 	Mouse_Delete_Region = 0;
 	del_region();
@@ -141,11 +141,10 @@ define copy_kill_to_mouse_buffer ()
    message ("region copied.");
 }
 
-
 define mouse_next_buffer ()
 {
    variable n, buf, cbuf = whatbuf ();
-   
+
    n = buffer_list ();		       %/* buffers on stack */
    loop (n)
      {
@@ -160,7 +159,6 @@ define mouse_next_buffer ()
    error ("All buffers are visible.");
 }
 
-	
 custom_variable ("Mouse_Save_Point_Mode", 1);
 %!%+
 %\variable{Mouse_Save_Point_Mode}
@@ -168,8 +166,8 @@ custom_variable ("Mouse_Save_Point_Mode", 1);
 %\usage{Integer Mouse_Save_Point_Mode = 1;}
 %\description
 % If this variable is non-zero, the editing point will be restored to its
-% original position when the left button is used to copy a region to the 
-% cutbuffer.  If the variable is zero, the current point is left at the 
+% original position when the left button is used to copy a region to the
+% cutbuffer.  If the variable is zero, the current point is left at the
 % end of the copied region.
 %!%-
 
@@ -181,9 +179,9 @@ define mouse_set_point_open ()
    Mouse_Drag_Mode = 0;
    Mouse_Save_Point_Window = window_info ('t');
    Mouse_Save_Point_Mark = create_user_mark ();
-   
+
    if (Mouse_Save_Point_Mode) Mouse_Save_Point_Mode = -1;
-   
+
    if (mouse_point_mouse (0, 0, 0, &mouse_next_buffer)
        and Mouse_Save_Point_Mode)
      {
@@ -193,7 +191,7 @@ define mouse_set_point_open ()
 
 define mouse_set_point_close ()
 {
-   if (Mouse_Drag_Mode) 
+   if (Mouse_Drag_Mode)
      {
 	copy_kill_to_mouse_buffer ();
 	Mouse_Drag_Mode = 0;
@@ -239,7 +237,7 @@ define mouse_yank_cutbuffer ()
 	     otherwindow ();
 	     max_loops--;
 	  }
-	
+
 	if (max_loops)
 	  {
 	     goto_user_mark (m);
@@ -247,7 +245,7 @@ define mouse_yank_cutbuffer ()
 	  }
      }
 }
- 
+
 define delete_window ()
 {
    call("delete_window");
@@ -259,7 +257,6 @@ define mouse_mark_and_copy ()
    () = mouse_point_mouse (0, 0, 1, &delete_window);
 }
 
-   
 define mouse_drag ()
 {
    ifnot (Mouse_Drag_Mode)
@@ -271,13 +268,11 @@ define mouse_drag ()
    update_sans_update_hook (not(input_pending(0)));
 }
 
-   
 define mouse_kill_region ()
 {
    Mouse_Delete_Region = 1;
-   mouse_mark_and_copy (0, 0, 1); 
+   mouse_mark_and_copy (0, 0, 1);
 }
-
 
 define mouse_split_window ()
 {
@@ -291,4 +286,3 @@ define mouse_delete_window ()
    delete_window ();
 }
 
-   

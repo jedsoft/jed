@@ -36,11 +36,11 @@ define c_indent_buffer ()
 	bol_skip_white ();
 	if (looking_at ("/*"))
 	  {
-	     % skip the comment 
+	     % skip the comment
 	     () = fsearch ("*/");
 	     continue;
 	  }
-	
+
 	eol ();
 	if (blooking_at ("\\"))
 	  {
@@ -62,7 +62,7 @@ define c_indent_buffer ()
 	     while (ffind_char ('{')
 		    and parse_to_point ())
 	       go_right_1 ();
-	     
+
 	     if (looking_at_char ('{'))
 	       {
 		  variable m = create_user_mark ();
@@ -89,7 +89,7 @@ define c_indent_buffer ()
 	     line = what_line ();
 	     flush (sprintf ("processed %d/%d lines.", line, max_line));
 	  }
-	
+
 	%update_sans_update_hook (1);
      }
    while (down_1 ());
@@ -98,5 +98,3 @@ define c_indent_buffer ()
    pop_spot ();
 }
 
-	
-	     

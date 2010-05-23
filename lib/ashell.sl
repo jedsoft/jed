@@ -6,7 +6,7 @@ ifnot (is_defined ("Shell_Default_Shell"))
    variable Shell_Default_Shell = getenv ("COMSPEC");
    if (Shell_Default_Shell == NULL)
      Shell_Default_Shell = "cmd.exe";
-#else   
+#else
    variable Shell_Default_Shell = getenv ("SHELL");
    if (Shell_Default_Shell == NULL)
      Shell_Default_Shell = "sh";
@@ -17,9 +17,9 @@ ifnot (is_defined ("Shell_Default_Interactive_Shell"))
 {
 #ifdef WIN32
    variable Shell_Default_Interactive_Shell = "";
-#else   
+#else
    variable Shell_Default_Interactive_Shell = "-i";
-#endif  
+#endif
 }
 
 variable AShell_Id = -1;
@@ -30,7 +30,7 @@ public define ashell_expand_path (path)
 {
    if ((path == NULL) or (path == "~"))
      path = "~/";
-   
+
 #ifdef UNIX
    if (path[0] == '~')
      {
@@ -83,7 +83,7 @@ private define builtin_edit (cmd, argc, argv)
    foreach (argv[[1:argc-1]])
      {
 	variable file = ();
-	
+
 	() = find_file (expand_filename (dircat (dir, file)));
      }
 
@@ -98,7 +98,7 @@ private define builtin_most (cmd, argc, argv)
 	insert ("\nUnable to read file.\n");
 	return "";
      }
-	
+
    if (argc < 2)
      return cmd;
 
@@ -126,14 +126,14 @@ ashell_add_builtin ("less", &builtin_most);
 private define parse_shell_cmd (cmd)
 {
    variable argv, argc;
-   
+
    cmd = strtok (cmd);
    argc = length (cmd);
-   
+
    % This has the effect of NULL terminating the argv list
    argv = String_Type[argc+1];
-   
-   %  remember that in slang1 [0:-1] picks out elements in an array indexing 
+
+   %  remember that in slang1 [0:-1] picks out elements in an array indexing
    %  context.  So, only do this if argc is non-zero.  slang2 has different
    %  semantics and does not suffer from this problem.
    if (argc)
@@ -145,7 +145,7 @@ private define parse_shell_cmd (cmd)
 private define try_builtin (cmd)
 {
    variable argc, argv;
-   
+
    (argc, argv) = parse_shell_cmd (cmd);
    ifnot (argc) return cmd;
 
@@ -206,12 +206,12 @@ define ashell_send_input ()
      }
    newline ();
    move_user_mark (m);
-   
+
    buf = try_builtin (buf);
 
 #ifdef WIN32
    send_process (AShell_Id, buf + "\n\r");
-#else   
+#else
    send_process (AShell_Id, buf + "\n");
 #endif
 }
@@ -229,17 +229,17 @@ define ashell_completion ()
    push_spot ();
    push_mark ();
    bskip_chars ("^ \n\t'`\"><$");
-   
+
    partial_completion = bufsubstr();
    pop_spot ();
-   
+
    (dir, file) = parse_filename (partial_completion);
    dir = ashell_expand_path (dir);
-   
+
    variable len = strlen (file);
    variable files = listdir (dir);
    files = files[where (0 == array_map (Int_Type, &strncmp, files, file, len))];
-   
+
    variable num_matches = length (files);
    if (num_matches == 0)
      {
@@ -285,10 +285,10 @@ define ashell_completion ()
    erase_buffer ();
    foreach (files)
      {
-	insert (()); 
+	insert (());
 	newline();
      }
-   
+
    buffer_format_in_columns ();
    bob ();
    pop2buf (cbuf);
@@ -349,7 +349,6 @@ define ashell_insert_output (pid, str)
    move_user_mark (process_mark (pid));
 }
 
-   
 define ashell ()
 {
    variable buf = "*ashell*";
@@ -364,12 +363,12 @@ define ashell ()
    pop2buf (buf);
    (,Current_Working_Directory,,) = getbuf_info ();
    () = chdir (Current_Working_Directory);
-   
+
    use_keymap ("AShellMap");
    run_mode_hooks ("ashell_mode_hook");
    erase_buffer ();
 #iffalse
-   AShell_Id = open_process (Shell_Default_Shell, 
+   AShell_Id = open_process (Shell_Default_Shell,
 			     Shell_Default_Interactive_Shell, 1);
 #else
    % parse possible arguments
@@ -383,7 +382,7 @@ define ashell ()
 	arg;		% push on stack
      }
 
-   Shell_Default_Interactive_Shell; nargs;% push on stack  
+   Shell_Default_Interactive_Shell; nargs;% push on stack
    AShell_Id = open_process ();
 #endif
    set_process (AShell_Id, "signal", "ashell_signal_handler");

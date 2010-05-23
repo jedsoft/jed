@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -56,7 +56,7 @@ static void cdelete_update_marks (Mark *m, unsigned int linenum, int n)
 	     tmp -= n;
 	     if (tmp < Point) tmp = Point;
 	     m->point = tmp;
-	     
+
 	     /*
 	      BAD CODE:
 	     m->point -= n;
@@ -88,7 +88,7 @@ static void ldelete_update_marks (Mark *m, unsigned int linenum, int n)
 static void nldelete_update_marks (Mark *m, unsigned int linenum, int n)
 {
    /* deletion performed at end of a line (CLine->prev)  */
-   
+
    (void) n;
    while (m != NULL)
       {
@@ -102,7 +102,6 @@ static void nldelete_update_marks (Mark *m, unsigned int linenum, int n)
       }
 }
 
-
 static void nlinsert_update_marks (Mark *m, unsigned int linenum, int n)
 {
    /* newline added-- affects only marks onward from insertion point */
@@ -112,9 +111,9 @@ static void nlinsert_update_marks (Mark *m, unsigned int linenum, int n)
 	 /* This is a bit controversial if the mark corresponds to JWindow->beg.
 	    In this case, JWindow beg gets shifted if Point = 0.  */
 
-	 if ((linenum < m->n) 
+	 if ((linenum < m->n)
 	     || ((linenum == m->n) && (m->point > Point))) m->n += 1;
-	    
+
 	 if ((m->line == CLine) && (m->point > Point))
             {
 	       m->line = CLine->next;
@@ -124,7 +123,6 @@ static void nlinsert_update_marks (Mark *m, unsigned int linenum, int n)
 	 m = m->next;
       }
 }
-
 
 void jed_update_marks (int type, int n) /*{{{*/
 {
@@ -138,29 +136,29 @@ void jed_update_marks (int type, int n) /*{{{*/
    unsigned int line_num;
 
    if (!n) return;
-   
+
    switch (type)
      {
       case CINSERT:
 	update_marks_fun = cinsert_update_marks;
 	break;
-	
+
       case CDELETE:
 	update_marks_fun = cdelete_update_marks;
 	break;
-	
+
       case LDELETE:
 	update_marks_fun = ldelete_update_marks;
 	break;
-	
+
       case NLINSERT:
 	update_marks_fun = nlinsert_update_marks;
 	break;
-	
+
       case NLDELETE:
 	update_marks_fun = nldelete_update_marks;
 	break;
-	
+
       default:
 	update_marks_fun = NULL;       /* crash.  I want to know about this */
      }
@@ -172,7 +170,7 @@ void jed_update_marks (int type, int n) /*{{{*/
 	if (b->undo == NULL) create_undo_ring();
 	Undo_Buf_Unch_Flag = !(b->flags & BUFFER_MODIFIED);
      }
-   
+
    mark_buffer_modified (b, 1, 0);
 
    line_num = LineNum + b->nup;
@@ -198,7 +196,7 @@ void jed_update_marks (int type, int n) /*{{{*/
 	save_narrow = save_narrow->next;
      }
 #endif
-   
+
    w = JWindow;
    do
      {
@@ -236,10 +234,10 @@ int jed_prepare_for_modification (int check_line_readonly)
 
    if (CBuf->flags & BUFFER_MODIFIED)
      return 0;
-   
+
    if (0 == CBuf->file[0])
      return 0;			       /* not attached to a file */
-   
+
    /* if ((SLang_get_error () == 0) */
    if (0 == (CBuf->flags & BUFFER_NON_LOCKING))
      {
@@ -309,7 +307,7 @@ int _jed_ins_byte (unsigned char c) /*{{{*/
    jed_update_marks(CINSERT,1);
    if ((c != '\n') || (CBuf == MiniBuffer)) record_insertion(1);
    Point++;
-   
+
    return 0;
 }
 
@@ -331,7 +329,7 @@ int jed_del_newline(void) /*{{{*/
 #endif
 
    if (!eol() || eobp()) return -1;
-   
+
    CLine->len -= 1;
    jed_update_marks(CDELETE,1);
    record_deletion((unsigned char *) "\n", 1);
@@ -352,7 +350,7 @@ int jed_del_nbytes (int n) /*{{{*/
    nn = CLine->len - 1;
    p = CLine->data + nn;
    if ((*p == '\n') && (CBuf != MiniBuffer)) nn = nn - Point; else nn = nn - Point + 1;
-   
+
    p = CLine->data + Point;
 
    nn = nn > n ? n : nn;
@@ -388,11 +386,11 @@ int jed_generic_del_nbytes (int n) /*{{{*/
 	     msg_error("End of Buffer.");
 	     return -1;
 	  }
-	
+
 	dn = jed_del_nbytes (n);
 	if (dn == -1)
 	  return -1;
-	
+
 	n -= dn;
 
 	if (n && (-1 == jed_del_newline()))
@@ -431,7 +429,6 @@ int jed_insert_newline (void)
 #endif
    return 0;
 }
-   
 
 /* MULTIBYTE OK */
 int jed_del_wchar (void)
@@ -440,7 +437,7 @@ int jed_del_wchar (void)
 
    if (eolp ())
      return jed_del_through_eol ();
-   
+
    p = CLine->data + Point;
    pmax = jed_multibyte_chars_forward (p, CLine->data + CLine->len, 1, NULL, 1);
    return jed_generic_del_nbytes (pmax - p);
@@ -450,12 +447,12 @@ int jed_quick_insert(register unsigned char *s, int n) /*{{{*/
 {
    register unsigned char *p, *p1;
    int nl = 0;
-   
+
    if (n == 0) return 0;
 
    if (-1 == jed_prepare_for_modification (0))
      return -1;
-   
+
 #if JED_HAS_LINE_ATTRIBUTES
    if ((CLine->flags & JED_LINE_IS_READONLY)
        && ((Point != 0) || (s[n-1] != '\n')))
@@ -474,7 +471,7 @@ int jed_quick_insert(register unsigned char *s, int n) /*{{{*/
 	  return -1;
 	(void) jed_up(1);
      }
-   
+
 #ifdef KEEP_SPACE_INFO
    if (CLine->space <= CLine->len + n + 1) remake_line(CLine->space + n + 8);
 #else
@@ -496,13 +493,13 @@ int jed_quick_insert(register unsigned char *s, int n) /*{{{*/
 	  }
 	CLine->len += n;
 	SLMEMCPY((char *) p, (char *) s, n);
-   
+
 	jed_update_marks(CINSERT, n);
 	record_insertion(n);
 	Point += n;
      }
 
-   if (nl) 
+   if (nl)
      jed_down (1);
 
    return 0;
@@ -517,7 +514,7 @@ int jed_insert_nbytes (unsigned char *ss, int n) /*{{{*/
    int n1;
 
    if (CBuf == MiniBuffer) nl = 0; else nl = '\n';
-   
+
    p1 = s;
    while (1)
      {
@@ -525,7 +522,7 @@ int jed_insert_nbytes (unsigned char *ss, int n) /*{{{*/
 	/* count the number until a new line is reached */
 	pmax = p1 + n;
 	while((p1 < pmax) && (*p1 != nl)) p1++;
-	
+
 	n1 = (int) (p1 - p);
 	if (p1 != pmax) n1++;
 	if (-1 == jed_quick_insert(p, n1))
@@ -597,7 +594,7 @@ int _jed_replace_wchar (SLwchar_Type ch) /*{{{*/
    unsigned char buf[JED_MAX_MULTIBYTE_SIZE];
    unsigned char *b, *bmax;
    unsigned char *p, *pmax;
-   
+
    if (ch == '\n') return -1;
 
    b = buf;
@@ -607,7 +604,7 @@ int _jed_replace_wchar (SLwchar_Type ch) /*{{{*/
 
    p = CLine->data + Point;
    pmax = CLine->data + CLine->len;
-   
+
    while ((p < pmax) && (b < bmax) && (*b == *p))
      {
 	b++;

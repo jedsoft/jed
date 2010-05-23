@@ -1,7 +1,6 @@
 % misc functions that should be in site.sl but they are not because we want
 % jed to start up fast and they are not always needed.
 
-
 %!%+
 %\function{make_tmp_buffer_name}
 %\synopsis{make_tmp_buffer_name}
@@ -14,9 +13,9 @@ define make_tmp_buffer_name (tmp)
 {
    variable n = 0, buf;
    variable t = time ();
-   
+
    tmp = strcat (tmp, time);
-   do 
+   do
      {
 	buf = sprintf("%s%d", tmp, n);
 	n++;
@@ -27,23 +26,23 @@ define make_tmp_buffer_name (tmp)
 
 define misc_do_write_to_file (str, file, write_function)
 {
-   variable ret = -1;   
+   variable ret = -1;
    variable buf = make_tmp_buffer_name (Null_String);
    variable cbuf = whatbuf ();
-   
+
    setbuf (buf);
    insert (str);
    set_buffer_modified_flag (0);
    push_mark ();
    bob ();
-#iffalse   
-   ERROR_BLOCK 
+#iffalse
+   ERROR_BLOCK
      {
 	_clear_error ();
      }
 #endif
    ret = @write_function (file);
-   
+
    setbuf (cbuf);
    delbuf (buf);
    ret;
@@ -90,7 +89,7 @@ define glob_to_regexp (glob)
    foreach (glob)
      {
 	variable ch = ();
-	
+
 	switch (ch)
 	  {
 	   case '.':
@@ -110,7 +109,7 @@ define glob_to_regexp (glob)
 	     if (is_substr ("[]\\^$+", ch))
 	       ch = strcat ("\\", ch);
 	  }
-	
+
 	regexp = strcat (regexp, ch);
      }
    strcat (regexp, "$");
@@ -182,12 +181,9 @@ define directory (dirspec)
    i = array_map (Int_Type, &string_match, files, pattern, 1);
    files = files[where (i)];
 
-   % Push them onto the stack to mimick 
+   % Push them onto the stack to mimick
    foreach (files)
      ;
    length (files);
 }
 
-   
-   
-   

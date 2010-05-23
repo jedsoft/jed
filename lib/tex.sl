@@ -10,10 +10,8 @@
 %    }
 %  which binds the function to Ctrl-C Ctrl-E.
 
-
 % Load the common definitions if not already loaded.
 require ("texcom");
-
 
 $1 = "TeX-Mode";
 
@@ -26,20 +24,19 @@ ifnot (keymap_p($1))
    definekey ("tex_ldots", ".", $1);
 }
 
-
 %!%+
 %\function{tex_mode}
 %\synopsis{tex_mode}
 %\description
-% Mode useful for editing TeX and LaTeX modes.  
+% Mode useful for editing TeX and LaTeX modes.
 % Useful bindings:
 %#v+
 %  '"'  :  tex_insert_quote
 %  '\'' :  tex_insert_quote
 %  '$'  :  tex_blink_dollar
-%  '.'  :  tex_ldots.  Inserts a '.' except if preceeded by two dots.  In 
+%  '.'  :  tex_ldots.  Inserts a '.' except if preceeded by two dots.  In
 %           this case, the dots are converted to \ldots.
-%#v- 
+%#v-
 %  When tex mode is loaded, 'tex_mode_hook' is called.  This hook will allow
 %  users to customize the mode.  In particular, certain functions here have
 %  no keybindings, e.g., 'latex_do_environment'.  So, in your jed.rc file,
@@ -69,7 +66,7 @@ define tex_mode ()
    run_mode_hooks ("tex_mode_hook");
    % This is called after the hook to give the hook a chance to load the
    % abbrev table.
-   %if (abbrev_table_p (mode)) use_abbrev_table (mode); 
+   %if (abbrev_table_p (mode)) use_abbrev_table (mode);
    %(Now handled in run_mode_hooks)
 }
 
@@ -78,7 +75,7 @@ define tex_mode ()
 define tex_info_find_node ()
 {
    variable node;
-   
+
    node = read_mini ("Node:", Null_String, Null_String);
    ifnot (strlen (node)) return;
    info_reader ();

@@ -1,14 +1,14 @@
-% Lua mode 
+% Lua mode
 % File: lua.sl v1.02
 %
 % For editing source code written in the Lua programming language.
 %
 % Authors: Reuben Thomas <rrt@sc3d.org>
-% 
+%
 % Adapted from Python mode (pymode 1.2) by:
 %          Harri Pasanen <hpa@iki.fi>
 %          Brien Barton <brien_barton@hotmail.com>
-%          
+%
 %
 % following keys have lua specific bindings:
 %
@@ -45,7 +45,6 @@ ifnot (is_defined ("Win_Keys")) {  % Ctrl-C conflicts with windows region copy.
 definekey ("lua_help_on_word", "^@;", $1);
 #endif
 
-
 % Set the following to your favourite indentation level
 custom_variable ("Lua_Indent_Level", 4);
 
@@ -71,17 +70,17 @@ private define lua_indent_calculate()
 {  % return the indentation of the previous lua line
    variable col = 0;
    variable end_block = 0;
-    
+
    EXIT_BLOCK
      {
 	pop_spot ();
 	return col;
      }
-   
+
    % check if current line ends a block
    bol_skip_white();
    if (lua_endblock_cmd()) end_block = 1;
-  
+
    % go to previous non blank line
    push_spot_bol ();
    ifnot (re_bsearch ("[^ \t\n]"))
@@ -102,7 +101,7 @@ define lua_indent_line()
    whitespace( col );
 }
 
-define lua_comment_line() 
+define lua_comment_line()
 {
    bol();
    insert("--");
@@ -111,7 +110,7 @@ define lua_comment_line()
 define lua_comment_region()
 {
    variable n;
-    
+
    check_region (1);
    n = what_line ();
    pop_mark_1 ();
@@ -123,7 +122,7 @@ define lua_comment_region()
    pop_spot();
 }
 
-define lua_comment() 
+define lua_comment()
 {
    push_spot();
    if (markp()) {
@@ -134,7 +133,7 @@ define lua_comment()
    pop_spot();
 }
 
-define lua_uncomment_line() 
+define lua_uncomment_line()
 {
    bol_skip_white();
    while (looking_at_char('-')) del();
@@ -143,7 +142,7 @@ define lua_uncomment_line()
 define lua_uncomment_region()
 {
    variable n;
-   
+
    check_region (1);
    n = what_line ();
    pop_mark_1 ();
@@ -165,26 +164,26 @@ define lua_uncomment() {
    pop_spot();
 }
 
-define lua_backspace_key() 
-{ 
-   variable col;                                                    
-                                   
-   col = what_column(); 
-   push_spot(); 
-   bskip_white(); 
-   if (bolp() and (col > 1)) { 
-      pop_spot();                                                     
-      bol_trim (); 
-      col--;                                                         
-      if (col mod Lua_Indent_Level == 0) 
-        col--; 
-      whitespace ( (col / Lua_Indent_Level) * Lua_Indent_Level ); 
-   } 
-   else { 
-      pop_spot(); 
-      call("backward_delete_char_untabify"); 
-   } 
-} 
+define lua_backspace_key()
+{
+   variable col;
+
+   col = what_column();
+   push_spot();
+   bskip_white();
+   if (bolp() and (col > 1)) {
+      pop_spot();
+      bol_trim ();
+      col--;
+      if (col mod Lua_Indent_Level == 0)
+        col--;
+      whitespace ( (col / Lua_Indent_Level) * Lua_Indent_Level );
+   }
+   else {
+      pop_spot();
+      call("backward_delete_char_untabify");
+   }
+}
 
 define lua_shift_line_right()
 {
@@ -206,7 +205,7 @@ define lua_shift_region_right()
    pop_spot();
 }
 
-define lua_shift_right() 
+define lua_shift_right()
 {
    push_spot();
    if (markp()) {
@@ -230,7 +229,7 @@ define lua_shift_line_left()
 define lua_shift_region_left()
 {
    variable n;
-   
+
    check_region (1);
    n = what_line ();
    pop_mark_1 ();
@@ -268,59 +267,59 @@ define file_path(fullname)
    substr(fullname, 1, strlen(fullname)-strlen(filename));
 }
 
-define lua_exec_region() 
-{ 
-   % Run lua interpreter on current region. 
-   % Display output in *shell-output* buffer window. 
-   variable oldbuf, thisbuf, file, line, start_line; 
-   variable tmpfile = "_lua.tmp"; 
-   variable error_regexp = "^  File \"\\([^\"]+\\)\", line \\(\\d+\\).*"; 
-   variable lua_source = buffer_filename(); 
+define lua_exec_region()
+{
+   % Run lua interpreter on current region.
+   % Display output in *shell-output* buffer window.
+   variable oldbuf, thisbuf, file, line, start_line;
+   variable tmpfile = "_lua.tmp";
+   variable error_regexp = "^  File \"\\([^\"]+\\)\", line \\(\\d+\\).*";
+   variable lua_source = buffer_filename();
    change_default_dir(file_path(lua_source));
-   thisbuf = whatbuf(); 
-   % Check if 1st line starts in column 1 
-   exchange_point_and_mark(); 
-   bol_skip_white(); 
-   start_line = what_line(); 
-   if (what_column() > 1) { 
-      % Workaround in case block is indented 
-      write_string_to_file("if 1:\n", tmpfile); bol(); 
-      start_line--;   % offset for this extra line 
-   } 
-   exchange_point_and_mark(); 
-   append_region_to_file(tmpfile); 
-   oldbuf = pop2buf_whatbuf("*shell-output*"); erase_buffer (); 
-#ifdef UNIX 
+   thisbuf = whatbuf();
+   % Check if 1st line starts in column 1
+   exchange_point_and_mark();
+   bol_skip_white();
+   start_line = what_line();
+   if (what_column() > 1) {
+      % Workaround in case block is indented
+      write_string_to_file("if 1:\n", tmpfile); bol();
+      start_line--;   % offset for this extra line
+   }
+   exchange_point_and_mark();
+   append_region_to_file(tmpfile);
+   oldbuf = pop2buf_whatbuf("*shell-output*"); erase_buffer ();
+#ifdef UNIX
    run_shell_cmd(sprintf("lua %s 2>&1", tmpfile));
-#else 
+#else
    run_shell_cmd(sprintf("lua %s", tmpfile));
-#endif 
-   () = delete_file(tmpfile); 
- 
-   % try to restore any window that got replaced by the shell-output 
-   if (strlen(oldbuf) and (strcmp(oldbuf, "*shell-output*") != 0) 
-       and (strcmp(thisbuf, oldbuf) != 0)) { 
-      splitwindow(); sw2buf(oldbuf); pop2buf("*shell-output*"); 
-   } 
-   eob(); 
-   %  Check for error message 
-   while (re_bsearch(error_regexp) != 0) { 
-      %  Make sure error occurred in the file we were executing 
-      file = regexp_nth_match(1); 
-      line = integer(regexp_nth_match(2)); 
-      if (strcmp(file, tmpfile) == 0) { 
-	 %  Move to line in source that generated the error 
-	 pop2buf(thisbuf); 
-	 goto_line(line + start_line - 1); 
-	 break; 
-      } else { 
-	 %  Error is in another file, try previous error message 
-	 continue; 
-      } 
-   } 
-} 
+#endif
+   () = delete_file(tmpfile);
 
-define lua_exec() 
+   % try to restore any window that got replaced by the shell-output
+   if (strlen(oldbuf) and (strcmp(oldbuf, "*shell-output*") != 0)
+       and (strcmp(thisbuf, oldbuf) != 0)) {
+      splitwindow(); sw2buf(oldbuf); pop2buf("*shell-output*");
+   }
+   eob();
+   %  Check for error message
+   while (re_bsearch(error_regexp) != 0) {
+      %  Make sure error occurred in the file we were executing
+      file = regexp_nth_match(1);
+      line = integer(regexp_nth_match(2));
+      if (strcmp(file, tmpfile) == 0) {
+	 %  Move to line in source that generated the error
+	 pop2buf(thisbuf);
+	 goto_line(line + start_line - 1);
+	 break;
+      } else {
+	 %  Error is in another file, try previous error message
+	 continue;
+      }
+   }
+}
+
+define lua_exec()
 {
    % Run lua interpreter on current region if one is defined, otherwise
    % on the whole buffer.
@@ -341,7 +340,7 @@ define lua_reindent() {
    variable level = -1;
    variable current_indent = -1;
    variable errmsg, i, col, ignore, oldlevel;
-   
+
    bob();
    do {
       bol_skip_white();
@@ -356,7 +355,7 @@ define lua_reindent() {
 	    indent_level[level] = -1;  % clear current level setting
 	    level--;
 	 }
-      } 
+      }
       if ((indent_level[level] != -1) and (indent_level[level] != col)) {
 	 % Indent is wrong.  Hopefully it's a continuation line.
 	 level = oldlevel;	% reset level
@@ -443,12 +442,12 @@ private define setup_dfa_callback (name)
    dfa_define_highlight_rule("\\.\\.\\.", "delimiter", name);
    dfa_define_highlight_rule("[\\+\\-\\*/%<>=]", "operator", name); % 1 char
    dfa_define_highlight_rule("==|<=|>=|~=|\\.\\.", "operator", name);	  % >1 char
-   
+
    % Flag badly formed numeric literals or identifiers.  This is more effective
    % if you change the error colors so they stand out.
    dfa_define_highlight_rule("[0-9]+[0-9A-Za-z\\.]+", "error", name);	% bad decimal
    dfa_define_highlight_rule("\\.[0-9]+([Ee][\\+\\-]?[0-9]+)?[A-Za-z]+", "error", name);	% bad float
-   
+
    dfa_build_highlight_table(name);
 }
 dfa_set_init_callback (&setup_dfa_callback, "Lua");
@@ -461,7 +460,7 @@ dfa_set_init_callback (&setup_dfa_callback, "Lua");
 %\usage{lua_mode ()}
 %\description
 % A major mode for editing lua files.
-% 
+%
 % The following keys have lua specific bindings:
 %#v+
 % DELETE deletes to previous indent level
@@ -472,16 +471,16 @@ dfa_set_init_callback (&setup_dfa_callback, "Lua");
 % ^C^C executes the region, or the buffer if region not marked.
 % ^C|  executes the region
 % ^C\t reindents the region
-%#v- 
+%#v-
 % Hooks: \var{lua_mode_hook}
-% 
+%
 %\seealso{Lua_Indent_Level}
 %\seealso{set_mode, c_mode}
 %!%-
 define lua_mode ()
 {
    variable lua = "Lua";
-   
+
    TAB = 8;
    set_mode (lua, 0x4); % flag value of 4 is generic language mode
    use_keymap(lua);

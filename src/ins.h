@@ -1,10 +1,10 @@
-/* Copyright (c) 1992, 1998, 2000, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
  * License.  See the file COPYING for more information.
  */
-    
+
 /* For undo, these flags assumed to be <= 0xFF */
 #define CDELETE		0x1
 #define CINSERT		0x2
@@ -13,7 +13,7 @@
 #define NLDELETE	0x10    /* opposite of above */
 #define UNDO_POSITION	0x20	       /* records position */
 
-extern void jed_update_marks(int, int);  
+extern void jed_update_marks(int, int);
 extern int No_Screen_Update;
 extern int jed_del_nbytes (int);
 extern int jed_generic_del_nbytes (int);

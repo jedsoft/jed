@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006, 2008 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -33,7 +33,7 @@ static char *make_version (unsigned int v)
 {
    static char v_string[128];
    unsigned int a, b, c;
-   
+
    a = v/10000;
    b = (v - a * 10000) / 100;
    c = v - (a * 10000) - (b * 100);
@@ -41,14 +41,12 @@ static char *make_version (unsigned int v)
    return v_string;
 }
 
-
-
 int main (int argc, char **argv)
 {
    unsigned int min_version, sl_version;
    unsigned int sug_version;
    int ret;
-   
+
    if ((argc < 3) || (argc > 4))
      {
 	fprintf (stderr, "Usage: %s <PGM> <SLANG-VERSION> <SUGG VERSION>\n", argv[0]);
@@ -74,7 +72,7 @@ Also try: make clean; make\n", (long)SLANG_VERSION, (long)SLang_Version);
      }
 #endif
 #endif
-   
+
    sscanf (argv[2], "%u", &min_version);
    if (argc == 4) sscanf (argv[3], "%u", &sug_version);
    else sug_version = sl_version;
@@ -84,10 +82,10 @@ Also try: make clean; make\n", (long)SLANG_VERSION, (long)SLang_Version);
      {
 	fprintf (stderr, "This version of %s requires slang version %s.\n",
 		 argv[1], make_version(min_version));
-	
+
 	ret = FAILURE;
      }
-   
+
    if (sl_version < sug_version)
      {
 	fprintf (stderr, "Your slang version is %s.\n", make_version(sl_version));

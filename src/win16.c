@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -334,8 +334,6 @@ int sys_findnext(char *file)
    return 0;
 }
 
-
-
 int sys_chmod(SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *dum1, gid_t *dum2)
 {
    int flag, m = *mode;
@@ -369,8 +367,7 @@ static void x_warp_pointer (void)
 {
 }
 
-
-static void 
+static void
 x_region_2_cutbuffer (void)
 {
    int i, x, nbytes;

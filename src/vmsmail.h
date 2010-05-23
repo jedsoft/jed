@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -7,18 +7,16 @@
 typedef struct Mail_Type
 {
    unsigned short buflen;
-   unsigned short code;   
+   unsigned short code;
    long addr;
    long ret, junk;
 } Mail_Type;
-
-
 
 /* Created by SDL V3.1-7     */
 /* Source:  8-AUG-1988 10:36:21  */
 #ifndef $MAILDEF_H
 #define $MAILDEF_H
- 
+
 /*** MODULE $MAILDEF ***/
 /*                                                                            */
 /* Definitions needed for callable mail.                                      */
@@ -390,6 +388,3 @@ struct flagsdef {
 } ;
 #endif
 
-
-
-   

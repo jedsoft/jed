@@ -60,12 +60,12 @@ define idl_beginning_of_statement ()
 {
    variable n = 0;
    bol_skip_white ();
-   
+
    if (looking_at ("pro ") or looking_at ("function "))
      {
 	return 0;
      }
-   
+
    while (up_1 ())
      {
 	idl_find_effective_eol (); bskip_white ();
@@ -77,7 +77,7 @@ define idl_beginning_of_statement ()
 		  skip_white ();
 		  if (looking_at_char (';')) continue;
 	       }
-#endif     
+#endif
 	     go_down_1 ();
 	     break;
 	  }
@@ -107,11 +107,11 @@ define idl_looking_at_block (word, begin)
      {
 	pop_spot ();
      }
-   
+
    push_spot ();
    go_right (strlen (word));
    if (ffind (begin)) return 1;
-   do 
+   do
      {
 	idl_find_effective_eol ();
 	bskip_white ();
@@ -121,7 +121,6 @@ define idl_looking_at_block (word, begin)
    bol ();
    return ffind(begin);
 }
-
 
 define idl_is_block_beginnning ()
 {
@@ -151,7 +150,7 @@ define idl_indent_line ()
 {
    variable len = 0, extra_indent = 0;
    variable word;
-   
+
    push_spot ();
    EXIT_BLOCK
      {
@@ -161,7 +160,6 @@ define idl_indent_line ()
 	bskip_white ();
 	pop_mark (not(bolp ()), skip_white ());
      }
-   
 
    if (idl_beginning_of_statement ())
      {
@@ -186,9 +184,9 @@ define idl_indent_line ()
 	len = what_column () + Idl_Indent_Amount;
 	return;
      }
-   
+
    if (looking_at_char ('@')) return;
-   
+
    if (looking_at ("end")) extra_indent = -Idl_Indent_Amount;
    else if (looking_at ("else"))
      {
@@ -198,14 +196,13 @@ define idl_indent_line ()
 	     extra_indent = -Idl_Indent_Amount;
 	  }
      }
-   
-   
+
    ifnot (up_1 ())
      {
 	len = 0;
 	return;
      }
-   
+
    do
      {
 	bol_skip_white ();
@@ -215,7 +212,7 @@ define idl_indent_line ()
    while (up_1 ());
    () = idl_beginning_of_statement ();
    len = what_column ();
-   
+
    if (idl_is_block_beginnning ())
      {
 	len += Idl_Indent_Amount;

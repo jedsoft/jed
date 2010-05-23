@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -39,7 +39,7 @@ extern int sys_delete_file(char *);
 extern int sys_chmod(SLFUTURE_CONST char *, int, mode_t *, uid_t *, gid_t *);
 extern unsigned long sys_file_mod_time(char *);
 
-/* expand the file in a canonical way and return a pointer to a 
+/* expand the file in a canonical way and return a pointer to a
    static area which should be regarded volatile */
 extern char *jed_standardize_filename_static (char *);
 
@@ -76,7 +76,6 @@ extern void i386_check_kbd(void);
 extern int i386_access (char *, int);
 #endif
 
-
 #ifdef IBMPC_SYSTEM
 # define SCREEN_HEIGHT 25
 extern int PC_Alt_Char;
@@ -108,7 +107,6 @@ extern int vms_get_help (char *, char *);
 #ifdef __WIN32__
 extern int jed_win32_rename (char *, char *);
 #endif
-
 
 #ifdef VMS
 #endif

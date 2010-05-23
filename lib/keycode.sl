@@ -19,7 +19,7 @@ define keycode ()
 #else
    variable fmt = "Press any key %s: `%s'";
 #endif
-   
+
    variable to_exit="";
    variable last_was_return = 0;
    forever
@@ -59,7 +59,7 @@ define keycode ()
 	     key += ch;
 	  }
 	last_was_return = (key == "\r");
-	if (last_was_return) 
+	if (last_was_return)
 	  to_exit = "(RETURN to exit)";
 	else
 	  to_exit = "";

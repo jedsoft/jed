@@ -20,8 +20,8 @@ private define set_format_mode (x)
    set_blocal_var (x, "F90_Mode_Format");
 }
 
-%{{{ Free Format Functions 
-private define free_f90_indent () 
+%{{{ Free Format Functions
+private define free_f90_indent ()
 {
    variable goal = 1;		% at top of buffer it should be 1 n'est pas?
    variable cs = CASE_SEARCH;
@@ -202,7 +202,7 @@ private define free_f90_newline ()
 
 %}}}
 
-%{{{ Fixed Format Functions 
+%{{{ Fixed Format Functions
 
 define fixed_f90_indent ()
 {
@@ -360,7 +360,7 @@ private define dispatch_f90_function (free, fixed)
 	(@free) ();
 	return;
      }
-   
+
    (@fixed) ();
 }
 
@@ -535,7 +535,7 @@ private define f90_prev_next_statement (dirfun)
 	skip_chars ("^0-9 \t\n");
 	ifnot (_get_point ()) break;
      }
-   
+
    variable col = 7;
    if (get_format_mode ())
      col = 1;

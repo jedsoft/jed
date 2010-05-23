@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -39,7 +39,7 @@
 #endif
 
 #ifdef __WIN32__
-# ifdef VOID 
+# ifdef VOID
 #  undef VOID
 # endif
 # if !defined(__CYGWIN32__)
@@ -148,12 +148,11 @@ void map_character(int *fromp, int *top) /*{{{*/
 
 /*}}}*/
 
-
 /* if input char arrives with hi bit set, it is replaced by 2 characters:
- *   Meta_Char + char with hi bit off.  If Meta_Char is -1, then return 
+ *   Meta_Char + char with hi bit off.  If Meta_Char is -1, then return
  * full 8 bits which self inserts */
 
-/* By default, 8 bit chars self insert. */	 
+/* By default, 8 bit chars self insert. */
 int Meta_Char = -1;
 #if !defined(IBMPC_SYSTEM)
 int DEC_8Bit_Hack = 64;
@@ -205,7 +204,7 @@ int my_getkey() /*{{{*/
 	  }
 	return((int) ch);
      }
-   
+
    ch = Input_Buffer[0];
    if ((ch & 0x80) && ((Meta_Char != -1) || ((ch < 160) && eightbit_hack)))
      {
@@ -216,11 +215,11 @@ int my_getkey() /*{{{*/
 	     i = 27;
 	  }
 	else i = Meta_Char;
-	
+
 	Input_Buffer[0] = ch;
 	return ((int) (unsigned int) i);
      }
-   
+
 #ifdef USING_INPUT_BUFFER
    USING_INPUT_BUFFER
 #endif
@@ -233,10 +232,10 @@ int my_getkey() /*{{{*/
      Input_Buffer[i] = Input_Buffer[i+1];
 #endif
    /* SLMEMCPY ((char *) Input_Buffer, (char *) (Input_Buffer + 1), imax); */
-   
+
 #ifdef DONE_WITH_INPUT_BUFFER
    DONE_WITH_INPUT_BUFFER
-#endif     
+#endif
      return((int) ch);
 }
 
@@ -246,16 +245,16 @@ void ungetkey_string(char *s, int n) /*{{{*/
 {
    /* int i; */
    register unsigned char *bmax, *b, *b1;
-   
+
    /* FIXME!! This should affect the keyboard macro buffer. */
    if (Executing_Keyboard_Macro) return;
 
    if (n + Input_Buffer_Len > MAX_INPUT_BUFFER_LEN - 3) return;
-   
+
 #ifdef USING_INPUT_BUFFER
    USING_INPUT_BUFFER
 #endif
-     
+
      b = Input_Buffer;
    bmax = b + (Input_Buffer_Len - 1);
    b1 = bmax + n;
@@ -263,7 +262,7 @@ void ungetkey_string(char *s, int n) /*{{{*/
    bmax = b + n;
    while (b < bmax) *b++ = (unsigned char) *s++;
    Input_Buffer_Len += n;
-   
+
 #ifdef DONE_WITH_INPUT_BUFFER
    DONE_WITH_INPUT_BUFFER
 #endif
@@ -274,7 +273,7 @@ void ungetkey_string(char *s, int n) /*{{{*/
 void buffer_keystring(char *s, int n) /*{{{*/
 {
    if (n + Input_Buffer_Len > MAX_INPUT_BUFFER_LEN - 3) return;
-   
+
 #ifdef USING_INPUT_BUFFER
    USING_INPUT_BUFFER
 # if 0
@@ -303,7 +302,7 @@ int input_pending (int *tsecs) /*{{{*/
 {
    int n;
    int c;
-   
+
    /* FIXME!!  This should affect the macro buffer */
    if (Executing_Keyboard_Macro) return 1;
 
@@ -311,16 +310,16 @@ int input_pending (int *tsecs) /*{{{*/
      (*Jed_Sig_Exit_Fun) ();
 
    if (Input_Buffer_Len) return Input_Buffer_Len;
-   
+
    n = sys_input_pending (tsecs, 0);
-   if (n < 0) 
+   if (n < 0)
      {
 	if (SLKeyBoard_Quit)
 	  n = 1;
 	else
 	  n = 0;
      }
-   
+
    if (n && (Input_Buffer_Len == 0))
      {
 	c = my_getkey ();
@@ -374,12 +373,11 @@ unsigned long sys_time(void) /*{{{*/
 
 /*}}}*/
 
-
 char *slash2slash(char *dir) /*{{{*/
 {
 #ifndef VMS
    register char *p = dir, ch;
-   
+
    while ((ch = *p) != 0)
      {
 	if ((ch == '/') || (ch == '\\')) *p = SLASH_CHAR;
@@ -391,14 +389,14 @@ char *slash2slash(char *dir) /*{{{*/
 
 /*}}}*/
 
-/* given a canonical filename, return pointer to its name.  
+/* given a canonical filename, return pointer to its name.
  * Note: If the file ends in a slash as in a/b/c/, then a pointer to
  * the END of the string is returned.
  */
 char *extract_file(SLFUTURE_CONST char *file) /*{{{*/
 {
    SLFUTURE_CONST char *f;
-   
+
    f = file + strlen(file);
    while (f > file)
      {
@@ -410,16 +408,16 @@ char *extract_file(SLFUTURE_CONST char *file) /*{{{*/
 
 /*}}}*/
 
-/* given a canonical filename, return pointer to its name.  
+/* given a canonical filename, return pointer to its name.
  * Note: If the file ends in a slash as in a/b/c/, then a pointer to
  * the c/ is returned.
  */
 char *jed_extract_file_or_dir (char *file) /*{{{*/
 {
    char *f;
-   
+
    f = file + strlen(file);
-   if (f > file) 
+   if (f > file)
      {
 	f--;
 	if (*f == SLASH_CHAR)
@@ -436,7 +434,7 @@ char *jed_extract_file_or_dir (char *file) /*{{{*/
 
 /*}}}*/
 #ifdef IBMPC_SYSTEM
-/* I do not know how to do this in a portable fashion.  
+/* I do not know how to do this in a portable fashion.
  */
 static int pcsystem_getdisk (void)
 {
@@ -476,20 +474,20 @@ static char *strcat_malloc (char *a, char *b)
    char *c;
    unsigned int lena = strlen (a);
    unsigned int lenb = strlen (b);
-   
+
    if (NULL == (c = SLmalloc (lena + lenb + 1)))
      return NULL;
-   
+
    strcpy (c, a);
    strcpy (c+lena, b);
    return c;
 }
-   
+
 /* file is assumed to be malloced here.  Its contents may be changed. */
 static int remove_slash_slash (char *file)
 {
    char *f, *g, ch;
-   
+
    g = f = file;
    while ((ch = *f++) != 0)
      {
@@ -510,7 +508,7 @@ static int remove_slash_slash (char *file)
 static int remove_dot_dot_slashes (char *file)
 {
    char *f = file;
-   
+
    while (1)
      {
 	char *f1;
@@ -551,8 +549,8 @@ static int remove_dot_dot_slashes (char *file)
 	else
 	  continue;
 
-	/* /foo/blah/../bar. 
-	 * Move bar to /blah 
+	/* /foo/blah/../bar.
+	 * Move bar to /blah
 	 */
 	f--;
 	if (f != file)
@@ -585,7 +583,7 @@ static char *make_abs_filename (char *file)
 	     SLfree (file);
 	     return file1;
 	  }
-   
+
 # endif
 	/* Otherwise it looks like a relative path.  */
 	/* get_cwd returns an absolute path with the trailing /. */
@@ -602,7 +600,7 @@ static char *make_abs_filename (char *file)
    if (file[0] == SLASH_CHAR)
      {
 	if (file[1] != SLASH_CHAR)
-	  {	     
+	  {
 	     buf[0] = 'A' + (pcsystem_getdisk ()-1); buf[1] = ':'; buf[2] = 0;
 	     file1 = strcat_malloc (buf, file);
 	     SLfree (file);
@@ -627,7 +625,7 @@ static char *make_abs_filename (char *file)
 static char *skip_drive_specifier (char *file)
 {
 #ifdef __QNX__
-   /* QNX pathnames look like //<node number>/rest_of_path 
+   /* QNX pathnames look like //<node number>/rest_of_path
     *  -- we need to leave on the <node number> and return /rest_of_path
     */
    if ((file[0] == SLASH_CHAR) && (file[1] == SLASH_CHAR)
@@ -643,7 +641,7 @@ static char *skip_drive_specifier (char *file)
 #ifdef IBMPC_SYSTEM
    if (((file[0] != 0) && (file[1] == ':'))
        || ((file[0] == SLASH_CHAR) && (file[1] == SLASH_CHAR)))
-     {	
+     {
 	file += 2;
 	while (*file && (*file != SLASH_CHAR))
 	  file++;
@@ -681,23 +679,22 @@ static char *prep_filename (SLFUTURE_CONST char *filename)
 char *jed_standardize_filename (SLFUTURE_CONST char *filename)
 {
    char *file1, *file;
-   
+
    if (NULL == (file = prep_filename (filename)))
      return NULL;
 
    if (NULL == (file = make_abs_filename (file)))
      return NULL;
-   
+
    file1 = skip_drive_specifier (file);
 
    (void) remove_slash_slash (file1);
 
    (void) remove_dot_dot_slashes (file1);
-   
+
    return file;
 }
 
-   
 /* this routine returns a Static pointer which is considered volatile */
 char *jed_standardize_filename_static (char *file) /*{{{*/
 {
@@ -719,24 +716,24 @@ char *jed_standardize_filename_static (char *file) /*{{{*/
 char *my_strstr(char *a, char *b) /*{{{*/
 {
    register char *bb, *aa, *amax;
-   
+
    if (*b == 0) return(a);
-   
+
    bb = b; while (*bb) bb++;
    aa = a; while (*aa++);
-   
+
    amax = aa - (bb - b);
-   
+
    while (a < amax)
      {
 	bb = b;
 	while ((a < amax) && (*a != *bb)) a++;
 	if (a == amax) return((char *) NULL);
-	
+
 	aa = a;
 	while (*aa && (*aa == *bb)) aa++, bb++;
 	if (! *bb) return(a);
-	
+
 	a++;
      }
    return((char *) NULL);
@@ -745,13 +742,12 @@ char *my_strstr(char *a, char *b) /*{{{*/
 /*}}}*/
 #endif
 
-
 void deslash(char *dir) /*{{{*/
 {
 #ifndef VMS
    int n;
-   
-   if ((n = strlen(dir)) > 1) 
+
+   if ((n = strlen(dir)) > 1)
      {
 	n--;
 # if defined (IBMPC_SYSTEM)
@@ -772,7 +768,7 @@ void fixup_dir(char *dir) /*{{{*/
 {
 #ifndef VMS
    int n;
-   
+
    if ((n = strlen(dir)) >= 1)
      {
 	n--;
@@ -796,7 +792,7 @@ int ch_dir(char *path) /*{{{*/
 {
 #if defined(IBMPC_SYSTEM) || defined(__os2__)
    char work[JED_MAX_PATH_LEN];
-   
+
    safe_strcpy(work, path, sizeof (work));
    deslash(work);
    return chdir(work);
@@ -828,7 +824,6 @@ int make_random_number (int *seed, int *max) /*{{{*/
 
 /*}}}*/
 
-
 #if defined(IBMPC_SYSTEM)
 /* This routine converts  C:\  --> C:\ and C:\subdir\  -> C:\subdir */
 char *msdos_pinhead_fix_dir(char *f) /*{{{*/
@@ -836,13 +831,13 @@ char *msdos_pinhead_fix_dir(char *f) /*{{{*/
    static char file[JED_MAX_PATH_LEN];
    register char ch;
    int n;
-   
+
    if (*f == 0) return f;
    strncpy (file, f, JED_MAX_PATH_LEN); file[JED_MAX_PATH_LEN - 1] = 0;
    f = file;
    /* skip past colon */
    while (((ch = *f) != 0) && (ch != ':')) f++;
-   
+
    if (ch == 0)			       /* no colon */
      {
 	n = (int) (f - file);
@@ -859,7 +854,7 @@ char *msdos_pinhead_fix_dir(char *f) /*{{{*/
 	return file;
      }
    if ((n == 1) && (*f == '\\')) return file;
-   
+
    f += n - 1;
    if (*f == '\\') *f = 0;
    return file;
@@ -878,11 +873,11 @@ int jed_win32_rename (char *old_name, char *new_name)
     *  C:\> ren temp.txt temp.txt~
     *  C:\> echo try2 >temp.txt
     */
-   
+
    /* The work-around is to rename the file in two stages:
     *   file.typ ==> file.~ ==> file.typ~
     */
-   
+
    char tmp_name[1024];
    char *p;
    unsigned int n, extlen;
@@ -892,7 +887,7 @@ int jed_win32_rename (char *old_name, char *new_name)
    while (*p && (*p != '.')) p++;      /* find extension */
    /* create temporary filename */
    /* everything up to potential dot */
-   
+
    n = (unsigned int) (p - old_name);
    extlen = strlen (p);
 
@@ -918,13 +913,13 @@ int jed_win32_rename (char *old_name, char *new_name)
 	  }
 	if (-1 == rename (old_name, tmp_name))
 	  return -1;
-	
+
 	if (-1 == rename (tmp_name, new_name))
 	  {
 	     (void) rename (tmp_name, old_name);
 	     return -1;
 	  }
-	
+
 	return 0;
      }
 #ifdef EFAULT
@@ -939,13 +934,11 @@ void jed_pause (int *ms) /*{{{*/
 {
    if (*ms < 0)
      return;
-   
+
    sys_pause (*ms);
 }
 
 /*}}}*/
-
-
 
 int jed_handle_interrupt (void)
 {
@@ -956,7 +949,6 @@ void jed_sleep (unsigned int n)
 {
    sleep (n);
 }
-
 
 char *jed_get_cwd (void) /*{{{*/
 {
@@ -972,14 +964,14 @@ char *jed_get_cwd (void) /*{{{*/
 #else
    c = (char *) getwd(cwd);
 #endif
-   
+
    if (c == NULL)
      {
 #ifndef REAL_UNIX_SYSTEM
 	exit_error ("Unable to get the current working directory.", 0);
 #else
 	struct stat st1, st2;
-	
+
 	if ((NULL == (c = getenv ("PWD")))
 	    || (-1 == stat (c, &st1))
 	    || (-1 == stat (".", &st2))
@@ -1015,36 +1007,35 @@ static char *prepend_home_dir (char *file)
    home = getenv ("HOME");
    if ((home == NULL) || (*home == 0))
      home = "/";
-   
+
    file = strcat_malloc (home, file);
    if (file == NULL)
      return file;
-   
+
    home = jed_standardize_filename (file);
    SLfree (file);
    return home;
 }
 
-
 /* This function makes the following transformations:
- * 
+ *
  *     /foo/bar//root/baz   --> /root/baz
  *     /foo/bar/~/foo       --> $HOME/foo
- * 
+ *
  * and then converts the result to standard form.
  * Possible cases include:
- * 
+ *
  *    /foo/bar//tmp/x.c    --> /tmp/x.c
  *    /foo/bar/~/me/baz    --> $HOME/me/baz
  *    /foo/bar//tmp/~/bar  --> /tmp/~/bar
  *    ~/bar                --> $HOME/bar
  *    /tmp/~/bar//home/me  --> /home/me
- * 
+ *
  * DOS/Windows:
- * 
+ *
  *    C:/foo/bar/D:/foo     --> D:/foo
  *    //foo/bar///share/baz --> //share/baz
- * 
+ *
  * For the case: /tmp/~/bar/~/foo, assume ~/foo.
  */
 char *jed_expand_filename (char *file)
@@ -1077,14 +1068,14 @@ char *jed_expand_filename (char *file)
 	drive = f;
 	break;
      }
-   
+
    if (drive != NULL)
      {
 	f = jed_standardize_filename (drive);
 	SLfree (file);
 	return f;
      }
-   
+
    /* Now look for /~/ */
    f = file + strlen (file);
    while (f != file)
@@ -1101,7 +1092,7 @@ char *jed_expand_filename (char *file)
 	  continue;
 	if ((f != file) && (*(f-1) != SLASH_CHAR))
 	  continue;
-	
+
 	f = prepend_home_dir (f + 1);
 	SLfree (file);
 	return f;

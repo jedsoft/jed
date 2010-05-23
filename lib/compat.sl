@@ -6,7 +6,7 @@ define create_array ()
 
    n = ();
    dims  = Integer_Type [n];
-   
+
    i = n;
    size = 1;
    while (i)
@@ -40,10 +40,9 @@ define create_array ()
 	% default
 	verror ("create_array: Type %d not supported.", type);
      }
-   
-   
+
    reshape (a, dims);
-   
+
    return a;
 }
 
@@ -74,7 +73,7 @@ define info_mode ()
 define get_jed_library_path()
 {
    variable t = get_slang_load_path ();
-   
+
    (t,) = strreplace(t, char(path_get_delimiter()), ",", strlen(t));
    return t;
 }

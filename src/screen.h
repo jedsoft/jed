@@ -1,6 +1,6 @@
 #ifndef _JED_SCREEN_H_
 #define _JED_SCREEN_H_
-/* Copyright (c) 1992, 1998, 2000, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -9,7 +9,7 @@
 #include "window.h"
 
 /* JED screen management routines */
-  
+
 extern int Screen_Row;		       /* cursor row */
 extern int Screen_Col;		       /* cursor col */
 extern int Cursor_Motion;	       /* cursor movement only */

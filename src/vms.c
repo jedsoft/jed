@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -26,7 +26,7 @@
 #ifdef __DECC
 #include <starlet.h>
 #include <lib$routines.h>
-#include <unixlib.h> 
+#include <unixlib.h>
 #include <unixio.h>
 #endif
 
@@ -54,17 +54,15 @@ TermChar_Type Old_Term_Char, New_Term_Char;
 /* This serves to identify the channel we are reading input from.  */
 static short This_Term;
 
-
 typedef struct /*{{{*/
 {
    short buflen;
    short item_code;
    int *buf_addr;
    int *len_addr;
-} 
+}
 /*}}}*/
 item_list_3;
-
 
 static int TTY_Inited;
 
@@ -73,8 +71,8 @@ void vms_exit_handler(int not_used) /*{{{*/
    if (TTY_Inited == 0) exit(0);
 
    auto_save_all();
-   jed_reset_display(); 
-   reset_tty(); 
+   jed_reset_display();
+   reset_tty();
    exit(1);
 }
 
@@ -110,7 +108,6 @@ void vms_cancel_exithandler() /*{{{*/
 #undef USING_INPUT_BUFFER
 #undef DONE_WITH_INPUT_BUFFER
 
-
 int vms_input_buffer;
 
 static struct vms_ast_iosb /*{{{*/
@@ -133,14 +130,14 @@ static int Using_Keyboard_Buffer_Event_Flag;
 
 #define USING_INPUT_BUFFER\
    sys$setast(0);
-   
+
 #define DONE_WITH_INPUT_BUFFER\
    sys$setast(1);
 
 static int getkey_ast(int not_used) /*{{{*/
 {
    unsigned int c = 1000;
-   
+
    if (vms_ast_iosb.offset)
      {
 	c = (unsigned int) vms_input_buffer;
@@ -150,16 +147,16 @@ static int getkey_ast(int not_used) /*{{{*/
      {
 	if (c == (unsigned int) Jed_Abort_Char)
 	  {
-	     if (Ignore_User_Abort == 0) 
+	     if (Ignore_User_Abort == 0)
 	       SLang_set_error (SL_USER_BREAK);
 	     SLKeyBoard_Quit = 1;
 	  }
 
 	USING_INPUT_BUFFER
-	
-	if (Input_Buffer_Len < MAX_INPUT_BUFFER_LEN - 3) 
+
+	if (Input_Buffer_Len < MAX_INPUT_BUFFER_LEN - 3)
 	  Input_Buffer[Input_Buffer_Len++] = c;
-	
+
 	DONE_WITH_INPUT_BUFFER
      }
    if (Waiting_For_Ast)  sys$setef (Ast_Fired_Event_Flag);
@@ -193,25 +190,25 @@ int init_tty() /*{{{*/
    int tmp, name_len, status, lastppid, ppid;
    item_list_3 itmlst[3];
    $DESCRIPTOR ( term, TTY_Name);
-   
+
    itmlst[0].buflen = sizeof(int);
    itmlst[0].item_code = JPI$_PID;
    itmlst[0].buf_addr = &This_Process_Pid;
    itmlst[0].len_addr = &tmp;
-   
+
    itmlst[1].buflen = 7;
    itmlst[1].item_code = JPI$_TERMINAL;
    itmlst[1].buf_addr = (int *) TTY_Name;
    itmlst[1].len_addr = &name_len;
-   
+
    itmlst[2].buflen = 0;
    itmlst[2].item_code = 0;
    itmlst[2].buf_addr = 0;
    itmlst[2].len_addr = 0;
-   
+
    TTY_Inited = 1;
    ppid = 0, lastppid = -1;
-   
+
    /* Here I get this process pid then I get the master process pid
       and use the controlling terminal of that process. */
    while (1)
@@ -222,7 +219,7 @@ int init_tty() /*{{{*/
 			     itmlst,
 			     0, 0, 0);
 
-	if (status != SS$_NORMAL) 
+	if (status != SS$_NORMAL)
 	  {
 	     fprintf(stderr, "PID: %X, status: %X\n", This_Process_Pid, status);
 	     return -1;
@@ -234,14 +231,14 @@ int init_tty() /*{{{*/
 	itmlst[0].item_code =  JPI$_MASTER_PID;
 	itmlst[0].buf_addr =  &ppid;
      }
-   
+
    if (Batch) return 0;
    if (X_Init_Term_Hook != NULL)
      {
 	(void) (*X_Init_Term_Hook) ();
 	return 0;
      }
-   
+
    term.dsc$w_length = name_len;
    status = sys$assign ( &term, &This_Term, 0, 0 );
    if (status != SS$_NORMAL)
@@ -258,24 +255,24 @@ int init_tty() /*{{{*/
      }
 
    /* allocate an event flag and clear it--- used by ast routines.  Since
-    * I am only using a few local event flags, there is really no need to 
+    * I am only using a few local event flags, there is really no need to
     * worry about freeing these.
-    * 
+    *
     * The event flags are used to avoid timing problems with the getkey AST
     * as well as for a form of time out.
     */
    if (!Ast_Fired_Event_Flag) lib$get_ef (&Ast_Fired_Event_Flag);
    sys$clref (Ast_Fired_Event_Flag);
-   
+
    if (!Timer_Event_Flag) lib$get_ef (&Timer_Event_Flag);
    sys$clref (Timer_Event_Flag);
-   
-   /* When no thread is using the keyboard buffer, this ev is set.  It 
+
+   /* When no thread is using the keyboard buffer, this ev is set.  It
     * gets cleared when the buffer is in use.
     */
    if (!Using_Keyboard_Buffer_Event_Flag) lib$get_ef (&Using_Keyboard_Buffer_Event_Flag);
    sys$setef (Using_Keyboard_Buffer_Event_Flag);
-   
+
    /* The working assumption here is that the event flags are in the same
     * cluster.  They need not be but it is very likely that they are.
     */
@@ -284,7 +281,7 @@ int init_tty() /*{{{*/
 
    Waiting_For_Ast = 0;
    Ast_Stop_Input = 0;
-   
+
    /* Get the startup terminal characteristics */
    status = sys$qiow(0,		       /* Wait on event flag zero      */
 		     This_Term,	       /* Channel to input terminal    */
@@ -294,11 +291,11 @@ int init_tty() /*{{{*/
                      &Old_Term_Char,   /* Terminal characteristics buf */
 		     sizeof(Old_Term_Char),/* Size of the buffer           */
 		     0, 0, 0, 0);
-   
+
    New_Term_Char = Old_Term_Char;
    New_Term_Char.t_mandl |= TT$M_EIGHTBIT | TT$M_NOECHO;
    New_Term_Char.t_extend |= TT2$M_PASTHRU | TT2$M_XON;
-   
+
    status = sys$qiow(0,		       /* Wait on event flag zero      */
 		     This_Term,	       /* Channel to input terminal    */
 		     IO$_SETMODE,      /* Set current characteristic   */
@@ -306,8 +303,8 @@ int init_tty() /*{{{*/
 		     0, 0,	       /* No AST service               */
                      &New_Term_Char,   /* Terminal characteristics buf */
 		     sizeof(New_Term_Char),/* Size of the buffer           */
-		     0, 0, 0, 0); 
-      
+		     0, 0, 0, 0);
+
    /* Enable the Application Keypad */
    (*tt_write_string) ("\033=\033[?1l");   /* application keys/cursor keys */
    vms_que_key_ast();   /* set up the key ast */
@@ -316,11 +313,10 @@ int init_tty() /*{{{*/
 
 /*}}}*/
 
-
 static void cancel_ast (void) /*{{{*/
 {
    if (TTY_Inited == 0) return;
-   
+
    /* stop the keyboard ast */
    sys$setast (0);		       /* disable AST delivery */
    sys$clref (Ast_Fired_Event_Flag);
@@ -328,7 +324,7 @@ static void cancel_ast (void) /*{{{*/
    Ast_Stop_Input = 1;
 
    /* cancel all i/o on this channel.  This canels pending, as well as those
-    * already in progress and queued.  In particular, according to the 
+    * already in progress and queued.  In particular, according to the
     * manuals, cancelling I/O on the channel will cause the getkey AST
     * to fire even though the SYS$QIO call was aborted.  This is crucial
     * because below we wait for the AST to set the event flag.
@@ -355,9 +351,9 @@ void reset_tty() /*{{{*/
      }
    cancel_ast ();
    TTY_Inited = 0;
-   
+
    /* reset the terminal characteristics */
-   
+
    sys$qiow(0,			       /* event flag 0 */
 	    This_Term,		       /* Channel to input terminal    */
 	    IO$_SETMODE,	       /* Set current characteristic   */
@@ -369,7 +365,7 @@ void reset_tty() /*{{{*/
 
    if (keypad_state) SLtt_write_string("\033=\033[?1l");
    else SLtt_write_string("\033>");
-   
+
    SLtt_flush_output ();
 }
 
@@ -381,7 +377,7 @@ unsigned char sys_getkey() /*{{{*/
    int tsecs;
 
    if (SLKeyBoard_Quit) return(Jed_Abort_Char);
-   
+
    /* Under DECWIndows, I do not know how to timeout so this will have to do
       for now */
    if (X_Read_Hook != NULL) return (c = X_Read_Hook ());
@@ -393,7 +389,7 @@ unsigned char sys_getkey() /*{{{*/
    Waiting_For_Ast = 0;
    if (Input_Buffer_Len) return(my_getkey());
    tsecs = 450;   /* 45 seconds */
-   
+
    while (!sys_input_pending(&tsecs, 0))
      {
 	if (Jed_Sig_Exit_Fun != NULL)
@@ -421,8 +417,8 @@ int sys_input_pending(int *secs, int unused) /*{{{*/
 
    if (Batch) return(0);
    if (Input_Buffer_Len) return(Input_Buffer_Len);
-   
-   if (X_Input_Pending_Hook != NULL) 
+
+   if (X_Input_Pending_Hook != NULL)
      {
 	if ((*X_Input_Pending_Hook) ()) return 1;
    	if (*secs == 0) return 0;
@@ -437,38 +433,38 @@ int sys_input_pending(int *secs, int unused) /*{{{*/
 	       {
 		  sys$cantim(1, 3);
 		  return 1;
-	       } 
-	     else 
+	       }
+	     else
 	       {
-		  if (sys$readef(Timer_Event_Flag, &EFstate) == SS$_WASSET) 
+		  if (sys$readef(Timer_Event_Flag, &EFstate) == SS$_WASSET)
 		    return 0;
 	       }
 	  }
      }
-   
-   if (*secs) 
+
+   if (*secs)
      {
 	/* takes a quad word time.  If negative, use a relative time. */
 	daytim[1] = 0xFFFFFFFF;
 	daytim[0] = -(*secs * 1000 * 1000);   /* 1000 * 1000 is a tenth of a sec */
-	
+
 	sys$clref (Ast_Fired_Event_Flag);
 	/* SYS$CLREF (Timer_Event_Flag);  SYS$SETIMR call clears this */
 
 	/* set up a flag for the ast so it knows to set the event flag */
 	Waiting_For_Ast = 1;
-	
+
 	sys$setimr(Timer_Event_Flag, daytim, 0, 1);
-		   
+
 	/* this will return when ast does its job or timer expires.
-	 * The first argument simply serves to identify the cluster for 
-	 * the event flag and that is all.  The second argument serves 
-	 * to identify the event flags to wait for. 
+	 * The first argument simply serves to identify the cluster for
+	 * the event flag and that is all.  The second argument serves
+	 * to identify the event flags to wait for.
 	 */
 	sys$wflor (Ast_Fired_Event_Flag, Event_Flag_Mask);
-	
+
 	Waiting_For_Ast = 0;
-	
+
 	/* cancel the timer */
 	sys$cantim(1, 3);   /* 3 is user mode */
      }
@@ -485,10 +481,9 @@ void sys_pause (int ms) /*{{{*/
    /* takes a quad word time.  If negative, use a relative time. */
    daytim[1] = 0xFFFFFFFF;
    daytim[0] = -(ms * 10 * 1000);   /* 10 * 1000 is a milli sec */
-	
-	
+
    sys$setimr(Timer_Event_Flag, daytim, 0, 1);
-		   
+
    /* cancel the timer */
    sys$cantim(1, 3);   /* 3 is user mode */
 }
@@ -502,17 +497,17 @@ int get_term_dimensions(int *cols, int *rows) /*{{{*/
    Iosb_Type iostatus;
    $DESCRIPTOR(devnam, TTY_Name);
    item_list_3 itmlst[4];
-   
+
    itmlst[0].buflen = sizeof (*rows);
    itmlst[0].item_code = DVI$_TT_PAGE;
    itmlst[0].buf_addr = rows;
    itmlst[0].len_addr = &junk;
-   
+
    itmlst[1].buflen = sizeof(*cols);
    itmlst[1].item_code = DVI$_DEVBUFSIZ;
    itmlst[1].buf_addr = cols;
    itmlst[1].len_addr = &junk;
-   
+
    itmlst[2].buflen = sizeof (keypad_state);
    itmlst[2].item_code = DVI$_TT_APP_KEYPAD;
    itmlst[2].buf_addr = &keypad_state;
@@ -551,7 +546,6 @@ int sys_delete_file(char *filename) /*{{{*/
 }
 
 /*}}}*/
-
 
 /* This routine converts unix type names to vms names */
 int locate(char ch, char *string) /*{{{*/
@@ -655,7 +649,7 @@ char *unix2vms(char *file) /*{{{*/
 void define_logical_name (char *varname, char *string) /*{{{*/
 {
    struct dsc$descriptor_s strdsc, envdsc, lnmdsc;
-   
+
    strdsc.dsc$w_length = strlen (string);
    strdsc.dsc$b_dtype = DSC$K_DTYPE_T;
    strdsc.dsc$b_class = DSC$K_CLASS_S;
@@ -668,7 +662,7 @@ void define_logical_name (char *varname, char *string) /*{{{*/
    lnmdsc.dsc$b_dtype = DSC$K_DTYPE_T;
    lnmdsc.dsc$b_class = DSC$K_CLASS_S;
    lnmdsc.dsc$a_pointer = "LNM$JOB";
-   
+
    lib$set_logical (&envdsc, &strdsc, &lnmdsc, 0, 0);
 }
 
@@ -677,7 +671,7 @@ void define_logical_name (char *varname, char *string) /*{{{*/
 void delete_logical_name (char *varname) /*{{{*/
 {
    struct dsc$descriptor_s envdsc, lnmdsc;
-   
+
    envdsc.dsc$w_length = strlen (varname);
    envdsc.dsc$b_dtype = DSC$K_DTYPE_T;
    envdsc.dsc$b_class = DSC$K_CLASS_S;
@@ -741,7 +735,7 @@ void sys_suspend() /*{{{*/
 	status = lib$spawn(0,0,0,0,0,&SHELL_PID,0);
 	/* if we attach back, status may come back unchanged */
 	if (!(status & 1))  /* Thanks to Hunter Goatley for this suggestion */
-	  {              
+	  {
 	     jed_verror ("Unable to spawn subprocess. Error = X%X (%d)", status, status);
 	     return;
 	  }
@@ -823,9 +817,9 @@ char *jed_standardize_filename_static(char *file) /*{{{*/
 	 *p1 = 0;
 	 break;
       }
-   
+
    dir = p = p1 = file;
-   
+
    /* look for the start of the path */
    while (*p != 0)
      {
@@ -839,16 +833,16 @@ char *jed_standardize_filename_static(char *file) /*{{{*/
 	     dir = p;
 	     break;
 	  }
-	if (*p == '[') 
+	if (*p == '[')
 	  {
 	     dir = p++;
 	     break;
 	  }
 	p++;
      }
-   
+
    p1 = p = dir;
-   
+
     while (*p != 0)
       {
 	 if (*p == '[')
@@ -856,28 +850,28 @@ char *jed_standardize_filename_static(char *file) /*{{{*/
 	      /* if (*(p + 1) == '-') */
 	      p1 = dir;
 	   }
-	 
+
 	 if (p1 != p) *p1 = *p;
-	 
+
 	 p1++;
 	 p++;
       }
    *p1 = 0;
 
    ugly:
-   
+
    switch(vms_parse_file(file))
       {
        case 0:
 	 break;
-	 case -1: msg_error("Filename syntax error."); break; 
-	 case -2: msg_error("Directory does not exist!"); 
+	 case -1: msg_error("Filename syntax error."); break;
+	 case -2: msg_error("Directory does not exist!");
 	          msg_error (file); break;
 	 case -3: msg_error("Bad device name."); break;
        default: msg_error ("Unknown directory error:");
 	 msg_error (file);
       }
-   
+
    p = file;
    while(*p != 0) if (*p++ == ']')
      {
@@ -1049,5 +1043,4 @@ int rmdir (const char *d) /*{{{*/
 /*}}}*/
 
 #endif
-
 

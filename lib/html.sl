@@ -5,10 +5,10 @@
 %  Substantial additions by Jim Knoble.
 
 %  Modified by John E. Davis for incorporation into JED.
-%% 
-%% Modified by Michael D Johnson to conform with the standards recommendation 
+%%
+%% Modified by Michael D Johnson to conform with the standards recommendation
 %% on capitalization.
-%% 
+%%
 %  Modified by Kees Serier
 %  All lower case except for DOCTYPE (like all W3C code), html: 2 3.2 4 XHTML
 %  Definition lists complete, tables, euro symbol and more.
@@ -55,7 +55,7 @@ define html_bskip_tag()
 define html_mark_next_tag()
 {
    variable taglng = 1;
-   
+
    ifnot (fsearch_char ('>')) return;
    go_right(taglng);
    set_mark_cmd ();
@@ -78,7 +78,6 @@ define html_mark_prev_tag()
    exchange_point_and_mark();
 }
 
-
 %
 % First define some useful functions
 %
@@ -88,7 +87,7 @@ define html_insert_pair_around_region (lfttag, rgttag)
    % make sure mark is before point;
    % 1 => push spot first
    check_region(1);
-   
+
    % put tags on appropriate sides of region,
    % then return to where we were
    exchange_point_and_mark();
@@ -103,7 +102,7 @@ define html_insert_move (str)
 {
    variable len;
    variable beg, end;
-   
+
    len = is_substr (str, "@");
    ifnot (len) return;
    len--;
@@ -114,7 +113,7 @@ define html_insert_move (str)
 	html_insert_pair_around_region (beg, end);
 	return;
      }
-   
+
    push_spot ();
    insert (str);
    pop_spot ();
@@ -139,7 +138,7 @@ define html_insert_with_2newlines (str)
 
 define html_form ()
 {
-   html_insert_move ("<form action=\"\" method=\"\">\n@\n</form>");   
+   html_insert_move ("<form action=\"\" method=\"\">\n@\n</form>");
 }
 
 define html_input ()
@@ -247,7 +246,7 @@ define html_image ()
 define html_quoted_insert ()
 {
    variable ch;
-   
+
    ifnot (input_pending (5)) flush ("`-");
    ch = getkey ();
    switch (ch)
@@ -277,7 +276,7 @@ define html_quoted_insert ()
      }
      {
 	% default:  The other special characters should be added.
-	insert_char (ch);		       
+	insert_char (ch);
      }
 }
 
@@ -299,13 +298,13 @@ define html_doctype ()
    variable key2;
    key2 = html_read_key ("HTML version: 2  3.2  4  Xhtml");
    switch (key2)
-     {case '2': 
+     {case '2':
 	insert ("<!DOCTYPE html PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n");}
-     {case '3': 
+     {case '3':
 	insert ("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2 FINAL//EN\">\n");}
-     {case '4': 
+     {case '4':
 	insert ("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.0 FINAL//EN\">\n");}
-     {case 'x' or case 'X': 
+     {case 'x' or case 'X':
 	insert ("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\">\n");}
      { beep (); }
 }
@@ -316,12 +315,11 @@ define html_template ()
    html_insert_move ("<html>\n\n<head>\n<title>@</title>\n</head>\n\n<body>\n</body>\n\n</html>") ;
 }
 
-
 define html_keymap_a ()
 {
    variable name = "<a name=\"@\"></a>";
    variable href = "<a href=\"@\"></a>";
-   
+
    switch (html_read_key ("Href  Name"))
      { case 'h': href; }
      { case 'n': name; }
@@ -344,7 +342,7 @@ define html_keymap_d ()
 
 define html_keymap_f ()
 {
-   
+
    switch (html_read_key ("txtArea Chkbox Form Hidden Input Option Passw Radio Select Text Xreset Ysubmit"))
      {case 'a': html_text_area (); }
      {case 'c': html_input_checkbox (); }
@@ -394,7 +392,7 @@ define html_keymap_l ()
      { case 'o': html_insert_with_newline ("ol"); }
      { case 'u': html_insert_with_newline ("ul"); }
      {
-	% default 
+	% default
 	beep ();
      }
 }
@@ -484,7 +482,6 @@ definekey ("html_quoted_insert",   "`",  $1);
 
 definekey("html_par_insert", "\e^M", $1); % Neater paragraph insert (MDJ 04/06/98)
 
-
 create_syntax_table ($1);
 define_syntax ("<", ">", '(', $1);     %  make these guys blink match
 define_syntax ("<>", '<', $1);
@@ -520,13 +517,13 @@ dfa_set_init_callback (&setup_dfa_callback, "html");
 () = define_keywords ($1, strcat (
 				  "&Auml&Euml&Iuml&Ouml&Uuml",
 				  "&auml&euml&iuml&nbsp&ouml&quot&uuml&yuml"
-				  ), 
+				  ),
 		      5);
 
 () = define_keywords ($1, strcat (
 				  "&AElig&Acirc&Aring&Ecirc&Icirc&Ocirc&THORN&Ucirc&acirc",
 				  "&aelig&aring&ecirc&icirc&ocirc&szlig&thorn&ucirc"
-				  ), 
+				  ),
 		      6);
 
 () = define_keywords ($1, strcat (
@@ -541,10 +538,10 @@ dfa_set_init_callback (&setup_dfa_callback, "html");
 %\synopsis{html_mode}
 %\usage{Void html_mode ();}
 %\description
-% \var{html_mode} is a mode designed for editing HTML files.  
+% \var{html_mode} is a mode designed for editing HTML files.
 % If a region is defined (i.e., if a mark is set), many HTML
 % tags will insert around the region, e.g. '<B>' and '</B>'.
-% 
+%
 % Keybindings begin with ^C and are grouped according to function:
 %     ^CA...  Anchors (<A>...</A>)
 %     ^CD...  Definition lists (<DL>...</DL>)
@@ -568,9 +565,9 @@ dfa_set_init_callback (&setup_dfa_callback, "html");
 %     ^C<space> insert HMTL text for NonBreakableSPace
 %     ^Ce     insert HMTL text for 'Eurosymbol'
 %     ^CC     insert HTML comment (around region, if marked)
-% 
+%
 % For a complete list of keybindings, use \var{describe_bindings}.
-% 
+%
 % This function calls \var{html_mode_hook} if it exists.
 %!%-
 define html_mode ()

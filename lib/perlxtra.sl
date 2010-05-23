@@ -182,7 +182,6 @@ define perltidy ()      % <AUTOLOAD> this function
     EXECUTE_ERROR_BLOCK;
 }
 
-
 % Run perl with some flags on current region if one is defined, otherwise
 % on the whole buffer.
 %
@@ -248,7 +247,6 @@ static define do_perl (opts, prompt)
         () = write_buffer (dir + file);
     }
 
-
     variable oldbuf = pop2buf_whatbuf(shell_output);
     erase_buffer ();
 
@@ -297,7 +295,6 @@ static define do_perl (opts, prompt)
     }
 }
 
-
 %!%+
 %\function{perl_exec}
 %\synopsis{Void perl_exec (Void)}
@@ -312,7 +309,6 @@ define perl_exec()  {   % <AUTOLOAD>
     do_perl(Null_String, "perl @ARGV:");
 }
 
-
 %!%+
 %\function{perl_check}
 %\synopsis{Void perl_check (Void)}
@@ -324,7 +320,6 @@ define perl_exec()  {   % <AUTOLOAD>
 define perl_check() {
     do_perl("-cT", Null_String);        % check with tainting on
 }
-
 
 % we seem to need this an awful lot, since we currently have no help mode
 % and the user may have deleted the buffer in the meantime
@@ -407,7 +402,6 @@ static define extract_word (chars)
 %!%-
 %\seealso{perldoc, perl_help}
 define perl_info () { perl_get_help("perl -V"); }       % <AUTOLOAD>
-
 
 %!%+
 %\function{perl_help}

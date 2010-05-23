@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <ssdef.h>
 #include <string.h>
-
 
 #include "buffer.h"
 #include "vmsmail.h"
@@ -39,7 +38,7 @@ static int vms_send_buffer(int *context, Mail_Type *mt0, Buffer *b) /*{{{*/
    Line *l = b->beg;
    int n = 0, len;
    unsigned char *p;
-   
+
    while (l != NULL)
      {
 	m.code = MAIL$_SEND_RECORD;
@@ -64,25 +63,25 @@ int vms_send_mail(char *to, char *subj) /*{{{*/
    Mail_Type mt0, mt;
    int context = 0;
    char *p;
-   
+
    mt0.code = mt0.buflen = mt0.addr = mt0.ret = mt0.junk = 0;
-   
+
    if (SS$_NORMAL != mail$send_begin(&context, &mt0, &mt0))
      {
 	return(0);
      }
-#if 0   
+#if 0
    fill_struct(&mt, MAIL$_SEND_TO_LINE, to);
    if (SS$_NORMAL != mail$send_add_attribute(&context, &mt, &mt0))
      {
 	return(0);
      }
-   
+
    fill_struct(&mt, MAIL$_SEND_USERNAME, to);
    if (SS$_NORMAL != mail$send_add_address(&context, &mt, &mt0))
      {
 	return(0);
-     } 
+     }
 #endif
    while (1)
      {
@@ -90,45 +89,45 @@ int vms_send_mail(char *to, char *subj) /*{{{*/
 	if (*to == 0) break;
 	p = to;
 	while ((*p > ' ') && (*p != ',')) p++;
-	
+
         mt.code = MAIL$_SEND_TO_LINE;
 	mt.buflen = p - to;
 	mt.ret = mt.junk = 0;
 	mt.addr = (long) to;
-	
+
 	if (SS$_NORMAL != mail$send_add_attribute(&context, &mt, &mt0))
 	  {
 	     return(0);
 	  }
-	
+
 	mt.code = MAIL$_SEND_USERNAME;
 	mt.buflen = p - to;
 	mt.ret = mt.junk = 0;
 	mt.addr = (long) to;
-	
+
 	if (SS$_NORMAL != mail$send_add_address(&context, &mt, &mt0))
 	  {
 	     return(0);
 	  }
 	to = p;
      }
-   
+
    fill_struct(&mt, MAIL$_SEND_SUBJECT, subj);
    if (SS$_NORMAL != mail$send_add_attribute(&context, &mt, &mt0))
      {
 	return(0);
      }
-   
+
    if (!vms_send_buffer(&context, &mt0, CBuf))
      {
 	return(0);
      }
-   
+
    if (SS$_NORMAL != mail$send_message(&context, &mt0, &mt0))
      {
 	return(0);
      }
-   
+
    if (SS$_NORMAL != mail$send_end(&context, &mt0, &mt0))
      {
 	return(0);

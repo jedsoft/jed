@@ -1,4 +1,4 @@
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -791,7 +791,6 @@ static KeySym_Mapping_Type Control_KeySym_Map_FF[256] =
    "\001\177"		/* 0xFFFF 	 XK_Delete */
 };
 
-
 static KeySym_Mapping_Type Control_Shift_KeySym_Map_FF[256] =
 {
    "\004\033[3^",	/* 0xFF00                        Remove */
@@ -1063,10 +1062,9 @@ static int init_xkeys (void)
    Shift_KeySym_Maps[0xFF] = Shift_KeySym_Map_FF;
    Control_Shift_KeySym_Maps[0xFF] = Control_Shift_KeySym_Map_FF;
    Control_KeySym_Maps[0xFF] = Control_KeySym_Map_FF;
-   
+
    return 0;
 }
-
 
 static void x_set_keysym (int *np, int *shift, char *str) /*{{{*/
 {
@@ -1141,7 +1139,7 @@ static unsigned char *map_keysym_to_keyseq (unsigned int keysym, unsigned long m
 	maps = Control_Shift_KeySym_Maps;
 	break;
      }
-   
+
    map = maps [(keysym >> 8) & 0xFF];
    if (map == NULL)
      return NULL;
@@ -1151,9 +1149,3 @@ static unsigned char *map_keysym_to_keyseq (unsigned int keysym, unsigned long m
    return keyseq;
 }
 
-   
-   
-
-
-
-   

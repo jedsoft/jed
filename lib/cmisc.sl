@@ -221,7 +221,7 @@ define c_end_of_function ()
    eol ();
    ifnot (bol_fsearch_char ('}'))
      error ("End of function not found");
-% was:   
+% was:
    % ifnot (bolp () and looking_at_char ('{'))
    %   c_top_of_function ();
    % call ("goto_match");

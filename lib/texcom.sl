@@ -45,7 +45,7 @@ define tex_paragraph_separator ()
 {
    bol_skip_white ();
 
-   if (eolp () or looking_at("$$")) 
+   if (eolp () or looking_at("$$"))
      return 1;
 
    if (looking_at ("\\"))
@@ -61,8 +61,7 @@ define tex_paragraph_separator ()
    %  look for comment
    %
    return not (Tex_Ignore_Comment) and tex_is_comment ();
-} 
-
+}
 
 define tex_wrap_hook ()
 {
@@ -97,7 +96,7 @@ define tex_blink_dollar ()
    insert_char ('$');
    if (blooking_at ("\\$")) return;
 
-   push_spot ();   
+   push_spot ();
    EXIT_BLOCK
      {
 	pop_spot ();
@@ -106,9 +105,9 @@ define tex_blink_dollar ()
    Tex_Ignore_Comment++;
    backward_paragraph ();
    Tex_Ignore_Comment--;
-   
+
    variable pmatch = NULL;
-   
+
    while (fsearch_char ('$'))
      {
 	variable tmp_match = create_user_mark ();
@@ -127,12 +126,12 @@ define tex_blink_dollar ()
 	  }
 	goto_user_mark (tmp_match);
 
-	if (blooking_at("\\")) 
+	if (blooking_at("\\"))
 	  {
 	     go_right_1 ();
 	     continue;
 	  }
-	
+
 	if (pmatch == NULL)
 	  pmatch = tmp_match;
 	else
@@ -161,14 +160,13 @@ define tex_blink_dollar ()
 define tex_insert_quote ()
 {
    variable c;
-   
 
    if ((LAST_CHAR != '\'') and (LAST_CHAR != '"'))
      {
 	insert_char(LAST_CHAR);
 	return;
      }
-   
+
    c = '[';
    ifnot (bolp())
      {
@@ -176,13 +174,13 @@ define tex_insert_quote ()
 	c = what_char();
 	go_right_1 ();
      }
-   
+
    if (c == '\\')
      {
 	insert_char (LAST_CHAR);
 	return;
      }
-   
+
    if (is_substr("[({\t ", char(c)))
      {
 	insert_char ('`');
@@ -195,21 +193,19 @@ define tex_insert_quote ()
      }
 }
 
-
-
 define latex_do_environment ()
 {
    variable env = Null_String;
-   
+
    push_spot ();
    if (bsearch ("\\begin{"))
-     { 
+     {
 	go_right (7); push_mark ();
 	() = ffind_char ('}');
 	env = bufsubstr ();
      }
    pop_spot ();
-   
+
    eol (); newline ();
    env = read_mini ("Enter Environment Name:", env, Null_String);
    vinsert ("\\\\begin{%s}\n\n\\\\end{%s}\n", env, env);
@@ -232,7 +228,6 @@ define tex_is_verbatim_environment ()
    return m <= create_user_mark ();
 }
 
-   
 define tex_ldots ()
 {
    if (blooking_at (".."))

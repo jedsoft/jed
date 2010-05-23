@@ -22,12 +22,11 @@ define text_justify_line ()
   pop_spot();
 }
 
-
 define format_paragraph_hook()
 {
    variable n;
    push_spot();
-   
+
    backward_paragraph();
    n = what_line();
    forward_paragraph ();

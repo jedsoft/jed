@@ -1,5 +1,5 @@
 /* -*- mode: C; mode: fold; -*- */
-/* Copyright (c) 1992, 1998, 2000, 2002, 2003, 2004, 2005, 2006 John E. Davis
+/* Copyright (c) 1992-2010 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
@@ -56,7 +56,6 @@ void interrupt int9_handler(_DOTS_) /*{{{*/
    unsigned int offset, f1_scan = 0x3B00;  /* f1 key */
    unsigned int *p;
    unsigned int numlock = 0x45;
-   
 
    s1 = *Shift_Ptr & 0xF;  /* ignoring caps, ins, num lock, scroll lock */
    s = inp(0x60);
@@ -139,7 +138,7 @@ static void set_ctrl_break(int state) /*{{{*/
       mov al, 1
       mov ah, 33h
       int 21h
-   }   
+   }
 }
 
 /*}}}*/
@@ -169,7 +168,7 @@ static char *int24_errs[] = /*{{{*/
 int int24_handler(int err, int ax, int bp, int si) /*{{{*/
 {
    unsigned int di;
-   
+
    di = _DI;
    (void) ax;
    (void) bp;
@@ -188,7 +187,6 @@ static int ctrl_break(void) /*{{{*/
 
 /*}}}*/
 
-
 #define BIOSKEY(x) bioskey((x) | bios_key_f)
 static int bios_key_f;
 static void (*delay_ptr) (unsigned int);
@@ -197,7 +195,7 @@ static void my_delay (unsigned int ms)
 {
    union REGS r;
    unsigned long us;
-   
+
    us = (unsigned long)ms * 1000;  /* Micro seconds */
    r.h.ah = 0x86;
    r.x.cx = (unsigned int) (us >> 16);
@@ -210,21 +208,21 @@ static int TTY_Initialized;
 static int ibmpc_set_abort_char (unsigned char ch)
 {
    char ch, *s, *scan = "@#$%^&*()_+?IQWERTYUIOP[]!!ASDFGHJKL!!!!\\ZXCVBNM";
-   
+
    ch += 64;
    s = scan; while (*s && (*s != ch)) s++;
    if (*s == 0) return;
-   Abort_Scan_Code = (unsigned int) (s - scan) + 0x03;   
+   Abort_Scan_Code = (unsigned int) (s - scan) + 0x03;
 }
 
 int init_tty (void) /*{{{*/
 {
    union REGS r;
    struct SREGS s;
-   
+
    if (TTY_Initialized) return 0;
    bios_key_f = peekb(0x40,0x96) & 0x10; /* enhanced keyboard flag */
-   
+
    /* Check for system type */
    delay_ptr = delay;
    r.x.ax = 0xC000;
@@ -232,7 +230,7 @@ int init_tty (void) /*{{{*/
    if ((r.x.cflag == 0) && (r.h.al == 0))
      {
 	unsigned char *table;
-	
+
 	table = MK_FP(s.es, r.x.bx);
 	switch (table[2])
 	  {
@@ -241,20 +239,19 @@ int init_tty (void) /*{{{*/
 	   case 0xFB:		       /* xt */
 	   case 0xFD:		       /* pc-jr */
 	     break;
-	     
+
 	   /* AT and higher */
 	   default:
 	     delay_ptr = my_delay;
 	  }
      }
-   
-	
-   set_ctrl_break(0); 
+
+   set_ctrl_break(0);
    ctrlbrk(ctrl_break);
    init_int9_handler();
-   
+
    TTY_Initialized = 1;
-   
+
    if (Batch == 0)
      {
 	if (X_Open_Mouse_Hook != NULL) (*X_Open_Mouse_Hook) ();
@@ -289,7 +286,7 @@ unsigned char sys_getkey() /*{{{*/
    unsigned int i;
    unsigned char chbuf[16];
    int timeout;
-   
+
    timeout = 300;
    if (BIOSKEY(1) == 0) while (!sys_input_pending(&timeout, 0))
      {
@@ -304,10 +301,10 @@ unsigned char sys_getkey() /*{{{*/
    if (Input_Buffer_Len) return my_getkey ();
    if (JMouse_Hide_Mouse_Hook != NULL) (*JMouse_Hide_Mouse_Hook) (0);
 #endif
-   
+
    shift = *Shift_Ptr & 0xF;
    i = BIOSKEY(0);
-   
+
    i = jed_scan_to_key (i, shift, chbuf);
    while (i > 1)
      {
@@ -316,22 +313,21 @@ unsigned char sys_getkey() /*{{{*/
 	ch = chbuf[i];
 	ungetkey (&ch);
      }
-   
+
    return chbuf[0];
 }
 
 /*}}}*/
 
-
 /* sleep for *tsecs tenths of a sec waiting for input */
 int sys_input_pending(int *tsecs, int unused) /*{{{*/
 {
    int count = *tsecs * 5;
-   
+
    (void) unused;
-   
+
    if (Batch || Input_Buffer_Len) return(Input_Buffer_Len);
-   
+
    if (count)
      {
 	while (count > 0)
@@ -347,14 +343,14 @@ int sys_input_pending(int *tsecs, int unused) /*{{{*/
 	  }
 	return (count);
      }
-   
+
    if (BIOSKEY(1)
 #ifdef HAS_MOUSE
        || ((JMouse_Event_Hook != NULL)
 	   && ((*JMouse_Event_Hook)() > 0))
 #endif
        ) return 1;
-   
+
    return 0;
 }
 
@@ -371,7 +367,7 @@ int sys_chmod(SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *dum1, gi
 {
    int flag = 0, m = *mode;
    (void) dum1; (void) dum2;
-   
+
    file = msdos_pinhead_fix_dir (file);
 
    asm mov ah, 43h
@@ -384,7 +380,7 @@ int sys_chmod(SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *dum1, gi
    asm mov m, cx
    asm jnc L1
    asm mov flag, ax
-   
+
    /* Here if carry flag is set */
    if (flag == 0x2) return(0);     /* file not found */
    if (flag == 0x3) return(-2);
@@ -394,7 +390,7 @@ int sys_chmod(SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *dum1, gi
 	   msg_error(buf);
 	*/
    return(-1);
-    
+
    /* carry flag is 0 */
    L1:
    if (what == 0)
@@ -431,7 +427,7 @@ static Dos_DTA_Type Dos_DTA;
 static void set_dta (void) /*{{{*/
 {
    Dos_DTA_Type *dummy = &Dos_DTA;
-   
+
    asm mov ah, 0x1A
    asm push ds
    asm lds dx, dword ptr dummy
@@ -440,7 +436,6 @@ static void set_dta (void) /*{{{*/
 }
 
 /*}}}*/
-
 
 static int File_Attr;
 
@@ -477,19 +472,18 @@ int sys_findfirst(char *thefile) /*{{{*/
 {
    char *f, the_path[JED_MAX_PATH_LEN], *file, *f1;
    char *pat, *fudge;
-   
+
    set_dta();
    File_Attr = READON | SUBDIR;
 
    file = jed_standardize_filename_static(thefile);
    f1 = f = extract_file(file);
    strcpy (Found_Dir, file);
-   
-   
+
    Found_Dir[(int) (f - file)] = 0;
 
    strcpy(the_path, file);
-   
+
    while (*f1 && (*f1 != '*')) f1++;
    if (! *f1)
      {
@@ -497,27 +491,27 @@ int sys_findfirst(char *thefile) /*{{{*/
 	if (*f) strcat(the_path, "*"); else strcat(the_path, "*.*");
      }
    pat = the_path;
-   
-   /* Something is very wrong after this returns.  
-    * thefile gets trashed for some reason.  Here I fudge until I figure 
-    *  out what is going on 
-    * 
-    * Note: This has been fixed.  I am just too lazy to remove the fudge. 
+
+   /* Something is very wrong after this returns.
+    * thefile gets trashed for some reason.  Here I fudge until I figure
+    *  out what is going on
+    *
+    * Note: This has been fixed.  I am just too lazy to remove the fudge.
     */
    fudge = thefile;
-   
+
    asm mov ah, 0x4e
    asm mov cx, File_Attr
    asm push ds
    asm lds dx, dword ptr pat
    asm int 21h
    asm pop ds
-   asm jc L1 
-   
+   asm jc L1
+
    thefile = fudge;
-   
+
    /* fprintf(stderr, "asm:%lu\t|%s|\n", thefile, thefile); */
-   
+
    dta_fixup_name(file);
    strcpy(thefile, file);
    return(1);
@@ -539,5 +533,4 @@ int sys_findnext(char *file) /*{{{*/
 }
 
 /*}}}*/
-
 
