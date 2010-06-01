@@ -367,7 +367,7 @@ define c_bskip_over_comment (skip_pp)
 	     bol ();
 	     ifnot (bobp ())
 	       {
-		  if (skip_pp and looking_at_char ('#'))
+		  if (skip_pp && looking_at_char ('#') && (0 == parse_to_point()))
 		    {
 		       pop_mark_0 ();
 		       continue;

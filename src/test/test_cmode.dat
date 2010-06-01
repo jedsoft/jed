@@ -195,7 +195,11 @@ int main (int argc, char **argv)
    if (this_condition)
      if (that_condition)
        do_that ();
-   
+
+   fprintf (stdout, "\n\
+### This is a multiline string with a # char\n");
+   x = 1;
+
    switch (val)
      {
       case 0:

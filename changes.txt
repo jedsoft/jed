@@ -30,6 +30,8 @@ Changes since 0.99-19
     Olesen).
 12. src/*.c,h, lib/*.sl: Removed excess whitespace from files, and
     updated copyright year.
+13. lib/cmode.sl: Multiline line strings with # at the beginning of a
+    line were interpreted as preprocessor statements.
 
 
 {{{ Previous Versions 
