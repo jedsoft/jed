@@ -32,7 +32,13 @@ Changes since 0.99-19
     updated copyright year.
 13. lib/cmode.sl: Multiline line strings with # at the beginning of a
     line were interpreted as preprocessor statements.
-
+14. lib/site.sl: Removed old compatibility functions for 'strbytelen'
+    and 'any'.  Added list_to_array.
+15. lib/recentx.sl: A new version of the recent files cache that also
+    caches filenames by extension.
+16. lib/session.sl: New file that implements saving/restoring of
+    sessions (See lib/sessions.sl for limitations).
+17. lib/folding.sl: Removed some dead-code.
 
 {{{ Previous Versions 
 

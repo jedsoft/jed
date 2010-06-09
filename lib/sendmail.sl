@@ -255,6 +255,7 @@ define mail_format_buffer () %{{{
 
      }
 
+   define_blocal_var ("save_session", 0);
    push_spot ();
    run_mode_hooks("mail_hook");
    pop_spot ();

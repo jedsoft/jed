@@ -254,21 +254,25 @@ define str_replace_all (str, old, new)
 
 %{{{ Compatibility functions
 
-#ifnexists strbytelen
-define strbytelen (s)
+#ifnexists list_to_array
+define list_to_array ()
 {
-   return strlen (s);
-}
-define substrbytes (s, n, len)
-{
-   return substr (s, n, len);
-}
-#endif
-
-#ifnexists any
-define any (x)
-{
-   return length (where (x));
+   variable list, type;
+   if (_NARGS == 2)
+     (list, type) = ();
+   else
+     {
+	list = ();
+	type = typeof(list[0]);
+     }
+   variable n = length(list);
+   variable a = type[n];
+   _for (0, n-1, 1)
+     {
+	variable i = ();
+	a[i] = list[i];
+     }
+   return a;
 }
 #endif
 

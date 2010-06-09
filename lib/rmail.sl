@@ -93,6 +93,7 @@ define rmail_set_buffer_flags()
    setbuf_info(flags);
 
    () = set_buffer_umask (0077);
+   define_blocal_var ("save_session", 0);
 }
 
 define rmail_save_buffer_secure ()
@@ -775,6 +776,7 @@ define rmail_get_message(flag)
 
    if (ret != -1) return ret;
 
+   define_blocal_var ("save_session", 0);
    () = set_buffer_umask (077);
    set_readonly(0);
    widen();

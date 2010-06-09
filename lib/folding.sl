@@ -1,5 +1,4 @@
 % -*- mode: slang; mode: fold -*-
-_debug_info = 1;
 
 ifnot (is_defined ("Fold_Bob_Eob_Error_Action")) %{{{
 {
@@ -266,76 +265,6 @@ define fold_close_this_fold () %{{{
 }
 %}}}
 
-#iffalse
-define fold_close_fold () %{{{
-{
-   variable start, end, end_of_start, end_of_end;
-   variable beg_mark, end_mark, orig_mark;
-   variable not_in_a_fold = "Not in a fold.";
-   variable end_line;
-
-   (start, end, end_of_start, end_of_end) = fold_get_marks ();
-
-   orig_mark = create_user_mark ();
-
-   ERROR_BLOCK
-     {
-	goto_user_mark (orig_mark);
-     }
-
-   EXIT_BLOCK
-     {
-	fold_this_fold (start, end, end_of_start, end_of_end, 1, 1);
-	skip_hidden_lines_backward (1);
-     }
-
-   if (fold_is_marker_line (start, end_of_start))
-     {
-	ifnot (down_1())
-	  return;
-	is_line_hidden();
-	goto_user_mark (orig_mark);
-	ifnot (())
-	  return;
-     }
-
-   beg_mark = create_user_mark ();
-
-   if (fold_is_marker_line (end, end_of_end))
-     go_up_1 ();
-
-   end_mark = create_user_mark ();
-
-   forever
-     {
-	goto_user_mark (end_mark);
-
-	end_line = 0;
-
-	if (fold_find_marker_line_reverse (end, end_of_end, 0))
-	  {
-	     if (up_1 ())
-	       end_line = what_line ();
-
-	     move_user_mark (end_mark);
-	  }
-
-	goto_user_mark (beg_mark);
-
-	ifnot (up_1 ()) break;
-	if (fold_find_marker_line_reverse (start, end_of_start, 0))
-	  {
-	     if (not(end_line)
-		 or (what_line () > end_line))
-	       break;
-	     move_user_mark (beg_mark);
-	  }
-	else error (not_in_a_fold);
-     }
-}
-
-%}}}
-#else
 define fold_close_fold () %{{{
 {
    variable start, end, end_of_start, end_of_end;
@@ -393,7 +322,6 @@ define fold_close_fold () %{{{
    bol();
 }
 %}}}
-#endif
 
 private define fold_exit_fold_internal () %{{{
 {
