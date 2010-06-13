@@ -1558,6 +1558,86 @@ define rmail_output_to_folder()
    rmail_resequence_folder();
 }
 
+define rmail_output_deleted_to_folder ()
+{
+   variable folder = NULL, header, old_n, new_n, new_file, old_file;
+   variable old_folder = Rmail_Folder_Name;
+   variable buf, vis;
+
+   if (_NARGS)
+     folder = ();
+
+   variable new_dir, old_dir = dircat(Rmail_Directory, Rmail_Folder_Name);
+
+   if ((folder == NULL) || (0 == folder_exists (folder)))
+     folder = query_create_folder (Rmail_Last_Folder);
+
+   if (folder == NULL)
+     return;
+
+   new_dir = dircat(Rmail_Directory, folder);
+
+   push_spot ();
+
+   try
+     {
+	bob ();
+	while (bol_fsearch_char ('D'))
+	  {
+	     old_n = rmail_extract_file_number();
+	     ifnot (strlen(old_n))
+	       {
+		  eol();
+		  continue;
+	       }
+	     flush ("Moving ${old_n}"$);
+
+	     % lets get this header
+	     header = line_as_string ();
+	     rmail_find_folder (folder);
+	     %
+	     % generate a new filename
+	     %
+	     new_n = rmail_make_filename ();
+	     new_file = dircat(new_dir, new_n);
+	     old_file = dircat(old_dir, old_n);
+	     if (rename_file(old_file, new_file))
+	       throw OSError, "Unable to rename ${old_file} to ${new_file}"$;
+
+	     eob();
+	     insert(header);
+	     bol();
+	     go_right_1 ();
+	     push_mark();
+	     skip_white();
+	     skip_chars("0-9");
+	     del_region();
+	     vinsert ("%3s", new_n);
+	     Rmail_Last_Folder = folder;
+
+	     % Now narrow it so next routine can process it
+	     bob();
+	     () = bol_fsearch("\x1F\xC\n");
+	     go_down_1 ();
+	     push_mark_eob();
+	     narrow();
+
+	     rmail_select_folder(old_folder);
+	     set_readonly(0);
+	     bob();
+	     () = bol_fsearch(header);
+	     delete_line();
+	  }
+     }
+   finally:
+     {
+	rmail_select_folder(old_folder);
+	rmail_resequence_folder();
+	pop_spot ();
+     }
+}
+
+
 define rmail_unhide_deleted ()
 {
    push_spot ();
@@ -1619,6 +1699,22 @@ define rmail_xpunge_deletions ()
    rmail_resequence_folder ();
 }
 
+define rmail_xpunge_or_move_deletions ()
+{
+   variable rsp = get_mini_response ("X-punge, M-ove, or C-cancel deleted messages?");
+   rsp |= 0x20;
+   if (rsp == 'x')
+     {
+	rmail_xpunge_deletions ();
+	return;
+     }
+   if (rsp == 'm')
+     {
+	rmail_output_deleted_to_folder ();
+	return;
+     }
+}
+
 $1 = "Rmail-Read";
 ifnot (keymap_p($1))
 {
@@ -1645,8 +1741,8 @@ ifnot (keymap_p($1))
    definekey("rmail_scroll_forward", " ", $1);
    definekey("rmail_scroll_forward", "\r", $1);
    definekey("rmail_scroll_backward", "^?", $1);
-   definekey("rmail_xpunge_deletions", "x", $1);
-   definekey("rmail_xpunge_deletions", "X", $1);
+   definekey("rmail_xpunge_or_move_deletions", "x", $1);
+   definekey("rmail_xpunge_or_move_deletions", "X", $1);
    definekey("rmail_reply", "r", $1);
    definekey("rmail_reply", "R", $1);
    definekey("rmail_forward_message", "f", $1);
