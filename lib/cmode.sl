@@ -161,6 +161,20 @@ custom_variable ("C_Label_Indents_Relative", 0);
 %!%-
 custom_variable ("C_Label_Offset", 0);
 
+
+%!%+
+%\variable{C_Newline_Indent_Trim}
+%\synopsis{Controls trimming of whitespace before inserting a newline character}
+%\usage{C_Newline_Indent_Trim = 1;}
+%\description
+%  Calling the \sfun{newline_and_indent} more than once in succession
+%  can result in unwanted whitespace caused by auto indentation.  If
+%  this variable is non-zero, then whitespace around the current point
+%  is trimmed before the newline is inserted.
+%\seealso{newline, trim}
+%!%-
+custom_variable ("C_Newline_Indent_Trim", 1);
+
 define cmode_is_slang_mode ()
 {
    variable is_slang;
@@ -1148,6 +1162,17 @@ private define c_is_comment_example ()
 define c_newline_and_indent ()
 {
    variable notCcomment = "//";
+
+   EXIT_BLOCK
+     {
+	if (C_Newline_Indent_Trim)
+	  {
+	     push_spot ();
+	     go_up_1 ();	       %  at eol
+	     trim();
+	     pop_spot ();
+	  }
+     }
 
    if (bolp ())
      {
