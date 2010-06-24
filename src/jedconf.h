@@ -141,8 +141,8 @@
  */
 /* typedef int mode_t; */
 /* typedef int pid_t; */
-/* typedef int uid_t; */
-/* typedef int gid_t; */
+typedef int uid_t;
+typedef int gid_t;
 
 #ifdef _MSC_VER
 # define HAVE_DLOPEN 1
