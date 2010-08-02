@@ -47,7 +47,7 @@
    "lightgray"        "white"
    "default"
 #v-
- On most terminals, the values in the second column have no affect
+ On most terminals, the values in the second column have no effect
  when used as the background color.
 
  Using "default" as a foreground or background color instructs the

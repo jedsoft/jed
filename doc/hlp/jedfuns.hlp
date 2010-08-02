@@ -290,7 +290,7 @@ buffer_visible
 
         define find_buffer_in_window (buf)
         {
-           !if (buffer_visible (buf)) return 0;
+           ifnot (buffer_visible (buf)) return 0;
            pop2buf (buf);
            return 1;
         }
@@ -745,7 +745,7 @@ set_color
    "lightgray"        "white"
    "default"
 
- One most terminals, the values in the second column have no affect
+ On most terminals, the values in the second column have no effect
  when used as the background color.
 
  Using "default" as a foreground or background color instructs the
@@ -795,7 +795,7 @@ set_color
  If line attributes are available, then you may also specifiy the color
  of the hidden line indicator:
 
-  "..."         Hidden line indicator
+   "..."         Hidden line indicator
 
  The color of the menu objects may be specified via
 
@@ -2549,7 +2549,7 @@ input_pending
         define peek_key ()
         {
           variable ch;
-          !if (input_pending (0)) return -1;
+          ifnot (input_pending (0)) return -1;
           ch = getkey ();
           ungetkey (ch);
           return ch;
@@ -3829,8 +3829,8 @@ read_mini
         {
           variable str;
           str = read_mini ("Search for:", "", "");
-          !if (strlen (str)) return;
-          !if (fsearch (str))
+          ifnot (strlen (str)) return;
+          ifnot (fsearch (str))
              {
                push_mark (); bob ();
                if (fsearch (str)) pop_mark (0);

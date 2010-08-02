@@ -76,7 +76,27 @@ custom_variable ("Recentx_Cache_Exclude_Patterns", {});
 %  name with the extension ".tmp".
 %\notes
 % This variable is defined in \file{recentx.sl}.
-%\seealso{Recentx_Max_Files, Recentx_Cache_Filename, Recentx_Use_Cache}
+%\seealso{Recentx_Cache_Ext_Exclude_Patterns, Recentx_Max_Files, Recentx_Cache_Filename, Recentx_Use_Cache}
+%!%-
+
+custom_variable ("Recentx_Cache_Ext_Exclude_Patterns", {});
+%!%+
+%\variable{Recentx_Cache_Ext_Exclude_Patterns}
+%\synopsis{List of patterns used to exclude filename extensions from the recent-files-cache}
+%\usage{Recentx_Cache_Ext_Exclude_Patterns = \{...\};}
+%\description
+%  The value of this variable is a list of regular expressions such that
+%  if a filename extension matches any of the patterns, the file will be
+%  excluded from the recent-files-cache.
+%\example
+%#v+
+%   variable Recentx_Cache_Ext_Exclude_Patterns = {"~$", "^tmp$", "^[0-9]+"};
+%#v-
+%  This example excludes any file whose extension ends in \exmp{~}, or
+%  is \exmp{"tmp"}, or consists entirely of digits.
+%\notes
+% This variable is defined in \file{recentx.sl}.
+%\seealso{Recentx_Cache_Exclude_Patterns, Recentx_Cache_Filename, Recentx_Use_Cache}
 %!%-
 
 private variable Last_Sync_Time = 0;
@@ -108,9 +128,21 @@ private define get_recent_file_list_name ()
 
 private define add_file_to_database (name, time)
 {
-   foreach (Recentx_Cache_Exclude_Patterns)
+   variable ext = path_extname (name), pat;
+   ext = strtrim_beg (ext, ".");
+   if (strlen (ext)) foreach pat (Recentx_Cache_Ext_Exclude_Patterns)
      {
-	variable pat = ();
+	try
+	  {
+	     if (string_match (ext, pat, 1))
+	       return;
+	  }
+	catch AnyError:
+	  vmessage ("Exclude pattern may be bad: %S", pat);
+     }
+
+   foreach pat (Recentx_Cache_Exclude_Patterns)
+     {
 	try
 	  {
 	     if (string_match (name, pat, 1))
@@ -120,9 +152,7 @@ private define add_file_to_database (name, time)
 	  vmessage ("Exclude pattern may be bad: %S", pat);
      }
 
-   variable ext = path_extname (name);
-   if ((ext == "") || (ext == ".")) ext = ".(none)";
-   ext = ext[[1:]];
+   if (ext == "") ext = "(none)";
 
    ifnot (assoc_key_exists (Recentx_Cache, ext))
      Recentx_Cache[ext] = Assoc_Type[Long_Type];

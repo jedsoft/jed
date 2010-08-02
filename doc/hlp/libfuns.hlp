@@ -1,31 +1,3 @@
-bufed
-
- SYNOPSIS
-  bufed
-
- DESCRIPTION
- Mode designed to aid in navigating through multiple buffers
- patterned somewhat after dired.
-
- To invoke Bufed, do `M-x bufed' or bind to `C-x C-b' (emacs)
-
- `g'	Update the buffer listing.
-
- `k'	Kill the buffer described on the current line, like typing
- 	`M-x kill_buffer' and supplying that buffer name.
-
- `s'	Save the buffer described on the current line.
-
- `f', `SPC', `CR', `TAB'
- 	Visit the buffer described on the current line.
- 	`f' and `SPC' will create a new window if required.
- 	`CR' will use the current window.
- 	`TAB' will revert to a single window.
-
- `Q'	Quit bufed mode.
-
---------------------------------------------------------------
-
 save_buffers
 
  SYNOPSIS
@@ -76,6 +48,34 @@ save_buffer_as
 
  SEE ALSO
   save_buffer, write_buffer
+
+--------------------------------------------------------------
+
+bufed
+
+ SYNOPSIS
+  bufed
+
+ DESCRIPTION
+ Mode designed to aid in navigating through multiple buffers
+ patterned somewhat after dired.
+
+ To invoke Bufed, do `M-x bufed' or bind to `C-x C-b' (emacs)
+
+ `g'	Update the buffer listing.
+
+ `k'	Kill the buffer described on the current line, like typing
+ 	`M-x kill_buffer' and supplying that buffer name.
+
+ `s'	Save the buffer described on the current line.
+
+ `f', `SPC', `CR', `TAB'
+ 	Visit the buffer described on the current line.
+ 	`f' and `SPC' will create a new window if required.
+ 	`CR' will use the current window.
+ 	`TAB' will revert to a single window.
+
+ `Q'	Quit bufed mode.
 
 --------------------------------------------------------------
 
@@ -282,6 +282,25 @@ C_Label_Offset
 
  SEE ALSO
   C_Label_Indents_Relative, C_Colon_Offset
+
+--------------------------------------------------------------
+
+C_Newline_Indent_Trim
+
+ SYNOPSIS
+  Controls trimming of whitespace before inserting a newline character
+
+ USAGE
+  C_Newline_Indent_Trim = 1;
+
+ DESCRIPTION
+  Calling the `newline_and_indent' more than once in succession
+  can result in unwanted whitespace caused by auto indentation.  If
+  this variable is non-zero, then whitespace around the current point
+  is trimmed before the newline is inserted.
+
+ SEE ALSO
+  newline, trim
 
 --------------------------------------------------------------
 
@@ -1153,6 +1172,60 @@ expand_keystring
 
  SEE ALSO
   setkey
+
+--------------------------------------------------------------
+
+help_for_apropos
+
+ SYNOPSIS
+  Void help_for_apropos (String)
+
+ DESCRIPTION
+ find apropos context for a particular string
+
+ SEE ALSO
+  apropos, help_apropos
+
+--------------------------------------------------------------
+
+apropos
+
+ SYNOPSIS
+  Void apropos (Void)
+
+ DESCRIPTION
+ prompt for a string and find the apropos context
+
+ SEE ALSO
+  help_apropos, help_for_apropos
+
+--------------------------------------------------------------
+
+help_apropos
+
+ SYNOPSIS
+  Void help_apropos (Void)
+
+ DESCRIPTION
+ use either the marked region or else extract an alphanumeric keyword,
+ and then display S-Lang apropos context for this entry
+
+ SEE ALSO
+  apropos, help_slang, help_for_apropos
+
+--------------------------------------------------------------
+
+help_slang
+
+ SYNOPSIS
+  Void help_slang (Void)
+
+ DESCRIPTION
+ use either the marked region or else extract an alphanumeric keyword,
+ and then display S-Lang function/variable help
+
+ SEE ALSO
+  apropos, help_apropos, help_for_function
 
 --------------------------------------------------------------
 
@@ -2212,6 +2285,144 @@ python_mode
 
  SEE ALSO
   set_mode, c_mode
+
+--------------------------------------------------------------
+
+Recentx_Cache_Filename
+
+ SYNOPSIS
+  The name of the file used for the recent file cache
+
+ USAGE
+  Recentx_Cache_Filename = ".jedrecent";
+
+ DESCRIPTION
+ This value of this variable specifies the name of the cache file
+ used for recently accessed files.  If the filename is given
+ as a relative path, it will be taken as relative to value of the
+ Jed_Home_Directory variable, which typically coincides with the
+ users's HOME directory.
+
+ NOTES
+ This variable is defined in `recentx.sl'.
+
+ SEE ALSO
+  Recentx_Cache_Exclude_Patterns, Recentx_Max_Files, Recentx_Use_Cache
+
+--------------------------------------------------------------
+
+Recentx_Use_Cache
+
+ SYNOPSIS
+  Turn on/off caching of recent filenames
+
+ USAGE
+  Recentx_Use_Cache=1;
+
+ DESCRIPTION
+ If non-zero, the recent-filename-cache will be enabled.  Otherwise,
+ caching will be turned off.
+
+ NOTES
+ This variable is defined in `recentx.sl'.
+
+ SEE ALSO
+  Recentx_Cache_Exclude_Patterns, Recentx_Max_Files, Recentx_Cache_Filename
+
+--------------------------------------------------------------
+
+Recentx_Max_Files
+
+ SYNOPSIS
+  Set the maximum number of recent-files to cache per extension
+
+ USAGE
+  Recentx_Max_Files=15;
+
+ DESCRIPTION
+ The value of this variable specifies the maximum number of number of
+ files per extension to store in the recent-files-cache.  The maximum number
+ of filenames in the cache will be the product of the number of
+ extensions and the value of this variable.
+
+ NOTES
+ This variable is defined in `recentx.sl'.
+
+ SEE ALSO
+  Recentx_Cache_Exclude_Patterns, Recentx_Cache_Filename, Recentx_Use_Cache
+
+--------------------------------------------------------------
+
+Recentx_Cache_Exclude_Patterns
+
+ SYNOPSIS
+  List of patterns used to exclude filenames from the recent-files-cache
+
+ USAGE
+  Recentx_Cache_Exclude_Patterns = {...};
+
+ DESCRIPTION
+  The value of this variable is a list of regular expressions such that
+  if a pathname matches any of the patterns, the file will be
+  excluded from the recent-files-cache.
+
+ EXAMPLE
+
+   variable Recentx_Cache_Exclude_Patterns = {"^/tmp/", "\\.tmp$"};
+
+  This example excludes any file in the /tmp directory, or any file
+  name with the extension ".tmp".
+
+ NOTES
+ This variable is defined in `recentx.sl'.
+
+ SEE ALSO
+  Recentx_Cache_Ext_Exclude_Patterns, Recentx_Max_Files, Recentx_Cache_Filename, Recentx_Use_Cache
+
+--------------------------------------------------------------
+
+Recentx_Cache_Ext_Exclude_Patterns
+
+ SYNOPSIS
+  List of patterns used to exclude filename extensions from the recent-files-cache
+
+ USAGE
+  Recentx_Cache_Ext_Exclude_Patterns = {...};
+
+ DESCRIPTION
+  The value of this variable is a list of regular expressions such that
+  if a filename extension matches any of the patterns, the file will be
+  excluded from the recent-files-cache.
+
+ EXAMPLE
+
+   variable Recentx_Cache_Ext_Exclude_Patterns = {"~$", "^tmp$", "^[0-9]+"};
+
+  This example excludes any file whose extension ends in `~', or
+  is `"tmp"', or consists entirely of digits.
+
+ NOTES
+ This variable is defined in `recentx.sl'.
+
+ SEE ALSO
+  Recentx_Cache_Exclude_Patterns, Recentx_Cache_Filename, Recentx_Use_Cache
+
+--------------------------------------------------------------
+
+Session_Filename
+
+ SYNOPSIS
+  Name of the file where session information is saved
+
+ USAGE
+  Session_Filename = ".jedsession";
+
+ DESCRIPTION
+ The `Session_Filename' function specifies the name of the file
+ where session information is saved.  If the filename is a relative
+ one, then it will be regarded as relative to the startup directory.
+
+ SEE ALSO
 
 --------------------------------------------------------------
 
