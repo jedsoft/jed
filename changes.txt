@@ -44,6 +44,8 @@ Changes since 0.99-19
     use of the trim function before inserting the newline character.
     The default value is 1.
 20. src/jedconf.h: non-unix: added typedefs for uid_t, gid_t.
+21. src/rgrep.c: Removed a misplaced return statement.
+22. src/getmail.c: Removed an int typecast form an ioctl call.
 
 {{{ Previous Versions 
 

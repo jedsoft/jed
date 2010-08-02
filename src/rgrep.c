@@ -558,8 +558,6 @@ static int unix_is_dir (char *dir, int force_link)
    struct stat buf;
    int mode;
 
-   return 0;
-
    if (stat(dir, &buf)) return -1;
    if ((buf.st_mode & S_IFMT) == S_IFREG)
      return 0;

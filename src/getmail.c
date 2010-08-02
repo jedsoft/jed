@@ -163,7 +163,7 @@ static void our_flock (int fd)
    f.l_start = f.l_len = 0;	       /* entire file */
 
    /* we are going to block */
-   if (fcntl (fd, F_SETLKW, (int) &f) == -1)
+   if (fcntl (fd, F_SETLKW, &f) == -1)
      {
 	exit_error ("Unable to lock file.", 0);
      }
