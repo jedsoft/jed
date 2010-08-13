@@ -326,7 +326,7 @@ private define slmode_bskip_comment (skip_pp)
 
 	push_mark ();
 	bol ();
-	pop_mark (not(looking_at_char ('#')));
+	pop_mark (not(looking_at_char ('#') && (0 == parse_to_point())));
 
 	ifnot (bolp ()) return;
 	ifnot (left (1)) return;

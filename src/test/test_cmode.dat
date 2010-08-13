@@ -236,5 +236,11 @@ int main (int argc, char **argv)
      = bar;
    (bar)
      = foo;
+
+   () = fprintf (stdout, "\n\
+#foo\n\
+#bar\n\
+#baz\n",
+                 x,y,z);
 }
 

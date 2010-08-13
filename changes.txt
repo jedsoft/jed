@@ -51,7 +51,9 @@ Changes since 0.99-19
     the list.
 24. src/file.c: Small tweak to avoid an unused variable warning in the
     jed_file_is_readonly function.
-
+25. lib/cmode.sl: In slang mode, a multiline string containing a '#'
+    at the beginning of a line was being interpreted as a preprocessor
+    line.
 
 {{{ Previous Versions 
 
