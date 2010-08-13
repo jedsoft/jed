@@ -322,7 +322,6 @@ void jed_set_buffer_ctime (Buffer *b)
 int jed_file_is_readonly (char *file, int respect_perms)
 {
    int ro = 0;
-   struct stat st;
 
    if (respect_perms)
      {
@@ -330,6 +329,7 @@ int jed_file_is_readonly (char *file, int respect_perms)
 	 * is set, then consider it a writable candidate.
 	 */
 #if defined(S_IWGRP) && defined(S_IWOTH)
+	struct stat st;
 	if (0 == stat (file, &st))
 	  ro = (0 == (st.st_mode & (S_IWUSR|S_IWGRP|S_IWOTH)));
 #endif
