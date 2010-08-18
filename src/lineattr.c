@@ -5,15 +5,13 @@
  * You may distribute this file under the terms the GNU General Public
  * License.  See the file COPYING for more information.
  */
-#include <stdio.h>
-
 #include "config.h"
 #include "jed-feat.h"
 
 #if JED_HAS_LINE_ATTRIBUTES
 
 /*{{{ Include Files */
-
+#include <stdio.h>
 #include <slang.h>
 
 #include "jdmacros.h"

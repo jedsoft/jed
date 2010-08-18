@@ -11,6 +11,15 @@
 # include <stdlib.h>
 #endif
 
+#ifdef REAL_UNIX_SYSTEM
+/* Needed for dev_t and ino_t */
+# include <sys/types.h>
+# include <sys/stat.h>
+# ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+# endif
+#endif
+
 #include <slang.h>
 #include "jedlimit.h"
 

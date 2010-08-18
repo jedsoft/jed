@@ -59,6 +59,9 @@ Changes since 0.99-19
     structure.  Apparantly, if a file is on an automounted filesystem,
     the st_dev value could change.
 27. configure,config.hin,..., Use dev_t and ino_t if they exist.
+28. src/blocal.c,src/lineattr.h: stdio.h was included before config.h.
+    This caused a different size to be used for ino_t, which lead to
+    different values for sizeof(Buffer), resulting in a SEGV.
 
 {{{ Previous Versions 
 
