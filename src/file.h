@@ -40,7 +40,7 @@ extern void set_file_trans(int *);
 extern char *jed_expand_link(char *);
 
 #ifdef REAL_UNIX_SYSTEM
-extern int jed_get_inode_info (char *, int *, int *);
+extern int jed_get_inode_info (char *, dev_t *, ino_t *);
 extern int Jed_Backup_By_Copying;
 #endif
 #ifndef VMS

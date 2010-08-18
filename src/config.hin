@@ -94,6 +94,9 @@
 #undef uid_t
 #undef gid_t
 
+#undef HAVE_DEV_T
+#undef HAVE_INO_T
+
 #undef SIZEOF_SHORT
 #undef SIZEOF_INT
 #undef SIZEOF_LONG
@@ -113,6 +116,13 @@
 
 /* Undefine this to disable floating point support. */
 #define FLOAT_TYPE
+
+#ifndef HAVE_DEV_T
+typedef unsigned int dev_t;
+#endif
+#ifndef HAVE_INO_T
+typedef unsigned long ino_t;
+#endif
 
 #if defined(ultrix) && !defined(__GNUC__)
 # ifndef NO_PROTOTYPES

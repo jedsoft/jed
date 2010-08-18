@@ -143,6 +143,8 @@
 /* typedef int pid_t; */
 typedef int uid_t;
 typedef int gid_t;
+/* typedef unsigned int dev_t; */
+/* typedef unsigned long ino_t; */
 
 #ifdef _MSC_VER
 # define HAVE_DLOPEN 1

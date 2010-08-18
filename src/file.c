@@ -1707,11 +1707,20 @@ int file_changed_on_disk (Buffer *buf, char *dirfile) /*{{{*/
     * been renamed, etc...
     */
      {
-	int device, inode;
+	dev_t device;
+	ino_t inode;
 	(void) jed_get_inode_info (dirfile, &device, &inode);
-	if ((buf->device != -1) && (buf->inode != -1))
+	if ((buf->device != (dev_t)-1) && (buf->inode != (ino_t)-1))
 	  {
-	     if ((device != buf->device) || (inode != buf->inode))
+	     /* Looking up the inode could cause an automounter to remount the
+	      * filesystem with a different device id.  As a work-around,
+	      * simply ignore the device id.  Ideally we would want to do this
+	      * only if the device is a local one.
+	      * FIXME: The statvfs system call might be usefule here.
+	      */
+	     if (
+		 /* (device != buf->device) || */
+		 (inode != buf->inode))
 	       buf->flags |= FILE_MODIFIED;
 	  }
 	buf->device = device;
@@ -1858,7 +1867,7 @@ int read_file_pointer(int fp) /*{{{*/
 
 #ifdef REAL_UNIX_SYSTEM
 
-int jed_get_inode_info (char *dirfile, int *device, int *inode)
+int jed_get_inode_info (char *dirfile, dev_t *device, ino_t *inode)
 {
    struct stat st;
 

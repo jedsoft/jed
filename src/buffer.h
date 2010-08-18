@@ -177,8 +177,8 @@ struct _Buffer
    char *dirfile;		       /* dir+file sans link expansion */
    char *canonical_dirfile;	       /* canonical filename with expanded links */
 #ifdef REAL_UNIX_SYSTEM
-   int device;			       /* inode and device of canonical_dirfile */
-   int inode;
+   dev_t device;			       /* inode and device of canonical_dirfile */
+   ino_t inode;
 #endif
    int umask;
    unsigned int flags;	       /* flags  (autosave, etc...) */

@@ -54,6 +54,11 @@ Changes since 0.99-19
 25. lib/cmode.sl: In slang mode, a multiline string containing a '#'
     at the beginning of a line was being interpreted as a preprocessor
     line.
+26. src/file.c: When checking to see if a file has been modified on
+    disk (via rename, etc), do not use the st_dev field of the stat
+    structure.  Apparantly, if a file is on an automounted filesystem,
+    the st_dev value could change.
+27. configure,config.hin,..., Use dev_t and ino_t if they exist.
 
 {{{ Previous Versions 
 

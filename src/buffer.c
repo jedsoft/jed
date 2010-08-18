@@ -1273,13 +1273,14 @@ int switch_to_buffer(Buffer *buf) /*{{{*/
 #ifdef REAL_UNIX_SYSTEM
 static Buffer *find_file_buffer_via_inode (char *file)
 {
-   int device, inode;
+   dev_t device;
+   ino_t inode;
    Buffer *b;
 
    if (-1 == jed_get_inode_info (file, &device, &inode))
      return NULL;
 
-   if ((device == -1) || (inode == -1))
+   if ((device == (dev_t)-1) || (inode == (ino_t)-1))
      return NULL;
 
    b = CBuf;
