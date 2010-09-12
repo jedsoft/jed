@@ -62,6 +62,9 @@ Changes since 0.99-19
 28. src/blocal.c,src/lineattr.h: stdio.h was included before config.h.
     This caused a different size to be used for ino_t, which lead to
     different values for sizeof(Buffer), resulting in a SEGV.
+29. lib/cua.sl: Change the tab key binding from
+    "indent_region_or_line" to "cua_indent_region_or_line". (Manfred
+    Hanke)
 
 {{{ Previous Versions 
 

@@ -128,7 +128,7 @@ setkey("describe_variable", 	"^HV");
 setkey("where_is", 		"^HW");
 setkey("select_menubar", 	"^H?");
 
-setkey("indent_region_or_line", "^I");   % Key_Tab: indent_line
+setkey("cua_indent_region_or_line", "^I");   % Key_Tab: indent_line
 % setkey("self_insert_cmd", 	"^I");
 % setkey("",		   	"^J");   % Free!
 setkey("del_eol",		"^K");   % Kill line
