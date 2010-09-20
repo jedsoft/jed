@@ -1,5 +1,7 @@
 % This file contains jed's native keybindings.
 
+require ("keydefs");
+
 _Jed_Emulation = "jed";
 _Reserved_Key_Prefix = "\003";         %  ^C
 
@@ -109,31 +111,20 @@ setkey ("sys_spawn_cmd",	"^Z");
 setkey ("goto_match",		"^\\");
 setkey ("undo",			"^_");
 
-#ifndef IBMPC_SYSTEM
-setkey("bob",			"^K\eOA");
-setkey("bob",			"^K\e[A");
-setkey("eob",			"^K\eOB");
-setkey("eob",			"^K\e[B");
-setkey("scroll_left",		"^K\eOC");
-setkey("scroll_left",		"^K\e[C");
-setkey("scroll_right",		"^K\eOD");
-setkey("scroll_right",		"^K\e[D");
-setkey("next_wind_up",		"^W\e[A");
-setkey("next_wind_dn",		"^W\e[B");
-#else
-setkey("bob",			"^K^@H");
-setkey("bob",			"^K\eOx");
-setkey("bob",			"^K‡H");
-setkey("eob",			"^K^@P");
-setkey("eob",			"^K\eOr");
-setkey("eob",			"^K‡P");
-setkey("next_wind_up",		"^W^@H");
-setkey("next_wind_up",		"^W\eOx");
-setkey("next_wind_up",		"^W‡H");
-setkey("next_wind_dn",		"^W^@P");
-setkey("next_wind_dn",		"^W\eOr");
-setkey("next_wind_dn",		"^W‡P");
-#endif
+setkey("bob",			"^K"+Key_Up);
+setkey("bob",			"^K"+Key_Up);
+setkey("eob",			"^K"+Key_Down);
+setkey("eob",			"^K"+Key_Down);
+setkey("scroll_left",		"^K"+Key_Right);
+setkey("scroll_right",		"^K"+Key_Left);
+setkey("next_wind_up",		"^W"+Key_Up);
+setkey("next_wind_dn",		"^W"+Key_Down);
+setkey("page_down",		Key_PgDn);
+setkey("page_up",		Key_PgUp);
+setkey("beg_of_line",		Key_Home);
+setkey("end_of_line",		Key_End);
+setkey("delete_char_cmd",	Key_Del);
+setkey("toggle_overwrite",	Key_Ins);
 
 #ifdef UNIX
 setkey("compile_parse_errors",	"^(k1)");
