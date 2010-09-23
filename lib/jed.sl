@@ -122,7 +122,7 @@ setkey("next_wind_dn",		"^W"+Key_Down);
 setkey("page_down",		Key_PgDn);
 setkey("page_up",		Key_PgUp);
 setkey("beg_of_line",		Key_Home);
-setkey("end_of_line",		Key_End);
+setkey("eol_cmd",		Key_End);
 setkey("delete_char_cmd",	Key_Del);
 setkey("toggle_overwrite",	Key_Ins);
 

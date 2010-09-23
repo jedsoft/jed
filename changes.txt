@@ -66,6 +66,7 @@ Changes since 0.99-19
     "indent_region_or_line" to "cua_indent_region_or_line". (Manfred
     Hanke)
 30. lib/jed.sl: Used keydefs.sl to simplify the bindings.
+31. lib/jed.sl: Corrected the Key_End binding.
 
 {{{ Previous Versions 
 
