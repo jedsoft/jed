@@ -1061,6 +1061,10 @@ static int x_handle_harmless_events (XEvent *report) /*{{{*/
 	  update_cmd (&Number_One);
 	break;
 
+      case MappingNotify:
+	XRefreshKeyboardMapping (&report->xmapping);
+	break;
+
       default:
 	if (Debug_Xjed)
 	  fprintf(stderr, "harmless: %d\n", report->type);
