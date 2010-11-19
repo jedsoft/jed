@@ -886,6 +886,7 @@ _autoload("reg_insert_register",	"register",
 	  "xform_region",		"xformreg",
 	  "require",			"require",
 	  "provide",			"require",
+	  "make_mode",			"makemode",
 
 	  (_stkdepth () - $0) / 2);	       %  matches start of _autoload
 

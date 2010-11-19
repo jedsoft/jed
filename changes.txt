@@ -72,6 +72,8 @@ Changes since 0.99-19
     of functions to call to set the mode of the buffer.  Each function
     in the list will get called with two arguments: the basename of
     the file and the filename extension.
+34. lib/makemode.sl: make.sl from the jed-modes repository with some
+    minor integration changes (Francesc Rocher)
 
 {{{ Previous Versions 
 

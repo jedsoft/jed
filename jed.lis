@@ -184,6 +184,7 @@
 @lib/ltx-comp.dat
 @lib/ltx-math.sl
 @lib/mail.sl
+@lib/makemode.sl
 @lib/man.sl
 @lib/maple.sl
 @lib/menu.sl
