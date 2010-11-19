@@ -68,6 +68,10 @@ Changes since 0.99-19
 30. lib/jed.sl: Used keydefs.sl to simplify the bindings.
 31. lib/jed.sl: Corrected the Key_End binding.
 32. src/xterm.c: MappingNotify events were not being handled.
+33. lib/site.sl: New variable: Mode_Hook_Pointer_List.  This is a list
+    of functions to call to set the mode of the buffer.  Each function
+    in the list will get called with two arguments: the basename of
+    the file and the filename extension.
 
 {{{ Previous Versions 
 

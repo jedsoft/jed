@@ -1,4 +1,3 @@
-
 This file documents the various hooks for extending JED.
 
 A `hook' is simply a user defined S-Lang function that may be used to extend
@@ -18,7 +17,7 @@ basis.  These hooks are associated with the current buffer via the
 function `set_buffer_hook'.  The syntax for this function is
 
     set_buffer_hook (name_of_hook, &hook_function);
-    
+
 Here name_of_hook is a string that indicates the name of the hook that
 is being set.  The second argument, `hook_function' specifies the
 S-Lang function to be associated with the hook.  The calling syntax of
@@ -33,7 +32,7 @@ The following buffer-local hooks are supported:
     return 1 if the current line is the beginning or end of a
     paragraph, or 0 otherwise.  If this hook has not been defined, the
     global hook is_paragraph_separator will be called.
-    
+
  "mark_paragraph_hook"
     If this hook exists, it will be used to mark the paragraph that is
     about to be formatted.  It should place a mark at the beginning of
@@ -63,7 +62,7 @@ The following buffer-local hooks are supported:
 	  push_spot ();
 	  go_up(1); bol (); skip_white ();
 	  variable p = what_column ();
-	  skip_chars ("0-9"); 
+	  skip_chars ("0-9");
 	  if ((p != what_column ()) and looking_at (". "))
 	    {
 	       go_right (1);
@@ -76,12 +75,12 @@ The following buffer-local hooks are supported:
        }
 
     and then declared as the wrap-hook in text mode:
-    
+
        define text_mode_hook ()
        {
           set_buffer_hook ("wrap_hook", &text_mode_wrap_hook);
        }
-       
+
     Note that if a buffer has been assigned a "wrap_hook", the value
     of the WRAP_INDENTS variable will be ignored for the buffer.
 
@@ -108,7 +107,7 @@ The following buffer-local hooks are supported:
                         1  next_line_cmd
                         2  next_char_cmd
                         3  page_down
-     
+
      The hook returns nothing.
 
  "mouse_down", "mouse_up", "mouse_drag", "mouse_2click", "mouse_3click"
@@ -123,7 +122,7 @@ The following buffer-local hooks are supported:
 S-Lang Hooks
 ===========================================================================
 
-This type of hook is called from another S-Lang function. 
+This type of hook is called from another S-Lang function.
 The most common hook of this class is a mode-hook, e.g., c_mode_hook.
 
 *_mode_hook
@@ -142,7 +141,7 @@ the simpler `newline' function.  Defining a c_mode_hook easily permits
 this customization:
 
      define c_mode_hook ()
-     {  
+     {
          local_setkey ("newline", "\r");
      }
 
@@ -180,7 +179,6 @@ keybindings, e.g., "emacs", "ide", etc:
 	    setkey ("dabbrev", "^A");
 	 }
     }
-
 
 ===========================================================================
 			    Internal Hooks
@@ -225,17 +223,17 @@ default value of `mode_hook' looks like:
 	      .
 	      .
 	   }
-       
+
 One could simply point `Mode_Hook_Pointer' to something like:
-       
+
            define set_no_mode (ext)
 	   {
 	      return 1;
 	   }
 	   Mode_Hook_Pointer = &set_no_mode;
-	   
+
 Typically, one would do something useful like:
-       
+
           define my_mode_hook (ext)
 	  {
 	     if (strcmp ("pas", ext)) return 0;
@@ -243,7 +241,7 @@ Typically, one would do something useful like:
 	     return 1;
 	  }
 	  Mode_Hook_Pointer = &my_mode_hook;
-	  
+
 Here `my_pascal_mode' is a hypothetical pascal mode.
 
 As another example of the `mode_hook', consider the case where one
@@ -267,6 +265,26 @@ function to set the mode if a suitable mode was not obtained from the
 extension.  By default, it has the value:
 
            Default_Mode = &text_mode;
+
+**** Update for version 0.99.20:
+
+  Mode_Hook_Pointer_List may be set to a list of functions to call to
+  set the mode for a buffer.  Each function in the list will get
+  called with the basename of the file associated with the buffer and
+  the filename extension.  Each function in the list is called in turn
+  until one returns a non-zero value. Using this method, the previous
+  example can be written as:
+
+      private define my_mode_setting_hook (base, ext)
+      {
+         if (path_basename_sans_extname (base) == "snd")
+	   {
+	      text_mode ();
+	      return 1;
+	   }
+	 return 0;
+      }
+      list_append (Mode_Hook_Pointer_List, &my_mode_setting_hook;
 
 format_paragraph_hook
 ---------------------
@@ -299,7 +317,6 @@ reduces to:
 which is useful for TeX mode.  The hook must return a non-zero value
 if the current line is a paragraph delimiter or zero if it is not.
 
-
 command_line_hook
 -----------------
 
@@ -323,7 +340,7 @@ _jed_startup_hooks
   This set of hooks are called just prior to entering the main editor
   loop of the editor.  All the hooks in the chain are called.  Each
   hook takes no arguments and should return no values.
-  An example of the hook is provided in site.sl.  
+  An example of the hook is provided in site.sl.
 
 _jed_exit_hooks
 ---------------
@@ -341,9 +358,9 @@ _jed_exit_hooks
         private define my_exit_hook ()
 	{
 	   variable ch;
-	   
+
 	   if (BATCH) return 1;
-	   
+
 	   ch = get_mini_response ("Really Exit?");
 	   if ((ch == 'y') or (ch == 'Y'))
 	     return 1;
@@ -357,12 +374,12 @@ _jed_quit_hooks
    The hooks in this list are called by the `quit_jed' function.
    Each hook in this list takes no arguments and returns no value.
    All hooks in the list are executed.
-   
+
    For systems such as MSDOS or VMS that do not have a separate
    working directory for each process, it might be desirable to ensure
    that the editor exit in the same directory in which it started.
    The following quit-hook may be used to implement this:
-       
+
           define my_quit_hook ()
 	  {
 	     variable dir;
@@ -380,7 +397,7 @@ _jed_suspend_hooks
    which causes the editor to be suspended on Unix, or spawn a
    subprocess on other systems.  They are called prior to the
    suspension action and if any hook returns less than or equal to
-   zero, suspension will not take place.   
+   zero, suspension will not take place.
 
 _jed_resume_hooks
 -----------------
@@ -388,14 +405,13 @@ _jed_resume_hooks
    All the hooks in the _jed_resume_hooks list are called after
    returning from a suspension state.  Hooks in this list take no
    arguments and return no values.  A silly example of this hook is:
-   
+
        private define my_resume_hook ()
        {
           message ("Welcome back to JED");
        }
        add_to_hook ("_jed_resume_hooks", &my_resume_hook);
 
-  
 _jed_init_display_hooks, _jed_reset_display_hooks
 --------------------------------------------------
 
@@ -464,13 +480,12 @@ _jed_write_region_hooks, _jed_append_region_hooks
 
 _jed_set_mode_hooks
 --------------------
-   
+
   These hooks are called before `mode_hook' is called to set the
   buffer's mode.  Like `mode_hook', the filename extension is passed
   to the hooks in this list.  If one of the hooks returns 1, the the
   mode is considered to be set.  If none of the hooks return 1, then
   mode_hook will be called to set the mode.
-
 
 _jed_switch_active_buffer_hooks
 -------------------------------
@@ -488,7 +503,7 @@ _jed_switch_active_buffer_hooks
 
   Functions in this list take a single argument: the name of the
   previously active buffer.  No value should be returned.
-  
+
   The following example shows how this hook may be used to set the
   name of the Xjed window to that of the currently active buffer.
 
@@ -498,7 +513,6 @@ _jed_switch_active_buffer_hooks
      }
      add_to_hook ("_jed_switch_active_buffer_hooks", &my_switch_buffer_hook);
 
-
 _jed_before_key_hooks
 ---------------------
 
@@ -507,9 +521,8 @@ _jed_before_key_hooks
   representing the function to be executed, and return no value.  The
   value representing the key function may be either a string giving
   the name of the function or as a reference via a Ref_Type object.
-  
-      define before_key_hook (fun) {...}
 
+      define before_key_hook (fun) {...}
 
 _jed_after_key_hooks
 ---------------------

@@ -1725,10 +1725,49 @@ define _function_return_1 () {1;}
 %\variable{Mode_Hook_Pointer}
 %\synopsis{Mode_Hook_Pointer}
 %\description
-% called from mode_hook.  Returns 0 if it is desired that control return
-% to mode_hook or 1 if mode hook should exit after calling mode_hook_ptr
+% This is a reference to a function that is called from mode_hook.
+% If the function returns non-zero, then the mode is assumed to have
+% been set.  Otherwise, a non-zero value is returned meaning that the
+% function did not set the mode.
 %!%-
 variable Mode_Hook_Pointer = &_function_pop_0;
+
+
+%!%+
+%\function{Mode_Hook_Pointer_List}
+%\synopsis{A list of functions to call to set the mode for a buffer}
+%\usage{list_append (Mode_Hook_Pointer_List, &my_func)}
+%\description
+% The value of this variable is a list of functions to be called to
+% set the mode of a buffer.  Each function in the list will be called
+% with two parameters: The base filename of the buffer and the
+% extension.  If the function sets the mode of the buffer, then it
+% must return 1.  Otherwise, the function must return 0 indicating
+% that it did not set the mode of the buffer.
+%\example
+%#v+
+% private define my_mode_setting_hook (base, ext)
+% {
+%    if ((base == "README") || (base == "NOTES")
+%      {
+%         text_mode ();
+%         return 1;
+%      }
+%    if ((base == "Makefile") || (ext == ".mak"))
+%      {
+%         make_mode ();
+%         return 1;
+%      }
+%    return 0;
+% }
+%#v-
+% list_append (Mode_Hook_Pointer_List, &my_mode_setting_hook);
+%\notes
+%  The functions in this list get called AFTER searching for the mode
+%  tag embedded in the file itself.
+%\seealso{add_mode_for_extension}
+%!%-
+variable Mode_Hook_Pointer_List = {};
 
 variable Default_Mode = &text_mode;
 
@@ -1882,9 +1921,19 @@ define mode_hook (ext)
      }
 #endif
 
-   if (@Mode_Hook_Pointer(ext)) return;
+   if ((Mode_Hook_Pointer != NULL)
+       && (@Mode_Hook_Pointer(ext)))
+     return;
 
    if (modeline_hook ()) return;
+
+   variable base = path_basename (buffer_filename ());
+   variable func;
+   foreach func (Mode_Hook_Pointer_List)
+     {
+	if ((@func)(base, ext))
+	  return;
+     }
 
    n = is_list_element (Mode_List_Exts, ext, ',');
 
@@ -1906,7 +1955,7 @@ define mode_hook (ext)
 	return;
      }
 
-   ifnot (strncmp (strup (extract_filename (buffer_filename ())), "READ", 4))
+   if (0 == strncmp (strup (base), "READ", 4))
      {
 	text_mode ();
 	return;
