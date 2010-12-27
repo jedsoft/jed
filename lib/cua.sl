@@ -83,8 +83,8 @@ setkey("beg_of_buffer",                    Key_Ctrl_Home);
 setkey("eob; recenter(window_info('r'));", Key_Ctrl_End);
 setkey("bskip_word",                       Key_Ctrl_Left);
 setkey("skip_word",                        Key_Ctrl_Right);
-setkey("forward_paragraph",                Key_Ctrl_Up);
-setkey("backward_paragraph",               Key_Ctrl_Down);
+setkey("forward_paragraph",                Key_Ctrl_Down);
+setkey("backward_paragraph",               Key_Ctrl_Up);
 %setkey("pop_mark(0)",                     Key_Ctrl_Up);
 %setkey("push_mark",                       Key_Ctrl_Down);  % define region
 

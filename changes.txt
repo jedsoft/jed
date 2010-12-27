@@ -74,6 +74,8 @@ Changes since 0.99-19
     the file and the filename extension.
 34. lib/makemode.sl: make.sl from the jed-modes repository with some
     minor integration changes (Francesc Rocher)
+35. lib/cua.sl: Keys for forward/backward_paragraph were swapped
+    (Daniel Carrera).
 
 {{{ Previous Versions 
 
