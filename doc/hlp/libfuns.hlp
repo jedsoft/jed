@@ -2631,7 +2631,7 @@ custom_variable
   custom_variable
 
  USAGE
-  Integer_Type custom_variable (String_Type name, Any_Type value)
+  custom_variable (String_Type name, Any_Type value)
 
  DESCRIPTION
  This function is used to create a new public global variable called
@@ -2641,14 +2641,6 @@ custom_variable
  variables. These variables can be defined and initialized by users
  before evaluating the file, or can be defined and initialized to
  a default value in a file using this function.
-
- This function returns 2 if the variable `name' has been defined and
- initialized, or 1 if it has only been intialized. If the variable
- `name' has already been defined and initialized, this function does
- nothing and returns 0. If `name' is an invalid variable name, this
- function does nothing and returns -1.
-
- This function should be only used by slang programmers, not users.
 
  SEE ALSO
   custom_color

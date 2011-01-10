@@ -1,3 +1,14 @@
+NOTE: This document was written with version 1 of the S-Lang
+      interpreter in mind.  However, version 2 has several levels of
+      optimization that obsolete some of the recommendations given
+      here. For example, recent versions of the interpreter execute
+      the "naive" version of the Fibonicci function faster than the
+      "optimized" version given below.  Rather, the user is urged to
+      write clean code and make use of the S-Lang profiler when
+      performance matters.
+
+==========================================================================
+
 This document provides some tips for writing better and more efficient
 S-Lang code.  It is not meant to be a tutorial on S-Lang.
 
@@ -96,10 +107,10 @@ Writing Fast Routines
        return fib(n) + fib (n - 1);
 
    Actually, we can do better than that.  We can write `n - 1' which
-   executes in 3 units to the equivalent expression `n--, n' that executes
-   in 2 units to produce:
+   executes in 3 units to the equivalent comma expression `(n--, n)'
+   that executes in 2 units to produce:
 
-      return fib (n) + fib (n--, n);
+      return fib (n) + fib ( (n--, n) );
 
    Here the fact that `n--' does not affect the stack makes this possible.
    Finally, we are left with:
@@ -108,7 +119,7 @@ Writing Fast Routines
       {
         ifnot (n) return 0;
 	n--; ifnot (n) return 1;
-	return fib(n) + fib (n--, n);
+	return fib(n) + fib ( (n--, n) );
       }
 
    Simply counting tokens (if, ifnot, fib, n, ==, 1, -, etc...) shows that the

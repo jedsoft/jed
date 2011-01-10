@@ -186,7 +186,7 @@ variable LAST_SEARCH = Null_String;
 %!%+
 %\function{custom_variable}
 %\synopsis{custom_variable}
-%\usage{Integer_Type custom_variable (String_Type name, Any_Type value)}
+%\usage{custom_variable (String_Type name, Any_Type value)}
 %\description
 % This function is used to create a new public global variable called
 % \var{name}, initialized to \var{value}, unless it exists. If the variable
@@ -195,14 +195,6 @@ variable LAST_SEARCH = Null_String;
 % variables. These variables can be defined and initialized by users
 % before evaluating the file, or can be defined and initialized to
 % a default value in a file using this function.
-%
-% This function returns 2 if the variable \var{name} has been defined and
-% initialized, or 1 if it has only been intialized. If the variable
-% \var{name} has already been defined and initialized, this function does
-% nothing and returns 0. If \var{name} is an invalid variable name, this
-% function does nothing and returns -1.
-%
-% This function should be only used by slang programmers, not users.
 %\seealso{custom_color}
 %!%-
 public define custom_variable (name, value)

@@ -76,6 +76,10 @@ Changes since 0.99-19
     minor integration changes (Francesc Rocher)
 35. lib/cua.sl: Keys for forward/backward_paragraph were swapped
     (Daniel Carrera).
+36. lib/site.sl: Doc for custom_variable updated (Manfred Hanke).
+37. doc/txt/program.txt: Manfred noted that recent versions of the
+    interpreter do not permit an unparenthesised comma expression in
+    an argument list.
 
 {{{ Previous Versions 
 
