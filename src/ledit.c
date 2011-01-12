@@ -980,7 +980,10 @@ static char *read_file_from_minibuffer(char *prompt, char *def, char *stuff) /*{
 	stuff = CBuf->dir;
      }
 
-   if (NULL == (file = read_from_minibuffer (prompt, def, stuff, &n)))
+   file = read_from_minibuffer (prompt, def, stuff, &n);
+   complete_next = complete_open = NULL;
+
+   if (file == NULL)
      return NULL;
 
    if (File_Expansion_Happened)
@@ -1062,9 +1065,11 @@ void read_object_with_completion(char *prompt, char *dflt, char *stuff, int *typ
      }
    else if (type == 's')
      {
+	if (-1 == SLpop_string (&str))
+	  return;
+
 	complete_open = open_string_list;
 	complete_next = next_string_list;
-	if (SLpop_string (&str)) return;
 	String_Completion_Str = str;
      }
    else
@@ -1081,6 +1086,8 @@ void read_object_with_completion(char *prompt, char *dflt, char *stuff, int *typ
 	SLfree(tmp);
 	if (str != NULL) SLfree (str);
      }
+
+   complete_next = complete_open = NULL;
 }
 
 /*}}}*/
@@ -1169,7 +1176,7 @@ static void get_last_buffer(void) /*{{{*/
 
 /*}}}*/
 
-int get_buffer() /*{{{*/
+int get_buffer (void) /*{{{*/
 {
    char *tmp;
    int n;
@@ -1178,10 +1185,15 @@ int get_buffer() /*{{{*/
 
    get_last_buffer ();
 
-   if (NULL == (tmp = read_from_minibuffer("Switch to buffer:", Last_Buffer->name, NULL, &n))) return(0);
+   tmp = read_from_minibuffer("Switch to buffer:", Last_Buffer->name, NULL, &n);
+   complete_next = complete_open = NULL;
+
+   if (tmp == NULL)
+     return 0;
+
    switch_to_buffer_cmd(tmp);
    SLfree(tmp);
-   return(1);
+   return 1;
 }
 
 /*}}}*/
@@ -1194,6 +1206,8 @@ int kill_buffer (void) /*{{{*/
    complete_open = open_bufflist;
    complete_next = next_bufflist;
    tmp = read_from_minibuffer("Kill buffer:", (char *) CBuf->name, NULL, &n);
+   complete_next = complete_open = NULL;
+
    if (tmp != NULL)
      {
 #if JED_HAS_SUBPROCESSES
@@ -1672,7 +1686,12 @@ int mini_complete (void) /*{{{*/
    int n, last_key_char = SLang_Last_Key_Char;
    static int flag = 0;  /* when flag goes 0, we call open */
 
-   if (complete_open == NULL) return ins_char_cmd();
+   if (complete_open == NULL)
+     {
+	if (CBuf != MiniBuffer)
+	  return 0;
+	return ins_char_cmd();
+     }
 
    bol ();
    jed_push_mark();

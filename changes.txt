@@ -80,6 +80,7 @@ Changes since 0.99-19
 37. doc/txt/program.txt: Manfred noted that recent versions of the
     interpreter do not permit an unparenthesised comma expression in
     an argument list.
+38. src/ledit.c: `M-x mini_complete' was producing an infinite loop.
 
 {{{ Previous Versions 
 
