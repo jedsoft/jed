@@ -81,6 +81,8 @@ Changes since 0.99-19
     interpreter do not permit an unparenthesised comma expression in
     an argument list.
 38. src/ledit.c: `M-x mini_complete' was producing an infinite loop.
+39. src/ledit.c: Remove trailing "?" from end of jed_get_yes_no
+    prompts (Joerg Sommer).
 
 {{{ Previous Versions 
 

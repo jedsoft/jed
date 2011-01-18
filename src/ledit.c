@@ -341,27 +341,27 @@ int jed_save_buffer_to_file (char *dir, char *file)
 	     break;
 
 	   case BUFFER_MODIFIED:
-	     prompt = "File changed on disk.  Save anyway?";
+	     prompt = "File changed on disk.  Save anyway";
 	     break;
 
 	   case READ_ONLY:
-	     prompt = "No permission to write to file.  Try to save anyway?";
+	     prompt = "No permission to write to file.  Try to save anyway";
 	     break;
 
 	   case BUFFER_MODIFIED|READ_ONLY:
-	     prompt = "File changed on disk and no permission to write.  Save anyway?";
+	     prompt = "File changed on disk and no permission to write.  Save anyway";
 	     break;
 
 	   case BUFFER_MODIFIED|OVERWRITE_MODE:
-	     prompt = "File exists and changed on disk.  Overwrite?";
+	     prompt = "File exists and changed on disk.  Overwrite";
 	     break;
 
 	   case READ_ONLY|OVERWRITE_MODE:
-	     prompt = "File exists and no permission to write.  Try to overwrite anyway?";
+	     prompt = "File exists and no permission to write.  Try to overwrite anyway";
 	     break;
 
 	   case READ_ONLY|OVERWRITE_MODE|BUFFER_MODIFIED:
-	     prompt = "File changed on disk and no permission to write.  Overwrite anyway?";
+	     prompt = "File changed on disk and no permission to write.  Overwrite anyway";
 	     break;
 	  }
 
