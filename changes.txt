@@ -84,6 +84,8 @@ Changes since 0.99-19
 39. src/ledit.c: Remove trailing "?" from end of jed_get_yes_no
     prompts (Joerg Sommer).
 40. lib/comments.sl: Added an entry for make_mode (Manfred Hanke).
+41. lib/latex.sl: Under some conditions, latex_indent_calculate_last
+    would loop forever (Manfred Hanke).
 
 {{{ Previous Versions 
 

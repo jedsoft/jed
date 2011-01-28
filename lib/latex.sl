@@ -651,9 +651,10 @@ define latex_indent_calculate_last ()
    % ignore comments
    do
      {
-	go_up_1 (); bol_skip_white();
+	ifnot (up_1 ()) return 0;
+	bol_skip_white();
      }
-   while (looking_at_char ('%') and not(bobp()));
+   while (looking_at_char ('%') && not(bobp()));
 
    if (looking_at("\\begin{document}")) return current_indentation();
 
