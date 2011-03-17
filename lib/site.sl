@@ -1807,9 +1807,9 @@ define modeline_hook()
 
 	ifnot (is_defined (mode + "_mode"))
 	  {
-	     if (is_list_element ("bash,ksh,ash,zsh,csh", mode, ','))
+	     if (is_list_element ("bash,ksh,ash,zsh,csh,tcsh", mode, ','))
 	       mode = "sh";
-	     else if (is_list_element ("slsh,jdl,jed-script,jdl-script", mode, ','))
+	     else if (is_list_element ("slsh,jed-script,isis-script,isis", mode, ','))
 	       mode = "slang";
 	  }
      }

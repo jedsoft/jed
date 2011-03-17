@@ -86,6 +86,7 @@ Changes since 0.99-19
 40. lib/comments.sl: Added an entry for make_mode (Manfred Hanke).
 41. lib/latex.sl: Under some conditions, latex_indent_calculate_last
     would loop forever (Manfred Hanke).
+42. lib/site.sl: add support for tcsh to modeline_hook. (Manfred Hanke)
 
 {{{ Previous Versions 
 
