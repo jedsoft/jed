@@ -63,10 +63,10 @@ define strncat (n)
    create_delimited_string (n);
 }
 
-define info_mode ()
-{
-   info_reader ();
-}
+% define info_mode ()
+% {
+%    info_reader ();
+% }
 
 % These are function to archive backward compatibiliy and give third
 % party mode time to migrate to slang load path.

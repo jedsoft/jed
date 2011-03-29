@@ -1,8 +1,8 @@
 README file for JED.
 
  JED is distributed in two forms:
- 
-     jedXXX.tar.gz: 
+
+     jedXXX.tar.gz:
        Contains the complete source to the editor.  It does not
        contain the slang library source.  The library is available
        from ftp://space.mit.edu/pub/davis/slang.
@@ -28,7 +28,7 @@ README file for JED.
       Unix:
         read INSTALL.unx
 
-      VMS: 
+      VMS:
         read INSTALL.vms
 
       DOS, OS/2, Win9X, NT:
@@ -39,7 +39,7 @@ README file for JED.
 
  Addition information about JED is available from
  <http://www.jedsoft.org/jed/>  The documentation for the
- slang library and interpreter is available from <http://www.s-lang.org>
+ slang library and interpreter is available from <http://www.jedsoft.org/slang/>
  and <http://www.jedsoft.org/slang/>.  Useful newsgroups include
  comp.editors and alt.lang.s-lang.  A mailing list is also available.
  See <http://www.jedsoft.org/jed/mailinglists.html> for more information

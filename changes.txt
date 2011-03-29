@@ -87,6 +87,8 @@ Changes since 0.99-19
 41. lib/latex.sl: Under some conditions, latex_indent_calculate_last
     would loop forever (Manfred Hanke).
 42. lib/site.sl: add support for tcsh to modeline_hook. (Manfred Hanke)
+43. lib/site.sl: Removed info_mode as an alias of info_reader.  This
+    allows jed to read foo.info without invoking info_reader.
 
 {{{ Previous Versions 
 

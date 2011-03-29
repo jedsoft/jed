@@ -836,7 +836,7 @@ _autoload("mode_get_mode_info",		"modeinfo",
 	  % Compatibility functions
 	  "create_array",		"compat",
 	  "strncat",			"compat",
-	  "info_mode",			"compat",
+	  %"info_mode",			"compat",
 	  "get_jed_library_path",	"compat",
 	  "set_jed_library_path",	"compat",
 
