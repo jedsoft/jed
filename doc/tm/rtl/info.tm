@@ -90,7 +90,7 @@
 #v-
   has the effect of replacing all underscore characters on the current
   line with a backslash-underscore combination.
-\seealso{looking_at}
+\seealso{looking_at, blooking_at}
 \done
 
 \function{what_column}

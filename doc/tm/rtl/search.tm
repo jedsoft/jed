@@ -43,6 +43,20 @@
 \seealso{CASE_SEARCH}
 \done
 
+
+\function{blooking_at}
+\synopsis{Test if the characters immediately preceding the point match a string}
+\usage{Int_Type blooking_at (String_Type str)}
+\description
+  This function returns non-zero if the characters immediately preceding
+  the current editing point match the string specified by \exmp{str}.  Whether
+  the match is case-sensitive or not depends upon the value of the
+  variable \var{CASE_SEARCH}.  The function returns a non-zero value
+  if there is a match; otherwise zero will be returned to indicated no
+  match.
+\seealso{ffind, fsearch, re_fsearch, bfind, looking_at, re_looking_at}
+\done
+
 \function{bol_bsearch}
 \synopsis{Search backward for "str" at the beginning of a line}
 \usage{Integer bol_bsearch (str)}

@@ -2,7 +2,7 @@
 \synopsis{Add a newline to a buffer when saving}
 \usage{Int_Type ADD_NEWLINE}
 \description
-  If the value of \var{ADD_NEWLINE} is non-zero and the buffer if the
+  If the value of \var{ADD_NEWLINE} is non-zero and the
   buffer does not end with a newline character, a newline character
   will be silently added to the end of a buffer when the buffer is
   written out to a file.

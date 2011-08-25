@@ -122,7 +122,7 @@ public define mailutils_set_keyword_value (field, value)
 	() = mailutils_find_header_separator ();
 	% Do it this way to avoid moving a line mark
 	go_left (1);
-	vinsert ("\n%s", field);
+	vinsert ("\n%s: ", field);
 	bol ();
      }
    mark_this_keywords_value ();

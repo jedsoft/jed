@@ -90,6 +90,10 @@ Changes since 0.99-19
 43. lib/site.sl: Removed info_mode as an alias of info_reader.  This
     allows jed to read foo.info without invoking info_reader.
 44. lib/f90.sl: The single quote character given a string syntax.
+45. doc/tm/rtl/*.tm: docs for blooking_at added, and a the
+    documentation for bskip_chars corrected. (Carlos R. Mafra).
+46. lib/mailutils.sl: mailutils_set_keyword_value was not working
+    properly.
 
 {{{ Previous Versions 
 

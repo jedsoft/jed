@@ -62,7 +62,7 @@
 \synopsis{Skip past all characters defined by string "str"}
 \usage{Void bskip_chars (String str)}
 \description
-  This function may be used to skip past all characters defined by the
+  This function may be used to skip backward past all characters defined by the
   string \var{str}.  See \var{skip_chars} for the definition of \var{str}.
   The following example illustrates how to skip past all whitespace
   including newline characters:

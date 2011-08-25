@@ -178,7 +178,7 @@ ADD_NEWLINE
   Int_Type ADD_NEWLINE
 
  DESCRIPTION
-  If the value of `ADD_NEWLINE' is non-zero and the buffer if the
+  If the value of `ADD_NEWLINE' is non-zero and the
   buffer does not end with a newline character, a newline character
   will be silently added to the end of a buffer when the buffer is
   written out to a file.
@@ -1763,7 +1763,7 @@ what_char
   line with a backslash-underscore combination.
 
  SEE ALSO
-  looking_at
+  looking_at, blooking_at
 
 --------------------------------------------------------------
 
@@ -4611,7 +4611,7 @@ bskip_chars
   Void bskip_chars (String str)
 
  DESCRIPTION
-  This function may be used to skip past all characters defined by the
+  This function may be used to skip backward past all characters defined by the
   string `str'.  See `skip_chars' for the definition of `str'.
   The following example illustrates how to skip past all whitespace
   including newline characters:
@@ -5811,6 +5811,27 @@ bfind_char
 
  SEE ALSO
   CASE_SEARCH
+
+--------------------------------------------------------------
+
+blooking_at
+
+ SYNOPSIS
+  Test if the characters immediately preceding the point match a string
+
+ USAGE
+  Int_Type blooking_at (String_Type str)
+
+ DESCRIPTION
+  This function returns non-zero if the characters immediately preceding
+  the current editing point match the string specified by `str'.  Whether
+  the match is case-sensitive or not depends upon the value of the
+  variable `CASE_SEARCH'.  The function returns a non-zero value
+  if there is a match; otherwise zero will be returned to indicated no
+  match.
+
+ SEE ALSO
+  ffind, fsearch, re_fsearch, bfind, looking_at, re_looking_at
 
 --------------------------------------------------------------
 
