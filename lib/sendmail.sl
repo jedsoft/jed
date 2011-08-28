@@ -49,30 +49,25 @@ ifnot (is_defined ("Mail_Extra_Headers"))
 
 % The sendmail program
 
-$1 = _stkdepth ();
-NULL;
-"/usr/bin/sendmail";		% places to look
-"/usr/lib/sendmail";
-"/usr/sbin/sendmail";
-
-ifnot (is_defined ("SendMail_Cmd"))
+ifnot (is_defined ("SendMail_Cmd")) variable SendMail_Cmd = NULL;
+if ((SendMail_Cmd == NULL) || (SendMail_Cmd == ""))
 {
-   variable SendMail_Cmd;
-
-   while (SendMail_Cmd = (), SendMail_Cmd != NULL)
+   SendMail_Cmd = NULL;
+   foreach $1 (["/usr/sbin/sendmail",
+		"/usr/lib/sendmail",
+		"/usr/bin/sendmail"]
+	      )
      {
-	if (1 == file_status (SendMail_Cmd))
+	if (1 == file_status ($1))
 	  {
-	     SendMail_Cmd = strcat (SendMail_Cmd, " -t -oem -oi -odb");
+	     SendMail_Cmd = strcat ($1, " -t -oem -oi -odb");
 	     break;
 	  }
      }
-
 }
 
-_pop_n (_stkdepth () - $1);
-
-ifnot (strlen (SendMail_Cmd)) error ("`sendmail' program not found!");
+if (SendMail_Cmd == NULL)
+  throw RunTimeError, "A suitable `sendmail' program was not found.";
 
 %!% always Reply-To: here instead.
 ifnot (is_defined ("Mail_Reply_To"))

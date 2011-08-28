@@ -94,6 +94,8 @@ Changes since 0.99-19
     documentation for bskip_chars corrected. (Carlos R. Mafra).
 46. lib/mailutils.sl: mailutils_set_keyword_value was not working
     properly.
+47. lib/sendmail.sl: Cleaned up the way the sendmail program is
+    searched while fixing a bug associated with the search.
 
 {{{ Previous Versions 
 
