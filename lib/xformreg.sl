@@ -2,7 +2,11 @@ private define skip_chars_to_mark (chars, mark)
 {
    skip_chars (chars);
    if (create_user_mark () > mark)
-     goto_user_mark (mark);
+     {
+	goto_user_mark (mark);
+	return 1;
+     }
+   return 0;
 }
 
 private define skip_word_chars_to_mark (mark)
@@ -20,11 +24,13 @@ private define chgcase_reg ()
    while (create_user_mark () < end)
      {
 	push_mark ();
-	skip_chars_to_mark ("^\\u", end);
+	variable at_end = skip_chars_to_mark ("^\\u", end);
 	insert (strup (bufsubstr_delete ()));
+	if (at_end) break;
 	push_mark ();
-	skip_chars_to_mark ("^\\l", end);
+	at_end = skip_chars_to_mark ("^\\l", end);
 	insert (strlow (bufsubstr_delete ()));
+	if (at_end) break;
      }
 }
 

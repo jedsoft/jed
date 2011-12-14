@@ -96,6 +96,8 @@ Changes since 0.99-19
     properly.
 47. lib/sendmail.sl: Cleaned up the way the sendmail program is
     searched while fixing a bug associated with the search.
+48. lib/xformreg.sl: The function that changes the case of a region
+    was not working in all cases.
 
 {{{ Previous Versions 
 
