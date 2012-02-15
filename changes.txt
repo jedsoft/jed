@@ -98,6 +98,9 @@ Changes since 0.99-19
     searched while fixing a bug associated with the search.
 48. lib/xformreg.sl: The function that changes the case of a region
     was not working in all cases.
+49. src/gpmmouse.c: On some systems, Gpm_Open will hang while making a
+    connection to /dev/gpmctl.  As a work-around, only call this
+    function on linux systems if $TERM contains linux.
 
 {{{ Previous Versions 
 

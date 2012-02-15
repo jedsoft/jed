@@ -233,9 +233,19 @@ static int open_mouse (void)
     * reporting.  Nice huh? NOT!!!
     */
    term = getenv ("TERM");
-   if ((term != NULL)
-       && (!strncmp (term, "xterm", 5) || !strncmp (term, "rxvt", 4)))
+   if (term == NULL)
      return -1;
+
+#ifdef __linux__
+   /* Gpm_Open can hang while trying to connect to /dev/gpmctl under some circumstances.
+    * As a brutal work-around, only use it if the TERM variable contains linux
+    */
+   if (NULL == strstr (term, "linux"))
+     return -1;
+#else
+   if (!strncmp (term, "xterm", 5) || !strncmp (term, "rxvt", 4))
+     return -1;
+#endif
 
    /* Another libgpm annoyance.  gpm installs a signal handler for SIGTSTP.
     * I am going to un-install it.
