@@ -50,7 +50,7 @@ private define make_key_name_table ()
 	  continue;
 	if (value == "")
 	  continue;
-	key_name = strtrans (substr (key_name, 5, -1), "_", "-");
+	key_name = str_replace_all (substr (key_name, 5, -1), "_", "-");
 	value = convert_keystring (value);
 	a[value] = key_name;
      }

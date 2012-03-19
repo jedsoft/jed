@@ -101,6 +101,8 @@ Changes since 0.99-19
 49. src/gpmmouse.c: On some systems, Gpm_Open will hang while making a
     connection to /dev/gpmctl.  As a work-around, only call this
     function on linux systems if $TERM contains linux.
+50. lib/*.sl: replaced calls to strtrans by str_replace_all for simple
+    substitutions.
 
 {{{ Previous Versions 
 

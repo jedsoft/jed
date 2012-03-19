@@ -133,7 +133,7 @@ private define minued_eval          ()       %{{{
         eval (minued_line);
         return;
      }
-   mtr = strtrans (minued_line, "-", "_");
+   mtr = str_replace_all (minued_line, "-", "_");
    if (is_internal (mtr))
      {
         call (mtr);

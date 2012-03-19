@@ -116,7 +116,7 @@ define modeline_hook2 ()
 	     switch (keyword)
 	       { case "mode":
 		  modestr = "_mode";
-		  value = strlow (strtrans (value, "-", "_"));
+		  value = strlow (str_replace_all (value, "-", "_"));
 		  ifnot (is_substr (value, modestr))
 		    value += modestr;
 		  if (value == "c++_mode")

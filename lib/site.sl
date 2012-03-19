@@ -236,7 +236,7 @@ public define custom_variable (name, value)
 %!%-
 define str_replace_all (str, old, new)
 {
-   (str,) = strreplace (str, old, new, strlen (str));
+   (str,) = strreplace (str, old, new, strbytelen (str));
    return str;
 }
 
@@ -425,7 +425,7 @@ define path2list ()
 {
    % path is on stack
 #ifndef VMS
-   strtrans ( (),
+   str_replace_all ( (),
 # ifdef UNIX
 	      ":",
 # else
@@ -1593,7 +1593,7 @@ define emacs_escape_x()
 	       }
 	  }
 
-	f = strtrans (f, "-", "_");
+	f = str_replace_all (f, "-", "_");
 	if (is_internal(f))
 	  {
 	     exec_fun = &call;
@@ -1833,7 +1833,7 @@ define modeline_hook()
    if ( strlen(mode) )
      {
 	variable mstr = "_mode";
-	mode = strtrans (mode, "-", "_");
+	mode = str_replace_all (mode, "-", "_");
 	ifnot (is_substr (mode, mstr)) mode += "_mode"; %mode = strcat (mode, "_mode" );
 
 	if (mode == "c++_mode")
@@ -3222,7 +3222,7 @@ define command_line_hook () %{{{
 	  }
 #endif
 	  {
-	     tmp = strtrans (substr (file, 3, -1), "-", "_");
+	     tmp = str_replace_all (substr (file, 3, -1), "-", "_");
 	     (not (strncmp (file, "--", 2))
 	      && is_defined (tmp))
 	       :

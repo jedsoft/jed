@@ -57,7 +57,7 @@ define mailalias_xList (raw,space_to_comma)	%{{{
    if (strlen (Mailrc))
      {
 	if (space_to_comma)
-	  raw = strtrans (raw, " ", ",");
+	  raw = str_replace_all (raw, " ", ",");
      }
 
    raw = strcompress (raw, ",");

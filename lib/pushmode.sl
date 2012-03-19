@@ -35,9 +35,9 @@ define push_mode ()
    ifnot (strlen (old_mode))
      old_mode = "no";
 
-   old_mode = strtrans (old_mode, "-", "_");
+   old_mode = str_replace_all (old_mode, "-", "_");
    % Some modes may set modeline to two words.
-   try_mode = strlow (strtrans (old_mode, " ", "_") + "_mode");
+   try_mode = strlow (str_replace_all (old_mode, " ", "_") + "_mode");
    if (2 != is_defined (try_mode))
      {
 	try_mode = strlow (extract_element (old_mode, 0, ' ') + "_mode");
