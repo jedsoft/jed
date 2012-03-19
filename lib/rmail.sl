@@ -264,7 +264,7 @@ define rmail_get_header (header, continue_flag, multi_flag)
 	ifnot (multi_flag) break;
      }
 
-   return strtrim (strtrans (h, "\n", " "));
+   return strtrim (str_replace_all (h, "\n", " "));
 }
 
 define rmail_narrow_to_headers ()
@@ -357,7 +357,7 @@ define rmail_parse_mime ()
    push_spot ();
 
    rmail_narrow_to_headers ();
-   if (fsearch ("?Q?"))
+   if (re_fsearch ("\\?[QqBb]\\?"))
      mime_rfc1522_parse_buffer ();
 
    h = rmail_get_header ("Content-Transfer-Encoding: ", 1, 0);
@@ -1011,7 +1011,7 @@ define rmail_parse_email_address (from)
      }
 
    % Now replace all space, tab, and newline by commas
-   return strcompress (strtrans (strcompress(from, " \t\n") , " ", ","), ",");
+   return strcompress (str_replace_all (strcompress(from, " \t\n") , " ", ","), ",");
 }
 
 define rmail_apply_dont_reply_to (from)

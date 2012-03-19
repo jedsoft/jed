@@ -39,6 +39,7 @@ $0 = _stkdepth ();
 "rmail.sl";
 "sendmail.sl";
 "mailalias.sl";
+"mimemisc.sl";
 "mime.sl";
 "perl.sl";
 "perlxtra.sl";
@@ -192,6 +193,8 @@ $0 = _stkdepth ();
 "paste.sl";
 "syncproc.sl";
 "tmpfile.sl";
+"recentx.sl";
+"session.sl";
 
 $0 = _stkdepth () - $0;
 

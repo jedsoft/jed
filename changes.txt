@@ -103,6 +103,8 @@ Changes since 0.99-19
     function on linux systems if $TERM contains linux.
 50. lib/*.sl: replaced calls to strtrans by str_replace_all for simple
     substitutions.
+51. lib/rmail.sl,mime.sl: Added support for base64 decoding if the
+    base64 module is available.
 
 {{{ Previous Versions 
 

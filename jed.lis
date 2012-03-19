@@ -209,6 +209,7 @@
 @lib/replace.sl
 @lib/rmail.sl
 @lib/mime.sl
+@lib/mimemisc.sl
 @lib/sendmail.sl
 @lib/seldisp.sl
 @lib/lua.sl
