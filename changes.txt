@@ -105,6 +105,8 @@ Changes since 0.99-19
     substitutions.
 51. lib/rmail.sl,mime.sl: Added support for base64 decoding if the
     base64 module is available.
+52. lib/makemode.sl: Added the dfa rules to a setup_dfa_callback
+    function.
 
 {{{ Previous Versions 
 

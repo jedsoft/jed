@@ -211,29 +211,29 @@ define_syntax ("(", ")", '(', $0);
 define_syntax ("0-9a-zA-Z_", 'w', $0);
 
 #ifdef HAS_DFA_SYNTAX
-%
-% This does not works fine. It seems like the DFA mechanism
-% in JED is seriously damaged. Or, alternatively (and probably),
-% I don't know how to write good rules   :(
-%
-dfa_define_highlight_rule("\"[^\"]*\"", "string", $0);
-dfa_define_highlight_rule("'[^']*'", "string", $0);
-%dfa_define_highlight_rule("\"([^\"\\\\]|\\\\.)*\"", "string", $0);
-%dfa_define_highlight_rule("\"([^\"\\\\]|\\\\.)*\\\\?$", "string", $0);
-%dfa_define_highlight_rule("'([^'\\\\]|\\\\.)*'", "Qstring", $0);
-%dfa_define_highlight_rule("'([^'\\\\]|\\\\.)*\\\\?$", "string", $0);
-dfa_define_highlight_rule ("^[ \t]*@", "string", $0);
-dfa_define_highlight_rule ("[ \t]*\\\\[ \t]*$", "string", $0);
-dfa_define_highlight_rule ("[ \t]*#.*$", "comment", $0);
-dfa_define_highlight_rule ("[A-Za-z_][A-Za-z_0-9]*", "Knormal", $0);
-%dfa_define_highlight_rule ("[ \t]*[A-Za-z_][A-Za-z_0-9]*", "Knormal", $0);
-%dfa_define_highlight_rule ("^[ \t]*[A-Za-z_][A-Za-z_0-9]*", "Knormal", $0);
-dfa_define_highlight_rule ("^[^\"']*\\:$", "keyword1", $0);
-dfa_define_highlight_rule ("^[^\"']*\\:[ \t]+", "keyword1", $0);
-%dfa_define_highlight_rule ("[ \t]*\.PHONY.*", "keyword1", $0);
-dfa_define_highlight_rule ("/include", "normal", $0);
-dfa_build_highlight_table ($0);
-enable_dfa_syntax_for_mode ($0);
+%%% DFA_CACHE_BEGIN %%%
+private define setup_dfa_callback (name)
+{
+   dfa_define_highlight_rule("\"[^\"]*\"", "string", name);
+   dfa_define_highlight_rule("'[^']*'", "string", name);
+   %dfa_define_highlight_rule("\"([^\"\\\\]|\\\\.)*\"", "string", name);
+   %dfa_define_highlight_rule("\"([^\"\\\\]|\\\\.)*\\\\?$", "string", name);
+   %dfa_define_highlight_rule("'([^'\\\\]|\\\\.)*'", "Qstring", name);
+   %dfa_define_highlight_rule("'([^'\\\\]|\\\\.)*\\\\?$", "string", name);
+   dfa_define_highlight_rule ("^[ \t]*@", "string", name);
+   dfa_define_highlight_rule ("[ \t]*\\\\[ \t]*$", "string", name);
+   dfa_define_highlight_rule ("[ \t]*#.*$", "comment", name);
+   dfa_define_highlight_rule ("[A-Za-z_][A-Za-z_0-9]*", "Knormal", name);
+   %dfa_define_highlight_rule ("[ \t]*[A-Za-z_][A-Za-z_0-9]*", "Knormal", name);
+   %dfa_define_highlight_rule ("^[ \t]*[A-Za-z_][A-Za-z_0-9]*", "Knormal", name);
+   dfa_define_highlight_rule ("^[^\"']*\\:$", "keyword1", name);
+   dfa_define_highlight_rule ("^[^\"']*\\:[ \t]+", "keyword1", name);
+   %dfa_define_highlight_rule ("[ \t]*\.PHONY.*", "keyword1", name);
+   dfa_define_highlight_rule ("/include", "normal", name);
+   dfa_build_highlight_table (name);
+}
+dfa_set_init_callback (&setup_dfa_callback, $0);
+%%% DFA_CACHE_END %%%
 #endif
 
 () = define_keywords_n ($0, "ARASCCCOCPFCPCRMfiif", 2, 0);
