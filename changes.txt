@@ -107,6 +107,8 @@ Changes since 0.99-19
     base64 module is available.
 52. lib/makemode.sl: Added the dfa rules to a setup_dfa_callback
     function.
+53. lib/mailutils.sl: If the top line of a mail buffer begins with
+    "From ", skip it.  Also updated the date in cpright.hlp.
 
 {{{ Previous Versions 
 

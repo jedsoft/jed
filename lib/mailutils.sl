@@ -13,7 +13,8 @@
 %\usage{Int_Type mailutils_find_header_separator ()}
 %\description
 %  This function searches for the line separating the mail headers
-%  from the body.  It returns 1 if found, and 0 otherwise.
+%  from the body.  It returns 1 if found, and 0 otherwise.  It does not
+%  preserve the spot upon failure.
 %\seealso{mailutils_narrow_to_header}
 %!%-
 public define mailutils_find_header_separator ()
@@ -21,6 +22,8 @@ public define mailutils_find_header_separator ()
    bob ();
    if (bol_fsearch ("--- Do not modify this line.  Enter your message below ---\n"))
      return 1;
+   if (looking_at ("From "))
+     go_down_1 ();
    ifnot (re_looking_at ("[-A-Za-z0-9_]+: "))
      return 0;
    return bol_fsearch ("\n");
