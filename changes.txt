@@ -109,6 +109,8 @@ Changes since 0.99-19
     function.
 53. lib/mailutils.sl: If the top line of a mail buffer begins with
     "From ", skip it.  Also updated the date in cpright.hlp.
+54. lib/site.sl: Made some changes that to suppress warnings by the
+    stack checker.
 
 {{{ Previous Versions 
 

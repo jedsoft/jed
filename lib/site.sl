@@ -1,7 +1,5 @@
 % -*- mode: slang; mode: fold; -*-
 % Note: This file has been folded.
-%_traceback = 1;
-%_boseos_info = 3;
 %{{{ Description of site.sl file
 %
 % This file must be present in $JED_ROOT/lib.  JED loads it first--- even
@@ -296,12 +294,39 @@ define compile_parse_errors ();
 %!%-
 define vinsert ()
 {
-   _NARGS-1; Sprintf; insert;
+   _NARGS-1, Sprintf, insert;
 }
 
 %}}}
 
 %{{{ dircat
+
+private define compress_dir_slashes (dir)
+{
+#ifndef IBMPC_SYSTEM
+   if (is_substr (dir, "\\\\"))
+     {
+	% Allow: \\foo\bar
+	variable prefix = "";
+	if (dir[0] == '\\')
+	  {
+	     prefix = "\\";
+	     if (dir[1] == '\\')
+	       prefix = "\\\\";
+	  }
+	dir = prefix + strcompress (dir, "\\");
+     }
+#elifndef VMS
+   if (is_substr (dir, "////"))
+     {
+	variable prefix = "";
+	if (dir[0] == '/')
+	  prefix = "/";
+	dir = prefix + strcompress (dir, "/");
+     }
+#endif
+   return dir;
+}
 
 %!%+
 %\function{dircat}
@@ -317,6 +342,8 @@ define dircat(dir, file)
    % Many functions assume dir = NULL is ok, e.g., dircat (getenv (...));
    if (dir == NULL) dir = "";
    if (file == NULL) file = "";
+
+   dir = compress_dir_slashes (dir);
 
    variable n = strlen(dir);
 
@@ -502,7 +529,7 @@ define expand_jedlib_file (f)
    f = search_path_for_file (get_slang_load_path (), f);
    if (f == NULL)
      return "";
-   f;
+   return f;
 }
 %}}}
 
@@ -905,7 +932,7 @@ define go_up() { () = up(); }
 % Move up 1 line.  If successful, returns 1 otherwise it returns 0.
 %\seealso{up, go_down, go_up, go_up_1}
 %!%-
-define up_1() { up(1); }
+define up_1() { return up(1); }
 
 %!%+
 %\function{go_up_1}
@@ -936,7 +963,7 @@ define go_down() { () = down(); }
 % zero is returned.
 %\seealso{go_up, down, go_down_1}
 %!%-
-define down_1 () {  down (1); }
+define down_1 () {  return down (1); }
 
 %!%+
 %\function{go_down_1}
@@ -1063,7 +1090,7 @@ private define make_reserved_key (key)
 {
    if (_Reserved_Key_Prefix == NULL)
      return "";
-   strcat (_Reserved_Key_Prefix, key);
+   return strcat (_Reserved_Key_Prefix, key);
 }
 
 define definekey_reserved (fun, key, kmap)
@@ -1093,7 +1120,7 @@ define unsetkey_reserved (key)
 
 define get_mode_name ()
 {
-   what_mode (); pop ();
+   return what_mode (), pop ();
 }
 
 define global_mode_hook (hook)
@@ -1308,8 +1335,7 @@ define mark_buffer ()
 define bufsubstr_delete ()
 {
    () = dupmark ();
-   bufsubstr ();		       %  on stack
-   del_region ();
+   return bufsubstr (), del_region ();
 }
 
 %!%+
@@ -1353,7 +1379,7 @@ define del_through_eol ()
 %!%-
 define line_as_string ()
 {
-   bol (); push_mark_eol (); bufsubstr ();
+   bol (); push_mark_eol (); return bufsubstr ();
 }
 
 %!%+
@@ -1620,14 +1646,12 @@ define emacs_escape_x()
 
 define goto_line_cmd()
 {
-   read_mini("Goto line:", Null_String, Null_String);
-   goto_line(integer(()));
+   goto_line (atoi (read_mini("Goto line:", "", "")));
 }
 
 define goto_column_cmd()
 {
-   read_mini("Goto Column:", Null_String, Null_String);
-   goto_column(integer(()));
+   goto_column (atoi(read_mini("Goto Column:", "", "")));
 }
 
 %;; scroll other window macros-- bind them yourself
@@ -1711,8 +1735,8 @@ define no_mode ()
 
 % Function prototypes
 % These 'functions' are only here to initialize function pointers.
-define _function_pop_0 (x) {0;}
-define _function_return_1 () {1;}
+define _function_pop_0 (x) {return 0;}
+define _function_return_1 () {return 1;}
 
 %!%+
 %\variable{Mode_Hook_Pointer}
@@ -1826,8 +1850,10 @@ define modeline_hook()
    EXIT_BLOCK
      {
 	mode = ();
-	if (extra_hook) (mode + modeline_hook2 ()); else mode;
+	if (extra_hook)
+	  mode = mode + modeline_hook2 ();
 	pop_spot ();		% restore place
+	return mode;
      }
 
    if ( strlen(mode) )
@@ -1842,11 +1868,10 @@ define modeline_hook()
 	if (is_defined(mode))
 	  {
 	     eval (mode);
-	     1;			       %  mode was defined
-	     return;
+	     return 1;			       %  mode was defined
 	  }
      }
-   0;
+   return 0;
 }
 
 variable Mode_List_Exts = "h,cc,cpp,hpp,hh,sl,txt,doc,f,for,pro,1,pl,pm,v,verilog,vhd,vhdl,vt,sp,cir,py,cxx,m,bib";
@@ -1965,21 +1990,17 @@ define _test_buffer_flag (x)
    variable flags;
 
    (,,,flags) = getbuf_info ();
-   flags & x;
+   return flags & x;
 }
 
+% Use commas to fool the stack checker
 define _set_buffer_flag (x)
 {
-   getbuf_info ();
-   () | x;
-   setbuf_info (());
+   getbuf_info (), () | x, setbuf_info (());
 }
-
 define _unset_buffer_flag (x)
 {
-   getbuf_info ();
-   () & ~x;
-   setbuf_info (());
+   getbuf_info (),  () & ~x, setbuf_info (());
 }
 
 % Usage: set_or_unset_buffer_flag (set, flag)
@@ -2020,7 +2041,7 @@ define set_buffer_modified_flag ()
 %!%-
 define buffer_modified ()
 {
-   _test_buffer_flag (0x01);
+   return _test_buffer_flag (0x01);
 }
 
 %!%+
@@ -2812,7 +2833,8 @@ define set_fill_column ()
 %!%-
 define rename_buffer (name)
 {
-   variable flags = getbuf_info(); pop(); setbuf_info(name, flags);
+   variable flags;
+   flags = getbuf_info(), pop(), setbuf_info(name, flags);
 }
 
 %}}}
@@ -2944,10 +2966,8 @@ define expand_file_hook (file)
 # endif
 
    if (changed)
-     {
-	file;
-     }
-   changed;
+     return file, changed;
+   return 0;
 }
 
 set_expansion_hook ("expand_file_hook");

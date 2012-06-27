@@ -511,6 +511,7 @@ define_syntax ("#", "", '%', $1);		% comments
 define_syntax ("([{", ")]}", '(', $1);		% delimiters
 define_syntax ('"', '"', $1);			% quoted strings
 define_syntax ('\'', '"', $1);			% quoted strings
+%define_syntax("\"\"\"","\"\"\"", '%', $1);
 %define_syntax ('\'', '\'', $1);			% quoted characters
 define_syntax ('\\', '\\', $1);			% continuations
 define_syntax ("0-9a-zA-Z_", 'w', $1);		% words

@@ -18,9 +18,16 @@ private variable Tmp_A_filec = path_concat (Tmp_A, "file.c");
 private variable Tmp_B = path_concat (Tmp_Root, "B");
 private variable Tmp_B_dev2 = path_concat (Tmp_B, "dev2");
 
+private variable Dir_Names = {};
+private variable File_Names = {};
+
 private define make_layout ()
 {
-   () = mkdir (Tmp_Root);
+   if (-1 == mkdir (Tmp_Root))
+     {
+	throw OSError, "Unable to mkdir ${Tmp_Root}: " + errno_string ();
+     }
+
    () = mkdir (Tmp_A);
    () = mkdir (Tmp_A_dev);
    () = append_string_to_file (Tmp_A_dev_foo, Tmp_A_dev_foo);
@@ -28,6 +35,11 @@ private define make_layout ()
    () = hardlink (Tmp_A_dev_foo, Tmp_A_dev_hoo);
    () = mkdir (Tmp_B);
    () = symlink (Tmp_A_dev, Tmp_B_dev2);
+}
+
+private define cleanup ()
+{
+   () = system ("/bin/rm -rf ${Tmp_Root}"$);
 }
 
 private define test_expand_link ()
@@ -46,12 +58,12 @@ private define test_expand_link ()
      {
 	vmessage ("expand_symlink returned %S, not %S", a, b);
 	Failed++;
-     }   
+     }
 }
 
 % Tests read/write of /tmp/jedtest/A/file.c which is a
 % symlink to /tmp/jedtest/A/dev/foo.
-% Then it tries to read 
+% Then it tries to read
 %   /tmp/jedtest/B/dev2/../file.c
 % where /tmp/jedtest/B/dev2 is a symlink to /tmp/jedtest/A/dev
 private define test_link_read_write_1 ()
@@ -67,7 +79,7 @@ private define test_link_read_write_1 ()
 
    if (buffer_filename () != Tmp_A_filec)
      {
-	message ("Failed to get proper filename for %s, found %s", 
+	message ("Failed to get proper filename for %s, found %s",
 		 Tmp_A_filec, buffer_filename ());
 	Failed++;
      }
@@ -79,7 +91,7 @@ private define test_link_read_write_1 ()
 	Failed++;
 	vmessage ("Failed to get proper buffer name for link, found %s", name);
      }
-   
+
    bob ();
    insert (Tmp_A_dev_foo);
    save_buffer ();
@@ -131,11 +143,12 @@ private define test_read_hard_link ()
      }
    delbuf (a);
 }
-   
+
 make_layout ();
 
 test_link_read_write_1 ();
 test_read_hard_link ();
 test_expand_link ();
+if (Failed == 0) cleanup ();
 
 exit (Failed);
