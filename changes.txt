@@ -111,6 +111,7 @@ Changes since 0.99-19
     "From ", skip it.  Also updated the date in cpright.hlp.
 54. lib/site.sl: Made some changes that to suppress warnings by the
     stack checker.
+55. documentation updates
 
 {{{ Previous Versions 
 

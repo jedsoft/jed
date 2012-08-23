@@ -1175,60 +1175,6 @@ expand_keystring
 
 --------------------------------------------------------------
 
-help_for_apropos
-
- SYNOPSIS
-  Void help_for_apropos (String)
-
- DESCRIPTION
- find apropos context for a particular string
-
- SEE ALSO
-  apropos, help_apropos
-
---------------------------------------------------------------
-
-apropos
-
- SYNOPSIS
-  Void apropos (Void)
-
- DESCRIPTION
- prompt for a string and find the apropos context
-
- SEE ALSO
-  help_apropos, help_for_apropos
-
---------------------------------------------------------------
-
-help_apropos
-
- SYNOPSIS
-  Void help_apropos (Void)
-
- DESCRIPTION
- use either the marked region or else extract an alphanumeric keyword,
- and then display S-Lang apropos context for this entry
-
- SEE ALSO
-  apropos, help_slang, help_for_apropos
-
---------------------------------------------------------------
-
-help_slang
-
- SYNOPSIS
-  Void help_slang (Void)
-
- DESCRIPTION
- use either the marked region or else extract an alphanumeric keyword,
- and then display S-Lang function/variable help
-
- SEE ALSO
-  apropos, help_apropos, help_for_function
-
---------------------------------------------------------------
-
 History_File
 
  SYNOPSIS
@@ -1522,7 +1468,8 @@ mailutils_find_header_separator
 
  DESCRIPTION
   This function searches for the line separating the mail headers
-  from the body.  It returns 1 if found, and 0 otherwise.
+  from the body.  It returns 1 if found, and 0 otherwise.  It does not
+  preserve the spot upon failure.
 
  SEE ALSO
   mailutils_narrow_to_header

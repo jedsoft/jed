@@ -125,8 +125,10 @@
 \done
 
 \function{x_warp_pointer}
-\synopsis{warp pointer}
-\usage{}
+\synopsis{Move the mouse cursor to the current editing position}
+\usage{x_warp_pointer ()}
 \description
+  This function may be used to move the mouse cursor to the editing
+  position.
 \done
 

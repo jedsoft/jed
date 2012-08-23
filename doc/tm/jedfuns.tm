@@ -8,6 +8,7 @@
 #d kw#1 \tt{$1}
 #d exmp#1 \tt{$1}
 #d var#1 \tt{$1}
+#d ifun#1 \tt{$1}
 #d dtype#1 \tt{$1}
 
 #d ldots ...
