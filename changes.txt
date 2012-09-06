@@ -113,6 +113,7 @@ Changes since 0.99-19
     stack checker.
 55. documentation updates
 56. src/VMSMAKE.COM: read version information from version.h (Harmut Becker)
+57. lib/dcl.sl: removed a misplaced set_color statement.
 
 {{{ Previous Versions 
 

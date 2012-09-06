@@ -117,8 +117,6 @@ dfa_set_init_callback (&setup_dfa_callback, "dcl");
 %%% DFA_CACHE_END %%%
 #endif
 
-set_color ("keyword2","blue","black");
-
 () = define_keywords_n ("dcl", "ifon", 2, 0);
 () = define_keywords_n ("dcl", "eodmcrrunset", 3, 0);
 () = define_keywords_n ("dcl", "callelseexitgotoopenreadshowthenwait", 4, 0);
