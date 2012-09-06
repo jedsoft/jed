@@ -114,6 +114,8 @@ Changes since 0.99-19
 55. documentation updates
 56. src/VMSMAKE.COM: read version information from version.h (Harmut Becker)
 57. lib/dcl.sl: removed a misplaced set_color statement.
+58. bin/vms/init_jed.com: Derive the value of jed_root based upon the
+    location of this file.  (Harmut Becker)
 
 {{{ Previous Versions 
 
