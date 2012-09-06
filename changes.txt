@@ -112,6 +112,7 @@ Changes since 0.99-19
 54. lib/site.sl: Made some changes that to suppress warnings by the
     stack checker.
 55. documentation updates
+56. src/VMSMAKE.COM: read version information from version.h (Harmut Becker)
 
 {{{ Previous Versions 
 

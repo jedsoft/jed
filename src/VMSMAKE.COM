@@ -1,10 +1,12 @@
-$!------------------------make.com for Jed--------------------------------------
+$!----------------make.com for Jed---------------------------------*-dcl-*---
 $! Modified VMSMAKE for JED - Andy Harper, Kings College London
-$!                            Martin Zinser (zinser@decus.decus.de)
+$!                            Martin Zinser (zinser .at. decus.decus.de)
+$!                            Hartmut Becker
 $! AH	- Use logicals to define SLANG location, if defined	[16-MAY-1996]
 $! AH	- A few bug fixes!					[16-MAY-1996]
 $! MPJZ - Extensive re-write to check
-$!         Platform, Compiler and MMS/MMK                       [02-MAR-1998]   
+$!         Platform, Compiler and MMS/MMK                       [02-MAR-1998]
+$! HB   - Read version information from version.h               [05-SEP-2012]
 $!
 $ ver = f$verify(0)
 $!
@@ -76,12 +78,25 @@ $         SLANGOBJ = SLANGLIB  +  "SLANG.OLB"		! AH 16-MAY-1996
 $     endif						! AH 16-MAY-1996
 $ endif							! AH 16-MAY-1996
 $!
+$! Get the version
+$!
+$ search version.h JED_VERSION_STR/exact/out=version.txt
+$ open/read in version.txt
+$ read in line
+$ close in
+$ version=f$extract(f$locate("""",line),f$length(line),line)
+$ purge version.txt
+$!
 $! Build the option files
 $!
 $ open/write optf jed.opt
 $ open/write xoptf xjed.opt
-$ write optf "Identification=""Jed B0.99-8"""
-$ write xoptf "Identification=""XJed B0.99-8"""
+$ write optf "Case=yes"
+$ write optf "Identification=",version
+$ write optf "Case=NO"
+$ write xoptf "Case=yes"
+$ write xoptf "Identification=",version
+$ write xoptf "Case=NO"
 $ write optf "''slangobj'/lib"
 $ write xoptf "''slangobj'/lib"
 $!
