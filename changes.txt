@@ -119,6 +119,8 @@ Changes since 0.99-19
 59. src/xterm.c: Avoid calls to XAllocNamedColor adding allocated
     colors to a cache.  This causes xjed to start much quicker across
     a network.
+60. src/cmode.sl: The '%' character was being interpreter as an
+    operator in slang_mode.
 
 {{{ Previous Versions 
 

@@ -1056,12 +1056,13 @@ define c_indent_line ()
 	     if (is_continuation
 		 && extra_indent && (prep_indent == 0))
 	       {
-		  variable ops = "+-/,=&|%^<>!~?.!";
+		  variable ops = "+-/,=&|^<>!~?.!";
+		  ifnot (cmode_is_slang_mode ()) ops += "%";
 		  ifnot (is_substr (ops + "*", char(what_char())))
 		    {
 		       push_spot ();
 		       c_bskip_over_comment (1);
-		       ifnot (blooking_at_one_of ("+-/,=&|%^<>!~?.!"))
+		       ifnot (blooking_at_one_of (ops))
 			 extra_indent = 0;
 		       pop_spot();
 		    }
