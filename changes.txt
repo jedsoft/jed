@@ -116,6 +116,9 @@ Changes since 0.99-19
 57. lib/dcl.sl: removed a misplaced set_color statement.
 58. bin/vms/init_jed.com: Derive the value of jed_root based upon the
     location of this file.  (Harmut Becker)
+59. src/xterm.c: Avoid calls to XAllocNamedColor adding allocated
+    colors to a cache.  This causes xjed to start much quicker across
+    a network.
 
 {{{ Previous Versions 
 

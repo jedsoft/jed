@@ -1775,43 +1775,176 @@ static void set_wm_hints (JXWindow_Type *w, int xpos,  int ypos, unsigned long o
 /*}}}*/
 #endif
 
+/* The following code tries to avoid calls to XAllocNamedColor, which runs
+ * very slowly across a network.
+ */
+typedef struct Color_Cache_Type
+{
+   SLstr_Type *color_name;		       /* slstring */
+   XColor xcolor;
+   unsigned int num_refs;
+   struct Color_Cache_Type *next;
+}
+Color_Cache_Type;
+
+static Color_Cache_Type *Color_Cache_List = NULL;
+
+static int alloc_color_from_cache (SLstr_Type *color_name, XColor *xcolor)
+{
+   Color_Cache_Type *list = Color_Cache_List;
+
+   while (list != NULL)
+     {
+	if (list->color_name == color_name)
+	  {
+	     *xcolor = list->xcolor;
+	     list->num_refs++;
+	     return 1;
+	  }
+	list = list->next;
+     }
+   return 0;
+}
+
+static int add_color_to_cache (SLstr_Type *color_name, XColor xcolor)
+{
+   Color_Cache_Type *list;
+
+   if (NULL == (list = (Color_Cache_Type *) SLmalloc (sizeof (Color_Cache_Type))))
+     return -1;
+   memset ((char *)list, 0, sizeof(Color_Cache_Type));
+   if (NULL == (list->color_name = SLang_create_slstring (color_name)))
+     {
+	SLfree ((char *)list);
+	return -1;
+     }
+   list->xcolor = xcolor;
+   list->num_refs = 1;
+   list->next = Color_Cache_List;
+   Color_Cache_List = list;
+   return 0;
+}
+
+static void delete_cached_color (Color_Cache_Type *elem)
+{
+   XFreeColors (This_XDisplay, XWin->color_map, &elem->xcolor.pixel, 1, 0);
+   SLang_free_slstring (elem->color_name);
+   SLfree ((char *)elem);
+}
+
+static void free_color_pixel (unsigned long pixel)
+{
+   Color_Cache_Type *list, *prev;
+
+   /* a value of 0 may not have been allocated, so do not free it */
+   if (pixel == 0)
+     return;
+
+   list = Color_Cache_List;
+   prev = NULL;
+   while (list != NULL)
+     {
+	if (list->xcolor.pixel != pixel)
+	  {
+	     prev = list;
+	     list = list->next;
+	     continue;
+	  }
+
+	if (list->num_refs > 1)
+	  {
+	     list->num_refs--;
+	     return;
+	  }
+
+	if (prev != NULL)
+	  prev->next = list->next;
+	else
+	  Color_Cache_List = list->next;
+
+	delete_cached_color (list);
+	return;
+     }
+}
+
+static void free_color (XColor *xc)
+{
+   free_color_pixel (xc->pixel);
+}
+
+static void free_color_cache (void)
+{
+   Color_Cache_Type *list = Color_Cache_List;
+   while (list != NULL)
+     {
+	Color_Cache_Type *next = list->next;
+	delete_cached_color (list);
+	list = next;
+     }
+   Color_Cache_List = NULL;
+}
+
 static int alloc_color(char* color_name, XColor* color_info)
 {
    XColor exact_info;
+   int status = 0;
+
+   if (NULL == (color_name = SLang_create_slstring (color_name)))
+     return -1;
+
+   if (1 == alloc_color_from_cache (color_name, color_info))
+     goto free_and_return;
 
    if (XAllocNamedColor(This_XDisplay, XWin->color_map, color_name, color_info,
 			&exact_info))
-     return color_info->pixel;
+     {
+	if (-1 == add_color_to_cache (color_name, *color_info))
+	  status = -1;
+
+	goto free_and_return;
+     }
 
    if (0 == strncmp (color_name, "bright", 6))
-     color_name += 6;
+     {
+	if (-1 == alloc_color (color_name + 6, color_info))
+	  status = -1;
 
-   if (XAllocNamedColor(This_XDisplay, XWin->color_map, color_name, color_info,
-			&exact_info))
-     return color_info->pixel;
+	goto free_and_return;
+     }
 
    fprintf(stderr, "Can't allocate color %s\n", color_name);
-   return -1;
+   status = -1;
+   /* drop */
+
+free_and_return:
+
+   SLang_free_slstring (color_name);
+   return status;
 }
 
 /* This parses the colors in the XWin structure and setting
    defaults to fg, bg upon failure of either one */
 static void setup_ith_color (int i) /*{{{*/
 {
-   XColor xcol;
-   int fg, bg;
+   XColor fgcol, bgcol;
 
    if (!Term_Supports_Color)
      return;
 
-   fg = alloc_color(XWin->text_gc[i].fg_name, &xcol);
-   bg = alloc_color(XWin->text_gc[i].bg_name, &xcol);
-
-   if ((fg < 0) || (bg < 0))
+   if (-1 == alloc_color(XWin->text_gc[i].fg_name, &fgcol))
      return;
 
-   XWin->text_gc[i].fg = fg;
-   XWin->text_gc[i].bg = bg;
+   if (-1 == alloc_color(XWin->text_gc[i].bg_name, &bgcol))
+     {
+	free_color (&fgcol);
+	return;
+     }
+
+   free_color_pixel (XWin->text_gc[i].fg);
+   free_color_pixel (XWin->text_gc[i].bg);
+
+   XWin->text_gc[i].fg = fgcol.pixel;
+   XWin->text_gc[i].bg = bgcol.pixel;
 }
 
 /*}}}*/
@@ -1919,10 +2052,13 @@ static void set_mouse_color (char *fgc, char *bgc) /*{{{*/
    if (0 == Term_Supports_Color)
      return;
 
-   if (alloc_color(fgc, &xfg) < 0)
+   if (-1 == alloc_color(fgc, &xfg))
      return;
-   if (alloc_color(bgc, &xbg) < 0)
-     return;
+   if (-1 == alloc_color(bgc, &xbg))
+     {
+	free_color (&xfg);
+	return;
+     }
 
    XRecolorCursor (This_XDisplay, XWin->mouse, &xfg, &xbg);
 }
@@ -2249,6 +2385,7 @@ static int init_Xdisplay (void) /*{{{*/
 
 static void reset_Xdisplay (void) /*{{{*/
 {
+   free_color_cache ();
    if (This_XDisplay != NULL) XCloseDisplay(This_XDisplay);
 }
 
@@ -2567,7 +2704,7 @@ static void set_border_color (char *fgc, char *bgc) /*{{{*/
    if (!Term_Supports_Color)
      return;
 
-   if (alloc_color(fgc, &xfg) < 0)
+   if (-1 == alloc_color(fgc, &xfg))
      return;
 
    XSetWindowBorder (This_XDisplay, XWin->w, xfg.pixel);
