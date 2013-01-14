@@ -121,6 +121,8 @@ Changes since 0.99-19
     a network.
 60. src/cmode.sl: The '%' character was being interpreter as an
     operator in slang_mode.
+61. lib/mime.sl: Use try/catch in mime_rfc1522_parse_buffer when
+    base64 decoding.
 
 {{{ Previous Versions 
 

@@ -52,7 +52,15 @@ define mime_rfc1522_parse_buffer ()
 	       continue;
 
 	     encoded_string = bufsubstr_delete ();
-	     str = (@Mime_Base64_Decode)(str);
+	     variable e;
+	     try (e)
+	       {
+		  str = (@Mime_Base64_Decode)(str);
+	       }
+	     catch AnyError:
+	       {
+		  vmessage ("Error [%S] encountered decoding mime: %S", e.descr, e.message);
+	       }
 	  }
 	else
 	  {
