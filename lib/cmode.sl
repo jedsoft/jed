@@ -681,7 +681,9 @@ private define is_continuation_line ()
    if (blooking_at (":"))
      {
 	push_spot ();
-	bol_skip_white ();
+	bol();
+	% Some like to use "{ case foo:".
+	skip_chars ("{ \t");
 	if (c_looking_at ("case") || c_looking_at ("default") || is_label_statement ())
 	  {
 	     pop_spot ();

@@ -140,6 +140,13 @@ int main (int argc, char **argv)
              Y++;
              break;
           }
+        switch (X)
+          { case foo:
+             bar;
+             baz;
+           case bang:
+             bing;
+          }
      }
 
    cout >> foo

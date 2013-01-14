@@ -123,6 +123,8 @@ Changes since 0.99-19
     operator in slang_mode.
 61. lib/mime.sl: Use try/catch in mime_rfc1522_parse_buffer when
     base64 decoding.
+62. lib/cmode.sl: fix indentation of subsequent line when a case
+    statement is on the first line of the containing block.
 
 {{{ Previous Versions 
 

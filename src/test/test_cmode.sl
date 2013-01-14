@@ -1,4 +1,4 @@
-private variable Input_File 
+private variable Input_File
   = path_concat (path_dirname (__FILE__), "test_cmode.dat");
 
 private variable Log_File = path_sans_extname (__FILE__) + ".log";
@@ -27,7 +27,7 @@ define test_cmode (file)
 	  }
      }
    while (down_1());
-   
+
    if (length (failures))
      {
 	() = fprintf (stderr, "cmode.sl failed to properly indent the following lines:\n");
@@ -46,4 +46,3 @@ define test_cmode (file)
 
 test_cmode (Input_File);
 
-	
