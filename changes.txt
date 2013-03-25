@@ -125,6 +125,10 @@ Changes since 0.99-19
     base64 decoding.
 62. lib/cmode.sl: fix indentation of subsequent line when a case
     statement is on the first line of the containing block.
+63. lib/cmode.sl: The c_newline_and_indent function should auto-insert
+    // only when the current line begins with // as described in the
+    documentation for C_Autoinsert_CPP_Comments.  This was not
+    happening.
 
 {{{ Previous Versions 
 

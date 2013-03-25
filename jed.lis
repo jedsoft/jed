@@ -385,6 +385,7 @@
 @src/vfile.c
 @src/vfile.h
 @src/vms.c
+@src/vms_x_fix.h
 @src/vmshelp.c
 @src/vmsmail.c
 @src/vmsmail.h

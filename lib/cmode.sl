@@ -1118,10 +1118,10 @@ define c_indent_line ()
      }
      {
       case -3: 				%  inside C++ comment
-	ifnot ((looking_at(notCcomment)) or not(eolp()))
+	if (eolp ())
 	  {
 	     goto_column(col);
-	     if (C_Autoinsert_CPP_Comments) insert(notCcomment);
+	     %if (C_Autoinsert_CPP_Comments) insert(notCcomment);
 	  }
 	return;
      }
