@@ -325,6 +325,31 @@ arguments, and it also loads the user's personal initialization file.
 It is defined in the file `site.sl' and should not be customized by
 the user.
 
+make_backup_filename
+--------------------
+
+The make_backup_filename hook is called when a file is saved to obtain
+the name of the backup file.  The function is called with two
+arguments: the directory of the file, and the name of the file, and
+must return a string representing the name of the backup file.  If the
+hook returns "", no backup file will be created. A simple example of
+the hook is:
+
+   define make_backup_filename (dir, file)
+   {
+      return dir + file + "~";
+   }
+
+The default definition of this hook is defined in site.sl.
+
+make_autosave_filename
+----------------------
+
+This hook is used to dictate the name of the autosave file.  The
+default definition is in site.sl.  It works very much the same was as
+the make_backup_filename hook.  See the documentation for
+make_backup_filename for more details.
+
 ===========================================================================
 Internal Hook Lists
 ===========================================================================

@@ -1005,6 +1005,9 @@ static int make_autosave_filename(char *save, unsigned int buflen, char *dir, ch
 # endif
 #endif
      }
+   if (*save == 0)
+     return 0;
+
    return 1;
 }
 
