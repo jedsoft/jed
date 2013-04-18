@@ -3091,7 +3091,7 @@ define command_line_hook () %{{{
    n = __argc; --n; i = 1;	       %  skip argv[0]
    if (BATCH)
      {
-	if ((__argv[i] == "--help") or (__argv[i] == "-help"))
+	if (any (__argv[i] == ["--help", "-help", "-h"]))
 	  () = evalfile ("jedusage");
 
 	--n; ++i; 	% -batch - 1st arg is not used
@@ -3112,7 +3112,7 @@ define command_line_hook () %{{{
    while (n)
      {
 	file = __argv[i];
-	if ((file == "-a") and (n > 1))
+	if ((file == "-a") && (n > 1))
 	  {
 	     i++; n--;
 	     init_file = __argv[i];
@@ -3125,7 +3125,7 @@ define command_line_hook () %{{{
 	     break;
 	  }
 
-	if ((file == "-e") and (n > 1))
+	if ((file == "-e") && (n > 1))
 	  {
 	     i++; n--;
 	     _Jed_Default_Emulation = __argv[i];
@@ -3216,14 +3216,14 @@ define command_line_hook () %{{{
 	  }
 
 	switch (file)
-	  {case "-f" and n : eval(next_file_arg);}
-	  {case "-g" and n : goto_line(integer(next_file_arg));}
-	  {case "-s" and n :
+	  {case "-f" && n : eval(next_file_arg);}
+	  {case "-g" && n : goto_line(integer(next_file_arg));}
+	  {case "-s" && n :
 	     () = fsearch(next_file);
 	     save_search_string(next_file);
 	  }
-	  {case "-l" and n : () = evalfile(next_file_arg); }
-	  {case "-i" and n : () = insert_file(next_file_arg);}
+	  {case "-l" && n : () = evalfile(next_file_arg); }
+	  {case "-i" && n : () = insert_file(next_file_arg);}
 	  {case "-2" : splitwindow(); ++n; --i;}
 	  {case "-tmp":
 	     set_buffer_no_backup ();
@@ -3231,7 +3231,7 @@ define command_line_hook () %{{{
 	     ++n; --i;
 	  }
 #iftrue
-	  {case "-hook" and n:		% run user hook
+	  {case "-hook" && n:		% run user hook
 	     variable hookfun = __get_reference (next_file);
 	     if (hookfun != NULL)
 	       {

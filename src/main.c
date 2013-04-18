@@ -290,7 +290,8 @@ static int main_initialize (int argc, char **argv)
 	char *argv1 = argv[1];
 
 	/* Allow, e.g., --batch */
-	if ((argv1[0] == '-') && (argv1[1] == '-'))
+	if ((argv1[0] == '-') && (argv1[1] == '-')
+	    && (strlen (argv1+2) > 1))
 	  argv1++;
 
 	if (!strcmp(argv1, "-batch"))
@@ -310,7 +311,8 @@ static int main_initialize (int argc, char **argv)
 		  argc -= 2;
 	       }
 	  }
-	else if (!strcmp (argv1, "-help"))
+	else if ((0 == strcmp (argv1, "-help"))
+		 || (0 == strcmp (argv1, "-h")))
 	  {
 	     Batch = 1;
 	     SLang_Traceback = 1;

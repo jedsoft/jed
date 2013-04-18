@@ -132,6 +132,7 @@ Changes since 0.99-19
 64. src/file.c: If the make_autosave_filename hook returns "", then do
     not create an autosave file.  It is a bad idea for the hook to
     return "".
+65. src/main.c,lib/site.sl: jed -h will show command-line usage.
 
 {{{ Previous Versions 
 
