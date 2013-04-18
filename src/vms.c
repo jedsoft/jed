@@ -66,6 +66,33 @@ item_list_3;
 
 static int TTY_Inited;
 
+/*
+ * VMS image initialization code to set DECC features
+ * DECC$ACL_ACCESS_CHECK, 1: checks both UIC protection
+ *                           and OpenVMS Access Control Lists (ACLs).
+ */
+extern void LIB$INITIALIZE();
+static void (*unused_function_pointer)(void) = LIB$INITIALIZE ;
+static void vms_init ();
+#pragma extern_model save
+#pragma extern_model strict_refdef "LIB$INITIALIZE" long, nowrt
+#if __INITIAL_POINTER_SIZE
+# pragma __pointer_size __save
+# pragma __pointer_size 32
+#endif
+void (* const init_array[])() = {vms_init};
+#if __INITIAL_POINTER_SIZE
+# pragma __pointer_size __restore
+#endif
+#pragma extern_model restore
+static void vms_init ()
+{
+   int index = decc$feature_get_index("DECC$ACL_ACCESS_CHECK");
+   if (index == -1 || decc$feature_set_value(index, 0, 1) == -1)
+     perror("DECC$ACL_ACCESS_CHECK");
+}
+
+
 void vms_exit_handler(int not_used) /*{{{*/
 {
    if (TTY_Inited == 0) exit(0);

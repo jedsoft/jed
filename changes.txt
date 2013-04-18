@@ -133,6 +133,8 @@ Changes since 0.99-19
     not create an autosave file.  It is a bad idea for the hook to
     return "".
 65. src/main.c,lib/site.sl: jed -h will show command-line usage.
+66. src/vms.c: Add support for VMS ACL file protection schemes (Harmut
+    Becker).
 
 {{{ Previous Versions 
 
