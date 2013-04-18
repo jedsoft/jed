@@ -2,7 +2,7 @@ private variable Compressed_File_Exts
   = [".gz", ".Z", ".bz2"];
 
 private variable Compress_File_Pgms
-  = ["gzip",
+  = ["gzip -f",			       %  -force compression to take place
      "uncompress",
      "bzip2"];
 

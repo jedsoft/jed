@@ -135,6 +135,8 @@ Changes since 0.99-19
 65. src/main.c,lib/site.sl: jed -h will show command-line usage.
 66. src/vms.c: Add support for VMS ACL file protection schemes (Harmut
     Becker).
+67. lib/compress.c: Use the -f flag to force gzip to compress even if
+    the size grows.
 
 {{{ Previous Versions 
 
