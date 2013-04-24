@@ -137,6 +137,8 @@ Changes since 0.99-19
     Becker).
 67. lib/compress.c: Use the -f flag to force gzip to compress even if
     the size grows.
+68. Changed #66 backed out.  It appears that it triggers a bug in the
+    VMS C RTL access function.
 
 {{{ Previous Versions 
 

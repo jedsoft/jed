@@ -66,6 +66,9 @@ item_list_3;
 
 static int TTY_Inited;
 
+#if 0
+/* This feature appears to trigger a bug in the C RTL access function. */
+
 /*
  * VMS image initialization code to set DECC features
  * DECC$ACL_ACCESS_CHECK, 1: checks both UIC protection
@@ -91,6 +94,7 @@ static void vms_init ()
    if (index == -1 || decc$feature_set_value(index, 0, 1) == -1)
      perror("DECC$ACL_ACCESS_CHECK");
 }
+#endif				       /* #if 0 */
 
 
 void vms_exit_handler(int not_used) /*{{{*/
