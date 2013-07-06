@@ -47,6 +47,7 @@ private define check_eval (checked)
    return @checked;
 }
 
+%!%+
 %\function{modeline_hook2}
 %\synopsis{modeline_hook2}
 %\description
@@ -61,6 +62,7 @@ private define check_eval (checked)
 %#v+
 % -*- mode: NAME; evalfile: FILE; VAR: VALUE -*-
 %#v-
+%!%-
 define modeline_hook2 ()
 {
    variable keyword, value, mode = 0, tag = "-*-", modestr;

@@ -1,5 +1,3 @@
-# -*- sh -*-
-
 # To create the SGML files, you will need to install the tmexpand
 # package.  See http://www.jedsoft.org/ for more information.
 #
