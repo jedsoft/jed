@@ -2,6 +2,81 @@
 require ("keydefs");
 autoload ("glob", "glob");
 
+% use '*help-slang*' for apropos and for describing functions
+% lets us reuse the same keymap/buffer
+private variable
+  Help_Buf = "*help-slang*",
+  Help_Keymap = "*help-slang*",
+  Mini_Help_String = "?:this-message, RET:help-on-word, q:quit-help";
+
+private define help_buf_switch_buffer_hook (prev_buffer)
+{
+   if (whatbuf () == Help_Buf)
+     {
+	variable str = Mini_Help_String;
+	if (_Reserved_Key_Prefix != NULL)
+	  str = _Reserved_Key_Prefix + Mini_Help_String;
+	message (str);
+     }
+}
+
+define help_slang_quit ()
+{
+   call("delete_window");
+   %variable buffers = [buffer_list(), pop()];
+}
+
+%
+% use attach_keymap function, since the user may have deleted the
+% buffer in the meantime and we need to reattach the keymap
+%
+private define attach_keymap ()
+{
+   ifnot (keymap_p(Help_Keymap))
+     {
+        make_keymap(Help_Keymap);
+        definekey("help_apropos", "?",   Help_Keymap);
+        definekey("help_slang",   "\r",  Help_Keymap);
+        definekey("help_slang_quit",   "q",  Help_Keymap);
+        definekey_reserved("help_slang", "?", Help_Keymap); % for consistency
+     }
+
+   variable cbuf = whatbuf();
+   if (bufferp(Help_Buf))
+     {
+        setbuf(Help_Buf);
+        use_keymap(Help_Keymap);    % attach keymap here
+        setbuf(cbuf);
+     }
+   add_to_hook ("_jed_switch_active_buffer_hooks", &help_buf_switch_buffer_hook);
+}
+
+private variable Word_Chars = "0-9A-Z_a-z";  % no localized 'define_word'
+
+%% %!%+
+%% %\function{extract_word}
+%% %\synopsis{extract_word}
+%% %\usage{String extract_word (String word_chars)}
+%% %\description
+%% % extract a word defined by \var{word_chars} from the current buffer
+%% %!%-
+private define extract_word (chars)
+{
+   ifnot (markp())
+     {
+        % skip leading non-word chars, including newline
+        do
+          {
+             skip_chars ("^" + chars);
+             ifnot (eolp()) break;
+          }
+        while (down_1());
+        bskip_chars (chars);    % in case we started in the middle of a word
+        push_mark(); skip_chars (chars);        % mark the word
+     }
+   return bufsubstr();
+}
+
 %!%+
 %\variable{Help_Describe_Bindings_Show_Synopsis}
 %\synopsis{Used to control the searching of synopsis strings}
@@ -211,28 +286,53 @@ public define showkey ()
      }
 }
 
-%% apropos function
+%!%+
+%\function{help_for_apropos}
+%\synopsis{Void help_for_apropos (String)}
+%\description
+% find apropos context for a particular string
+%\seealso{apropos, help_apropos}
+%!%-
+define help_for_apropos (s)
+{
+    if (s == NULL) return;
+    ifnot (strlen (s)) return;    % no funny strings
+
+    variable a = _apropos("Global", s, 0xF);
+    variable cbuf = whatbuf();
+
+    vmessage ("Found %d matches.", length (a));
+
+    pop2buf(Help_Buf);
+    set_readonly (0);
+    attach_keymap();
+    erase_buffer();
+
+    a = a[array_sort (a)];
+    foreach (__tmp(a))
+      {
+          insert(());
+          newline();
+      }
+    buffer_format_in_columns();
+    bob();
+    set_buffer_modified_flag(0);
+    set_readonly (1);
+    pop2buf(cbuf);
+}
+
+%!%+
+%\function{apropos}
+%\synopsis{Void apropos (Void)}
+%\description
+% prompt for a string and find the apropos context
+%\seealso{help_apropos, help_for_apropos}
+%!%-
 define apropos ()
 {
-   variable n, cbuf, s, a;
    if (MINIBUFFER_ACTIVE) return;
-
-   s = read_mini("apropos:", "", "");
-   a = _apropos("Global", s, 0xF);
-   vmessage ("Found %d matches.", length (a));
-   a = a[array_sort (a)];
-   cbuf = whatbuf();
-   pop2buf("*apropos*");
-   erase_buffer();
-   foreach (__tmp(a))
-     {
-	insert(());
-	newline();
-     }
-   buffer_format_in_columns();
-   bob();
-   set_buffer_modified_flag(0);
-   pop2buf(cbuf);
+   variable s = read_mini("apropos:", "", "");
+   help_for_apropos(s);
 }
 
 define where_is ()
@@ -285,10 +385,7 @@ define help_get_doc_string (f)
 define help_for_function (f)
 {
    variable cbuf = whatbuf ();
-   variable tmp = " *jed-help*";
-   variable help = "*function-help*";
    variable doc_str, file;
-   variable value;
    variable str = "";
 
    % For variables such as TAB, whose value depends upon the buffer,
@@ -296,7 +393,7 @@ define help_for_function (f)
    if (is_defined (f) < 0)
      {
 	% __get_reference cannot return NULL since f is defined
-	value = __get_reference (f);
+	variable value = __get_reference (f);
 	if (__is_initialized (value))
 	  str = sprintf ("%S %s: value = %S\n", typeof (@value), f, @value);
 	else
@@ -305,7 +402,7 @@ define help_for_function (f)
    else if (is_internal (f))
      str = (f + ": internal function\n");
 
-   pop2buf (help); set_readonly (0); erase_buffer ();
+   pop2buf (Help_Buf); set_readonly (0); erase_buffer ();
    vinsert (str);
 
    (file, doc_str) = help_get_doc_string (f);
@@ -338,40 +435,60 @@ define help_for_function (f)
 
    bob ();
    set_buffer_modified_flag (0);
+   set_readonly (1);
    pop2buf (cbuf);
 }
 
 define help_do_help_for_object (prompt, flags)
 {
-   variable n, objs;
-
    if (MINIBUFFER_ACTIVE) return;
-
-#ifntrue
-   n = _apropos ("", flags);
-
-   objs = "";
-   loop (n)
-     {
-	objs = () + "," + objs;
-     }
-#else
-   objs = _apropos ("Global", "", flags);
+   variable objs = _apropos ("Global", "", flags);
    objs = objs[array_sort (objs)];
    objs = strjoin (objs, ",");
-#endif
    help_for_function (read_string_with_completion (prompt, "", objs));
 }
 
 define describe_function ()
 {
    help_do_help_for_object ("Describe Function:", 0x3);
+   attach_keymap ();
 }
 
 define describe_variable ()
 {
    help_do_help_for_object ("Describe Variable:", 0xC);
+   attach_keymap ();
 }
+
+%!%+
+%\function{help_apropos}
+%\synopsis{Void help_apropos (Void)}
+%\description
+% use either the marked region or else extract an alphanumeric keyword,
+% and then display S-Lang apropos context for this entry
+%\seealso{apropos, help_slang, help_for_apropos}
+%!%-
+define help_apropos ()
+{
+    extract_word(Word_Chars);
+    help_for_apropos();
+    attach_keymap();
+}
+
+%!%+
+%\function{help_slang}
+%\synopsis{Void help_slang (Void)}
+%\description
+% use either the marked region or else extract an alphanumeric keyword,
+% and then display S-Lang function/variable help
+%\seealso{apropos, help_apropos, help_for_function}
+%!%-
+define help_slang ()
+{
+    extract_word(Word_Chars);
+    help_for_function();
+    attach_keymap();
+ }
 
 define describe_mode ()
 {
@@ -420,7 +537,7 @@ define describe_bindings ()
 	     go_right (3);
 	     push_mark();
 	     % Could have a newline here
-	     if (not fsearch("\t\t\t")) eob ();
+	     ifnot (fsearch("\t\t\t")) eob ();
 	     go_up_1();
 	     () = dupmark();
 	     global_map[key] = bufsubstr();
@@ -476,7 +593,7 @@ define describe_bindings ()
 	bob();
 	while ( not eobp() )
 	  {
-	     if (not ffind("\t\t\t"))
+	     ifnot (ffind("\t\t\t"))
 	       {
 		  go_up_1();
 		  insert("\\n");
@@ -538,7 +655,7 @@ define describe_bindings ()
    while (fsearch ("\t\t\t"))
      {
 	go_right (3);
-	if ( looking_at_char('@') or looking_at_char(' ') )
+	if ( looking_at_char('@') || looking_at_char(' ') )
 	  continue;
         if ( looking_at_char('.') )
 	  {

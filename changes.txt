@@ -140,6 +140,7 @@ Changes since 0.99-19
 68. Changed #66 backed out.  It appears that it triggers a bug in the
     VMS C RTL access function.
 69. configure: parse /etc/ld.so.conf to look for system lib paths.
+70. lib/help.sl: Enhanced help mode (Mark Olesen).
 
 {{{ Previous Versions 
 
