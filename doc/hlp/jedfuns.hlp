@@ -507,7 +507,7 @@ set_mode
 
 
  SEE ALSO
-  whatmode, getbuf_info, setbuf_info.
+  what_mode, getbuf_info, setbuf_info
 
 --------------------------------------------------------------
 
@@ -556,7 +556,7 @@ setbuf_info
   `setbuf_info' performs the opposite function of the related
   function `getbuf_info'.  Here `file' is the name of the file
   to be associated with the buffer; `dir' is the directory to be
-  associated with the buffer; `buf' is the name to be assigned to
+  associated with the buffer; `name' is the name to be assigned to
   the buffer, and `flags' describe the buffer attributes.  See
   `getbuf_info' for a discussion of `flags'.  Note that the
   actual file associated with the buffer is located in directory
@@ -3077,7 +3077,7 @@ move_user_mark
 pop_mark
 
  SYNOPSIS
-  Pop the most recent mark (if "g" is non-zero, go there
+  Pop the most recent mark (if "g" is non-zero, go there)
 
  USAGE
   pop_mark (Integer g)
@@ -3152,10 +3152,10 @@ push_spot
   stack.  This function does not set the mark.  The function `push_mark'
   should be used for that purpose. The spot can be returned to using the
   function `pop_spot'.
-  Note: Spots are local to each buffer.  It is not
-  possible to call `push_spot' from one buffer and then subsequently
-  call `pop_spot' from another buffer to return to the position in the
-  first buffer.  For this purpose, one must use user marks instead.
+  Note: Spots are local to each buffer.  It is not possible to call
+  `push_spot' from one buffer and then subsequently call `pop_spot'
+  from another buffer to return to the position in the first buffer.
+  For this purpose, one must use user marks instead.
 
  SEE ALSO
   pop_spot, push_mark, create_user_mark
@@ -4405,7 +4405,7 @@ mouse_get_event_info
   is not returned by `mouse_get_event_info'.
 
  SEE ALSO
-  mouse_set_default_hook, set_buffer_hook.
+  mouse_set_default_hook, set_buffer_hook
 
 --------------------------------------------------------------
 
@@ -4786,7 +4786,7 @@ goto_line
   indeterminate.
 
  SEE ALSO
-  what_line, goto_column, down, up.
+  what_line, goto_column, down, up
 
 --------------------------------------------------------------
 
@@ -6402,7 +6402,7 @@ dfa_build_highlight_table
   create_syntax_table, use_syntax_table, dfa_define_highlight_rule, dfa_enable_highlight_cache
 
  SEE ALSO
-  WANT_SYNTAX_HIGHLIGHT,USE_ANSI_COLORS
+  WANT_SYNTAX_HIGHLIGHT, USE_ANSI_COLORS
 
 --------------------------------------------------------------
 
@@ -6451,7 +6451,7 @@ dfa_define_highlight_rule
   create_syntax_table, use_syntax_table, dfa_build_highlight_table
 
  SEE ALSO
-  WANT_SYNTAX_HIGHLIGHT,USE_ANSI_COLORS
+  WANT_SYNTAX_HIGHLIGHT, USE_ANSI_COLORS
 
 --------------------------------------------------------------
 
@@ -6488,7 +6488,7 @@ dfa_enable_highlight_cache
   create_syntax_table, use_syntax_table, dfa_define_highlight_rule, dfa_build_highlight_table
 
  SEE ALSO
-  WANT_SYNTAX_HIGHLIGHT,USE_ANSI_COLORS
+  WANT_SYNTAX_HIGHLIGHT, USE_ANSI_COLORS
 
 --------------------------------------------------------------
 
@@ -6511,7 +6511,7 @@ dfa_set_init_callback
   create_syntax_table, use_syntax_table, dfa_define_highlight_rule, dfa_enable_highlight_cache
 
  SEE ALSO
-  WANT_SYNTAX_HIGHLIGHT,USE_ANSI_COLORS
+  WANT_SYNTAX_HIGHLIGHT, USE_ANSI_COLORS
 
 --------------------------------------------------------------
 
@@ -6684,7 +6684,7 @@ use_syntax_table
   indentation, etc.
 
  SEE ALSO
-  create_syntax_table, define_syntax
+  create_syntax_table, define_syntax, what_syntax_table
 
 --------------------------------------------------------------
 

@@ -58,7 +58,7 @@
   This function may be used to test whether or not the mark is a visible
   mark.  A visible mar is one which causes the region defined by it to
   be highlighted.
-  It returns \var{1} is the mark is visible, or \exmp{0} if the mark
+  It returns \exmp{1} is the mark is visible, or \exmp{0} if the mark
   is not visible or does not exist.
 \seealso{markp, push_mark}
 \done
@@ -104,7 +104,7 @@
 \done
 
 \function{pop_mark}
-\synopsis{Pop the most recent mark (if "g" is non-zero, go there}
+\synopsis{Pop the most recent mark (if "g" is non-zero, go there)}
 \usage{pop_mark (Integer g)}
 \description
   \var{pop_mark} pops the most recent mark pushed onto the mark stack.  If
@@ -152,10 +152,10 @@
   stack.  This function does not set the mark.  The function \var{push_mark}
   should be used for that purpose. The spot can be returned to using the
   function \var{pop_spot}.
-  Note: Spots are local to each buffer.  It is not
-  possible to call \var{push_spot} from one buffer and then subsequently
-  call \var{pop_spot} from another buffer to return to the position in the
-  first buffer.  For this purpose, one must use user marks instead.
+  Note: Spots are local to each buffer.  It is not possible to call
+  \var{push_spot} from one buffer and then subsequently call \var{pop_spot}
+  from another buffer to return to the position in the first buffer.
+  For this purpose, one must use user marks instead.
 \seealso{pop_spot, push_mark, create_user_mark}
 \done
 

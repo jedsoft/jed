@@ -113,7 +113,7 @@
   by the name \var{n}. This must be called before any syntax
   highlighting will be done for that syntax table.
 \seealso{create_syntax_table, use_syntax_table, dfa_define_highlight_rule, dfa_enable_highlight_cache}
-\seealso{WANT_SYNTAX_HIGHLIGHT,USE_ANSI_COLORS}
+\seealso{WANT_SYNTAX_HIGHLIGHT, USE_ANSI_COLORS}
 \done
 
 \function{dfa_define_highlight_rule}
@@ -152,7 +152,7 @@
   Note also that \var{dfa_build_highlight_table} must be called before
   the syntax highlighting can take effect.
 \seealso{create_syntax_table, use_syntax_table, dfa_build_highlight_table}
-\seealso{WANT_SYNTAX_HIGHLIGHT,USE_ANSI_COLORS}
+\seealso{WANT_SYNTAX_HIGHLIGHT, USE_ANSI_COLORS}
 \done
 
 \function{dfa_enable_highlight_cache}
@@ -179,7 +179,7 @@
   theoretically possible but not recommended. Transferring them
   between different versions of Jed is not guaranteed to work.
 \seealso{create_syntax_table, use_syntax_table, dfa_define_highlight_rule, dfa_build_highlight_table}
-\seealso{WANT_SYNTAX_HIGHLIGHT,USE_ANSI_COLORS}
+\seealso{WANT_SYNTAX_HIGHLIGHT, USE_ANSI_COLORS}
 \done
 
 \function{dfa_set_init_callback}
@@ -192,7 +192,7 @@
   highlighting, the callback function \var{func} will be called to to
   create the specified syntax table if it does not already exist.
 \seealso{create_syntax_table, use_syntax_table, dfa_define_highlight_rule, dfa_enable_highlight_cache}
-\seealso{WANT_SYNTAX_HIGHLIGHT,USE_ANSI_COLORS}
+\seealso{WANT_SYNTAX_HIGHLIGHT, USE_ANSI_COLORS}
 \done
 
 \function{parse_to_point}
@@ -316,7 +316,7 @@
   with the buffer, the syntax table named \var{n} will be used in all
   operations that require a syntax.  This includes parenthesis matching,
   indentation, etc.
-\seealso{create_syntax_table, define_syntax}
+\seealso{create_syntax_table, define_syntax, what_syntax_table}
 \done
 
 \function{what_syntax_table}

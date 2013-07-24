@@ -169,7 +169,7 @@
   specified by the parameter \var{n}.
   Note: The actual column that the editing point will be left in is
   indeterminate.
-\seealso{what_line, goto_column, down, up.}
+\seealso{what_line, goto_column, down, up}
 \done
 
 \function{left}
