@@ -1717,6 +1717,26 @@ Enable_Mode_Hook_Eval
 
 --------------------------------------------------------------
 
+modeline_hook2
+
+ SYNOPSIS
+  modeline_hook2
+
+ DESCRIPTION
+ check for the following mode statements:
+
+ -*- mode: NAME -*-		set mode to NAME
+ -*- evalfile: FILE -*-	evaluate file FILE
+ -*- eval: expression -*-    evaluate expression
+ -*- VAR: VALUE -*-		set VAR = VALUE
+
+ these statements may be combined:
+
+ -*- mode: NAME; evalfile: FILE; VAR: VALUE -*-
+
+
+--------------------------------------------------------------
+
 most_mode
 
  SYNOPSIS

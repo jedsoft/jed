@@ -32,7 +32,7 @@ define sort_using_function (sort_fun)
 	go_down_1 ();
      }
 
-   index = array_sort(keys, sort_fun);
+   index = array_sort(keys, sort_fun;; __qualifiers());
 
    %
    %  arrange region
@@ -62,7 +62,7 @@ define sort_using_function (sort_fun)
 
 define sort ()
 {
-   sort_using_function (&strcmp);
+   variable dir = (prefix_argument() == NULL) ? +1 : -1;
+   sort_using_function (&strcmp; dir=dir);
    %flush("Done.");
 }
-

@@ -218,7 +218,7 @@
         16: Fortran mode highlighting
         32: TeX mode highlighting
 #v-
-\seealso{whatmode, getbuf_info, setbuf_info.}
+\seealso{what_mode, getbuf_info, setbuf_info}
 \done
 
 \function{setbuf}
@@ -253,7 +253,7 @@
   \var{setbuf_info} performs the opposite function of the related
   function \var{getbuf_info}.  Here \var{file} is the name of the file
   to be associated with the buffer; \var{dir} is the directory to be
-  associated with the buffer; \var{buf} is the name to be assigned to
+  associated with the buffer; \var{name} is the name to be assigned to
   the buffer, and \var{flags} describe the buffer attributes.  See
   \var{getbuf_info} for a discussion of \var{flags}.  Note that the
   actual file associated with the buffer is located in directory

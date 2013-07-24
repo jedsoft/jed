@@ -32,7 +32,7 @@
   Other information such as the button that triggered the event is
   available when the mouse handler is called.  As a result, this information
   is not returned by \var{mouse_get_event_info}.
-\seealso{mouse_set_default_hook, set_buffer_hook.}
+\seealso{mouse_set_default_hook, set_buffer_hook}
 \done
 
 \function{mouse_map_buttons}
