@@ -97,7 +97,7 @@ OTHERLIBS = @LIBS@ -lm
 # There should be no need to modify anything below here.
 #---------------------------------------------------------------------------
 
-MIN_SLANG_VERSION = 20100
+MIN_SLANG_VERSION = 20203
 MAX_SLANG_VERSION =
 XLIB = $(X_XTRA_LIBS) $(XLIBDIR) -lX11 $(TERMCAP_LIB) $(OTHERLIBS) $(DL_LIB)
 MISCLIBS = $(MOUSELIB) $(TERMCAP_LIB) $(X_XTRA_LIBS) $(OTHERLIBS) $(DL_LIB)

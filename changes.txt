@@ -141,6 +141,9 @@ Changes since 0.99-19
     VMS C RTL access function.
 69. configure: parse /etc/ld.so.conf to look for system lib paths.
 70. lib/help.sl: Enhanced help mode (Mark Olesen).
+71. lib/sort.sl: If given a prefix-argument, perform a reverse sort
+    (requires slang>=2.2.3).  Documentation corrections.  (Manfred
+    Hanke).
 
 {{{ Previous Versions 
 
