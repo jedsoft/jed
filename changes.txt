@@ -144,6 +144,8 @@ Changes since 0.99-19
 71. lib/sort.sl: If given a prefix-argument, perform a reverse sort
     (requires slang>=2.2.3).  Documentation corrections.  (Manfred
     Hanke).
+72. lib/sendmail.sl: In addition to String_Type, Mail_Extra_Headers is
+    allowed to be an array or list of strings.
 
 {{{ Previous Versions 
 

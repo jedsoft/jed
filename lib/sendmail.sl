@@ -236,8 +236,14 @@ define mail_format_buffer () %{{{
 
 	if (Mail_Extra_Headers != NULL)
 	  {
-	     insert (Mail_Extra_Headers);
-	     newline ();
+	     variable meh = Mail_Extra_Headers;
+	     if (typeof (meh) == String_Type)
+	       meh = {meh};
+	     foreach meh (meh)
+	       {
+		  insert (strtrim (meh));
+		  newline ();
+	       }
 	  }
 	insert (Mail_Header_Separator_String);
 	newline ();
