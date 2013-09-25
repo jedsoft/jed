@@ -211,6 +211,28 @@ static void set_process_group (void)
      {
 	pid_t pid = getpid ();
 	Startup_PGID = getpgid (pid);
+#if 0				       /* works on BSD */
+	if (-1 == setpgid (pid, pid))
+	  {
+	     fprintf (stderr, "setpgid failed\n");
+	     Terminal_PGID = -1;
+	     return;
+	  }
+	if (-1 == tcsetpgrp (Read_FD, pid))
+	  {
+	     int e = errno;
+	     Terminal_PGID = -1;
+	     (void) setpgid (pid, Startup_PGID);
+	     fprintf (stderr, "tcsetpgrp failed: %s\n", SLerrno_strerror (e));
+	     return;
+	  }
+#else				       /* works on linux */
+	if (-1 == tcsetpgrp (Read_FD, pid))
+	  {
+	     fprintf (stderr, "tcsetpgrp failed: %s\n", SLerrno_strerror (errno));
+	     Terminal_PGID = -1;
+	     return;
+	  }
 	if (-1 == setpgid (pid, pid))
 	  {
 	     fprintf (stderr, "setpgid failed\n");
@@ -218,13 +240,7 @@ static void set_process_group (void)
 	     Terminal_PGID = -1;
 	     return;
 	  }
-	if (-1 == tcsetpgrp (Read_FD, pid))
-	  {
-	     fprintf (stderr, "tcsetpgrp failed: %s\n", SLerrno_strerror (errno));
-	     Terminal_PGID = -1;
-	     (void) setpgid (pid, Startup_PGID);
-	     return;
-	  }
+#endif
      }
 #endif
 }
