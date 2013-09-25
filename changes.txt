@@ -146,6 +146,8 @@ Changes since 0.99-19
     Hanke).
 72. lib/sendmail.sl: In addition to String_Type, Mail_Extra_Headers is
     allowed to be an array or list of strings.
+73. src/unix.c: Call setpgid before tcsetpgrp to ensure that the new
+    pgid exists.
 
 {{{ Previous Versions 
 
