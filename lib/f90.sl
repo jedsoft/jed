@@ -15,125 +15,293 @@ private define get_format_mode ()
 
 private define set_format_mode (x)
 {
-   x = (strlow(x) == "free");
    create_blocal_var ("F90_Mode_Format");
-   set_blocal_var (x, "F90_Mode_Format");
+   set_blocal_var (strlow(x) == "free", "F90_Mode_Format");
+}
+
+private variable Zero_Indent_Words =
+  ["PROGRAM", "CONTAINS"];
+
+private variable Block_Indent_Keywords =
+  [
+   "CASE",
+   "DO",
+   "ELSE",
+   "IF",
+   "SELECT",
+   "TYPE",
+   "WHERE",
+   "ElSEIF", "ELSEWHERE",
+   "INTERFACE",
+   "FUNCTION", "SUBROUTINE", "MODULE",
+   Zero_Indent_Words,
+  ];
+
+private define goto_end_of_code_line ()
+{
+   eol ();
+   while (not bolp ())
+     {
+	bskip_white ();
+	if (0 == parse_to_point ())
+	  break;
+	go_left (1);
+     }
+}
+
+private define bskip_non_code ()
+{
+   while (not bobp())
+     {
+	bskip_white ();
+	if (bolp ())
+	  {
+	     go_up (1);
+	     continue;
+	  }
+	variable p = parse_to_point ();
+	if (p)
+	  {
+	     if ((p != -2) || (0 == bfind ("!")))
+	       go_left (1);
+
+	     continue;
+	  }
+
+	push_mark ();
+	bol ();
+	if (looking_at ("#"))
+	  {
+	     pop_mark_0 ();
+	     continue;
+	  }
+	pop_mark_1 ();
+	return;
+     }
+}
+
+
+private define line_continues ()
+{
+   push_spot ();
+   goto_end_of_code_line ();
+   variable c = blooking_at ("&");
+   pop_spot ();
+   return c;
+}
+
+private define line_was_continued ()
+{
+   push_spot ();
+   bol ();
+   bskip_non_code ();
+   variable c = blooking_at ("&");
+   pop_spot ();
+   return c;
+}
+
+% If looking at one of the words, return 1 otherwise 0.
+% If wordp reference is non-NULL, set it to word.
+% The words array is assumed to be uppercase
+private define looking_at_word (words, wordp)
+{
+   push_spot ();
+   push_mark ();
+   skip_chars ("A-Za-z0-9_");
+   variable word = strup (bufsubstr ());
+   pop_spot ();
+   if (wordp != NULL) @wordp = word;
+   return any (words == word);
+}
+
+private define blooking_at_words (words, wordp)
+{
+   push_spot ();
+   push_mark ();
+   bskip_chars ("A-Za-z0-9_");
+   variable word = strup (bufsubstr ());
+   pop_spot ();
+   if (wordp != NULL) @wordp = word;
+   return any (words == word);
 }
 
 %{{{ Free Format Functions
 private define free_f90_indent ()
 {
-   variable goal = 1;		% at top of buffer it should be 1 n'est pas?
-   variable cs = CASE_SEARCH;
-   variable ch;
+   variable start_pos = create_user_mark ();
 
-   % goto beginning of line and skip past tabs and spaces
-   USER_BLOCK0
+   variable goal = 1;
+
+   variable cs = CASE_SEARCH; CASE_SEARCH = 0;
+
+   EXIT_BLOCK
      {
-	bol ();
-	skip_chars (" \t");
-	skip_white ();
+	CASE_SEARCH = cs;
+	bol_skip_white ();
+	if (goal != what_column ())
+	  {
+	     bol_trim ();
+	     insert_spaces (goal-1);
+	  }
+	goto_user_mark (start_pos);
+	bskip_white ();
+	if (bolp())
+	  {
+	     skip_white ();
+	     return;
+	  }
+	goto_user_mark (start_pos);
      }
 
-   push_spot ();
-   push_spot ();
-   CASE_SEARCH = 0;	% F90 is not case sensitive
+
+   bol_skip_white ();
+   if (looking_at_word (Zero_Indent_Words, NULL))
+     {
+	goal = 1;
+	return;
+     }
+
+   if (looking_at ("!"))
+     {
+	push_spot ();
+	if (up_1 ())
+	  {
+	     bol_skip_white ();
+	     if (looking_at ("!"))
+	       {
+		  goal = what_column ();
+		  pop_spot ();
+		  return;
+	       }
+	  }
+	pop_spot ();
+     }
+
    while (up_1 ())
      {
-	bol_skip_white();
-	if (eolp() or looking_at("!") or looking_at("&") or looking_at("#") )
-	  continue;
-	X_USER_BLOCK0 ();
+	bskip_non_code ();
+	variable eol_word;
+	() = blooking_at_words ("", &eol_word);
+
+	variable will_continue = line_continues ();
+	variable was_continued = line_was_continued ();
+
+	bol_skip_white ();
+#iffalse
+	if (looking_at ("&"))
+	  {
+	     go_right_1 ();
+	     skip_white ();
+	  }
+#endif
 	goal = what_column ();
 
-%	if (goal == 1) continue;
-
-	skip_chars (" \t1234567890");
-	if (looking_at("do ") or looking_at("else")
-	    or looking_at("function")
-	    or looking_at("subroutine")
-	    or looking_at("case")
-	    or looking_at("interface")
-	    or looking_at("recursive")
-	    or looking_at("program")
-	    or looking_at("where")
-	    )
-	  goal += F90_Indent_Amount;
-	else if (looking_at("select") )
-	  goal += F90_Indent_Amount * 2;
-	else if (looking_at("if ") or looking_at("if("))
+	if (eol_word == "THEN")
 	  {
-	     % We want to check for 'then' so take care of continuations
-	     push_spot ();
-	     while (down_1 ())
+	     ifnot (was_continued)
+	       goal += F90_Indent_Amount;
+	     break;
+	  }
+
+	% Check for the presence of labels
+	ifnot (was_continued)
+	  skip_chars (" \t0-9");%  numeric label
+
+	push_mark ();
+	skip_chars ("A-Za-z0-9_ \t");
+	if (looking_at (":") && not looking_at ("::"))
+	  {
+	     skip_chars (": \t");
+	     pop_mark_0();
+	  }
+	else pop_mark_1();
+
+	variable word;
+	ifnot (looking_at_word (Block_Indent_Keywords, &word))
+	  {
+	     variable is_func = 0;
+	     if (word != "END") foreach (["FUNCTION", "SUBROUTINE"])
 	       {
-		  bol_skip_white ();
-		  ifnot (looking_at (F90_Continue_Char))
+		  variable f = ();
+		  push_spot ();
+		  if (ffind (f)
+		      && (re_looking_at (strcat ("\\C", f,  "[\t ]+[A-Za-z_]")))
+		      && (0 == parse_to_point ()))
 		    {
-		       go_up_1 ();
-		       bol ();
+		       is_func = 1;
+		       pop_spot ();
 		       break;
 		    }
+		  pop_spot ();
 	       }
-	     if (ffind ("then")) goal += F90_Indent_Amount;
 	     pop_spot ();
+	     if (is_func == 0)
+	       {
+		  if (was_continued) goal -= F90_Indent_Amount;
+		  if (will_continue) goal += F90_Indent_Amount;
+		  break;
+	       }
 	  }
-	else if (looking_at("type ") or looking_at("module "))
+
+	goal += F90_Indent_Amount;
+
+	switch (word)
 	  {
-	     if (not (ffind ("::"))) goal += F90_Indent_Amount;
+	   case "IF":
+	     if ((will_continue == 0) && (eol_word != "THEN"))
+	       goal -= F90_Indent_Amount;
+	  }
+	  {
+	   case "TYPE":
+	     if (will_continue == 0)
+	       {
+		  go_right(4);
+		  skip_white ();
+		  if (looking_at_char ('('))
+		    goal -= F90_Indent_Amount;
+	       }
+	  }
+	  {
+	   case "MODULE":
+	     if (will_continue == 0)
+	       {
+		  go_right(6);
+		  skip_white ();
+		  if (looking_at ("PROCEDURE"))
+		    goal -= F90_Indent_Amount;
+	       }
+	  }
+	  {
+	     if (will_continue)
+	       goal += F90_Indent_Amount;
 	  }
 	break;
      }
 
    % now check current line
-   pop_spot ();
-   push_spot ();
-   X_USER_BLOCK0 ();
-
-   if (looking_at("end") )
+   goto_user_mark (start_pos);
+   bol ();
+   skip_chars ("0-9 \t");
+   if (looking_at_word (["CASE", "ELSE", "ELSEWHERE", "ELSEIF"], &word))
      {
-	if (ffind ("select")) goal -= F90_Indent_Amount * 2;
-	else
-	  goal -= F90_Indent_Amount;
+	goal -= F90_Indent_Amount;
+	return;
      }
-   else if ( looking_at("continue") or
-       looking_at("case") or
-       looking_at("else")) goal -= F90_Indent_Amount;
 
-   CASE_SEARCH = cs;		% done getting indent
-   if (goal < 1) goal = 1;
-   pop_spot ();
-
-   bol_skip_white ();
-
-   % after the label or continuation char and indent the rest to goal
-   USER_BLOCK1
+   if (0 == strncmp (word, "END", 3))
      {
-	%skip_chars ("0-9");
-	trim ();
-	if (looking_at (F90_Continue_Char))
+	go_right (3);
+	skip_white ();
+	if (looking_at_word (Zero_Indent_Words, NULL))
 	  {
-	     go_right_1 (); trim();
-	     goal += F90_Indent_Amount;
+	     goal = 1;
+	     return;
 	  }
-	insert_spaces (goal - what_column());
+	ifnot (looking_at_word (Block_Indent_Keywords, &word))
+	  return;
+	goal -= F90_Indent_Amount;
+	return;
      }
-
-   ch = char(what_char());
-   switch (ch)
-     {
-	case F90_Continue_Char :	% continuation character
-	bol (); trim ();
-	X_USER_BLOCK1 ();
-     }
-     {
-	not (bolp()) or eolp ():	% general case
-	bol (); trim ();
-	goal--;
-	insert_spaces (goal);
-     }
-   pop_spot ();
-   skip_white ();
 }
 
 private define free_f90_is_comment ()
@@ -142,7 +310,7 @@ private define free_f90_is_comment ()
    looking_at("!");
 }
 
-private define free_f90_newline ()
+private define old_free_f90_newline ()
 {
    variable p, cont , cont1;
 
@@ -200,6 +368,27 @@ private define free_f90_newline ()
    free_f90_indent ();
 }
 
+private define free_f90_newline ()
+{
+   trim ();
+   if (0 == parse_to_point ())
+     {
+	variable p = _get_point ();
+	bskip_chars("-+*=/,(<>");
+	variable needs_continued = (p != _get_point ());
+	eol ();
+	if (needs_continued)
+	  insert (" &");
+     }
+
+   if (what_column () > 72)
+     message ("Line exceeds 72 columns.");
+
+   newline ();
+   free_f90_indent ();
+}
+
+
 %}}}
 
 %{{{ Fixed Format Functions
@@ -225,23 +414,23 @@ define fixed_f90_indent ()
    while (up_1 ())
      {
 	bol_skip_white();
-	if (eolp() or looking_at(F90_Continue_Char)) continue;
+	if (eolp() || looking_at(F90_Continue_Char)) continue;
 	X_USER_BLOCK0 ();
 	goal = what_column ();
 
 	if (goal == 1) continue;
 
-	if (looking_at("do ") or looking_at("else")
-	    or looking_at("subroutine")
-	    or looking_at("interface")
-	    or looking_at("program")
+	if (looking_at("do ") || looking_at("else")
+	    || looking_at("subroutine")
+	    || looking_at("interface")
+	    || looking_at("program")
 	    )
 	  goal += F90_Indent_Amount;
-	else if (looking_at("if ") or looking_at("if("))
+	else if (looking_at("if ") || looking_at("if("))
 	  {
 	     if (ffind ("then")) goal += F90_Indent_Amount;
 	  }
-	else if (looking_at("type ") or looking_at("module "))
+	else if (looking_at("type ") || looking_at("module "))
 	  {
 	     if (not (ffind ("::"))) goal += F90_Indent_Amount;
 	  }
@@ -295,7 +484,7 @@ define fixed_f90_indent ()
 	X_USER_BLOCK1 ();
      }
      {
-	not (bolp()) or eolp ():	% general case
+	not (bolp()) || eolp ():	% general case
 	bol (); trim ();
 	goal--;
 	insert_spaces (goal);
@@ -462,8 +651,8 @@ define f90_beg_of_subprogram ()
 	if (_get_point ())
 	  {
 	     if (looking_at ("program")
-		 or looking_at ("function")
-		 or looking_at ("subroutine")) break;
+		 || looking_at ("function")
+		 || looking_at ("subroutine")) break;
 	  }
      }
    while (up_1 ());
