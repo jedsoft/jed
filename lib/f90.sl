@@ -80,7 +80,6 @@ private define bskip_non_code ()
      }
 }
 
-
 private define line_continues ()
 {
    push_spot ();
@@ -152,7 +151,6 @@ private define free_f90_indent ()
 	  }
 	goto_user_mark (start_pos);
      }
-
 
    bol_skip_white ();
    if (looking_at_word (Zero_Indent_Words, NULL))
@@ -370,16 +368,19 @@ private define old_free_f90_newline ()
 
 private define free_f90_newline ()
 {
-   trim ();
+   bskip_white ();
    if (0 == parse_to_point ())
      {
-	variable p = _get_point ();
-	bskip_chars("-+*=/,(<>");
-	variable needs_continued = (p != _get_point ());
-	eol ();
+	variable m = create_user_mark();
+	bskip_chars("-+*=/,(<>:");
+	variable needs_continued = (m != create_user_mark ());
+	ifnot (needs_continued)
+	  needs_continued = (1 == find_matching_delimiter (')'));
+	goto_user_mark (m);
 	if (needs_continued)
 	  insert (" &");
      }
+   trim ();
 
    if (what_column () > 72)
      message ("Line exceeds 72 columns.");
@@ -387,7 +388,6 @@ private define free_f90_newline ()
    newline ();
    free_f90_indent ();
 }
-
 
 %}}}
 

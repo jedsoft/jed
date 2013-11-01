@@ -151,6 +151,8 @@ Changes since 0.99-19
 74. src/unix.c: Undo #73 since it fails on linux.
 75. lib/f90.sl: Reworked the indent_line function for the free-format
     mode.
+76. lib/f90.sl: Fixed a problem with continuation lines in
+    the free_f90_newline function.
 
 {{{ Previous Versions
 
