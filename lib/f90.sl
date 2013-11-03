@@ -933,7 +933,7 @@ public define f90_fixed_format_mode ()
 % Variables include:
 %#v+
 %   F90_Continue_Char   --- character used as a continuation character.
-%     By default, its value is ">"
+%     By default, its value is "&"
 %   F90_Comment_String  --- string used by 'f90_comment' to
 %     comment out a line.  The default string is "C ";
 %   F90_Indent_Amount   --- number of spaces to indent statements in
@@ -945,6 +945,8 @@ public define f90_mode ()
 {
    setup_f90_mode (strlow (F90_Default_Format));
    run_mode_hooks ("f90_mode_hook");
+
+   set_comment_info (F90_Comment_String, F90_Comment_String, 0x4);
 }
 
 provide ("f90");
