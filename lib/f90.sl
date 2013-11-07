@@ -124,40 +124,27 @@ private define blooking_at_words (words, wordp)
    return any (words == word);
 }
 
+private define bskip_to_bos ()
+{
+   bskip_non_code ();
+   while (line_was_continued () && up_1())
+     ;
+   bol_skip_white ();
+}
+
 %{{{ Free Format Functions
-private define free_f90_indent ()
+
+% This function does not preserve the point
+private define compute_free_f90_indent ();   %  recursive
+private define compute_free_f90_indent ()
 {
    variable start_pos = create_user_mark ();
 
-   variable goal = 1;
-
-   variable cs = CASE_SEARCH; CASE_SEARCH = 0;
-
-   EXIT_BLOCK
-     {
-	CASE_SEARCH = cs;
-	bol_skip_white ();
-	if (goal != what_column ())
-	  {
-	     bol_trim ();
-	     insert_spaces (goal-1);
-	  }
-	goto_user_mark (start_pos);
-	bskip_white ();
-	if (bolp())
-	  {
-	     skip_white ();
-	     return;
-	  }
-	goto_user_mark (start_pos);
-     }
+   variable goal = 0;		       %  0 signifies not set
 
    bol_skip_white ();
    if (looking_at_word (Zero_Indent_Words, NULL))
-     {
-	goal = 1;
-	return;
-     }
+     return 1;
 
    if (looking_at ("!"))
      {
@@ -169,12 +156,32 @@ private define free_f90_indent ()
 	       {
 		  goal = what_column ();
 		  pop_spot ();
-		  return;
+		  return goal;
 	       }
 	  }
 	pop_spot ();
      }
 
+   variable is_paren = looking_at (")") || looking_at ("]")
+     || looking_at ("/)");
+   if (1 == find_matching_delimiter (')'))
+     {
+	goal = what_column () + (is_paren == 0);
+	% If the match is at the end of the line, reset the indent point
+	% This should be made configurable.  This idea is to avoid excess
+	% whitespace
+	%go_right_1 (); skip_white ();
+	skip_chars ("(/ \t");
+	ifnot (looking_at ("&"))
+	  {
+	     goto_user_mark (start_pos);
+	     return goal;
+	  }
+	goal = 0;
+     }
+   goto_user_mark (start_pos);
+
+   variable word;
    while (up_1 ())
      {
 	bskip_non_code ();
@@ -184,15 +191,40 @@ private define free_f90_indent ()
 	variable will_continue = line_continues ();
 	variable was_continued = line_was_continued ();
 
-	bol_skip_white ();
-#iffalse
-	if (looking_at ("&"))
+	if (will_continue == 0)
 	  {
-	     go_right_1 ();
-	     skip_white ();
+	     was_continued = 0;
+	     bskip_to_bos ();
 	  }
-#endif
-	goal = what_column ();
+
+	if (will_continue && (goal == 0))
+	  {
+	     go_left_1();
+	     bskip_white ();
+	     if (blooking_at (")"))
+	       {
+		  was_continued = 0;
+		  bskip_to_bos ();
+	       }
+	  }
+
+	bol_skip_white ();
+
+	% Check for the presence of labels
+	ifnot (was_continued)
+	  {
+	     variable p = _get_point ();
+	     skip_chars (" \t0-9");
+	     if (p != _get_point ())
+	       {
+		  push_spot ();
+		  goal = compute_free_f90_indent ();
+		  pop_spot ();
+	       }
+	  }
+
+	if (goal == 0)
+	  goal = what_column ();
 
 	if (eol_word == "THEN")
 	  {
@@ -202,8 +234,8 @@ private define free_f90_indent ()
 	  }
 
 	% Check for the presence of labels
-	ifnot (was_continued)
-	  skip_chars (" \t0-9");%  numeric label
+%	ifnot (was_continued)
+%	  skip_chars (" \t0-9");%  numeric label
 
 	push_mark ();
 	skip_chars ("A-Za-z0-9_ \t");
@@ -214,7 +246,6 @@ private define free_f90_indent ()
 	  }
 	else pop_mark_1();
 
-	variable word;
 	ifnot (looking_at_word (Block_Indent_Keywords, &word))
 	  {
 	     variable is_func = 0;
@@ -232,7 +263,7 @@ private define free_f90_indent ()
 		    }
 		  pop_spot ();
 	       }
-	     pop_spot ();
+	     % pop_spot ();
 	     if (is_func == 0)
 	       {
 		  if (was_continued) goal -= F90_Indent_Amount;
@@ -281,26 +312,88 @@ private define free_f90_indent ()
    bol ();
    skip_chars ("0-9 \t");
    if (looking_at_word (["CASE", "ELSE", "ELSEWHERE", "ELSEIF"], &word))
-     {
-	goal -= F90_Indent_Amount;
-	return;
-     }
-
-   if (0 == strncmp (word, "END", 3))
+     goal -= F90_Indent_Amount;
+   else if (0 == strncmp (word, "END", 3))
      {
 	go_right (3);
 	skip_white ();
 	if (looking_at_word (Zero_Indent_Words, NULL))
+	  return 1;
+	if (looking_at_word (Block_Indent_Keywords, &word))
+	  goal -= F90_Indent_Amount;
+     }
+   return goal;
+}
+
+private define free_f90_indent ()
+{
+   variable cs = CASE_SEARCH; CASE_SEARCH = 0;
+   EXIT_BLOCK
+     {
+	CASE_SEARCH = cs;
+     }
+
+   variable start_pos = create_user_mark ();
+   variable goal = compute_free_f90_indent ();
+
+   bol_skip_white ();
+   variable col = what_column ();
+   skip_chars ("0-9");
+   variable label_end_col = 0;
+   if (col != what_column())
+     {
+	ifnot (line_was_continued ())
 	  {
-	     goal = 1;
-	     return;
+	     if (col != 2)
+	       {
+		  bol_trim ();
+		  insert_single_space ();
+	       }
+	     skip_chars ("0-9");
+	     label_end_col = what_column();
+	     ifnot (looking_at (" ")) insert_single_space ();
+	     skip_white ();
 	  }
-	ifnot (looking_at_word (Block_Indent_Keywords, &word))
-	  return;
-	goal -= F90_Indent_Amount;
+	else bol_skip_white ();
+     }
+
+   col = what_column ();
+   if (goal != col)
+     {
+	bskip_white ();
+	if (label_end_col)
+	  {
+	     goal -= label_end_col;
+	     if (goal < 1) goal = 1;
+	     goal++;
+	  }
+	if ((label_end_col == 0) || (goal > 1))
+	  {
+	     col = what_column ();
+	     skip_white ();
+	     if (goal - 1 != what_column() - col)
+	       {
+		  bskip_white ();
+		  trim ();
+		  insert_spaces (goal-1);
+	       }
+	  }
+     }
+   eol ();
+
+   if (_get_point() > 132)
+     vmessage ("Line %d contains more than 132 bytes", what_line());
+
+   goto_user_mark (start_pos);
+   bskip_white ();
+   if (bolp())
+     {
+	skip_white ();
 	return;
      }
+   goto_user_mark (start_pos);
 }
+
 
 private define free_f90_is_comment ()
 {
@@ -946,7 +1039,7 @@ public define f90_mode ()
    setup_f90_mode (strlow (F90_Default_Format));
    run_mode_hooks ("f90_mode_hook");
 
-   set_comment_info (F90_Comment_String, F90_Comment_String, 0x4);
+   set_comment_info (F90_Comment_String, "", 0x4);
 }
 
 provide ("f90");
