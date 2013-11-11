@@ -1047,10 +1047,10 @@ unsigned char *jed_skip_whitespace (void)
 
 unsigned char *jed_bskip_whitespace (void)
 {
-   unsigned char *p, *pmin, *pmax;
+   unsigned char *p, *pmin;
 
    pmin = CLine->data;
-   pmax = p = CLine->data + Point;
+   p = CLine->data + Point;
 
    while (p > pmin)
      {

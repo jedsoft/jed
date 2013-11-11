@@ -1940,7 +1940,7 @@ static Menu_Node_Type *find_menu_node1 (Menu_Popup_Type *m,
 	  {
 	     if (stop_at_last_popup
 		 && ((p->type != MENU_NODE_POPUP)
-		     || (p->type != MENU_NODE_MENUBAR)))
+		     && (p->type != MENU_NODE_MENUBAR)))
 	       return (Menu_Node_Type *)m;
 
 	     return (Menu_Node_Type *)p;

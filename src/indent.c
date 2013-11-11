@@ -194,7 +194,7 @@ static int parse_to_point1 (Syntax_Table_Type *table,
 			    unsigned char *pmax)
 {
    unsigned char ch;
-   int quote,  cc,  flags;
+   int quote, flags;
    unsigned char *p;
    unsigned int lflags;
    unsigned char com_start_char;
@@ -213,7 +213,6 @@ static int parse_to_point1 (Syntax_Table_Type *table,
      }
 
    sc = table->string_chars;
-   cc = table->char_char;
    syntax = table->char_syntax;
    sgml_stop_char = table->sgml_stop_char;
 
@@ -672,6 +671,8 @@ static int backward_goto_match (int count, unsigned char ch) /*{{{*/
    sgml_stop_char = table->sgml_stop_char;
 
    /* FIXME: handle sgml_start/stop_char */
+   (void) sgml_start_char; (void) sgml_stop_char; (void) in_html;
+
    pmax = CLine->data + CLine->len;
    while (count)
      {

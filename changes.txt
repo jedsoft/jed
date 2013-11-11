@@ -159,6 +159,9 @@ Changes since 0.99-19
     and numeric labels.
 79. lib/f90.sl: Changed the way "contains" is indented, and added
     support for "forall".
+80. src/menu.c: Use && instead of || in the find_menu_node1
+    (David Binderman).  A few set-but-not-used variables were
+    eliminated elsewhere.
 
 {{{ Previous Versions
 

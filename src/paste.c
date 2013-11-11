@@ -890,9 +890,9 @@ int insert_rectangle() /*{{{*/
 
 /*}}}*/
 
-int open_rectangle() /*{{{*/
+int open_rectangle (void) /*{{{*/
 {
-   int c1, n, c2, tmpm;
+   int c1, n, c2;
    Line *save_line;
 
    CHECK_READ_ONLY
@@ -900,7 +900,7 @@ int open_rectangle() /*{{{*/
 
    c1 = calculate_column();
    save_line = CLine;
-   tmpm = 1; jed_pop_mark(1);
+   jed_pop_mark(1);
    c2 = calculate_column();
    n = c2 - c1;
    if (n < 0)
