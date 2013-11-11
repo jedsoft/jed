@@ -20,13 +20,15 @@ private define set_format_mode (x)
 }
 
 private variable Zero_Indent_Words =
-  ["PROGRAM", "CONTAINS"];
+  ["PROGRAM"];
 
 private variable Block_Indent_Keywords =
   [
    "CASE",
+   "CONTAINS",
    "DO",
    "ELSE",
+   "FORALL",
    "IF",
    "SELECT",
    "TYPE",
@@ -311,7 +313,7 @@ private define compute_free_f90_indent ()
    goto_user_mark (start_pos);
    bol ();
    skip_chars ("0-9 \t");
-   if (looking_at_word (["CASE", "ELSE", "ELSEWHERE", "ELSEIF"], &word))
+   if (looking_at_word (["CASE", "ELSE", "ELSEWHERE", "ELSEIF", "CONTAINS"], &word))
      goal -= F90_Indent_Amount;
    else if (0 == strncmp (word, "END", 3))
      {
