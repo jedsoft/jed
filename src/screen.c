@@ -342,7 +342,7 @@ static void display_line_numbers (void)
 	  }
 
 	SLsmg_gotorc (i, c);
-	sprintf (buf, "%*d ", CBuf->line_num_display_size-1, linenum);
+	sprintf (buf, "%*u ", CBuf->line_num_display_size-1, linenum);
 	SLsmg_write_string (buf);
 
 	line = line->next;
@@ -809,22 +809,22 @@ static void finish_status(int col_flag)
 	     else
 	       {
 		  if (User_Prefers_Line_Numbers == 1)
-		    sprintf(buf, "%d/%d", LineNum, Max_LineNum);
+		    sprintf(buf, "%u/%u", LineNum, Max_LineNum);
 		  else
 		    {
 		       if (col_flag) (void) calculate_column ();
-		       sprintf(buf, "%d/%d,%d", LineNum, Max_LineNum, Absolute_Column);
+		       sprintf(buf, "%u/%u,%d", LineNum, Max_LineNum, Absolute_Column);
 		    }
 	       }
 	     break;
 
 	   case 'l':
-	     sprintf(buf, "%d", LineNum);
+	     sprintf(buf, "%u", LineNum);
 	     str=buf;
 	     break;
 
 	   case 'L':
-	     sprintf(buf, "%d", Max_LineNum);
+	     sprintf(buf, "%u", Max_LineNum);
 	     str=buf;
 	     break;
 
@@ -2114,7 +2114,7 @@ void exit_error(char *str, int severity)
 	     fprintf(stderr, "CBuf: %p, CLine: %p, Point %d\n", (void *)CBuf, (void *) CLine, Point);
 	     if (CLine != NULL) fprintf(stderr, "CLine: data: %p, len = %d, next: %p, prev %p\n",
 					(void *) CLine->data, CLine->len, (void *)CLine->next, (void *)CLine->prev);
-	     fprintf(stderr, "Max_LineNum: %d, LineNum: %d\n", Max_LineNum, LineNum);
+	     fprintf(stderr, "Max_LineNum: %u, LineNum: %u\n", Max_LineNum, LineNum);
 	     if (JWindow != NULL) fprintf(stderr, "JWindow: %p, top: %d, rows: %d, buffer: %p\n",
 					  (void *)JWindow, JWindow->sy, JWindow->rows, (void *)JWindow->buffer);
 	  }

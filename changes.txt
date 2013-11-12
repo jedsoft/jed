@@ -162,6 +162,8 @@ Changes since 0.99-19
 80. src/menu.c: Use && instead of || in the find_menu_node1
     (David Binderman).  A few set-but-not-used variables were
     eliminated elsewhere.
+81. src/screen.c: Use %u instead of %d in some format statements for
+    use with unsigned variables. (David Binderman).
 
 {{{ Previous Versions
 
