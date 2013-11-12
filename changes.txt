@@ -166,6 +166,8 @@ Changes since 0.99-19
     use with unsigned variables. (David Binderman).
 82. lib/compile.sl: The gcc error message regexp tweaked to handle
     cppcheck.
+83. src/gtk*.c: Calls to SLmalloc were using the wrong size.  (Note:
+    This code is still under development).
 
 {{{ Previous Versions
 

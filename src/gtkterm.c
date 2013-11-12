@@ -5205,7 +5205,7 @@ int jgtk_createKeyEvents( char *keyStr )
    newEv->any.type = JXKeyFeedID;
    newEv->keyFeed.type = JXKeyFeedID;
    /* newEv->keyFeed.keys = keyStr; */
-   newEv->keyFeed.keys = SLmalloc( sizeof( ( *keyStr ) + 1 ) );
+   newEv->keyFeed.keys = SLmalloc(1 + (unsigned char)*keyStr);
    strncpy( newEv->keyFeed.keys, keyStr, *keyStr );
    newEv->keyFeed.keys[(unsigned char) *keyStr] = '\0';
    eB->jXGtkEvList = g_list_append( eB->jXGtkEvList, newEv );

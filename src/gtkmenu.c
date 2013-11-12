@@ -951,7 +951,7 @@ insertSpecCmdItem( Menu_Popup_Type *m, char *name,
 
       /* printf( "File: %s, Line: %d: insertSpecCmdItem: Length: %d\n", __FILE__, __LINE__, *buf ); */
 
-	if ( NULL == ( k = SLmalloc( sizeof( ( *buf ) + 1 ) ) ) )
+	if ( NULL == ( k = SLmalloc(1 + (unsigned char)*buf)))
 	  return NULL;
 
 	strncpy( k, buf, *buf );
@@ -987,7 +987,7 @@ insertSpecCmdItem( Menu_Popup_Type *m, char *name,
    /* printf( "File: %s, Line: %d: insertSpecCmdItem: Length: %d 1: |%x| 2: |%c|\n", __FILE__, __LINE__, *buf, *buf, buf[1] ); */
 
    /* if (NULL == (l->keystring = SLang_create_slstring (k))) */
-   if ( NULL == ( k = SLmalloc( sizeof( ( *buf ) + 1 ) ) ) )
+   if ( NULL == ( k = SLmalloc(1 + (unsigned char)(*buf))))
      {
 	free_menu_node ((Menu_Node_Type *) l);
 	return NULL;

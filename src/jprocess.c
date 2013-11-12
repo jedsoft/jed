@@ -936,6 +936,7 @@ static int open_process (char *pgm, char **argv, int want_pty) /*{{{*/
 /*}}}*/
 #endif				       /* __os2__ */
 
+#ifdef EIO
 static int flag_fd_as_eio_error (int fd)
 {
    unsigned int i, n;
@@ -951,7 +952,7 @@ static int flag_fd_as_eio_error (int fd)
      }
    return -1;
 }
-
+#endif
 /* This function is only called when we are reading characters from the
  * keyboard.  Keyboard input has the highest priority and this is called only
  * if there is no input ready.
@@ -1070,8 +1071,9 @@ static int write_to_process (int fd, char *buf, unsigned int len)
    while (n < ilen)
      {
 	int dn;
+#ifdef EAGAIN
 	int count = 0;
-
+#endif
 	while (-1 == (dn =  write (fd, buf + n, ilen - n)))
 	  {
 	     if (errno == EINTR)
