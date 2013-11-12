@@ -97,7 +97,7 @@ private define compile_find_file (file, line, col)
 
    if (1 != file_status (file))
      {
-	file = Compile_Src_Dir + file;
+	file = dircat (Compile_Src_Dir, file);
 	while (1 != file_status (file))
 	  {
 	     file = read_file_from_mini ("Find this file's errors:");
@@ -304,7 +304,7 @@ compile_add_compiler ("xlf", "^\\\"\\(.+\\)\\\", line \\(\\d+\\)\\.\\(\\d+\\)");
 %cmds.c:33: warning: initialization of non-const * pointer...
 %cmds.c:1041 (cmds.o): Undefined symbol _Screen_Height referenced...
 %In file included from /usr/local/src/jed/src/xterm.c:10:
-compile_add_compiler ("gcc", "^\\([^ :]+\\):\\(\\d+\\)[^:]*:\\(\\d*\\)");
+compile_add_compiler ("gcc", `^\[?\([^] :]+\):\(\d+\)]?[^:]*:\(\d*\)`);
 %--------------------------------------------------------------------------
 %The WATCOM compiler wcc
 %keymap.c(71): Error! E1011: Symbol 'show_memory' has not been declared

@@ -164,6 +164,8 @@ Changes since 0.99-19
     eliminated elsewhere.
 81. src/screen.c: Use %u instead of %d in some format statements for
     use with unsigned variables. (David Binderman).
+82. lib/compile.sl: The gcc error message regexp tweaked to handle
+    cppcheck.
 
 {{{ Previous Versions
 
