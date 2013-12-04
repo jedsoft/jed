@@ -168,6 +168,9 @@ Changes since 0.99-19
     cppcheck.
 83. src/gtk*.c: Calls to SLmalloc were using the wrong size.  (Note:
     This code is still under development).
+84. lib/f90.sl: If a line is continued, then inserting a newline at
+    the end of the line should not insert another continuation
+    character.
 
 {{{ Previous Versions
 

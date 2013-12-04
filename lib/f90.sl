@@ -472,7 +472,7 @@ private define free_f90_newline ()
 	ifnot (needs_continued)
 	  needs_continued = (1 == find_matching_delimiter (')'));
 	goto_user_mark (m);
-	if (needs_continued)
+	if (needs_continued && not blooking_at ("&"))
 	  insert (" &");
      }
    trim ();
