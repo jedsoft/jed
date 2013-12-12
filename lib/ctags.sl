@@ -62,6 +62,8 @@ private define goto_position ()
    try
      {
 	buf = user_mark_buffer (s.mark);
+	if ((buf != whatbuf ()) && (s.file == "") && bufferp(buf))
+	  sw2buf (buf);
 	goto_user_mark (s.mark);
 	return;
      }
@@ -104,8 +106,13 @@ private define _ctags_find (tag, sinfo)
 {
    variable n, file, proto;
 
-   ifnot ((n = re_fsearch (strcat ("\\c^", tag, "\t+\\([^\t]+\\)\t+"))), n)
-     return NULL;
+   n = re_fsearch (strcat ("\\c^", tag, "\t+\\([^\t]+\\)\t+"));
+   if (n == 0)
+     {
+	n = re_fsearch (strcat ("^", tag, "\t+\\([^\t]+\\)\t+"));
+	if (n == 0)
+	  return NULL;
+     }
    file = regexp_nth_match (1);
 
    variable dir;

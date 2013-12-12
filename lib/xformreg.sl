@@ -79,7 +79,7 @@ public define xform_region (how)
 	% default
 	return chgcase_reg ();
      }
-   dupmark ();
+   () = dupmark ();
    variable reg = (@f)(bufsubstr ());
    del_region ();
    insert (reg);

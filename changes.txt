@@ -171,6 +171,11 @@ Changes since 0.99-19
 84. lib/f90.sl: If a line is continued, then inserting a newline at
     the end of the line should not insert another continuation
     character.
+85. lib/xformreg.sl:xform_region: Return value from dupmark left on
+    stack.
+86. lib/ctags.sl: If the case-sensitive search fails to find a tag,
+    then try a case-insensitive search.  Also, ctags_backward was
+    modified to support buffers with no files attached.
 
 {{{ Previous Versions
 
