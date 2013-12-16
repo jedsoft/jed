@@ -125,7 +125,7 @@ main_C_FLAGS = -DJED_ROOT='"$(JED_ROOT)"'
 main_O_DEP = Makefile
 jprocess_O_DEP = $(SRCDIR)/pty.c
 version_O_DEP = $(SRCDIR)/version.h
-DOT_O_DEPS = $(SRCDIR)/buffer.h $(SRCDIR)/jed-feat.h $(CONFIG_H)
+DOT_O_DEPS = $(SRCDIR)/buffer.h $(SRCDIR)/jed-feat.h $(SRCDIR)/misc.o $(CONFIG_H)
 COMMON_LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) -lslang $(MISCLIBS)
 
 JED_OFILES = jedwin.o display.o menu.o $(MOUSE_O_FILE) 

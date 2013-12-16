@@ -350,6 +350,7 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
      {
 	ps -= 4;
 	*ps++ = '.'; *ps++ = '.'; *ps++ = '.';
+	len--;
      }
    *ps = 0;
 
