@@ -37,7 +37,8 @@ extern char Error_Buffer[256];
 typedef struct MiniInfo_Type
   {
      Window_Type *action_window;   /* buffer for minibuffer action */
-     unsigned char prompt[132];
+#define JED_PROMPT_BUF_SIZE 256
+     unsigned char prompt[JED_PROMPT_BUF_SIZE];
      int prompt_len;
      int effective_prompt_len;	       /* length when tabs/etc are expanded */
   }

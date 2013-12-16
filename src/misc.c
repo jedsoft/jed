@@ -260,7 +260,7 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
 {
    char buf[JED_MAX_PATH_LEN];
    jmp_buf_struct *mini_jmp_save, mini_jmp_buf;
-   unsigned char *ps;
+   unsigned char *ps, *psmax;
    unsigned char *p, ch;
    static Window_Type *current_window;
    /* may get changed if user leaves minibuffer and returns from other
@@ -315,18 +315,23 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
    if (select_minibuffer()) return(NULL);   /* we should be on a new line of mini buffer */
 
    ps = Mini_Info.prompt;
+   psmax = Mini_Info.prompt + JED_PROMPT_BUF_SIZE;
    p = (unsigned char *) prompt;
    len = 0;
 
    if (p != NULL)
      {
-	while (0 != (ch = *p++))
+	while ((0 != (ch = *p++))
+	       && (ps < psmax))
 	  {
 	     *ps++ = ch;
 	     len++;
 	  }
-	*ps++ =  ' ';
-	len++;
+	if (ps < psmax)
+	  {
+	     *ps++ =  ' ';
+	     len++;
+	  }
      }
 
    if ((deflt != NULL) && (*deflt != 0))
@@ -334,11 +339,17 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
 	SLsnprintf (buf, sizeof (buf), "(default: %s) ", deflt);
 	p = (unsigned char *) buf;
 
-	while (0 != (ch = *p++))
+	while ((0 != (ch = *p++)) && (ps < psmax))
 	  {
 	     *ps++ = ch;
 	     len++;
 	  }
+     }
+
+   if (ps == psmax)
+     {
+	ps -= 4;
+	*ps++ = '.'; *ps++ = '.'; *ps++ = '.';
      }
    *ps = 0;
 
