@@ -1,5 +1,4 @@
 #ifdef HAS_LINE_ATTR
-
 define set_selective_display ()
 {
    variable c, arg, h;
@@ -27,9 +26,10 @@ define set_selective_display ()
    push_spot ();
    bob ();
    h = 0;
+   variable ws = get_blocal_var ("seldisp_whitespace", " \t");
    do
      {
-	bol_skip_white ();
+	bol(); skip_chars (ws);
 	ifnot (eolp ())
 	  h = arg * (what_column () > c);
 	% Otherwise, a blank line to if the last line was hidden, then

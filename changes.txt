@@ -183,6 +183,8 @@ Changes since 0.99-19
     slightly incorrect bitmask.  I also added a get_syntax_flags
     function, which is now used in tags.sl to determine the
     case-sensitivity of searches.
+90. lib/seldisp.sl:  What is regarded as whitespace may be specified
+    via the buffer-local variable "seldisp_whitespace".
 
 {{{ Previous Versions
 
