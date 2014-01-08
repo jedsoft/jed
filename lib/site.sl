@@ -2463,7 +2463,7 @@ variable Startup_With_File = 0;
 %!%-
 define jed_startup_hook()
 {
-   variable n, hlp, ok = 0, file;
+   variable n, hlp, ok = 0;
    variable scratch = "*scratch*";
 
    % turn on Abort character processing
@@ -2473,43 +2473,41 @@ define jed_startup_hook()
 
    try
      {
-	ifnot ((whatbuf != scratch) || buffer_modified())
+	if ((whatbuf () == scratch) && not buffer_modified ())
 	  {
-	     try
+	     () = insert_file (expand_jedlib_file("cpright.hlp"));
+	     set_buffer_modified_flag (0);
+	     bob();
+	     message ("");
+	     if (Startup_With_File > 0)
 	       {
-		  () = insert_file (expand_jedlib_file("cpright.hlp"));
-		  set_buffer_modified_flag (0);
-		  bob();
-		  file = "";
-		  message ("");
-		  if (Startup_With_File > 0)
+		  forever
 		    {
-		       forever
-			 {
-			    file = read_file_from_mini ("Enter Filename:");
-			    if (strlen(extract_filename(file))) break;
-			 }
-		    }
-		  else ifnot (Startup_With_File)
-		    {
-		       do
-			 {
-			    update_sans_update_hook (1);
-			 }
-		       while (not (input_pending(600)));   %  1 minute
+		       variable file = read_file_from_mini ("Enter Filename:");
+		       ifnot (strlen(extract_filename(file)))
+			 continue;
+		       () = find_file (file);
+		       break;
 		    }
 	       }
-	     finally
+	     else ifnot (Startup_With_File)
 	       {
-		  setbuf (scratch);
-		  erase_buffer ();
-		  set_buffer_modified_flag (0);
+		  do
+		    {
+		       update_sans_update_hook (1);
+		    }
+		  while (not (input_pending(600)));   %  1 minute
 	       }
-	     if (file != "") () = find_file(file);
 	  }
      }
    finally
-     eval (".()jed_startup_hook");
+     {
+	setbuf (scratch);
+	erase_buffer ();
+	no_mode ();
+	set_buffer_modified_flag (0);
+	eval (".()jed_startup_hook");
+     }
 }
 
 add_to_hook ("_jed_startup_hooks", &jed_startup_hook);

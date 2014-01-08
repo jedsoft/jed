@@ -185,6 +185,8 @@ Changes since 0.99-19
     case-sensitivity of searches.
 90. lib/seldisp.sl:  What is regarded as whitespace may be specified
     via the buffer-local variable "seldisp_whitespace".
+91. lib/site.sl: The *scratch* buffer's mode was not getting fully set
+    (noticied by "Parke" on the jed-users mailing list).
 
 {{{ Previous Versions
 
