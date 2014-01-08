@@ -187,6 +187,7 @@ Changes since 0.99-19
     via the buffer-local variable "seldisp_whitespace".
 91. lib/site.sl: The *scratch* buffer's mode was not getting fully set
     (noticied by "Parke" on the jed-users mailing list).
+92. src/Makefile.in: Fixed a typo: misc.o -> misc.h
 
 {{{ Previous Versions
 
