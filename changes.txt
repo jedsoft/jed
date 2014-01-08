@@ -179,6 +179,10 @@ Changes since 0.99-19
 87. src/misc.c: Fixed a buffer overflow problem when the mini-buffer
     prompt is too long.
 88. src/Makefile.in: Added misc.h to list of dependencies.
+89. src/indent.c,buffer.h: The syntax_parse_lines function was using a
+    slightly incorrect bitmask.  I also added a get_syntax_flags
+    function, which is now used in tags.sl to determine the
+    case-sensitivity of searches.
 
 {{{ Previous Versions
 

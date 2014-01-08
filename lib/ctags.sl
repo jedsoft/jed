@@ -176,6 +176,40 @@ private define etags_find (tag)
    goto_line (line);
 }
 
+private define tag_search_forward (tag)
+{
+   variable m = create_user_mark ();
+   variable len = strlen (tag);
+   variable syntax_table = what_syntax_table ();
+   variable is_case_insensitive
+     = ((syntax_table == NULL) ? 1
+	: get_syntax_flags (syntax_table) & 0x1);
+
+   variable cs = CASE_SEARCH;
+   CASE_SEARCH = not (is_case_insensitive);
+
+   EXIT_BLOCK
+     {
+	CASE_SEARCH = cs;
+     }
+   variable wordchars = "\\w_";
+   while (fsearch (tag))
+     {
+	bskip_chars (wordchars);
+	push_mark ();
+	skip_chars (wordchars);
+	variable t = bufsubstr();
+	if ((t == tag)
+	    || (is_case_insensitive && (strup(t) == strup(tag))))
+	  {
+	     bskip_chars (wordchars);
+	     return 1;
+	  }
+     }
+   goto_user_mark (m);
+   return 0;
+}
+
 private define goto_tag (s, tag)
 {
    () = read_file (s.file);
@@ -183,13 +217,17 @@ private define goto_tag (s, tag)
    if (String_Type == typeof (line))
      {
 	bob ();
-	if (0 == bol_fsearch (line))
-	  {
-	     () = fsearch (tag);
-	     message ("Your tags file needs to be updated");
-	  }
+	() = bol_fsearch (line);
      }
    else goto_line (line);
+
+   bol ();
+
+   ifnot (tag_search_forward (tag))
+     {
+	message ("Your tags file needs to be updated");
+	return;
+     }
 }
 
 private define tags_find (find_method, tag)

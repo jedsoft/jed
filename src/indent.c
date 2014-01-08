@@ -1191,6 +1191,18 @@ static void set_syntax_flags (char *name, int *flags) /*{{{*/
 
 /*}}}*/
 
+static int get_syntax_flags (char *name) /*{{{*/
+{
+   Syntax_Table_Type *table;
+
+   table = jed_find_syntax_table (name, 1);
+   if (table == NULL) return -1;
+
+   return table->flags & 0xFF;
+}
+
+/*}}}*/
+
 /* UTF-8 WORD UNsafe */
 static void define_syntax (int *what, char *name) /*{{{*/
 {
@@ -1557,7 +1569,7 @@ static void syntax_parse_lines (Syntax_Table_Type *table, Line *l, unsigned int 
 	     l->flags |= state;
 	     state = 0;
 	  }
-	if (((state == JED_LINE_IN_STRING0) || (state == JED_LINE_IN_STRING1))
+	else if (((state == JED_LINE_IN_STRING0) || (state == JED_LINE_IN_STRING1))
 	    && (table->flags & SINGLE_LINE_STRINGS))
 	  state = 0;
 
@@ -1568,7 +1580,7 @@ static void syntax_parse_lines (Syntax_Table_Type *table, Line *l, unsigned int 
 
 	if (num == 0)
 	  {
-	     if (state == (int) (l->flags & JED_LINE_SYNTAX_BITS))
+	     if (state == (int) (l->flags & JED_LINE_SYNTAX_IN_BITS))
 	       return;
 	  }
 	else num--;
@@ -1676,6 +1688,7 @@ static SLang_Intrin_Fun_Type Intrinsics [] =
 {
    MAKE_INTRINSIC("parse_to_point", parse_to_point, INT_TYPE, 0),
    MAKE_INTRINSIC_SI("set_syntax_flags", set_syntax_flags, VOID_TYPE),
+   MAKE_INTRINSIC_S("get_syntax_flags", get_syntax_flags, INT_TYPE),
    MAKE_INTRINSIC_IS("define_syntax", define_syntax, VOID_TYPE),
    MAKE_INTRINSIC_S("use_syntax_table", use_syntax_table, VOID_TYPE),
    MAKE_INTRINSIC_0("what_syntax_table", what_syntax_table, STRING_TYPE),
