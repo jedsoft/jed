@@ -24,6 +24,7 @@ private variable Zero_Indent_Words =
 
 private variable Block_Indent_Keywords =
   [
+   "ASSOCIATE",
    "CASE",
    "CONTAINS",
    "DO",
@@ -944,7 +945,7 @@ foreach (["F90_free", "F90_fixed"])
 () = define_keywords ($1, "commondoubleformatintentmodulepublicrecordreturnrewindselecttarget", 6);
 () = define_keywords ($1, "complexendfileendtypeincludeinquireintegerlogicalnullifypointerprivateprogram", 7);
 () = define_keywords ($1, "allocatecontainscontinueendwhereexternalfunctionimplicitnamelistoptionalsequence", 8);
-() = define_keywords ($1, "backspacecharacterdimensionelsewhereendmoduleendselectinterfaceintrinsicparameterprecisionrecursivestructure", 9);
+() = define_keywords ($1, "associatebackspacecharacterdimensionelsewhereendmoduleendselectinterfaceintrinsicparameterprecisionrecursivestructure", 9);
 () = define_keywords ($1, "deallocateendprogramselectcasesubroutine", 10);
 () = define_keywords ($1, "allocatableendfunctionequivalence", 11);
 () = define_keywords ($1, "endblockdataendinterface", 12);
