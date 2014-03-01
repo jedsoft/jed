@@ -741,6 +741,7 @@ void jed (void) /*{{{*/
      {
 	switch_to_buffer(JWindow->buffer);
 	window_buffer(CBuf);
+	(void) run_switch_active_buffer_hooks (&buffer_name);
      }
 
 #if JED_HAS_MENUS

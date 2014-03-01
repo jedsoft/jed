@@ -189,6 +189,8 @@ Changes since 0.99-19
     (noticied by "Parke" on the jed-users mailing list).
 92. src/Makefile.in: Fixed a typo: misc.o -> misc.h
 93. src/f90.sl: add support for associate block and keyword
+94. src/keymap.c: The run_switch_active_buffer_hooks was not always
+    getting called if a startup hooked changed the buffer.
 
 {{{ Previous Versions
 
