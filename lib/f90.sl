@@ -184,7 +184,7 @@ private define compute_free_f90_indent ()
      }
    goto_user_mark (start_pos);
 
-   variable word;
+   variable bol_word;
    while (up_1 ())
      {
 	bskip_non_code ();
@@ -249,10 +249,10 @@ private define compute_free_f90_indent ()
 	  }
 	else pop_mark_1();
 
-	ifnot (looking_at_word (Block_Indent_Keywords, &word))
+	ifnot (looking_at_word (Block_Indent_Keywords, &bol_word))
 	  {
 	     variable is_func = 0;
-	     if (word != "END") foreach (["FUNCTION", "SUBROUTINE"])
+	     if (bol_word != "END") foreach (["FUNCTION", "SUBROUTINE"])
 	       {
 		  variable f = ();
 		  push_spot ();
@@ -277,7 +277,7 @@ private define compute_free_f90_indent ()
 
 	goal += F90_Indent_Amount;
 
-	switch (word)
+	switch (bol_word)
 	  {
 	   case "IF":
 	     if ((will_continue == 0) && (eol_word != "THEN"))
@@ -304,6 +304,24 @@ private define compute_free_f90_indent ()
 	       }
 	  }
 	  {
+	   case "WHERE":
+	     if (will_continue == 0)
+	       {
+		  goal -= F90_Indent_Amount;
+		  go_right (5);
+		  skip_white ();
+		  if (looking_at ("(")
+		      && (1 == find_matching_delimiter ('(')))
+		    {
+		       go_right (1);
+		       skip_white ();
+		       if (looking_at ("!") || eolp ())
+			 goal += F90_Indent_Amount;
+		    }
+	       }
+	     else goal += F90_Indent_Amount;
+	  }
+	  {
 	     if (will_continue)
 	       goal += F90_Indent_Amount;
 	  }
@@ -311,19 +329,32 @@ private define compute_free_f90_indent ()
      }
 
    % now check current line
+   variable curr_word;
    goto_user_mark (start_pos);
    bol ();
    skip_chars ("0-9 \t");
-   if (looking_at_word (["CASE", "ELSE", "ELSEWHERE", "ELSEIF", "CONTAINS"], &word))
-     goal -= F90_Indent_Amount;
-   else if (0 == strncmp (word, "END", 3))
+   if (looking_at_word (["CASE", "ELSE", "ELSEWHERE", "ELSEIF", "CONTAINS"], &curr_word))
+     {
+	goal -= F90_Indent_Amount;
+	if ((curr_word == "CASE") && (bol_word == "SELECT"))
+	  {
+	     goal += F90_Indent_Amount;
+	  }
+     }
+   else if (0 == strncmp (curr_word, "END", 3))
      {
 	go_right (3);
 	skip_white ();
 	if (looking_at_word (Zero_Indent_Words, NULL))
 	  return 1;
-	if (looking_at_word (Block_Indent_Keywords, &word))
-	  goal -= F90_Indent_Amount;
+	if (looking_at_word (Block_Indent_Keywords, &curr_word))
+	  {
+	     goal -= F90_Indent_Amount;
+	     if ((curr_word == "SELECT") && (bol_word != "SELECT"))
+	       {
+		  goal -= F90_Indent_Amount;
+	       }
+	  }
      }
    return goal;
 }

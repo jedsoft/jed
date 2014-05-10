@@ -191,6 +191,8 @@ Changes since 0.99-19
 93. src/f90.sl: add support for associate block and keyword
 94. src/keymap.c: The run_switch_active_buffer_hooks was not always
     getting called if a startup hooked changed the buffer.
+95. src/f90.sl: The line following a single line WHERE statement was
+    being indented.
 
 {{{ Previous Versions
 
