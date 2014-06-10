@@ -137,6 +137,19 @@ private define bskip_to_bos ()
 
 %{{{ Free Format Functions
 
+private define line_contains_word (f)
+{
+   push_spot ();
+   EXIT_BLOCK
+     {
+	pop_spot();
+     }
+
+   return (ffind (f)
+	   && (re_looking_at (strcat ("\\C", f,  "[\t ]+[A-Za-z_]")))
+	   && (0 == parse_to_point ()));
+}
+
 % This function does not preserve the point
 private define compute_free_f90_indent ();   %  recursive
 private define compute_free_f90_indent ()
@@ -255,16 +268,11 @@ private define compute_free_f90_indent ()
 	     if (bol_word != "END") foreach (["FUNCTION", "SUBROUTINE"])
 	       {
 		  variable f = ();
-		  push_spot ();
-		  if (ffind (f)
-		      && (re_looking_at (strcat ("\\C", f,  "[\t ]+[A-Za-z_]")))
-		      && (0 == parse_to_point ()))
+		  if (line_contains_word (f))
 		    {
 		       is_func = 1;
-		       pop_spot ();
 		       break;
 		    }
-		  pop_spot ();
 	       }
 	     % pop_spot ();
 	     if (is_func == 0)
@@ -290,7 +298,11 @@ private define compute_free_f90_indent ()
 		  go_right(4);
 		  skip_white ();
 		  if (looking_at_char ('('))
-		    goal -= F90_Indent_Amount;
+		    {
+		       ifnot (line_contains_word ("FUNCTION")
+			      || (line_contains_word ("SUBROUTINE")))
+			 goal -= F90_Indent_Amount;
+		    }
 	       }
 	  }
 	  {

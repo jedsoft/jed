@@ -193,6 +193,8 @@ Changes since 0.99-19
     getting called if a startup hooked changed the buffer.
 95. src/f90.sl: The line following a single line WHERE statement was
     being indented.
+96. src/f90.sl: function declarations were not always getting indented
+    in fortran 90 interface blocks.
 
 {{{ Previous Versions
 
