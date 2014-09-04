@@ -195,6 +195,8 @@ Changes since 0.99-19
     being indented.
 96. src/f90.sl: function declarations were not always getting indented
     in fortran 90 interface blocks.
+97. src/xterm.c: Paste from xpdf was not working.  Perhaps the fix for
+    it will solve issues with other apps.
 
 {{{ Previous Versions
 

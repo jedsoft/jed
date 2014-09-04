@@ -217,6 +217,7 @@ static Atom Compound_Text_Atom;
 static Atom UTF8_String_Atom;
 static Atom Text_Atom;
 static Atom Targets_Atom;
+static Atom XA_Clipboard_Atom;
 
 static XEvent Current_Event;
 static char *Selection_Send_Data = NULL;
@@ -2378,6 +2379,8 @@ static int init_Xdisplay (void) /*{{{*/
    UTF8_String_Atom = XInternAtom (This_XDisplay, "UTF8_STRING", False);
    Targets_Atom = XInternAtom (This_XDisplay, "TARGETS", False);
    Xjed_Prop = XInternAtom(This_XDisplay, "XJED_PROPERTY_TEXT", False);
+   XA_Clipboard_Atom = XInternAtom (This_XDisplay, "CLIPBOARD", False);
+
    return ConnectionNumber (This_XDisplay);
 }
 
@@ -2797,19 +2800,143 @@ static int x_insert_cutbuffer (void) /*{{{*/
 
 /*}}}*/
 
+typedef struct
+{
+   Atom actual_type;		       /* server undefined */
+   int actual_format;		       /* 8, 16, or 32 */
+   unsigned long nitems;
+   union
+     {
+	unsigned char *vals_8;	       /* actual_format=8 */
+	short *vals_16;		       /* actual_format=16 */
+	long *vals_32;		       /* actual_format=32 */
+     }
+   vals;
+}
+X_Property_Type;
+
+static int read_property (Display *d, Window w, Atom p, X_Property_Type *xpt)
+{
+   unsigned long bytes_after;
+   unsigned char *bytes = NULL;
+   int read_bytes = 64;
+
+   while (1)
+     {
+	if (Success != XGetWindowProperty(d, w, p, 0, read_bytes, False, AnyPropertyType,
+					  &xpt->actual_type, &xpt->actual_format,
+					  &xpt->nitems, &bytes_after,
+					  &bytes))
+	  return -1;
+
+	if (bytes_after == 0)
+	  break;
+
+	read_bytes += bytes_after;
+	if (bytes != NULL)
+	  XFree (bytes);
+     }
+
+   xpt->vals.vals_8 = bytes;
+   return 0;
+}
+
+static int has_target (long *targets, unsigned long ntargets, long target)
+{
+   unsigned long i;
+
+   for (i = 0; i < ntargets; i++)
+     {
+	if (targets[i] == target)
+	  return 1;
+     }
+   return 0;
+}
+
 static int x_insert_selection (void)
 {
+   Window owner;
+   Atom preferred_target, selection;
+
 #if XJED_USE_COMPOUND_TEXT
-   XConvertSelection (This_XDisplay, XA_PRIMARY, Compound_Text_Atom, Xjed_Prop, This_XWindow,
-		      Current_Event.xbutton.time);
+   preferred_target = Compound_Text_Atom;
 #else
    if (Jed_UTF8_Mode)
-     XConvertSelection (This_XDisplay, XA_PRIMARY, UTF8_String_Atom, Xjed_Prop, This_XWindow,
-			Current_Event.xbutton.time);
+     preferred_target = UTF8_String_Atom;
    else
-     XConvertSelection (This_XDisplay, XA_PRIMARY, XA_STRING, Xjed_Prop, This_XWindow,
-			Current_Event.xbutton.time);
+     preferred_target = XA_STRING;
 #endif
+
+   selection = XA_PRIMARY;
+   owner = XGetSelectionOwner (This_XDisplay, selection);
+   if (owner == None)
+     {
+	selection = XA_Clipboard_Atom;
+	owner = XGetSelectionOwner (This_XDisplay, XA_Clipboard_Atom);
+	if (owner == None)
+	  {
+	     /* punt */
+	     return x_insert_cutbuffer ();
+	  }
+     }
+
+   if (owner != This_XWindow)
+     {
+	/* Find out what targets the owner supports */
+	XConvertSelection(This_XDisplay, selection, Targets_Atom, selection, This_XWindow, CurrentTime);
+
+	while (1)
+	  {
+	     XEvent ev;
+	     X_Property_Type xpt;
+	     long *targets;
+
+	     XNextEvent (This_XDisplay, &ev);
+	     if (ev.type != SelectionNotify)
+	       {
+		  (void) x_handle_harmless_events (&ev);
+		  continue;
+	       }
+
+	     if ((ev.xselection.property == None)
+		 || (Targets_Atom != ev.xselection.target))
+	       {
+		  /* TARGETS not understood/supported -- use default */
+		  break;
+	       }
+
+	     if (-1 == read_property (This_XDisplay, This_XWindow, selection, &xpt))
+	       return -1;
+
+	     switch (xpt.actual_format)
+	       {
+		  /* 8 and 16 are not really valid but were produced by old versions of xjed */
+		case 8:
+		  xpt.nitems /= 4;
+		  break;
+		case 16:
+		  xpt.nitems /= 2;
+		  break;
+
+		case 32:
+		  break;
+
+		default:
+		  xpt.nitems = 1;
+	       }
+
+	     targets = xpt.vals.vals_32;
+	     if (0 == has_target (targets, xpt.nitems, preferred_target))
+	       preferred_target = XA_STRING;
+
+	     XFree (xpt.vals.vals_8);
+	     break;
+	  }
+     }
+
+   XConvertSelection (This_XDisplay, selection, preferred_target, Xjed_Prop, This_XWindow,
+		      Current_Event.xbutton.time);
+
    return 0;
 }
 
@@ -2940,8 +3067,16 @@ static int receive_selection (XEvent *ev)
 
    if (None == (property = ev->xselection.property))
      {
-	/* Try this */
-	(void) x_insert_cutbuffer ();
+	Atom target = ev->xselection.target;
+
+	if ((target != XA_STRING)
+	    && (target != UTF8_String_Atom)
+	    && (target != Compound_Text_Atom))
+	  {
+	     /* Try this */
+	     (void) x_insert_cutbuffer ();
+	     return -1;
+	  }
 	return -1;
      }
 
@@ -2998,7 +3133,7 @@ static int send_selection (XEvent *ev)
      {
 	/* The requester wants to know what targets we support.  How polite. */
 #define MAX_SELECTION_TARGETS 5
-	Atom target_atoms[MAX_SELECTION_TARGETS];
+	long target_atoms[MAX_SELECTION_TARGETS];
 	unsigned int ntargets = 0;
 
 	target_atoms[ntargets++] = XA_STRING;
@@ -3008,8 +3143,8 @@ static int send_selection (XEvent *ev)
 	target_atoms[ntargets++] = UTF8_String_Atom;
 #endif
 	tp.value = (unsigned char *)target_atoms;
-	tp.format = 8;
-	tp.nitems = sizeof(Atom)*ntargets;
+	tp.format = 32;		       /* target_atoms is a long */
+	tp.nitems = ntargets;
 	free_tp_value = 0;
 	len = 0;
      }
