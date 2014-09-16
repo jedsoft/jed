@@ -197,6 +197,7 @@ Changes since 0.99-19
     in fortran 90 interface blocks.
 97. src/xterm.c: Paste from xpdf was not working.  Perhaps the fix for
     it will solve issues with other apps.
+98. autoconf/: updated configure scripts
 
 {{{ Previous Versions
 
