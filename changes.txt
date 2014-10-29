@@ -198,6 +198,11 @@ Changes since 0.99-19
 97. src/xterm.c: Paste from xpdf was not working.  Perhaps the fix for
     it will solve issues with other apps.
 98. autoconf/: updated configure scripts
+99. src/cmisc.sl: c_format_paragraph was not working properly for C++
+    comments of the form
+
+       //comment with no space after comment start.
+
 
 {{{ Previous Versions
 

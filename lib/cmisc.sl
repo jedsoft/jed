@@ -112,7 +112,7 @@ define c_format_paragraph ()
    push_mark ();
    skip_white ();
    if (looking_at ("* ")) go_right (2);
-   else if (looking_at ("// ")) go_right (3);
+   else if (looking_at ("//")) go_right (2);
 
    Cmode_Fill_Chars = bufsubstr ();
    dwrap = what_column ();
@@ -121,7 +121,7 @@ define c_format_paragraph ()
      {
 	bol_trim ();
 	if (looking_at ("* ")) deln (2);
-	else if (looking_at ("// ")) deln (3);
+	else if (looking_at ("//")) deln (2);
      }
    while (down_1 ());
    WRAP -= dwrap;
