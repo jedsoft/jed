@@ -246,8 +246,8 @@ definekey ("bufed_kill",	"k",	$1);
 definekey ("bufed_save",	"s",	$1);
 definekey ("bufed_pop2buf",	"f",	$1);
 definekey ("bufed_pop2buf",	" ",	$1);
-definekey (".0 bufed_sw2buf",	"\r",	$1);
-definekey (".1 bufed_sw2buf",	"\t",	$1);
+definekey (". 0 bufed_sw2buf",	"\r",	$1);
+definekey (". 1 bufed_sw2buf",	"\t",	$1);
 definekey ("bufed_exit",	"q",	$1);
 definekey ("bufed_help",	"?",	$1);
 

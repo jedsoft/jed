@@ -107,27 +107,27 @@ setkey ("ide_insert_any_char", "^P");
 % There's an exception: use ESC + ESC + digit to mimick ^Q + digit; this is
 % to avoid overriding the ESC + number + operation feature.
 %
-setkey (".0 ide_goto_mark_n", "^Q0");
-setkey (".1 ide_goto_mark_n", "^Q1");
-setkey (".2 ide_goto_mark_n", "^Q2");
-setkey (".3 ide_goto_mark_n", "^Q3");
-setkey (".4 ide_goto_mark_n", "^Q4");
-setkey (".5 ide_goto_mark_n", "^Q5");
-setkey (".6 ide_goto_mark_n", "^Q6");
-setkey (".7 ide_goto_mark_n", "^Q7");
-setkey (".8 ide_goto_mark_n", "^Q8");
-setkey (".9 ide_goto_mark_n", "^Q9");
+setkey (". 0 ide_goto_mark_n", "^Q0");
+setkey (". 1 ide_goto_mark_n", "^Q1");
+setkey (". 2 ide_goto_mark_n", "^Q2");
+setkey (". 3 ide_goto_mark_n", "^Q3");
+setkey (". 4 ide_goto_mark_n", "^Q4");
+setkey (". 5 ide_goto_mark_n", "^Q5");
+setkey (". 6 ide_goto_mark_n", "^Q6");
+setkey (". 7 ide_goto_mark_n", "^Q7");
+setkey (". 8 ide_goto_mark_n", "^Q8");
+setkey (". 9 ide_goto_mark_n", "^Q9");
 #ifndef MSDOS WIN32
-setkey (".0 ide_goto_mark_n", "\e\e0");
-setkey (".1 ide_goto_mark_n", "\e\e1");
-setkey (".2 ide_goto_mark_n", "\e\e2");
-setkey (".3 ide_goto_mark_n", "\e\e3");
-setkey (".4 ide_goto_mark_n", "\e\e4");
-setkey (".5 ide_goto_mark_n", "\e\e5");
-setkey (".6 ide_goto_mark_n", "\e\e6");
-setkey (".7 ide_goto_mark_n", "\e\e7");
-setkey (".8 ide_goto_mark_n", "\e\e8");
-setkey (".9 ide_goto_mark_n", "\e\e9");
+setkey (". 0 ide_goto_mark_n", "\e\e0");
+setkey (". 1 ide_goto_mark_n", "\e\e1");
+setkey (". 2 ide_goto_mark_n", "\e\e2");
+setkey (". 3 ide_goto_mark_n", "\e\e3");
+setkey (". 4 ide_goto_mark_n", "\e\e4");
+setkey (". 5 ide_goto_mark_n", "\e\e5");
+setkey (". 6 ide_goto_mark_n", "\e\e6");
+setkey (". 7 ide_goto_mark_n", "\e\e7");
+setkey (". 8 ide_goto_mark_n", "\e\e8");
+setkey (". 9 ide_goto_mark_n", "\e\e9");
 #endif
 setkey ("kill_line", "^QY");
 setkey ("kill_line", "^Q^Y");
@@ -179,16 +179,16 @@ setkey ("ide_toggle_case", "\e^T");
 %
 % Control-K map
 %
-setkey (".0 ide_set_mark_n", "^K0");
-setkey (".1 ide_set_mark_n", "^K1");
-setkey (".2 ide_set_mark_n", "^K2");
-setkey (".3 ide_set_mark_n", "^K3");
-setkey (".4 ide_set_mark_n", "^K4");
-setkey (".5 ide_set_mark_n", "^K5");
-setkey (".6 ide_set_mark_n", "^K6");
-setkey (".7 ide_set_mark_n", "^K7");
-setkey (".8 ide_set_mark_n", "^K8");
-setkey (".9 ide_set_mark_n", "^K9");
+setkey (". 0 ide_set_mark_n", "^K0");
+setkey (". 1 ide_set_mark_n", "^K1");
+setkey (". 2 ide_set_mark_n", "^K2");
+setkey (". 3 ide_set_mark_n", "^K3");
+setkey (". 4 ide_set_mark_n", "^K4");
+setkey (". 5 ide_set_mark_n", "^K5");
+setkey (". 6 ide_set_mark_n", "^K6");
+setkey (". 7 ide_set_mark_n", "^K7");
+setkey (". 8 ide_set_mark_n", "^K8");
+setkey (". 9 ide_set_mark_n", "^K9");
 setkey ("exit_jed", "^KX");
 setkey ("exit_jed", "^K^X");
 setkey ("find_file", "^KE");

@@ -28,7 +28,7 @@
 autoload ("mailalias_expand", "mailalias"); % the mail-alias package
 
 % Create a dummy function if set_line_readonly is not defined.
-ifnot (is_defined ("set_line_readonly")) eval (".(pop) set_line_readonly");
+ifnot (is_defined ("set_line_readonly")) eval (". (pop) set_line_readonly");
 
 %{{{ Public Variables
 

@@ -188,6 +188,6 @@ public define mini_init_minibuffer ()
    definekey ("mini_complete", " ", mini);
 
    % Now that we are initialized, remove this function
-   eval (".() mini_init_minibuffer");
+   eval (". () mini_init_minibuffer");
 }
 

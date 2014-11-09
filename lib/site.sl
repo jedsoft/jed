@@ -2506,7 +2506,7 @@ define jed_startup_hook()
 	erase_buffer ();
 	no_mode ();
 	set_buffer_modified_flag (0);
-	eval (".()jed_startup_hook");
+	eval (". ()jed_startup_hook");
      }
 }
 

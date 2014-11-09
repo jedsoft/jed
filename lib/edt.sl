@@ -592,12 +592,12 @@ setkey("eob",           GOLD("\e[B"));	% gold v
 setkey("scroll_left",   GOLD("\e[C"));	% gold ->
 setkey("scroll_right",  GOLD("\e[D"));	% gold <-
 
-setkey(".\"page_up\" call edt_check_scroll",		"\e[5~");
-setkey(".\"page_down\" call edt_check_scroll",		"\e[6~");
-setkey(".\"previous_line_cmd\" call edt_check_scroll",	"\e[A");
-setkey(".\"previous_line_cmd\" call edt_check_scroll",	"\eOA");
-setkey(".\"next_line_cmd\" call edt_check_scroll",	"\e[B");
-setkey(".\"next_line_cmd\" call edt_check_scroll",	"\eOB");
+setkey(". \"page_up\" call edt_check_scroll",		"\e[5~");
+setkey(". \"page_down\" call edt_check_scroll",		"\e[6~");
+setkey(". \"previous_line_cmd\" call edt_check_scroll",	"\e[A");
+setkey(". \"previous_line_cmd\" call edt_check_scroll",	"\eOA");
+setkey(". \"next_line_cmd\" call edt_check_scroll",	"\e[B");
+setkey(". \"next_line_cmd\" call edt_check_scroll",	"\eOB");
 
 application_keypad_mode (1);
 runhooks ("keybindings_hook", _Jed_Emulation);

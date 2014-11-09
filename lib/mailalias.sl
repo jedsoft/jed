@@ -252,23 +252,23 @@ foreach ([&Mailaliases, &Mailrc])
 % ~/.addressbook is okay, un-load Mailrc stuff
 if (1 == file_status (Mailaliases))
 {
-   eval (".()mailrc_xAlias");
+   eval (". ()mailrc_xAlias");
    Mailrc = Null_String;
 }
 % ~/.mailrc is okay, then un-load addressbook stuff & over-load definition
 else if (1 == file_status (Mailrc))
 {
-   eval (".(mailrc_xAlias) mailalias_xAlias");
+   eval (". (mailrc_xAlias) mailalias_xAlias");
    Mailaliases = Mailrc;
 }
 % nothing seems to have worked, so get rid of everything
 else
 {
-   eval (".()mailrc_xAlias");
-   eval (".()mailalias_xAlias");
-   eval (".()mailalias_xList");
-   eval (".()mailalias_xField");
-   eval (".()mailalias_expand");
+   eval (". ()mailrc_xAlias");
+   eval (". ()mailalias_xAlias");
+   eval (". ()mailalias_xList");
+   eval (". ()mailalias_xField");
+   eval (". ()mailalias_expand");
    Mailaliases = Null_String;
 }
 %}}}

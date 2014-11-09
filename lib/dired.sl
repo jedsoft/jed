@@ -87,19 +87,19 @@ definekey ("dired_find",	"\r",	Dired_Buffer);
 definekey ("dired_find",	"f",	Dired_Buffer);
 definekey ("dired_view",	"v",	Dired_Buffer);
 definekey ("dired_tag",		"d",	Dired_Buffer);
-definekey (".1 dired_untag",	"u",	Dired_Buffer);
+definekey (". 1 dired_untag",	"u",	Dired_Buffer);
 definekey ("dired_move",	"m",	Dired_Buffer);
 definekey ("dired_delete",	"x",	Dired_Buffer);
-definekey (".1 dired_point",	"^N",	Dired_Buffer);
-definekey (".1 dired_point",	"n",	Dired_Buffer);
-definekey (".1 dired_point",	" ",	Dired_Buffer);
-definekey (".1 chs dired_point",	"^P",	Dired_Buffer);
-definekey (".1 chs dired_point",	"p",	Dired_Buffer);
+definekey (". 1 dired_point",	"^N",	Dired_Buffer);
+definekey (". 1 dired_point",	"n",	Dired_Buffer);
+definekey (". 1 dired_point",	" ",	Dired_Buffer);
+definekey (". 1 chs dired_point",	"^P",	Dired_Buffer);
+definekey (". 1 chs dired_point",	"p",	Dired_Buffer);
 #ifdef UNIX
-definekey (".1 chs dired_untag",	"^?",	Dired_Buffer); % DEL key
+definekey (". 1 chs dired_untag",	"^?",	Dired_Buffer); % DEL key
 #elifdef IBMPC_SYSTEM
-definekey (".1 chs dired_untag",	"\xE0S",Dired_Buffer);   %  DELETE
-definekey (".1 chs dired_untag",	"\eOn",	Dired_Buffer);   %  DELETE
+definekey (". 1 chs dired_untag",	"\xE0S",Dired_Buffer);   %  DELETE
+definekey (". 1 chs dired_untag",	"\eOn",	Dired_Buffer);   %  DELETE
 #endif
 definekey ("dired_flag_backup",	"~",	Dired_Buffer);
 definekey ("dired_rename",	"r",	Dired_Buffer);

@@ -220,16 +220,16 @@ setkey ("undo", "^@");	       %  Alt U
 
 setkey ("brief_line_mark", "^@&");    %  Alt L
 
-setkey (".0 brief_set_bkmrk_cmd", "^@\d129");%  Alt 0
-setkey (".1 brief_set_bkmrk_cmd", "^@x");%  Alt 1
-setkey (".2 brief_set_bkmrk_cmd", "^@y");%  Alt 2
-setkey (".3 brief_set_bkmrk_cmd", "^@z");%  Alt 3
-setkey (".4 brief_set_bkmrk_cmd", "^@{");%  Alt 4
-setkey (".5 brief_set_bkmrk_cmd", "^@|");%  Alt 5
-setkey (".6 brief_set_bkmrk_cmd", "^@}");%  Alt 6
-setkey (".7 brief_set_bkmrk_cmd", "^@~");%  Alt 7
-setkey (".8 brief_set_bkmrk_cmd", "^@");%  Alt 8
-setkey (".9 brief_set_bkmrk_cmd", "^@\d128");%  Alt 9
+setkey (". 0 brief_set_bkmrk_cmd", "^@\d129");%  Alt 0
+setkey (". 1 brief_set_bkmrk_cmd", "^@x");%  Alt 1
+setkey (". 2 brief_set_bkmrk_cmd", "^@y");%  Alt 2
+setkey (". 3 brief_set_bkmrk_cmd", "^@z");%  Alt 3
+setkey (". 4 brief_set_bkmrk_cmd", "^@{");%  Alt 4
+setkey (". 5 brief_set_bkmrk_cmd", "^@|");%  Alt 5
+setkey (". 6 brief_set_bkmrk_cmd", "^@}");%  Alt 6
+setkey (". 7 brief_set_bkmrk_cmd", "^@~");%  Alt 7
+setkey (". 8 brief_set_bkmrk_cmd", "^@");%  Alt 8
+setkey (". 9 brief_set_bkmrk_cmd", "^@\d128");%  Alt 9
 setkey ("delete_word", "^@");	       %  Alt Bksp
 setkey ("goto_match", "^Q[");
 setkey ("goto_match", "^Q\e");

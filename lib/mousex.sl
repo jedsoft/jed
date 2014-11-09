@@ -64,10 +64,10 @@ if (is_defined ("X_LAST_KEYSYM"))
 variable Mouse_Event_Type = 0, Mouse_X = 0, Mouse_Y = 0;
 variable Mouse_Button = 3;	% start with ButtonRelease event
 
-setkey (".0 mouse_event",	"\e[M");	% MouseButton
-setkey_reserved (".'c'mouse_event",	"\e[M");% simulate Ctrl+MouseButton
-setkey (".'m'mouse_event",	"\e\e[M");	% simulate Meta+MouseButton
-setkey (".'s'mouse_event",	"\e[\e[M");	% simulate Shift+MouseButton
+setkey (". 0 mouse_event",	"\e[M");	% MouseButton
+setkey_reserved (". 'c'mouse_event",	"\e[M");% simulate Ctrl+MouseButton
+setkey (". 'm'mouse_event",	"\e\e[M");	% simulate Meta+MouseButton
+setkey (". 's'mouse_event",	"\e[\e[M");	% simulate Shift+MouseButton
 
 % hooks to properly restore selection state (See $JED_ROOT/doc/mouse.txt)
 
@@ -218,7 +218,7 @@ define mouse_event (Mod)
    if (is_defined (fn) > 0)
      {
 	status;
-	eval(strcat (".", fn));	% Use RPN--- no need to parse it
+	eval(strcat (". ", fn));	% Use RPN--- no need to parse it
      }
    else
      {

@@ -48,9 +48,9 @@ define push_mode ()
    keymap = what_keymap ();
 
    no_mode ();
-   eval ("." + mode);		       %  RPN form
+   eval (". " + mode);		       %  RPN form
 
-   set_blocal_var (sprintf (".%s|%s,%s", try_mode, keymap,
+   set_blocal_var (sprintf (". %s|%s,%s", try_mode, keymap,
 			    get_blocal_var (var_name)),
 		   var_name);
 }

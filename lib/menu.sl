@@ -81,7 +81,7 @@ define menu_select_cmd (s_list, cmd_list)
 	else
 	  {
 	     Menu_Last_Cmd = cmd;
-	     eval(strcat (".", cmd));  %  Use RPN--- no need to parse it
+	     eval(strcat (". ", cmd));  %  Use RPN--- no need to parse it
 	  }
      }
    while(Menu_Abort);
