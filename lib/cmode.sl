@@ -643,6 +643,9 @@ private define between_statements ()
 
 private define is_label_statement ()
 {
+   if (get_blocal_var ("cmode_has_no_label_statement", 0))
+     return 0;
+
    push_spot ();
    EXIT_BLOCK
      {
@@ -656,7 +659,7 @@ private define is_label_statement ()
    variable label = extract_identifier ();
 
    if ((label == "")
-       or ((label == "finally") and cmode_is_slang_mode ()))
+       || ((label == "finally") && cmode_is_slang_mode ()))
      return 0;
 
    skip_all_whitespace ();
@@ -1651,6 +1654,8 @@ define c_mode_common ()
    set_buffer_hook ("indent_hook", "c_indent_line");
    set_buffer_hook ("newline_indent_hook", "c_newline_and_indent");
 
+   define_blocal_var ("cmode_has_no_label_statement", 0);
+
    foreach (["C", "SLang"])
      {
 	variable mode = ();
@@ -1704,6 +1709,7 @@ define c_mode ()
    mode_set_mode_info ("C", "fold_info", "/*{{{\r/*}}}\r*/\r*/");
    mode_set_mode_info ("C", "dabbrev_case_search", 1);
    use_syntax_table ("C");
+
    run_mode_hooks("c_mode_hook");
 }
 

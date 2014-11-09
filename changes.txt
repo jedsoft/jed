@@ -203,6 +203,12 @@ Changes since 0.99-19
 
        //comment with no space after comment start.
 
+100. src/cmode.sl,java.sl: A number of modes for C-like languages such
+     as java use cmode for indentation.  A buffer-local variable
+     "cmode_has_no_label_statement" was added to provide a mechanism
+     to turn off the indentation of label statements
+     for those language modes that do not have label statements.
+
 
 {{{ Previous Versions
 

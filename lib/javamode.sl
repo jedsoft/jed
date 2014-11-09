@@ -72,5 +72,6 @@ define java_mode ()
    c_mode ();
    set_mode (java, 2);
    use_syntax_table (java);
+   define_blocal_var ("cmode_has_no_label_statement", 1);
    run_mode_hooks("java_mode_hook");
 }
