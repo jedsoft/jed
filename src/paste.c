@@ -821,7 +821,9 @@ int delete_region (void) /*{{{*/
      }
 
    jed_set_point (beg_point);
-   (void) jed_generic_del_nbytes (end_point - Point);
+   if (-1 == jed_generic_del_nbytes (end_point - Point))
+     return -1;
+
    return 1;
 }
 

@@ -104,7 +104,8 @@ static int replace_bytes (unsigned int n, unsigned char *str)
      return -1;
    if (n != jed_right_bytes (n))
      return -1;
-   delete_region ();
+   if (-1 == delete_region ())
+     return -1;
    if (-1 == jed_insert_nbytes (str, len))
      return -1;
    return (int) len;
@@ -322,7 +323,8 @@ static int replace_next(char *old, char *neew) /*{{{*/
 
    if (search(old, 1, 0) == 0) return(0);
    n = strlen (old);
-   (void) replace_bytes (n, (unsigned char *)neew);
+   if (-1 == replace_bytes (n, (unsigned char *)neew))
+     return -1;
    return(1);
 }
 
@@ -333,7 +335,7 @@ static void replace_cmd(char *old, char *neew) /*{{{*/
    CHECK_READ_ONLY_VOID
      push_spot ();
    if (search(old, 1, 0))
-     while(replace_next(old, neew))
+     while(1 == replace_next(old, neew))
        ;
    pop_spot();
    return;

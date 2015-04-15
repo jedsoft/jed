@@ -11,7 +11,7 @@
 extern void exit_error(char *, int);
 extern void jed_error_hook (SLFUTURE_CONST char *);
 extern void msg_error(char *);
-extern void jed_verror (char *, ...);
+extern void jed_verror (char *, ...) SLATTRIBUTE_PRINTF(1,2);
 extern void jed_vmessage (int, char *, ...);
 extern void read_string(char *, int *);
 extern void clear_error(void);

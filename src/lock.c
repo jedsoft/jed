@@ -166,7 +166,7 @@ static int ask_about_lock (char *file, Lock_Info_Type *l)
 
    if (Batch)
      {
-	jed_verror ("%s is locked by %s@%s.d.", file, l->user, l->host, l->pid);
+	jed_verror ("%s is locked by %s@%s.%d.", file, l->user, l->host, l->pid);
 	return -1;
      }
 
