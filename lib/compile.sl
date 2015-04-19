@@ -36,8 +36,8 @@ private variable Error_Regexp;
 %  it if needed. <aldem>
 %
 #ifdef UNIX
-private variable Compile_Dir_Enter = "^g?make\\[\\d+\\]: Entering directory `\\(.+\\)'";
-private variable Compile_Dir_Leave = "^g?make\\[\\d+\\]: Leaving directory `\\(.+\\)'";
+private variable Compile_Dir_Enter = "^g?make\\[\\d+\\]: Entering directory [`']\\(.+\\)'";
+private variable Compile_Dir_Leave = "^g?make\\[\\d+\\]: Leaving directory [`']\\(.+\\)'";
 
 private define compile_parse_make_chdir ()
 {
