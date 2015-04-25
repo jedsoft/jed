@@ -215,6 +215,8 @@ Changes since 0.99-19
 103. src/: Check return values in the replace_cmd function.
 104. lib/compile.sl: The Compile_Dir_Enter/Leave regexs needed to be
      tweeked for recent versions of GNU make.
+105. lib/dired.sl: Quote the directory argument before passing it to
+     the shell ls or dir commands.
 
 {{{ Previous Versions
 

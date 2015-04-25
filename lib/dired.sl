@@ -180,11 +180,11 @@ define dired_read_dir (dir)
    use_keymap (Dired_Buffer);
    set_mode ("dired", 0);
 #ifdef UNIX
-   shell_cmd (sprintf ("ls -al %s 2>/dev/null", dir));
+   shell_cmd (sprintf ("ls -al '%s' 2>/dev/null", dir));
 #elifdef MSDOS WIN16
    shell_cmd (sprintf ("dir %s /l/ogne", dir));
 #elifdef WIN32
-   shell_cmd (sprintf ("dir %s /ogne", dir));
+   shell_cmd (sprintf ("dir \"%s\" /ogne", dir));
 %  shell_cmd (Sprintf ("(dir %s /l/ogne) 2>&1", dir, 1));
 #elifdef OS2
    shell_cmd ("dir /n " + dir);
