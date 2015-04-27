@@ -78,6 +78,8 @@
 %       dired_search from the next file in the list.
 %
 
+require ("glob");
+
 variable Dired_Buffer = "*dired*";
 variable Dired_Current_Directory;
 
@@ -113,64 +115,197 @@ define dired_quit ()
    delbuf (Dired_Buffer);
 }
 
-#ifdef VMS
-% takes somthing like dev:[a.b.c] and converts it to dev:[a.b]c.dir
-define dired_vms_dir (dir)
+private define mode_to_modestring (st)
 {
-   variable cdir = Null_String, last = Null_String,  this;
-   variable n, file, ch;
+   variable i,
+     mode = st.st_mode,
+     is_types = ["reg", "dir", "lnk", "chr", "fifo", "sock", "blk"],
+     type_codes = ['-', 'd', 'l', 'c', 'p', 's', 'b'];
 
-   n = strlen (dir);
-   if (int (substr (dir, n, 1)) != ']') return dir;
+   variable mode_string = Char_Type[10]; mode_string[*] = '-';
 
-   forever
+   _for i (0, length(is_types)-1, 1)
      {
-	n--;
-	ifnot (n) break;
-
-	ch = int (substr (dir, n, 1));
-	if ((ch == '.') or (ch == '[')) break;
+	ifnot (stat_is (is_types[i], mode))
+	  continue;
+	mode_string[0] = type_codes[i];
+	break;
      }
 
-   if (ch == '[')
-     substr (dir, 1, n) +  "000000]";
-   else
-     substr (dir, 1, n - 1) + "]";
-
-   cdir = ();
-
-   file = substr (dir, n + 1, strlen (dir));
-   file = substr (file, 1, strlen (file) - 1) + ".dir";
-   cdir + file;
-}
+   if (mode & S_IRUSR) mode_string[1] = 'r';
+   if (mode & S_IWUSR) mode_string[2] = 'w';
+   if (mode & S_IXUSR) mode_string[3] = 'x';
+#ifexists S_ISUID
+   if (mode & S_ISUID) mode_string[3] = 's';
 #endif
+
+#ifdef __WIN32__
+   variable opts = st.st_opt_attrs;
+   if (opts & FILE_ATTRIBUTE_ARCHIVE) mode_string[7] = 'A';
+   if (opts & FILE_ATTRIBUTE_SYSTEM) mode_string[8] = 'S';
+   if (opts & FILE_ATTRIBUTE_HIDDEN) mode_string[9] = 'H';
+#else
+   if (mode & S_IRGRP) mode_string[4] = 'r';
+   if (mode & S_IWGRP) mode_string[5] = 'w';
+   if (mode & S_IXGRP) mode_string[6] = 'x';
+# ifexists S_SISGID
+   if (mode & S_ISGID) mode_string[6] = 'g';
+# endif
+
+   if (mode & S_IROTH) mode_string[7] = 'r';
+   if (mode & S_IWOTH) mode_string[8] = 'w';
+   if (mode & S_IXOTH) mode_string[9] = 'x';
+# ifexists S_ISVTX
+   if (mode & S_ISVTX) mode_string[9] = 't';
+# endif
+#endif
+   return typecast (array_to_bstring (mode_string), String_Type);
+}
+
+private define escape_string (str)
+{
+   %  include > to encode symlink indicator
+   variable badchars = "> \t\n\"";
+
+   if (str == str_delete_chars (str, badchars))
+     return str;
+
+   variable newstr = "\"";
+   badchars = "^" + badchars + "\\";
+   variable i, i0 = 0, n = strbytelen (str);
+
+   while (i = strskipbytes (str, badchars, i0), i < n)
+     {
+	variable ch = str[i];
+	newstr = newstr + str[[i0:i-1]];
+	newstr = newstr + sprintf ("\\x%02X", ch);
+	i0 = i+1;
+     }
+   newstr = newstr + str[[i0:i-1]] + "\"";
+
+   return newstr;
+}
+
+private define insert_directory_listing (pat)
+{
+   variable this_dir;
+   variable st = stat_file (pat);
+   if ((st != NULL) && (stat_is ("dir", st.st_mode)))
+     {
+	this_dir = pat;
+	pat = [path_concat (pat, "*"), path_concat (pat, ".*")];
+     }
+   else
+     this_dir = path_dirname (pat);
+
+   variable file, files = glob (pat);
+   variable i, n = length (files);
+   variable stats = Struct_Type[n];
+   variable sizes = UInt64_Type[n];
+
+   files = files[array_sort (files)];
+   _for i (0, n-1, 1)
+     {
+	file = files[i];
+	st = lstat_file (file);
+	if (st == NULL)
+	  continue;
+	stats[i] = st;
+	sizes[i] = st.st_size;
+     }
+
+   variable max_size = 0;
+   if (length (sizes))
+     max_size = max(sizes);
+
+   variable numdigits = 0;
+   do
+     {
+	max_size /= 10;
+	numdigits++;
+     }
+   while (max_size);
+
+   variable fmt = "  %10s %6S %6S " + sprintf ("%%%dS ", numdigits)
+     + "%s %s%s\n";
+
+   variable mode_string = NULL, mode = NULL;
+   variable six_months = _time () - 3600*24*30*6;
+
+   _for i (0, n-1, 1)
+     {
+	st = stats[i];
+	if (st == NULL)
+	  continue;
+
+	if (mode != st.st_mode)
+	  {
+	     mode = st.st_mode;
+	     mode_string = mode_to_modestring (st);
+	  }
+
+	variable mtime, tm;
+
+	mtime = st.st_mtime;
+	tm = localtime (mtime);
+
+	if (tm == NULL)
+	  mtime = "Jan 01  1980";      %  Windows
+	else
+	  {
+	     if (mtime < six_months)
+	       mtime = strftime ("%b %d  %Y", tm);
+	     else
+	       mtime = strftime ("%b %d %H:%M", tm);
+	  }
+	variable symlink = "";
+
+	file = files[i];
+#ifexists readlink
+	if (stat_is ("lnk", mode))
+	  {
+	     symlink = readlink (path_concat (this_dir, file));
+	     if (symlink == NULL)
+	       symlink = "??";
+
+	     symlink = " -> " + escape_string (symlink);
+	  }
+#endif
+	file = escape_string (path_basename (file));
+
+	vinsert (fmt,
+		 mode_string, st.st_uid, st.st_gid, st.st_size,
+		 mtime, file, symlink);
+     }
+}
+
 
 define dired_read_dir (dir)
 {
-   variable file, flags, spaces = "  ";
+   variable file, flags;
 
-#ifdef VMS
-   dir = dired_vms_dir (dir);
-#elifdef IBMPC_SYSTEM
+#ifdef IBMPC_SYSTEM
    dir = expand_filename (dir);
 # ifdef MSDOS MSWINDOWS
    dir = msdos_fixup_dirspec (dir);
 # endif
 #endif
 
+   variable want_dir;
    if ( file_status (dir) == 2 )
      {
-	(Dired_Current_Directory,) = parse_filename (dircat (dir, Dired_Buffer));
+	(want_dir,) = parse_filename (dircat (dir, Dired_Buffer));
 #ifdef VMS
 	dir = Dired_Current_Directory;
 #endif
      }
    else
      {
-	(Dired_Current_Directory,dir) = parse_filename (dir);
+	(want_dir,dir) = parse_filename (dir);
      }
-   if ( change_default_dir (Dired_Current_Directory) )
+   if ( change_default_dir (want_dir))
       error ("Failed to chdir.");
+   Dired_Current_Directory = want_dir;
    sw2buf (Dired_Buffer);
    (file,,,flags) = getbuf_info ();
    setbuf_info (file, Dired_Current_Directory, Dired_Buffer, flags);
@@ -179,57 +314,10 @@ define dired_read_dir (dir)
    erase_buffer ();
    use_keymap (Dired_Buffer);
    set_mode ("dired", 0);
-#ifdef UNIX
-   shell_cmd (sprintf ("ls -al '%s' 2>/dev/null", dir));
-#elifdef MSDOS WIN16
-   shell_cmd (sprintf ("dir %s /l/ogne", dir));
-#elifdef WIN32
-   shell_cmd (sprintf ("dir \"%s\" /ogne", dir));
-%  shell_cmd (Sprintf ("(dir %s /l/ogne) 2>&1", dir, 1));
-#elifdef OS2
-   shell_cmd ("dir /n " + dir);
-#elifdef VMS
-   shell_cmd ("directory/size/date/prot/notrail " + dir);
-#endif
-   bob ();
-#ifdef OS2
-   % kill 4 lines of header junk and 2 lines of trailer junk
-   push_mark (); go_down (4);
-   if ( eolp () )
-     go_down_1 ();
-   del_region ();
-   eob (); push_mark ();
-   go_up (3);			% implicit eol();
-   del_region ();
-   bob ();
-#elifdef MSDOS MSWINDOWS
-   push_mark (); go_down (5); del_region ();	% header junk
-   eob (); push_mark ();	% trailer junk
-   if ( bsearch ("bytes free") )
-     {
-	go_down_1 ();
-	del_region ();
-     }
-   else
-     {
-	pop_mark_0 ();
-     }
-   bob ();
-#elifdef VMS
-   push_mark (); go_down (3); del_region ();
-#endif
 
-   do
-     {
-	insert (spaces);
-     }
-   while (down_1 ());
+   insert_directory_listing (dir);
 
    bob ();
-#ifdef UNIX
-   if ( looking_at ("  total "))
-     delete_line ();
-#endif
    insert ("== ");
    insert (Dired_Current_Directory);
    newline ();
@@ -255,7 +343,6 @@ define dired_point (dirn)
 {
    if (dirn > 0) go_down_1 (); else if (dirn < 0) go_up_1 ();
 
-#ifdef UNIX
    bol_skip_white ();
    if (looking_at_char ('l'))
      {
@@ -263,17 +350,8 @@ define dired_point (dirn)
 	bskip_white ();
      }
    else eol ();
-   bskip_chars ("^ \n");
 
-#elifdef OS2
-   eol ();
-   if (bfind_char (' ')) go_right_1 ();
-#elifdef VMS MSDOS WIN16
-   bol (); go_right (2);
-#elifdef WIN32
-   eol ();
    bskip_chars ("^ \n");
-#endif
 }
 
 #ifndef VMS
@@ -290,6 +368,24 @@ define dired_kill_line ()
 }
 #endif
 
+private define extract_filename_at_point ()
+{
+   push_spot ();
+   push_mark_eol ();
+   variable name = strtrim (bufsubstr ());
+   pop_spot ();
+
+   if (name[0] == '"')
+     {
+	try
+	  {
+	     name = eval (name);
+	  }
+	catch AnyError: name = "";
+     }
+   return name;
+}
+
 % (name, type) = dired_getfile ()
 %
 % name = name of file or directory
@@ -303,38 +399,24 @@ define dired_getfile ()
    variable name, type, ext, stat_buf;
 
    bol ();
-   type = not (bobp ());		% assume it will be a file
-#ifdef UNIX
-   if (type)
-     {
-	go_right (2);
-	if (looking_at_char ('l'))           type = 3;
-	else if (looking_at_char ('d'))	     type = 2;
-	else
-	  {
-	     skip_white ();
-	     if ( what_column () > 3 )       type = 0;
-	  }
-     }
+   if (bobp ())
+     return ("", 0);
 
-   ifnot ( type )
-     {
-	bol ();
-	return (Null_String, type);
-     }
+   go_right(2);			       %  skip possible D tag
+
+   type = 1;
+   if (looking_at_char ('d')) type = 2;
+   else if (looking_at_char ('l')) type = 3;
 
    dired_point (0);
    if (type != 3)
-     {
-	push_mark_eol ();			% extract the name
-	name = bufsubstr ();			% the name
-     }
+     name = extract_filename_at_point ();
    else
      {
 	go_right (ffind (" ->"));
 	skip_white ();
-	push_mark_eol ();
-	name = bufsubstr ();
+	name = extract_filename_at_point ();
+
 	stat_buf = stat_file (name);
 	if (stat_buf != NULL)
 	  {
@@ -342,88 +424,6 @@ define dired_getfile ()
 	     else if (stat_is ("reg", stat_buf.st_mode)) type = 1;
 	  }
      }
-#elifdef VMS
-   if (type)
-     {
-	go_right (2);
-	if ( ffind ( ".DIR" ) )
-	  {
-	     type = 2;
-	  }
-	else
-	  {
-	     skip_white ();
-	     if ( what_column () > 3 )
-	       type = 0;
-	  }
-     }
-
-   ifnot ( type )
-     {
-	bol ();
-	return (Null_String, type);
-     }
-
-   dired_point (0);
-   push_mark ();
-   () = ffind_char (';');
-   skip_chars (";0-9");
-   name = bufsubstr ();			% leave on the stack
-#elifdef IBMPC_SYSTEM
-   if ( type )
-     {
-	go_right (2);
-	if ( ffind ("<DIR>") )
-	  {
-	     type = 2;
-	  }
-	else
-	  {
-	     % Following used to just be what was in the #ifndef OS2..#endif.  Prolly
-	     % can be changed to just whats in the #ifdef OS2..#endif.  This is a fix
-	     % for OS/2 handling  MDJ 06/11/95
-# ifdef OS2
-	      if ( eolp () or what_column () > 4 )
-	       type = 0;
-# else
-	      if ( eolp () or what_column () > 3 )
-	       type = 0;
-# endif
-	  }
-     }
-
-   ifnot ( type )
-     {
-	bol ();
-	return (Null_String, type);
-     }
-
-# ifdef OS2
-   eol (); bskip_white ();
-   push_mark ();
-   () = bfind_char (' ');
-   go_right_1 ();	% Added to fix space at start of filename MDJ 06/11/95
-   name = bufsubstr ();
-# elifdef WIN32
-   dired_point (0);
-   push_mark_eol ();
-   name = bufsubstr ();
-# else
-   dired_point (0);
-   push_mark ();			% extract the name
-   skip_chars ("^ \n");			% skip past name
-   name = bufsubstr ();			% the name
-   skip_white ();
-   if ( what_column () <= 12 )
-     {
-	push_mark ();
-	skip_chars ("^ \n");		% skip past ext
-	ext = bufsubstr ();
-	if (strlen (ext) or (type != 2))
-	  name = sprintf ("%s.%s", name, ext);
-     }
-# endif
-#endif
    dired_point (0);
    return (name, type);
 }
