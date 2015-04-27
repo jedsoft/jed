@@ -371,7 +371,15 @@ define dired_kill_line ()
 private define extract_filename_at_point ()
 {
    push_spot ();
-   push_mark_eol ();
+   push_mark ();
+   if (looking_at_char ('"'))
+     {
+	go_right (1);
+	if (ffind_char ('"'))
+	  go_right (1);
+     }
+   else skip_chars ("^ \t\n");
+
    variable name = strtrim (bufsubstr ());
    pop_spot ();
 
@@ -409,14 +417,10 @@ define dired_getfile ()
    else if (looking_at_char ('l')) type = 3;
 
    dired_point (0);
-   if (type != 3)
-     name = extract_filename_at_point ();
-   else
+   name = extract_filename_at_point ();
+   if (type == 3)
      {
-	go_right (ffind (" ->"));
-	skip_white ();
-	name = extract_filename_at_point ();
-
+	% symbolic link
 	stat_buf = stat_file (name);
 	if (stat_buf != NULL)
 	  {
@@ -424,7 +428,6 @@ define dired_getfile ()
 	     else if (stat_is ("reg", stat_buf.st_mode)) type = 1;
 	  }
      }
-   dired_point (0);
    return (name, type);
 }
 
@@ -615,30 +618,23 @@ define dired_rename ()
    if ( rename_file (f, n) ) error ("Operation Failed!");
    set_readonly (0);
 #ifdef UNIX
-   if ( strcmp (od, nd) )
+   if (od != nd)
 #elifdef VMS IBMPC_SYSTEM
-   if ( strcmp (strup (od), strup (nd)) )
+   if (strup (od) != strup (nd))
 #endif
      {
 	delete_line ();
+        dired_point (0);
      }
    else
      {
         dired_point (0);
 	push_mark ();
-#ifdef MSDOS MSWINDOWS
-	go_right (12);  del_region ();
-	variable nf1 = extract_element (nf, 1, '.');
-	if (nf1 == NULL) nf1 = "";
-	vinsert ("%-8s %-3s",
-		 extract_element (nf, 0, '.'),
-		 nf1);
-#else
-	go_right (strlen (oldf)); del_region ();
-	insert (nf);
-#endif
+	skip_chars ("^ \t\n");
+	del_region ();
+	insert (escape_string (nf));
+	dired_point (1);
      }
-   dired_point (1);
    set_buffer_modified_flag (0);
    set_readonly (1);
 }
