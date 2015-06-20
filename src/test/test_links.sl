@@ -10,6 +10,9 @@ private variable Tmp_Root = make_tmp_file ("/tmp/jedtest");
 %        file.c -> dev/foo
 %      B/
 %        dev2 -> /tmp/jedtest/A/dev
+%      X --> A/dev
+%      Y --> /tmp/jedtest/X/../../A
+%
 private variable Tmp_A = path_concat (Tmp_Root, "A");
 private variable Tmp_A_dev = path_concat (Tmp_A, "dev");
 private variable Tmp_A_dev_foo = path_concat (Tmp_A_dev, "foo");
@@ -17,6 +20,9 @@ private variable Tmp_A_dev_hoo = path_concat (Tmp_A_dev, "hoo");
 private variable Tmp_A_filec = path_concat (Tmp_A, "file.c");
 private variable Tmp_B = path_concat (Tmp_Root, "B");
 private variable Tmp_B_dev2 = path_concat (Tmp_B, "dev2");
+private variable Tmp_X = path_concat (Tmp_Root, "X");
+private variable Tmp_Y = path_concat (Tmp_Root, "Y");
+private variable Tmp_Y_linkval = path_concat (Tmp_Root, "X/../../A");
 
 private variable Dir_Names = {};
 private variable File_Names = {};
@@ -35,6 +41,8 @@ private define make_layout ()
    () = hardlink (Tmp_A_dev_foo, Tmp_A_dev_hoo);
    () = mkdir (Tmp_B);
    () = symlink (Tmp_A_dev, Tmp_B_dev2);
+   () = symlink ("A/dev", Tmp_X);
+   () = symlink (Tmp_Y_linkval, Tmp_Y);
 }
 
 private define cleanup ()
@@ -59,6 +67,14 @@ private define test_expand_link ()
 	vmessage ("expand_symlink returned %S, not %S", a, b);
 	Failed++;
      }
+
+   a = expand_symlink (path_concat (Tmp_Y, "file.c"));
+   b = Tmp_A_dev_foo;
+   if (a != b)
+     {
+	vmessage ("expand_symlink returned %S, not %S", a, b);
+	Failed++;
+     }
 }
 
 % Tests read/write of /tmp/jedtest/A/file.c which is a
@@ -66,6 +82,8 @@ private define test_expand_link ()
 % Then it tries to read
 %   /tmp/jedtest/B/dev2/../file.c
 % where /tmp/jedtest/B/dev2 is a symlink to /tmp/jedtest/A/dev
+% And then tries: /tmp/jedtest/Y/foo, which is also /tmp/jedtest/A/dev/foo.
+% 
 private define test_link_read_write_1 ()
 {
    () = read_file (Tmp_A_filec);
@@ -122,6 +140,19 @@ private define test_link_read_write_1 ()
 	Failed++;
 	vmessage ("failed to read %s via %s", Tmp_A_dev_foo, dev2_file);
      }
+   delbuf (whatbuf());
+
+   variable tmpfoo = path_concat (Tmp_Y, "file.c");
+   %vmessage ("about to read %S", tmpfoo);
+
+   () = read_file (tmpfoo);
+   bob();
+   ifnot (looking_at (Tmp_A_dev_foo))
+     {
+	Failed++;
+	vmessage ("failed to read %s via %s", Tmp_A_dev_foo, tmpfoo);
+     }
+   delbuf (whatbuf());
 }
 
 private define test_read_hard_link ()

@@ -1435,7 +1435,9 @@ static char *expand_link_2(char *f) /*{{{*/
 	     jed_verror ("possible circular-link detected");
 	     return NULL;
 	  }
-	d = jed_standardize_filename(work);
+
+	d = jed_expand_link (work);
+	/* d = jed_standardize_filename(work); */
      }
 
    return (d);

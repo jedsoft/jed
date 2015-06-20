@@ -221,6 +221,7 @@ Changes since 0.99-19
      Untested on Windows/VMS systems.  Consider this to be
      experimental.
 107. lib/dired.sl: Rename was not working with symlinks
+108. src/file.c: Fixed a symlink expansion bug (reported by Jason Noakes)
 
 {{{ Previous Versions
 
