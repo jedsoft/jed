@@ -1,7 +1,7 @@
 private define skip_chars_to_mark (chars, mark)
 {
    skip_chars (chars);
-   if (create_user_mark () > mark)
+   if (create_user_mark () >= mark)
      {
 	goto_user_mark (mark);
 	return 1;

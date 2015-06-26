@@ -222,6 +222,9 @@ Changes since 0.99-19
      experimental.
 107. lib/dired.sl: Rename was not working with symlinks
 108. src/file.c: Fixed a symlink expansion bug (reported by Jason Noakes)
+109. lib/xform.sl: Fixed a bug in xform_region('x') when the region is
+     followed immediately by an upper case character (reported by Ulli
+     Horlacher).
 
 {{{ Previous Versions
 
