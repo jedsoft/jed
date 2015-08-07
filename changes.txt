@@ -225,6 +225,8 @@ Changes since 0.99-19
 109. lib/xform.sl: Fixed a bug in xform_region('x') when the region is
      followed immediately by an upper case character (reported by Ulli
      Horlacher).
+110. lib/compile.sl: remove ansi color escape sequences from the
+     compile buffer.
 
 {{{ Previous Versions
 

@@ -115,6 +115,26 @@ private define compile_find_file (file, line, col)
      bol_skip_white ();
 }
 
+private define filter_color_escape_seqs ()
+{
+   push_spot ();
+   replace ("\e[K", "");
+   while (fsearch ("\e["))
+     {
+	push_mark ();
+	go_right (2);
+	skip_chars ("0-9;");
+	if (looking_at ("m"))
+	  {
+	     del();
+	     del_region ();
+	     continue;
+	  }
+	pop_mark (0);
+     }
+   pop_spot();
+}
+
 private define compile_parse_errors_dir (next_error_fun, next_line_fun)
 {
    variable cbuf, obuf = Compile_Output_Buffer;
@@ -132,7 +152,9 @@ private define compile_parse_errors_dir (next_error_fun, next_line_fun)
 
    cbuf = pop2buf_whatbuf (obuf);
 
-   if (@next_error_fun (&file, &line, &col))
+   filter_color_escape_seqs ();
+
+   if ((@next_error_fun)(&file, &line, &col))
      {
 	ifnot (strlen (line)) return;
 	ifnot (strlen (col)) col = "0";
