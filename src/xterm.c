@@ -2512,6 +2512,52 @@ static void set_geometry (XEvent *report, XIMStyle style, char *attr)
    /*   XFree (rb); */
 }
 
+static char *extract_comma_delim_string (const char **inputp, const char *prefix)
+{
+   static char buf[256];
+   const char *p;
+   const char *input;
+   size_t prefix_len, len;
+
+   if ((inputp == NULL)
+       || (NULL == (input = *inputp)))
+     return NULL;
+
+   while (*input && isspace (*input))
+     input++;
+
+   if (*input == 0)
+     return NULL;
+
+   p = strchr (input, ',');
+   if (p != NULL)
+     *inputp = p + 1;
+   else
+     {
+	p = input + strlen (input);
+	*inputp = p;
+     }
+
+   /* ignore trailing whitespace */
+   p--;				       /* char before \0 or \, */
+   while (isspace(*p))
+     p--;
+   p++;
+
+   prefix_len = strlen (prefix);
+   strcpy (buf, prefix);
+
+   len = p - input;
+
+   if (prefix_len + len >= sizeof(buf))
+     len = sizeof(buf)-prefix_len-1;
+
+   strncpy (buf+prefix_len, input, len);
+   buf[prefix_len+len] = 0;
+
+   return buf;
+}
+
 /*
  * This is more or less stolen startight from XFree86 xterm. This should
  * support all European type languages.
@@ -2519,51 +2565,44 @@ static void set_geometry (XEvent *report, XIMStyle style, char *attr)
 static void i18init (void) /*{{{*/
 {
    int i;
-   char *p, *s, *ns, *end, tmp[1024], buf[32];
+   char *p;
    XIM xim = NULL;
    XIMStyles *xim_styles = NULL;
-   int found;
+   const char *context, *word;
+   XIMStyle input_style;
+
+
+   R6IM_Xic = NULL;
+   R6IM_Input_Style = 0;
 
    setlocale(LC_ALL, "");
 
-   if (R6IM_Input_Method != NULL)
+   context = R6IM_Input_Method;
+   while (NULL != (word = extract_comma_delim_string (&context, "@im=")))
      {
-	strcpy(tmp, R6IM_Input_Method);
-	s=tmp;
-	while (*s)
-	  {
-	     while (*s && (isspace(*s) || (*s == ','))) s++;
-	     if (*s == 0) break;
-	     end = s;
-	     while (*end && (*end != ',')) end++;
-	     ns = end;
-	     if (*end) ns++;
-	     *end-- = 0;
-	     while ((end >= s) && isspace(*end)) *end-- = 0;
-
-	     if (*s)
-	       {
-		  strcpy(buf, "@im=");
-		  strcat(buf, s);
-		  if (((p = XSetLocaleModifiers(buf)) != NULL)
-		      && *p
-		      && (NULL != (xim = XOpenIM(This_XDisplay, NULL, NULL, NULL))))
-		    break;
-	       }
-	     s = ns;
-	  }
+	if ((NULL != (p = XSetLocaleModifiers(word)))
+	    && *p
+	    && (NULL != (xim = XOpenIM(This_XDisplay, NULL, NULL, NULL))))
+	  break;
      }
-
-   if ((xim == NULL) && ((p = XSetLocaleModifiers("")) != NULL) && *p)
-     xim = XOpenIM(This_XDisplay, NULL, NULL, NULL);
-
-   if ((xim == NULL) && ((p = XSetLocaleModifiers("@im=none")) != NULL) && *p)
-     xim = XOpenIM(This_XDisplay, NULL, NULL, NULL);
 
    if (xim == NULL)
      {
-	fprintf(stderr, "Failed to open input method");
-	return;
+	context = "@im=none";
+
+	while (NULL != (word = extract_comma_delim_string (&context, "")))
+	  {
+	     if ((NULL != (p = XSetLocaleModifiers(word)))
+		 && *p
+		 && (NULL != (xim = XOpenIM(This_XDisplay, NULL, NULL, NULL))))
+	       break;
+	  }
+
+	if (xim == NULL)
+	  {
+	     fprintf(stderr, "Failed to open input method\n");
+	     return;
+	  }
      }
 
    /* Believe it or not, XGetIMValues return NULL upon success */
@@ -2575,27 +2614,21 @@ static void i18init (void) /*{{{*/
         return;
      }
 
-   found = 0;
-   strcpy(tmp, R6IM_Preedit_Type);
-
-   s = tmp;
-   while (*s && !found)
+   context = R6IM_Preedit_Type;
+   while ((R6IM_Input_Style == 0)
+	  && (NULL != (word = extract_comma_delim_string (&context, ""))))
      {
-	while (*s && (isspace(*s) || (*s == ','))) s++;
-	if (*s == 0) break;
-	end = s;
-	while (*end && (*end != ',')) end++;
-	ns = end;
-	if (*ns) ns++;
-	*end-- = 0;
-	while ((end >= s) && isspace(*end)) *end-- = 0;
+#define OVERSPOT_INPUT_STYLE (XIMPreeditPosition | XIMStatusArea)
+#define OFFSPOT_INPUT_STYLE (XIMPreeditArea | XIMStatusArea)
+#define ROOT_INPUT_STYLE (XIMPreeditNothing | XIMStatusNothing)
 
-        if (!strcmp(s, "OverTheSpot"))
-	  R6IM_Input_Style = (XIMPreeditPosition | XIMStatusArea);
-	else if (!strcmp(s, "OffTheSpot"))
-	  R6IM_Input_Style = (XIMPreeditArea | XIMStatusArea);
-	else if (!strcmp(s, "Root"))
-	  R6IM_Input_Style = (XIMPreeditNothing | XIMStatusNothing);
+        if (!strcmp(word, "OverTheSpot"))
+	  input_style = OVERSPOT_INPUT_STYLE;
+	else if (!strcmp(word, "OffTheSpot"))
+	  input_style = OFFSPOT_INPUT_STYLE;
+	else if (!strcmp(word, "Root"))
+	  input_style = ROOT_INPUT_STYLE;
+	else continue;
 
 	/* FIXME!!!  (I think)
 	 * Examples on the web show testing of bits via & instead of
@@ -2603,17 +2636,16 @@ static void i18init (void) /*{{{*/
 	 */
         for (i = 0; (unsigned short)i < xim_styles->count_styles; i++)
 	  {
-	     if (R6IM_Input_Style == xim_styles->supported_styles[i])
+	     if (input_style == xim_styles->supported_styles[i])
 	       {
-		  found = 1;
+		  R6IM_Input_Style = input_style;
 		  break;
 	       }
 	  }
-        s = ns;
      }
    XFree(xim_styles);
 
-   if (found == 0)
+   if (R6IM_Input_Style == 0)
      {
         /* fprintf(stderr, "input method doesn't support my preedit type\n"); */
         XCloseIM(xim);
@@ -2626,20 +2658,15 @@ static void i18init (void) /*{{{*/
      *          "OverTheSpot,OffTheSpot,Root"
      *  /MaF
      */
-#if 0
-   if (R6IM_Input_Style != (XIMPreeditNothing | XIMStatusNothing))
+
+   if (R6IM_Input_Style == ROOT_INPUT_STYLE)
      {
-        fprintf(stderr,"This program only supports the 'Root' preedit type\n");
-        XCloseIM(xim);
-        return;
+	R6IM_Xic = XCreateIC(xim, XNInputStyle, R6IM_Input_Style,
+			     XNClientWindow, This_XWindow,
+			     XNFocusWindow, This_XWindow,
+			     NULL);
      }
-#else
-   if (R6IM_Input_Style == (XIMPreeditNothing | XIMStatusNothing))/* "Root" */
-     R6IM_Xic = XCreateIC(xim, XNInputStyle, R6IM_Input_Style,
-			  XNClientWindow, This_XWindow,
-			  XNFocusWindow, This_XWindow,
-			  NULL);
-   else if (R6IM_Input_Style == (XIMPreeditPosition | XIMStatusArea))/* "OverTheSpot" */
+   else if (R6IM_Input_Style == OVERSPOT_INPUT_STYLE)
      {
 	XFontSet fs;
 	char **miss, *def;
@@ -2666,7 +2693,7 @@ static void i18init (void) /*{{{*/
 				  NULL);
 	  }
      }
-   else if (R6IM_Input_Style == (XIMPreeditArea | XIMStatusArea))/* "OffTheSpot" */
+   else if (R6IM_Input_Style == OFFSPOT_INPUT_STYLE)
      {
 	XFontSet fs;
 	char **miss, *def;
@@ -2687,7 +2714,6 @@ static void i18init (void) /*{{{*/
 				  NULL);
 	  }
      }
-#endif
 
    if (NULL == R6IM_Xic)
      {

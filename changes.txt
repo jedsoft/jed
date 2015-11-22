@@ -227,6 +227,8 @@ Changes since 0.99-19
      Horlacher).
 110. lib/compile.sl: remove ansi color escape sequences from the
      compile buffer.
+111. src/xterm.c: The implementation-specific XIM method was
+     incorrectly specified for newer versions of xlib.
 
 {{{ Previous Versions
 
