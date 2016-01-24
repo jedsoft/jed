@@ -555,7 +555,7 @@ FILE *w32_popen(char *cmd, char *mode)
    CloseHandle (er);
    SLfree (cmd);
 
-   fd = _open_osfhandle((long) rd, O_RDONLY|O_TEXT);
+   fd = _open_osfhandle((intptr_t) rd, O_RDONLY|O_TEXT);
    if ((fd < 0)
        || (NULL == (fp = _fdopen(fd, mode))))
      {

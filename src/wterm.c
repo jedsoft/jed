@@ -2205,11 +2205,11 @@ LRESULT CALLBACK JEDWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
    return 0;
 }
 
+#if defined(__x86_64__)
 static int pop_hmenu (HMENU *h)
 {
-   int i;
-
-   if (-1 == SLang_pop_integer (&i))
+   long long i;
+   if (-1 == SLang_pop_long_long (&i))
      return -1;
 
    *h = (HMENU) i;
@@ -2218,8 +2218,25 @@ static int pop_hmenu (HMENU *h)
 
 static int push_hmenu (HMENU h)
 {
-   return SLang_push_integer ((int) h);
+   return SLang_push_long_long ((long long)h);
 }
+
+#else
+static int pop_hmenu (HMENU *h)
+{
+   long i;
+   if (-1 == SLang_pop_long (&i))
+     return -1;
+
+   *h = (HMENU) i;
+   return 0;
+}
+
+static int push_hmenu (HMENU h)
+{
+   return SLang_push_long ((long) h);
+}
+#endif
 
 void get_menubar()
 {
@@ -2326,7 +2343,7 @@ void append_popup_menu()
        !SLpop_string (&name) &&
        !pop_hmenu(&hmenu))
      {
-	if (!AppendMenu(hmenu, MF_STRING | MF_POPUP, (UINT)popup, name))
+	if (!AppendMenu(hmenu, MF_STRING | MF_POPUP, (UINT_PTR)popup, name))
 	  msg_error("Cannot append popup menu");
 
      }
@@ -2394,7 +2411,7 @@ void insert_popup_menu()
        !SLang_pop_integer(&id) &&
        !pop_hmenu(&hmenu))
      {
-	if (!InsertMenu(hmenu, id, MF_STRING | MF_POPUP | MF_BYCOMMAND, (UINT)popup, name))
+	if (!InsertMenu(hmenu, id, MF_STRING | MF_POPUP | MF_BYCOMMAND, (UINT_PTR)popup, name))
 	  msg_error("Cannot insert popup menu");
 
      }
@@ -2464,7 +2481,7 @@ void insert_popup_menu_pos()
        !SLang_pop_integer(&pos) &&
        !pop_hmenu(&hmenu))
      {
-	if (!InsertMenu(hmenu, pos, MF_STRING | MF_POPUP | MF_BYPOSITION, (UINT)popup, name))
+	if (!InsertMenu(hmenu, pos, MF_STRING | MF_POPUP | MF_BYPOSITION, (UINT_PTR)popup, name))
 	  msg_error("Cannot insert popup menu");
 
      }
@@ -2684,22 +2701,23 @@ void msw_help (void)
    char *keyword = NULL;
    int   partial_keyword;
    UINT  help_type;
-   DWORD dwData;
 
    if (!SLang_pop_integer(&partial_keyword) &&
        !SLpop_string (&keyword) &&
        !SLpop_string(&file))
      {
-	help_type = (partial_keyword) ? HELP_PARTIALKEY : HELP_KEY;
-	dwData = (DWORD)(LPSTR) keyword;
+	ULONG_PTR p;
 
+	help_type = (partial_keyword) ? HELP_PARTIALKEY : HELP_KEY;
+
+	p = (ULONG_PTR)keyword;
 	if (*keyword == '\0')
 	  {
 	     help_type = HELP_CONTENTS;
-	     dwData = 0;
+	     p = 0;
 	  }
 
-	if (!WinHelp(This_Window.w, file, help_type, dwData))
+	if (!WinHelp(This_Window.w, file, help_type, p))
 	  {
 	     msg_error("Help file not found.");
 	  }

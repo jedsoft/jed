@@ -229,6 +229,8 @@ Changes since 0.99-19
      compile buffer.
 111. src/xterm.c: The implementation-specific XIM method was
      incorrectly specified for newer versions of xlib.
+112. src/wterm.c,w32proc.c: Added initial support for 64bit windows.
+     This requires slang pre2.3.1-42 or later.
 
 {{{ Previous Versions
 

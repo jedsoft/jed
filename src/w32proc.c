@@ -226,12 +226,16 @@ void jed_get_child_status (void)
      }
 }
 
-static DWORD thread_func (DWORD fd)
+static DWORD thread_func (void *fdaddr)
 {
+   Process_Type *p;
    char buf[PROCESS_BUFSIZE];
    DWORD n;
-   int i;
-   Process_Type *p = get_process(fd);
+   int i, fd;
+
+   fd = *(int *)fdaddr;
+
+   p = get_process(fd);
 
    if (p == NULL)
      return 0;
@@ -472,7 +476,7 @@ static int open_process (char *cmd)
    Subprocess_Id[Num_Subprocesses] = pd;
 
    p->hthread =
-     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)thread_func, (LPVOID) pd, 0, &id_thread);
+     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)thread_func, &pd, 0, &id_thread);
 
    return pd;
 }

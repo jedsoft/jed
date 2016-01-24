@@ -1701,7 +1701,7 @@ int mini_complete (void) /*{{{*/
    safe_strcpy(buf, tmp, sizeof (buf));
    SLfree(tmp);
 
-   if ((last_key_char == ' ') && ((long) Last_Key_Function == (long) mini_complete))
+   if ((last_key_char == ' ') && (Last_Key_Function == (FVOID_STAR) mini_complete))
      {
 	if (flag)
 	  flag = (*complete_next)(buf);
@@ -1847,7 +1847,7 @@ int mini_complete (void) /*{{{*/
      {
 	erase_buffer();
 	(void) jed_insert_string(last);
-	if ((n == 1) && ((long) Last_Key_Function == (long) mini_complete))
+	if ((n == 1) && (Last_Key_Function == (FVOID_STAR) mini_complete))
 	  message("[Sole Completion.]");
      }
    else msg_error("No Match!");

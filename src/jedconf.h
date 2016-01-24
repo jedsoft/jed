@@ -124,6 +124,8 @@
 # endif
 #endif
 
+#define HAVE_LONG_LONG 1	       /* is this true?? */
+
 /* Define this if compiler has limits.h */
 #define HAVE_LIMITS_H
 
