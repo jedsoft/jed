@@ -234,6 +234,11 @@ Changes since 0.99-19
 113. lib/idl.sl: Don't give the backslash character a quote syntax.
 114. src/ins.c,ledit.c: Tweak to avoid gcc warning with respect to
      printf-style format.
+115. src/text.c: Avoid rare semi-infinite loop when wrapping a paragraph in
+     the presence of a file-changed-on-disk condition.  I refer to it
+     as semi-infinite because the loop could be broken by answering "yes"
+     when asked to edit the buffer.  Pressing Ctrl-G or answering "no"
+     had no effect.
 
 {{{ Previous Versions
 

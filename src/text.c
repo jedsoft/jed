@@ -146,9 +146,13 @@ static int wrap_line1(int format, int trim) /*{{{*/
      }
 
    jed_position_point (p);
-   if (trim)
-     (void)jed_trim_whitespace();
-   (void) jed_insert_newline();
+
+   if (trim && (-1 == jed_trim_whitespace()))
+     return -1;
+
+   if (-1 == jed_insert_newline())
+     return -1;
+
    jed_up(1);
    return 1;
 }
@@ -322,7 +326,7 @@ int text_format_paragraph () /*{{{*/
      indent_col = 0;
 
    if (-1 == mark_paragraph (&beg, &end))
-     return 0;
+     goto return_error;
 
    get_current_indent (&col);
    /* col is the indentation of the first line of the paragraph-- don't change it */
@@ -331,10 +335,8 @@ int text_format_paragraph () /*{{{*/
    while (CLine != end)
      {
 	if (-1 == wrap_line1 (0, 0))
-	  {
-	     pop_spot ();
-	     return -1;
-	  }
+	  goto return_error;
+
 	if (0 == jed_down (1))
 	  break;
      }
@@ -357,10 +359,8 @@ int text_format_paragraph () /*{{{*/
 	if (CLine != beg) indent_to(indent_col);
 	status = wrap_line1(1, 1);
 	if (status == -1)
-	  {
-	     pop_spot ();
-	     return -1;
-	  }
+	  goto return_error;
+
 	if (status == 1)
 	  {
 	     (void) jed_down(1);
@@ -377,7 +377,10 @@ int text_format_paragraph () /*{{{*/
 
 	     /* Now count the length of the word on the next line. */
 	     (void) jed_down(1);       /* at bol too */
-	     jed_trim_whitespace();
+
+	     if (-1 == jed_trim_whitespace())
+	       goto return_error;
+
 	     p = CLine->data;
 	     pmax = jed_eol_position (CLine);
 
@@ -393,7 +396,7 @@ int text_format_paragraph () /*{{{*/
 	     if ((p - next->data) + col < Buffer_Local.wrap_column - 1)
 	       {
 		  if (-1 == _jed_replace_wchar (' '))
-		    return -1;
+		    goto return_error;
 	       }
 	     else
 	       {
@@ -408,6 +411,10 @@ int text_format_paragraph () /*{{{*/
      }
    pop_spot();
    return(1);
+
+return_error:
+   pop_spot ();
+   return -1;
 }
 
 /*}}}*/

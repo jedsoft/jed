@@ -689,7 +689,7 @@ int eol_cmd (void)
        && (0 == (CLine->flags & JED_LINE_IS_READONLY))
 #endif
        )
-     jed_trim_whitespace();
+     (void) jed_trim_whitespace();
    return(1);
 }
 
@@ -944,7 +944,9 @@ int jed_trim_whitespace ()
    n = Point;
 
    (void) jed_bskip_whitespace ();
-   jed_del_nbytes (n - Point);
+   if (-1 == jed_del_nbytes (n - Point))
+     return -1;
+
    return 1;
 }
 
@@ -958,7 +960,8 @@ void indent_to(int n)
    if (n != m)
      {
 	bol ();
-	jed_trim_whitespace();
+	if (-1 == jed_trim_whitespace())
+	  return;
 	if (n >= 0) insert_whitespace(&n);
      }
 }
