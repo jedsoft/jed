@@ -635,7 +635,9 @@ int jed_vget_y_n (char *fmt, char *arg)
 	fmt = "%s";
      }
 
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
    SLsnprintf (msg, sizeof (msg), fmt, arg);
+#pragma GCC diagnostic warning "-Wformat-nonliteral"
 
    return jed_get_y_n (msg);
 }
@@ -734,7 +736,7 @@ int find_file_cmd (char *filestr)       /* filestr is const ! */ /*{{{*/
 
    if (*file == 0)
      {
-	jed_verror (Expect_File_Error);
+	jed_verror ("%s", Expect_File_Error);
 	goto free_and_return;
      }
 

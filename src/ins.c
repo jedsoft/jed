@@ -457,7 +457,7 @@ int jed_quick_insert(register unsigned char *s, int n) /*{{{*/
    if ((CLine->flags & JED_LINE_IS_READONLY)
        && ((Point != 0) || (s[n-1] != '\n')))
      {
-	jed_verror (Line_Read_Only_Error);
+	jed_verror ("%s", Line_Read_Only_Error);
 	return -1;
      }
 #endif
