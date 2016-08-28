@@ -625,6 +625,9 @@ int jed_get_y_n (char *question)
    return jed_get_yes_no (question);
 }
 
+#if defined(__GNUC__)
+# pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
 int jed_vget_y_n (char *fmt, char *arg)
 {
    char msg [1024];
@@ -635,12 +638,13 @@ int jed_vget_y_n (char *fmt, char *arg)
 	fmt = "%s";
      }
 
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
    SLsnprintf (msg, sizeof (msg), fmt, arg);
-#pragma GCC diagnostic warning "-Wformat-nonliteral"
 
    return jed_get_y_n (msg);
 }
+#if defined(__GNUC__)
+# pragma GCC diagnostic warning "-Wformat-nonliteral"
+#endif
 
 int jed_get_yes_no (char *question) /*{{{*/
 {

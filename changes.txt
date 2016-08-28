@@ -239,6 +239,9 @@ Changes since 0.99-19
      as semi-infinite because the loop could be broken by answering "yes"
      when asked to edit the buffer.  Pressing Ctrl-G or answering "no"
      had no effect.
+116. Moved gcc diagnosic pragmas outside function bodies for
+     compatibility with old versions of gcc.
+
 
 {{{ Previous Versions
 
