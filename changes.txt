@@ -241,6 +241,8 @@ Changes since 0.99-19
      had no effect.
 116. Moved gcc diagnosic pragmas outside function bodies for
      compatibility with old versions of gcc.
+117. src/jprocess.c: In child_signal_handler, it was possible for
+     return_status to not be initialized.
 
 
 {{{ Previous Versions

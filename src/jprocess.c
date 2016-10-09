@@ -456,7 +456,7 @@ static void child_signal_handler (int sig) /*{{{*/
 
 	     if (p->pid == pid)
 	       {
-		  int return_status;
+		  int return_status = -1;
 
 		  found++;
 
