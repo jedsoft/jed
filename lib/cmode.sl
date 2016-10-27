@@ -1194,7 +1194,11 @@ define c_newline_and_indent ()
 	if (looking_at (slcom) and C_Autoinsert_CPP_Comments)
 	  {
 	     push_mark ();
-	     skip_chars ("%!");
+	     if (looking_at ("%///") || looking_at ("%//!")) % doxygen
+	       go_right (4);
+	     else
+	       skip_chars ("%!");
+
 	     skip_white ();
 	     slcom = bufsubstr ();
 	     pop_spot ();

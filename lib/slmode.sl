@@ -73,6 +73,8 @@ private define skip_comment_whitespace ()
 {
    skip_white ();
    skip_chars ("%");
+   if (looking_at ("//!") || looking_at ("///"))   %  doxygen
+     go_right (3);
    skip_white ();
 }
 
