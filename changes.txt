@@ -249,6 +249,9 @@ Changes since 0.99-19
      files.
 120. lib/php.sl: When adding a newline inside a string, indent the
      next line to the level of the current line.
+121. lib/slmode.sl: Add buffer-local variable
+     cmode_has_no_label_statement so that inserting a colon does not
+     trigger an indent.
 
 {{{ Previous Versions
 

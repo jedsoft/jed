@@ -264,6 +264,7 @@ define slang_mode ()
    set_buffer_hook ("wrap_hook", &wrap_hook);
    set_buffer_hook ("wrapok_hook", &wrapok_hook);
    unset_buffer_hook ("par_sep");
+   set_blocal_var (1, "cmode_has_no_label_statement");
    run_mode_hooks("slang_mode_hook");
 }
 
