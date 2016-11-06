@@ -3257,7 +3257,12 @@ define command_line_hook () %{{{
 	  }
 	  {
 	     flush ("Reading " + file);
-	     () = find_file(patch_cmdline_file (file));  ++n; --i;
+	     file = patch_cmdline_file (file);
+	     if (2 == file_status (file))
+	       dired (file);
+	     else
+	       () = find_file(file);
+	     ++n; --i;
 	  }
 
 	--n; ++i;

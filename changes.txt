@@ -254,7 +254,8 @@ Changes since 0.99-19
      trigger an indent.
 122. src/screen.c: set_status_format now supports a width specifier
      for %c, %l, and %L formats (patch from Nicholas Christopoulos)
-
+123. lib/site.sl,dired.sl: If a directory is specified on the command
+     line, use dired to edit it (patch from dram)
 
 {{{ Previous Versions
 

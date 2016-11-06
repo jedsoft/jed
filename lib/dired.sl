@@ -80,8 +80,10 @@
 
 require ("glob");
 
+variable Dired_Quick_Help = "d:tag file, u:untag, x:delete tagged files, r:rename, h:more help, ?:this help";
 variable Dired_Buffer = "*dired*";
 variable Dired_Current_Directory;
+variable Dired_Move_Target_Dir;
 
 ifnot (keymap_p (Dired_Buffer)) make_keymap (Dired_Buffer);
 
@@ -325,9 +327,6 @@ define dired_read_dir (dir)
    flush ("");
 }
 
-variable Dired_Quick_Help;
-Dired_Quick_Help = "d:tag file, u:untag, x:delete tagged files, r:rename, h:more help, ?:this help";
-
 define dired_quick_help ()
 {
    message (Dired_Quick_Help);
@@ -549,8 +548,6 @@ define dired_delete ()
    dired_xop_tagged_files ("Delete these files", "Deleted ", &delete_file);
 }
 
-variable Dired_Move_Target_Dir;
-
 define dired_do_move (file)
 {
    variable name;
@@ -694,7 +691,12 @@ define dired_rename ()
 %!%-
 define dired ()
 {
-   dired_read_dir (read_file_from_mini ("Directory:"));
+   variable dir;
+   if (_NARGS == 1)
+     dir = ();
+   else
+     dir = read_file_from_mini ("Directory:");
+   dired_read_dir (dir);
    dired_quick_help ();
    run_mode_hooks ("dired_hook");
 }
