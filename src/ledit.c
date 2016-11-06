@@ -1052,35 +1052,40 @@ void read_object_with_completion(char *prompt, char *dflt, char *stuff, int *typ
    char *str = NULL;
 
    *buf = 0;
-   if (type == 'f')		       /* file */
+   switch (type)
      {
-	char *file = read_file_from_minibuffer (prompt, dflt, stuff);
-	if (file != NULL)
-	  (void) SLang_push_malloced_string (file);
+      case 'f':			       /* file */
+	str = read_file_from_minibuffer (prompt, dflt, stuff);
+	if (str != NULL)
+	  SLang_push_malloced_string (str);
 	return;
-     }
-   else if (type == 'b')	       /* buffer */
-     {
+
+      case 'b':			       /* buffer */
 	complete_open = open_bufflist;
 	complete_next = next_bufflist;
-     }
-   else if (type == 'F')	       /* function */
-     {
+	break;
+
+      case 'F':			       /* function */
 	complete_open = open_function_list;
 	complete_next = next_function_list;
-     }
-   else if (type == 's')
-     {
+	break;
+
+      case 's':
 	if (-1 == SLpop_string (&str))
 	  return;
-
 	complete_open = open_string_list;
 	complete_next = next_string_list;
 	String_Completion_Str = str;
-     }
-   else
-     {
+	break;
+
+      case 'V':			       /* Variable */
 	complete_open = NULL;
+	break;
+
+      default:
+	SLang_verror (SL_InvalidParm_Error, "Unknown completion type: '%c'", type);
+	complete_open = NULL;
+	return;
      }
 
    safe_strcat (buf, stuff, sizeof (buf));
