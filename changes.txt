@@ -252,6 +252,9 @@ Changes since 0.99-19
 121. lib/slmode.sl: Add buffer-local variable
      cmode_has_no_label_statement so that inserting a colon does not
      trigger an indent.
+122. src/screen.c: set_status_format now supports a width specifier
+     for %c, %l, and %L formats (patch from Nicholas Christopoulos)
+
 
 {{{ Previous Versions
 

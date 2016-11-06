@@ -9,6 +9,7 @@
 #include "jed-feat.h"
 
 #include <stdio.h>
+#include <ctype.h>
 #include <slang.h>
 
 #include "jdmacros.h"
@@ -721,7 +722,7 @@ static void finish_status(int col_flag)
    char *v, ch;
    Line *l;
    int top, rows, narrows;
-   char buf [256];
+   char buf[256];
    char *str;
 
    v = CBuf->status_line;
@@ -842,6 +843,47 @@ static void finish_status(int col_flag)
 	     if (col_flag) (void) calculate_column ();
 	     sprintf(buf, "%d",  Absolute_Column);
 	     str = buf;
+	     break;
+
+	   case '0': case '1': case '2': case '3': case '4':
+	   case '5': case '6': case '7': case '8': case '9':
+	       {
+		  char fmt[16];
+		  int num = ch - '0';
+		  while (isdigit(*v))
+		    {
+		       num = num * 10 + (*v - '0');
+		       v++;
+		    }
+
+		  if ((num < 0)
+		      || (-1 == SLsnprintf (fmt, sizeof(fmt), "%s%du", ((ch == '0') ? "%0" : "%"), num)))
+		    strcpy (fmt, "%u");
+
+		  str = "*";
+		  switch (*v++)
+		    {
+		     default:
+		       v--;
+		       break;
+
+		     case 'c':
+		       if (col_flag) (void) calculate_column ();
+		       if (-1 != SLsnprintf (buf, sizeof (buf), fmt, (unsigned int)Absolute_Column))
+			 str = buf;
+		       break;
+
+		     case 'l':
+		       if (-1 != SLsnprintf (buf, sizeof (buf), fmt, LineNum))
+			 str = buf;
+		       break;
+
+		     case 'L':
+		       if (-1 != SLsnprintf (buf, sizeof (buf), fmt, Max_LineNum))
+			 str = buf;
+		       break;
+		    }
+	       }
 	     break;
 
 	   case '%': str = "%"; break;
