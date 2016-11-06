@@ -247,6 +247,8 @@ Changes since 0.99-19
      comments in slang code.
 119. lib/php.sl: Reformatted for consistency with other jed library
      files.
+120. lib/php.sl: When adding a newline inside a string, indent the
+     next line to the level of the current line.
 
 {{{ Previous Versions
 

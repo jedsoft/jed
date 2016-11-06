@@ -1,6 +1,6 @@
 %   file     : php.sl
 %   author   : Mikael hultgren <micke@yeah.nu>
-%   version  : 1.4-1
+%   version  : 1.5-0
 %
 %   $Id: php.sl,v 1.190 2001/10/03 13:27:08 child Exp $
 %
@@ -513,12 +513,41 @@ private define inside_class( bra ) %{{{
    return 0;
 } %}}}
 %#endif
+
+% This function is called when it is known that the current point
+% is in a string.  Try not to change the string unless the line is
+% empty.
+private define indent_within_php_string ()
+{
+   push_spot ();
+   EXIT_BLOCK
+     {
+        pop_spot ();
+     }
+
+   bol_skip_white ();
+   ifnot (eolp ())
+     return;                           %  line is not empty
+
+   % Indent to the level of the previous line if it is in a string
+   variable col = 0;
+   push_spot ();
+   if (up_1 ())
+     {
+        bol_skip_white ();
+        if (-1 == parse_to_point ())
+          col = what_column ();        %  in a string
+     }
+   pop_spot ();
+   php_indent_to (col);
+}
+
 define php_indent_line( ) %{{{
 {
    variable val, col, extra_indent = 0;
    variable prep_line = 0;
    variable match_char, match_indent, this_char, match_line;
-   variable match_mark;
+   variable match_mark, ptp;
    variable is_continuation = 0;
 
    % Check whetever we are in a php block or not
@@ -529,20 +558,28 @@ define php_indent_line( ) %{{{
 
         % Store the character we are standing on
         this_char = what_char( );
-        if( -2 == parse_to_point( ) )
+        ptp = parse_to_point ();
+        if (ptp == -2)
           {
              % In a c comment.  Indent it at level of matching /* string
              ( ) = bsearch( "/*" );
              col = what_column( );
              pop_spot( );
              php_indent_continued_comment( col );
-             php_mode_if_bol_skip_white( );
              return;
           }
 
         EXIT_BLOCK
           {
              php_mode_if_bol_skip_white( );
+          }
+
+        if (ptp == -1)
+          {
+             % Inside a string
+             indent_within_php_string ();
+             pop_spot ();
+             return;
           }
 
         if(php_looking_at( "case" ) || php_looking_at( "default" ))
