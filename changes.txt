@@ -261,6 +261,9 @@ Changes since 0.99-19
      InvalidParmError exception (patch from dram)
 125. lib/idl.sl: Improved the automatic indentation through better
      recognition of block begin/end constructs.
+126. src/rgrep.c: Added -t option, which transposes the pattern with
+     the file name arguments.  Character codes greater than 127 are no
+     longer escaped upon output.
 
 {{{ Previous Versions
 

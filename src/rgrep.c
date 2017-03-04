@@ -7,7 +7,7 @@
 #include "config.h"
 
 #define RGREP_MAJOR_VERSION 2
-#define RGREP_MINOR_VERSION 1
+#define RGREP_MINOR_VERSION 3
 
 #include <stdio.h>
 #include <slang.h>
@@ -58,9 +58,7 @@ static int Follow_Links = 0;
 static int Debug_Mode = 0;
 static char *Match_This_Extension;
 static int Print_Non_Matching_Lines = 0;
-#ifdef __unix__
 static int Stdout_Is_TTY;
-#endif
 
 #define HON_STR "\033[1m"
 #define HON_STR_LEN 4
@@ -87,7 +85,9 @@ static void version (void)
 
 static void usage(void)
 {
-   fputs("Usage: rgrep [options..] pattern [files ...]\n\
+   (void) fputs("\
+Usage: rgrep [options..] [--] pattern [files ...]\n\
+       rgrep [options..] -t [--] files ... pattern\n\
 Options:\n\
   -?        additional help (use '-?' to avoid shell expansion on some systems)\n\
   -c        count matches\n\
@@ -95,6 +95,9 @@ Options:\n\
   -H        Output match instead of entire line containing match\n\
   -i        ignore case\n\
   -l        list filename only\n\
+",
+		stderr);
+   (void) fputs ("\
   -n        print line number of match\n\
   -F        follow links\n\
   -r        recursively scan through directory tree\n\
@@ -102,6 +105,10 @@ Options:\n\
   -B        If file looks like a binary one, skip it.\n\
   -R 'pat'  like '-r' except that only those files matching 'pat' are checked\n\
               Here 'pat' is a globbing expression.\n\
+  -t        Transpose the order of the pattern and the filename arguments\n\
+",
+		 stderr);
+   (void) fputs ("\
   -v        print only lines that do NOT match the specified pattern\n\
   -x 'ext'  checks only files with extension given by 'ext'.\n\
   -D        Print all directories that would be searched.  This option is for\n\
@@ -109,9 +116,15 @@ Options:\n\
   -W'len'   lines are 'len' characters long (not newline terminated).\n\
   --version Print version\n\
   --help    Print this help\n\
+  --        Used to indicate the end of the options\n\
+",
+		 stderr);
+   (void) fputs ("\
 \n\
 'pattern' is a valid 'ex' type of regular expression.  See the man page for ex.\n\
-It is best enclosed in single quotes to avoid shell expansion.\n", stderr);
+It is best enclosed in single quotes to avoid shell expansion.\n\
+",
+		 stderr);
 
    exit(1);
 }
@@ -119,7 +132,8 @@ It is best enclosed in single quotes to avoid shell expansion.\n", stderr);
 static void additional_help (void)
 {
    char buf[3];
-   fputs("Supported Regular Expressions:\n\
+   (void) fputs("\
+Supported Regular Expressions:\n\
    .                  match any character except newline\n\
    \\d                match any digit\n\
    \\e                match ESC char\n\
@@ -128,6 +142,9 @@ static void additional_help (void)
    ?                  matches zero or one occurence of last single char RE\n\
    ^                  matches beginning of line\n\
    $                  matches end of line\n\
+",
+		 stderr);
+   (void) fputs ("\
    [ ... ]            matches any single character between brackets.\n\
                       For example, [-02468] matches `-' or any even digit.\n\
 		      and [-0-9a-z] matches `-' and any digit between 0 and 9\n\
@@ -135,11 +152,15 @@ static void additional_help (void)
    \\<                Match the beginning of a word.\n\
    \\>                Match the end of a word.\n\
    \\{ ... \\}\n\
+",
+		 stderr);
+   (void) fputs ("\
    \\( ... \\)\n\
    \\1, \\2, ..., \\9    matches match specified by nth \\( ... \\) expression.\n\
                       For example, '\\([ \\t][a-zA-Z]+\\)\\1[ \\t]' matches any\n\
-		      word repeated consecutively.\n",
-	 stderr);
+		      word repeated consecutively.\n\
+",
+		 stderr);
 
    if (isatty(fileno(stderr)) && isatty(fileno(stdin)))
      {
@@ -176,6 +197,7 @@ static VFILE *File_Vp;
 static unsigned char *Fixed_Len_Buf;
 static int Fixed_Len_Mode;
 static int Fixed_Line_Len;
+static int Transpose_Argv = 0;
 
 extern void msg_error (char *);
 
@@ -203,7 +225,7 @@ static void parse_flags(char *f)
 	   case 'r': Do_Recursive = 1; break;
 	   case 'N': Do_Recursive = -1; break;
 	   case 'B': Binary_Option = 1; break;
-	   case 'v': Print_Non_Matching_Lines = 1;
+	   case 'v': Print_Non_Matching_Lines = 1; break;
 	   case 'H':
 	     Highlight = 1;	       /* does not cause highlight for this case */
 	     Output_Match_Only = 1;
@@ -218,6 +240,7 @@ static void parse_flags(char *f)
 	   case 'F': Follow_Links = 1; break;
 	   case 'D': Debug_Mode = 1; break;
 	   case '?': additional_help (); break;
+	   case 't': Transpose_Argv = 1; break;
 	   case 'W':
 	     Fixed_Line_Len = 0;
 	     while (((ch = *f) != 0) && (ch >= '0') && (ch <= '9'))
@@ -252,25 +275,26 @@ static int print_file_too;
 static void do_fwrite (unsigned char *s, int n, int nl)
 {
    unsigned char *smax = s + n, ch = 0;
-#if defined(__unix__) || defined(VMS)
-   unsigned char ch1;
-#endif
 
-   while (s < smax)
+   if (Stdout_Is_TTY == 0)
+     {
+	while (s < smax)
+	  {
+	     ch = *s++;
+	     (void) putc (ch, stdout);
+	  }
+     }
+   else while (s < smax)
      {
 	ch = *s++;
-#if defined(__unix__) || defined(VMS)
-	ch1 = ch & 0x7F;
-	if ((ch1 < ' ') || (ch1 == 0x7F))
+	if (ch < ' ')
 	  {
 	     if ((ch != '\n') && (ch != '\t'))
 	       {
-		  if (ch & 0x80) putc ('~', stdout);
 		  putc ('^', stdout);
-		  if (ch1 == 0x7F) ch = '?'; else ch = ch1 + '@';
+		  ch += '@';
 	       }
 	  }
-#endif
 	putc (ch, stdout);
      }
    if (nl && (ch != '\n')) putc ('\n', stdout);
@@ -424,9 +448,7 @@ static void grep(char *file)
 	  }
 
 	output_line(buf, n, p, pmax);
-#ifdef __unix__
 	if (Stdout_Is_TTY) fflush (stdout);
-#endif
      }
    while (NULL != (buf = (unsigned char *) rgrep_gets(&n)));
 
@@ -435,9 +457,7 @@ static void grep(char *file)
        && (n_matches == line))
      {
 	puts (file);
-#ifdef __unix__
 	if (Stdout_Is_TTY) fflush (stdout);
-#endif
      }
 
    if (n_matches && Count_Matches)
@@ -448,9 +468,7 @@ static void grep(char *file)
 	     putc(':', stdout);
 	  }
 	fprintf(stdout, "%d\n", n_matches);
-#ifdef __unix__
 	if (Stdout_Is_TTY) fflush (stdout);
-#endif
      }
 }
 
@@ -862,9 +880,7 @@ int main(int argc, char **argv)
    unsigned int flags;
    char *pattern;
 
-#ifdef __unix__
    Stdout_Is_TTY = isatty (fileno(stdout));
-#endif
    argv++;
    argc--;
 
@@ -894,6 +910,11 @@ int main(int argc, char **argv)
 	     Recursive_Match = 1;
 	     Match_This_Extension = *argv;
 	  }
+	else if (0 == strcmp (*argv, "--"))
+	  {
+	     argv++; argc--;
+	     break;
+	  }
 	else
 	  {
 	     parse_flags(*argv + 1);
@@ -903,10 +924,24 @@ int main(int argc, char **argv)
 
    if (!argc) usage();
 
+   if (Transpose_Argv)
+     {
+	/* Move from end of array to current point */
+	int i = argc-1;
+	pattern = argv[i];
+	while (i > 0)
+	  {
+	     argv[i] = argv[i-1];
+	     i--;
+	  }
+	argv[i] = pattern;
+     }
+
    pattern = *argv;
 
    if (NULL == (reg = SLregexp_compile (pattern, Case_Sensitive ? 0 : SLREGEXP_CASELESS)))
      exit_error ("Error compiling pattern");
+
    argc--; argv++;
 
    Must_Match = 1;
