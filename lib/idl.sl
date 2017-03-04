@@ -110,6 +110,9 @@ define idl_looking_at_block (word, begin)
 
    push_spot ();
    go_right (strlen (word));
+   ifnot (re_looking_at ("[^a-z0-9A-Z_]"))
+     return 0;
+
    if (ffind (begin)) return 1;
    do
      {
@@ -127,11 +130,11 @@ define idl_is_block_beginnning ()
    push_spot ();
    bol_skip_white ();
    orelse
-     {idl_looking_at_block ("if ", " begin")}
+     {idl_looking_at_block ("if", " begin")}
      {idl_looking_at_block ("while", " begin")}
      {idl_looking_at_block ("else ", " begin")}
-     {idl_looking_at_block ("for ", " begin")}
-     {idl_looking_at_block ("case ", " of")}
+     {idl_looking_at_block ("for", " begin")}
+     {idl_looking_at_block ("case", " of")}
      {idl_looking_at_block ("endif else", " begin")}
      {idl_looking_at_block ("repeat", " begin")}
      {looking_at ("function ")}

@@ -259,6 +259,8 @@ Changes since 0.99-19
 124. src/ledit.c:read_object_with_completion: Accept only the
      documented completion types; anything else will result in an
      InvalidParmError exception (patch from dram)
+125. lib/idl.sl: Improved the automatic indentation through better
+     recognition of block begin/end constructs.
 
 {{{ Previous Versions
 
