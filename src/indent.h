@@ -16,8 +16,9 @@ typedef struct Syntax_Table_Type
    char *name;			       /* name of this table */
    unsigned char sgml_start_char;      /* < */
    unsigned char sgml_stop_char;       /* > */
-#define MAX_STRING_CHARS 2	       /* do not change this without making other changes to buffer flags */
-   unsigned char string_chars[MAX_STRING_CHARS];	       /* character for string delim */
+#define JED_MAX_SYNTAX_STRING_CHARS (1+JED_LINE_IN_STRING_MAXVAL-JED_LINE_IN_STRING_MINVAL)
+   /* do not change this without making other changes to buffer flags */
+   unsigned char string_chars[JED_MAX_SYNTAX_STRING_CHARS];/* character for string delim */
    unsigned int num_string_chars;
    unsigned char char_char;	       /* char for char delim */
    unsigned int flags;
@@ -30,6 +31,7 @@ typedef struct Syntax_Table_Type
 #define PREPROCESS_COLOR_WHOLE_LINE	0x20
 #define PREPROCESS_IGNORE_WHITESPACE	0x40
 #define SINGLE_LINE_STRINGS		0x80
+
    /* Comments.  Each mode can have at most 2 comment styles: one for
     * multiline comments, and one for single line comments.
     * A single line comments ends at the end of the line.  Since some

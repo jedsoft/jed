@@ -194,9 +194,8 @@ static int parse_to_point1 (Syntax_Table_Type *table,
 			    unsigned char *pmax)
 {
    unsigned char ch;
-   int quote, flags;
+   int quote, flags, lval;
    unsigned char *p;
-   unsigned int lflags;
    unsigned char com_start_char;
    char *comment_start;
    unsigned short *syntax;
@@ -216,29 +215,25 @@ static int parse_to_point1 (Syntax_Table_Type *table,
    syntax = table->char_syntax;
    sgml_stop_char = table->sgml_stop_char;
 
-   lflags = l->flags & JED_LINE_SYNTAX_BITS;
+   lval = JED_GET_LINE_IN_VAL(l);
 
-   if (lflags)
+   if (lval)
      {
-	if (lflags & JED_LINE_IN_COMMENT)
+	if (JED_IS_LINE_IN_COMMENT_VAL(lval))
 	  {
 	     if (NULL == (p = find_comment_end (table, p, pmax)))
-	       return JED_LINE_IN_COMMENT;
+	       return lval;
 	  }
-	else if (lflags & JED_LINE_IN_STRING0)
+	else if (JED_IS_LINE_IN_STRING_VAL(lval))
 	  {
-	     if (NULL == (p = find_string_end (table, p, pmax, sc[0])))
-	       return JED_LINE_IN_STRING0;
+	     int i = lval - JED_LINE_IN_STRING_MINVAL;
+	     if (NULL == (p = find_string_end (table, p, pmax, sc[i])))
+	       return lval;
 	  }
-	else if (lflags & JED_LINE_IN_STRING1)
-	  {
-	     if (NULL == (p = find_string_end (table, p, pmax, sc[1])))
-	       return JED_LINE_IN_STRING1;
-	  }
-	else if (lflags & JED_LINE_IN_HTML)
+	else if (JED_IS_LINE_IN_HTML_VAL(lval))
 	  {
 	     if (NULL == (p = find_string_end (table, p, pmax, sgml_stop_char)))
-	       return JED_LINE_IN_HTML;
+	       return JED_LINE_IN_HTML_MINVAL;
 	  }
      }
 
@@ -271,7 +266,7 @@ static int parse_to_point1 (Syntax_Table_Type *table,
 	       {
 		  p = find_comment_end (table, p + table->comment_start_len, pmax);
 		  if (p == NULL)
-		    return JED_LINE_IN_COMMENT;
+		    return JED_LINE_IN_COMMENT_MINVAL;
 
 		  continue;
 	       }
@@ -285,11 +280,13 @@ static int parse_to_point1 (Syntax_Table_Type *table,
 	     p = find_string_end (table, p + 1, pmax, ch);
 	     if (p == NULL)
 	       {
-		  if (sc[0] == ch)
-		    return JED_LINE_IN_STRING0;
-		  if (sc[1] == ch)
-		    return JED_LINE_IN_STRING1;
-		  return JED_LINE_IN_STRING0;
+		  unsigned int i, n = table->num_string_chars;
+		  for (i = 0; i < n; i++)
+		    {
+		       if (sc[i] == ch)
+			 return JED_LINE_IN_STRING_MINVAL+i;
+		    }
+		  return JED_LINE_IN_STRING_MINVAL;
 	       }
 	     continue;
 	  }
@@ -298,7 +295,7 @@ static int parse_to_point1 (Syntax_Table_Type *table,
 	  {
 	     p = find_string_end (table, p+1, pmax, table->sgml_stop_char);
 	     if (p == NULL)
-	       return JED_LINE_IN_HTML;
+	       return JED_LINE_IN_HTML_MINVAL;
 	     continue;
 	  }
 #if 0
@@ -622,7 +619,7 @@ static int backward_goto_match (int count, unsigned char ch) /*{{{*/
    unsigned char *p, *pmin, want_ch;
    unsigned short *syntax;
    int in_string, in_comment, in_html, level;
-   int quote;
+   int quote, lval;
    Syntax_Table_Type *table;
    unsigned int this_syntax;
    unsigned char *pmax;
@@ -638,24 +635,16 @@ static int backward_goto_match (int count, unsigned char ch) /*{{{*/
    level = 1;
 
    /* Get some context */
-   in_string = 0; in_comment = 0;
-   switch (parse_to_point1 (table, CLine, CLine->data + Point))
-     {
-      case JED_LINE_HAS_EOL_COMMENT:
-      case JED_LINE_IN_COMMENT:
-	in_comment = 1;
-	break;
+   in_html = in_string = in_comment = 0;
+   lval = parse_to_point1 (table, CLine, CLine->data + Point);
+   if ((lval == JED_LINE_HAS_EOL_COMMENT)
+       || JED_IS_LINE_IN_COMMENT_VAL(lval))
+     in_comment = 1;
+   else if (JED_IS_LINE_IN_STRING_VAL(lval))
+     in_string = (int) table->string_chars[lval-JED_LINE_IN_STRING_MINVAL];
+   else if (JED_IS_LINE_IN_HTML_VAL(lval))
+     in_html = 1;
 
-      case JED_LINE_IN_STRING0:
-	in_string = (int) table->string_chars[0];
-	break;
-      case JED_LINE_IN_STRING1:
-	in_string = (int) table->string_chars[1];
-	break;
-      case JED_LINE_IN_HTML:
-	in_html = 1;
-	break;
-     }
    Point--;
 
    if (table->comment_start != NULL)
@@ -861,7 +850,7 @@ static int forward_goto_match (unsigned char ch) /*{{{*/
 {
    unsigned char *p, *pmax, want_ch;
    unsigned short *syntax;
-   int in_string, in_comment, level;
+   int in_string, in_comment, level, lval;
    unsigned int this_syntax;
    Syntax_Table_Type *table;
    unsigned char com_start_char;
@@ -871,26 +860,13 @@ static int forward_goto_match (unsigned char ch) /*{{{*/
 
    syntax = table->char_syntax;
 
-   /* Here we go */
-
-   in_string = 0; in_comment = 0;
-   switch (parse_to_point1 (table, CLine, CLine->data + Point))
-     {
-      case JED_LINE_HAS_EOL_COMMENT:
-	in_comment = JED_LINE_HAS_EOL_COMMENT;
-	break;
-
-      case JED_LINE_IN_COMMENT:
-	in_comment = JED_LINE_IN_COMMENT;
-	break;
-
-      case JED_LINE_IN_STRING0:
-	in_string = (int) table->string_chars[0];
-	break;
-      case JED_LINE_IN_STRING1:
-	in_string = (int) table->string_chars[1];
-	break;
-     }
+   in_string = in_comment = 0;
+   lval = parse_to_point1 (table, CLine, CLine->data + Point);
+   if ((lval == JED_LINE_HAS_EOL_COMMENT)
+       || JED_IS_LINE_IN_COMMENT_VAL(lval))
+     in_comment = lval;
+   else if (JED_IS_LINE_IN_STRING_VAL(lval))
+     in_string = (int) table->string_chars[lval-JED_LINE_IN_STRING_MINVAL];
 
    com_start_char = 0;
 
@@ -917,7 +893,7 @@ static int forward_goto_match (unsigned char ch) /*{{{*/
 	       {
 		  if (in_string) continue;
 
-		  if (in_comment == JED_LINE_IN_COMMENT)
+		  if (JED_IS_LINE_IN_COMMENT_VAL(in_comment))
 		    {
 		       p--;
 		       if ((table->comment_stop != NULL)
@@ -1075,20 +1051,20 @@ int goto_match (void) /*{{{*/
 static int parse_to_point (void) /*{{{*/
 {
    Syntax_Table_Type *table = CBuf->syntax_table;
+   int lval;
+
    if (table == NULL) return 0;
 #if JED_HAS_LINE_ATTRIBUTES
    jed_syntax_parse_buffer (0);
 #endif
 
-   switch (parse_to_point1 (table, CLine, CLine->data + Point))
-     {
-      case JED_LINE_IN_COMMENT:
-      case JED_LINE_HAS_EOL_COMMENT:
-	return -2;
-      case JED_LINE_IN_STRING0:
-      case JED_LINE_IN_STRING1:
-	return -1;
-     }
+   lval = parse_to_point1 (table, CLine, CLine->data + Point);
+   if ((lval == JED_LINE_HAS_EOL_COMMENT)
+       || JED_IS_LINE_IN_COMMENT_VAL(lval))
+     return -2;
+
+   if (JED_IS_LINE_IN_STRING_VAL(lval))
+     return -1;
 
    return 0;
 }
@@ -1185,7 +1161,7 @@ static void set_syntax_flags (char *name, int *flags) /*{{{*/
 
    table = jed_find_syntax_table (name, 1);
    if (table == NULL) return;
-
+   table->flags &= ~0xFF;
    table->flags |= *flags & 0xFF;
 }
 
@@ -1268,7 +1244,7 @@ static void define_syntax (int *what, char *name) /*{{{*/
 	break;
       case '"':
 	if (SLang_pop_integer (&c2)) break;
-	if (table->num_string_chars == MAX_STRING_CHARS)
+	if (table->num_string_chars == JED_MAX_SYNTAX_STRING_CHARS)
 	  break;
 	table->char_syntax[(unsigned char) c2] |= STRING_SYNTAX;
 	table->string_chars[table->num_string_chars++] = (unsigned char) c2;
@@ -1550,8 +1526,6 @@ static void define_keywords (char *name, char *kwords, int *lenp, int *tbl_nump)
 #if JED_HAS_LINE_ATTRIBUTES
 static void syntax_parse_lines (Syntax_Table_Type *table, Line *l, unsigned int num)
 {
-   int state;
-
    if (l == NULL)
      return;
 
@@ -1563,15 +1537,15 @@ static void syntax_parse_lines (Syntax_Table_Type *table, Line *l, unsigned int 
 
    while (1)
      {
-	state = parse_to_point1 (table, l, l->data + l->len);
-	if (state == JED_LINE_HAS_EOL_COMMENT)
+	int lval = parse_to_point1 (table, l, l->data + l->len);
+	if (lval == JED_LINE_HAS_EOL_COMMENT)
 	  {
-	     l->flags |= state;
-	     state = 0;
+	     l->flags |= JED_LINE_HAS_EOL_COMMENT;
+	     lval = 0;
 	  }
-	else if (((state == JED_LINE_IN_STRING0) || (state == JED_LINE_IN_STRING1))
-	    && (table->flags & SINGLE_LINE_STRINGS))
-	  state = 0;
+	else if (JED_IS_LINE_IN_STRING_VAL(lval)
+		 && (table->flags & SINGLE_LINE_STRINGS))
+	  lval = 0;
 
 	l = l->next;
 
@@ -1580,13 +1554,13 @@ static void syntax_parse_lines (Syntax_Table_Type *table, Line *l, unsigned int 
 
 	if (num == 0)
 	  {
-	     if (state == (int) (l->flags & JED_LINE_SYNTAX_IN_BITS))
+	     if (lval == (int)JED_GET_LINE_IN_VAL(l))
 	       return;
 	  }
 	else num--;
 
-	l->flags &= ~JED_LINE_SYNTAX_BITS;
-	l->flags |= state;
+	l->flags &= ~JED_LINE_HAS_EOL_COMMENT;
+	JED_SET_LINE_IN_VAL(l, lval);
      }
 }
 

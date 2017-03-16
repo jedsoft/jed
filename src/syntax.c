@@ -305,12 +305,11 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
    flags = st->flags;
 
 #if JED_HAS_LINE_ATTRIBUTES
-   context = l->flags & JED_LINE_SYNTAX_BITS;
-#else
-   context = 0;
+   context = JED_GET_LINE_IN_VAL(l);
 #endif
 
-   if (context & JED_LINE_IN_COMMENT)
+#if JED_HAS_LINE_ATTRIBUTES
+   if (JED_IS_LINE_IN_COMMENT_VAL(context))
      {
 	/* I do not like the whitespace that preceeds the
 	 * '*' on the current line to be highlighted.  So...
@@ -327,15 +326,12 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 
 	p = highlight_comment (p, p, pmax, st);
      }
-   else if (context & JED_LINE_IN_STRING0)
+   else if (JED_IS_LINE_IN_STRING_VAL(context))
      {
-	p = highlight_string (p, pmax, st->quote_char, st->string_chars[0], 0);
+	int i = context - JED_LINE_IN_HTML_MINVAL;
+	p = highlight_string (p, pmax, st->quote_char, st->string_chars[i], 0);
      }
-   else if (context & JED_LINE_IN_STRING1)
-     {
-	p = highlight_string (p, pmax, st->quote_char, st->string_chars[1], 0);
-     }
-   else if (context & JED_LINE_IN_HTML)
+   else if (JED_IS_LINE_IN_HTML_VAL(context))
      {
 	p1 = p;
 	ch = st->sgml_stop_char;
@@ -343,8 +339,9 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 	  ;
 	p = write_using_color (p, p1, JHTML_KEY_COLOR);
      }
-   else if ((flags & FORTRAN_TYPE)
-	    && st->fortran_comment_chars[*p])
+   else
+#endif /* JED_HAS_LINE_ATTRIBUTES */
+   if ((flags & FORTRAN_TYPE) && st->fortran_comment_chars[*p])
      {
 	(void) write_using_color (p, pmax, JCOM_COLOR);
 	return;

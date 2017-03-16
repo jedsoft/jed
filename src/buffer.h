@@ -52,8 +52,8 @@ typedef struct Line
    int space;		       /* space allocated for line */
 #endif
 #if JED_HAS_LINE_ATTRIBUTES
-   /* The first n bits of the flags field represent an n bit integer that
-    * is used by the syntax parsing routines.  The next m bits
+   /* The first 4 bits of the flags field represent an 4 bit integer that
+    * is used by the syntax parsing routines.  The next 4 bits
     * control the various flags.  The last 8 bits specify the
     * color of the line.
     *
@@ -63,24 +63,39 @@ typedef struct Line
     * which is useful if there are more than one.
     */
    unsigned int flags;
-#endif
-#define JED_LINE_IN_COMMENT		0x0001
-#define JED_LINE_IN_STRING0		0x0002
-#define JED_LINE_IN_STRING1		0x0004
-#define JED_LINE_IN_HTML		0x0008
-#define JED_LINE_SYNTAX_IN_BITS		0x000F
-#define JED_LINE_HAS_EOL_COMMENT	0x0010
-#define JED_LINE_SYNTAX_BITS		0x001F
+# define JED_LINE_IN_COMMENT_MINVAL (1)
+# define JED_LINE_IN_COMMENT_MAXVAL (4)
+# define JED_IS_LINE_IN_COMMENT_VAL(val) \
+   ((JED_LINE_IN_COMMENT_MINVAL<=(val)) && ((val)<=JED_LINE_IN_COMMENT_MAXVAL))
 
-#define JED_LINE_HIDDEN			0x0020
-#define JED_LINE_IS_READONLY		0x0040
-#define JED_LINE_FLAG_BITS		0x0060
+# define JED_LINE_IN_STRING_MINVAL  (5)
+# define JED_LINE_IN_STRING_MAXVAL (10)
+# define JED_IS_LINE_IN_STRING_VAL(val) \
+   ((JED_LINE_IN_STRING_MINVAL<=(val)) && ((val)<=JED_LINE_IN_STRING_MAXVAL))
 
-#define JED_LINE_COLOR_BITS		0xFF00
-#define JED_GET_LINE_COLOR(line) ((line->flags & JED_LINE_COLOR_BITS) >> 8)
-#define JED_SET_LINE_COLOR(line,color) \
+# define JED_LINE_IN_HTML_MINVAL   (11)
+# define JED_LINE_IN_HTML_MAXVAL   (11)
+# define JED_IS_LINE_IN_HTML_VAL(val) \
+   ((JED_LINE_IN_HTML_MINVAL<=(val)) && ((val)<=JED_LINE_IN_HTML_MAXVAL))
+# define JED_LINE_IN_BITS		0x000F
+
+# define JED_GET_LINE_IN_VAL(line) ((line)->flags & JED_LINE_IN_BITS)
+# define JED_SET_LINE_IN_VAL(line,val) \
+   (line)->flags &= ~JED_LINE_IN_BITS; \
+   (line)->flags |= ((val)&JED_LINE_IN_BITS)
+
+# define JED_LINE_HAS_EOL_COMMENT	0x0010
+# define JED_LINE_SYNTAX_BITS		0x001F
+
+# define JED_LINE_HIDDEN		0x0020
+# define JED_LINE_IS_READONLY		0x0040
+
+# define JED_LINE_COLOR_BITS		0xFF00
+# define JED_GET_LINE_COLOR(line) ((line->flags & JED_LINE_COLOR_BITS) >> 8)
+# define JED_SET_LINE_COLOR(line,color) \
    (line)->flags &= ~JED_LINE_COLOR_BITS; \
    (line)->flags |= (((color) << 8) & JED_LINE_COLOR_BITS)
+#endif
 } Line;
 
 #define LINE_HAS_NEWLINE(l) \
