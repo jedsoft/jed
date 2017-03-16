@@ -1116,48 +1116,51 @@ static int dfa_try_keyword (register unsigned char *q, int n,
    return 0;
 }
 
-static void dfa_syntax_highlight (register unsigned char *p,
-				  register unsigned char *pmax,
-				  Syntax_Table_Type *st)
+static int get_keyword_color (Syntax_Table_Type *st, unsigned char *p, int n, int *colourp)
 {
-   Highlight *h = st->hilite;
-   DFA *d;
-   unsigned char *q;
-   unsigned char *last_acc_pos;
-   Accept *accept, *last_accept;
-   int preproc = -1, colour, i;
-   int case_sense;
+   int i, case_sense;
 
-   if (st == NULL)
-     return;
+   if ((n <= 0) || (n > MAX_KEYWORD_LEN))
+     return -1;
 
    case_sense = !(st->flags & SYNTAX_NOT_CASE_SENSITIVE);
+
+   for (i=0; i<MAX_KEYWORD_TABLES; i++)
+     {
+	if (dfa_try_keyword (p, n, st->keywords[i][n-1], case_sense))
+	  {
+	     *colourp = JKEY_COLOR+i;
+	     return 0;
+	  }
+     }
+   return -1;
+}
+
+static void dfa_syntax_highlight (unsigned char *p, unsigned char *pmax,
+				  Syntax_Table_Type *st)
+{
+   DFA *d;
+   Highlight *h;
+   int preproc = -1;
+
+   if ((st == NULL) || (NULL == (h = st->hilite)))
+     return;
 
    d = h->dfa->next;		       /* the first time, start at state 1 */
    while (p < pmax)
      {
-	q = p;
-	last_accept = NULL;
+	Accept *last_accept;
+	unsigned char *last_acc_pos, *q;
+
 	last_acc_pos = NULL;
+	last_accept = NULL;
+
+	q = p;
 	while (q < pmax)
 	  {
-	     d = d->where_to[*q++];
-	     /* accept = (!d ? NULL : q==pmax ? d->accept_end : d->accept); */
-	     accept = ((d==NULL) ? NULL
-		       : (q==pmax) ? d->accept_end
-		       : d->accept);
+	     Accept *accept;
 
-	     if (accept != NULL)
-	       {
-		/*
-		 * We have hit an accepting state: record it.
-		 */
-		  last_accept = accept;
-		  last_acc_pos = q;
-		  if (last_accept->is_quick)
-		    break;
-	       }
-	     if (d == NULL)
+	     if (NULL == (d = d->where_to[*q++]))
 	       {
 		  if (last_accept == NULL)
 		    {
@@ -1168,32 +1171,44 @@ static void dfa_syntax_highlight (register unsigned char *p,
 		    }
 		  break;		       /* error state */
 	       }
+
+	     if (q == pmax)
+	       accept = d->accept_end;
+	     else
+	       accept = d->accept;
+
+	     if (accept == NULL)
+	       continue;
+
+	     /*
+	      * We have hit an accepting state: record it.
+	      */
+	     last_accept = accept;
+	     last_acc_pos = q;
+	     if (last_accept->is_quick)
+	       break;
 	  }
-	if (last_accept)
+
+	/* If last_accept is NULL, then accept is also NULL */
+	if (last_accept != NULL)
 	  {
-	     colour = last_accept->colour;
+	     int colour = last_accept->colour;
+
 	     if (last_accept->is_keyword)
-	       {
-		  int n = last_acc_pos - p;
-		  if (n>=1 && n<=MAX_KEYWORD_LEN)
-		    for (i=0; i<MAX_KEYWORD_TABLES; i++)
-		      if (dfa_try_keyword (p, n, st->keywords[i][n-1],
-					   case_sense))
-			{
-			   colour = JKEY_COLOR+i;
-			   break;
-			}
-	       }
-	     if (preproc != -1 && !last_accept->is_preproc &&
-		 colour != JCOM_COLOR)
-	       colour = preproc;
-             p = write_using_color(p, last_acc_pos, colour);
+	       (void) get_keyword_color (st, p, last_acc_pos-p, &colour);
 
 	     if (last_accept->is_preproc)
 	       preproc = last_accept->colour;
+	     else if ((preproc != -1) && (colour != JCOM_COLOR))
+	       colour = preproc;
+
+             p = write_using_color(p, last_acc_pos, colour);
 	  }
 	else
 	  {
+	     /* Here, accept = last_accept = NULL
+	      * and either q == pmax or d==NULL
+	      */
 	     if (preproc != -1)
 	       p = write_using_color (p, q, preproc);
 	     else

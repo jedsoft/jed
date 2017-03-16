@@ -264,6 +264,8 @@ Changes since 0.99-19
 126. src/rgrep.c: Added -t option, which transposes the pattern with
      the file name arguments.  Character codes greater than 127 are no
      longer escaped upon output.
+127. src/dfasyntax.c: Cleaned up and simplified dfa_syntax_highlight.
+
 
 {{{ Previous Versions
 
