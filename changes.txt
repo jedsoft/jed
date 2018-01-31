@@ -269,6 +269,8 @@ Changes since 0.99-19
      raise the limit on the number of string delimiters from 2 to 6.
      Other files were updated accordingly.
 129. autoconf/aclocal.m4: Updated to version 0.3.3-1
+130. lib/fortran.sl: Added indentation support for
+     structure/endstructure (Markus Nyman).
 
 
 {{{ Previous Versions

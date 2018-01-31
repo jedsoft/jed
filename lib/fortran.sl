@@ -49,9 +49,9 @@ define fortran_indent ()
 
 	if (goal == 1) continue;
 
-	if (looking_at("do ") or looking_at("else"))
+	if (looking_at("do ") || looking_at("else") || looking_at("structure"))
 	  goal += Fortran_Indent_Amount;
-	else if (looking_at("if ") or looking_at("if("))
+	else if (looking_at("if ") || looking_at("if("))
 	  {
 	     % We want to check for 'then' so take care of continuations
 	     push_spot ();
@@ -79,8 +79,8 @@ define fortran_indent ()
    push_mark ();
    skip_chars ("a-zA-Z");
    variable word = strlow (bufsubstr ());
-   if ((word == "end") || (word == "endif") || (word == "enddo")
-       || (word == "continue") || (word == "else"))
+   if (any(word == ["end", "endif", "enddo", "continue",
+		    "else", "endstructure"]))
      goal -= Fortran_Indent_Amount;
 
    CASE_SEARCH = cs;		% done getting indent
