@@ -1067,7 +1067,7 @@ define_syntax( "//", "", '%', $1 );            % comments
 %define_syntax ("<>", '<', $1);
 define_syntax( "([{", ")]}", '(', $1 );        % parentheses
 define_syntax( '"', '"', $1 );                 % strings
-define_syntax( '\'', '\'', $1 );               % strings
+define_syntax( '\'', '"', $1 );               % strings
 define_syntax( '\\', '\\', $1 );               % escape character
 define_syntax( "0-9a-zA-Z_", 'w', $1 );        % words
 define_syntax( "-+0-9a-fA-F.xXL", '0', $1 );   % numbers
