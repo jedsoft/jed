@@ -328,7 +328,7 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
      }
    else if (JED_IS_LINE_IN_STRING_VAL(context))
      {
-	int i = context - JED_LINE_IN_HTML_MINVAL;
+	int i = context - JED_LINE_IN_STRING_MINVAL;
 	p = highlight_string (p, pmax, st->quote_char, st->string_chars[i], 0);
      }
    else if (JED_IS_LINE_IN_HTML_VAL(context))
