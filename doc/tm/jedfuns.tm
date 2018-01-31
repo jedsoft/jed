@@ -54,7 +54,7 @@
 \chapter{Insertion/Deletions Functions}
 #i rtl/insdel.tm
 
-\chapter{Search Functions}
+\chapter{Search/Replace Functions}
 #i rtl/search.tm
 
 \chapter{Buffer Related Functions}
@@ -110,9 +110,6 @@
 
 \chapter{Functions that Involve Regions}
 #i rtl/region.tm
-
-\chapter{Search/Replace Functions}
-#i rtl/search.tm
 
 \chapter{Syntax Highlighting and Parsing Functions}
 #i rtl/syntax.tm

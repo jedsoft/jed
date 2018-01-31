@@ -268,6 +268,7 @@ Changes since 0.99-19
 128. src/buffer.h: Changed the meaning of the Line structure flags to
      raise the limit on the number of string delimiters from 2 to 6.
      Other files were updated accordingly.
+129. autoconf/aclocal.m4: Updated to version 0.3.3-1
 
 
 {{{ Previous Versions
