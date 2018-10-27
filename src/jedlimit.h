@@ -28,4 +28,6 @@
 # endif
 #endif
 
+#define JED_MAX_STATUS_LEN 256
+
 #endif				       /* _JED_LIMIT_H_ */

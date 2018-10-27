@@ -715,7 +715,7 @@ static void set_utf8_mode (int *yes_no)
 /* These pointers are necessary because the things they are assigned to
  * are character arrays.  Character arrays are not valid in MAKE_VARIABLE.
  */
-static char *Default_Status_Line_Ptr = Default_Status_Line;
+static char *Default_Status_Line_Ptr = Jed_Default_Status_Line;
 static char *Message_Buffer_Ptr = Message_Buffer;
 static char *Jed_Root_Dir_Ptr = Jed_Root_Dir;
 

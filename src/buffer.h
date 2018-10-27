@@ -233,7 +233,7 @@ struct _Buffer
    Jed_Mark_Array_Type *spot_array;
    Jed_Mark_Array_Type *mark_array;
    int vis_marks;		       /* number of visible marks */
-   char status_line[80];
+   char status_line[JED_MAX_STATUS_LEN];
    Jed_Buffer_Hook_Type *buffer_hooks;
 
 #if JED_HAS_COLOR_COLUMNS
@@ -267,7 +267,7 @@ struct _Buffer
 #endif
 };
 
-extern char Default_Status_Line[80];
+extern char Jed_Default_Status_Line[JED_MAX_STATUS_LEN];
 
 /* flags */
 #define BUFFER_MODIFIED			0x0001

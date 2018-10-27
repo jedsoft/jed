@@ -85,7 +85,7 @@ void (*X_Update_Open_Hook)(void);      /* hooks called when starting */
 void (*X_Update_Close_Hook)(void);     /* and finishing update */
 
 /* site.sl should modify this */
-char Default_Status_Line[80] =
+char Jed_Default_Status_Line[JED_MAX_STATUS_LEN] =
   " ^Ke: quit, ^Kg: get file, ^K^W: write file | %b  (%m%n%o) %p";
 
 static Line *HScroll_Line;
@@ -723,14 +723,24 @@ static void finish_status(int col_flag)
    Line *l;
    int top, rows, narrows;
    char buf[256];
-   char *str;
 
    v = CBuf->status_line;
-   if (*v == 0) v = Default_Status_Line;
+   if (*v == 0) v = Jed_Default_Status_Line;
 
    while (1)
      {
+	char int_format[16], uint_format[16], str_format[16];
+	char *str;
 	char *v0 = v;
+	unsigned int uvalue;
+	int value, val_mult;
+	int is_num;
+
+	strcpy (int_format, "%d");
+	strcpy (uint_format, "%u");
+	strcpy (str_format, "%s");
+	v0 = v;
+
 	while (1)
 	  {
 	     ch = *v;
@@ -751,44 +761,94 @@ static void finish_status(int col_flag)
 	v++;
 	ch = *v++;
 
+       /* If the first character after the '%' is a '-' then treat it as the
+	* start of a negative field specifier
+	*/
+	val_mult = 1;
+	if(ch == '-')
+	  {
+	     val_mult = -1;
+	     /* v++; */
+	     ch = *v++;
+	     if (!ch)
+	       break;
+	  }
+
+       /* If the first character after the '%' is a digit, treat it as
+	* a formatting prefix value, or a color specifier
+	*/
+	value = 0;
+	while (isdigit(ch))
+	  {
+	     value = 10*value + (ch - '0');
+	     ch = *v++;
+	     if(!ch)
+	       break;
+	  }
+
+	/* Special case: Color */
+	if (ch == 'C')
+	  {
+	     if (value > 0) SLsmg_set_color (value);
+	     continue;
+	  }
+
+	if (value > 0)
+	  {
+	     value = val_mult*value;
+
+	     if (-1 == SLsnprintf (int_format, sizeof(int_format), "%%%dd", value))
+	       strcpy (int_format, "%d");
+	     if (-1 == SLsnprintf (uint_format, sizeof(int_format), "%%%du", value))
+	       strcpy (uint_format, "%u");
+	     if (-1 == SLsnprintf (str_format, sizeof(str_format), "%%%ds", value))
+	       strcpy (str_format, "%s");
+	  }
+
+	str = NULL;
+	is_num = 0;    /* +1 ==> use value, -1 ==> use uvalue */
+	value = 0;
+	uvalue = 0;
+
 	switch (ch)
 	  {
 	   case 'F':
-	     SLsmg_write_string (CBuf->dir);
-	     str = CBuf->file;
+	     str = CBuf->dirfile;
 	     break;
 
 	   case 'S':
 	     /* stack depth */
-	     sprintf(buf, "%03d", SLstack_depth());
-	     str = buf;
+	     value = SLstack_depth ();
+	     is_num = 1;
 	     break;
 
 	   case 'a':
-	     if (CBuf->flags & ABBREV_MODE) str = " abbrev"; else str = NULL;
+	     if (CBuf->flags & ABBREV_MODE) str = " abbrev";
 	     break;
 	   case 'f': str = CBuf->file; break;
 	   case 'n':
 	     narrows = jed_count_narrows ();
 	     if (narrows)
 	       {
-		  sprintf (buf, " Narrow[%d]", narrows);
-		  str = buf;
+		  SLsmg_write_string (" Narrow[");
+		  SLsmg_printf (int_format, narrows);
+		  SLsmg_write_string ("]");
 	       }
-	     else str = NULL;
 	     break;
 
 	   case 'o':
-	     if (CBuf->flags & OVERWRITE_MODE) str = " Ovwrt"; else str = NULL;
+	     if (CBuf->flags & OVERWRITE_MODE) str = " Ovwrt";
 	     break;
 	   case 'O':
-	     if (CBuf->flags & OVERWRITE_MODE) str = " ovr"; else str = " ins";
+	     if (CBuf->flags & OVERWRITE_MODE)
+	       str = " ovr";
+	     else
+	       str = " ins";
 	     break;
 
 	   case 'b': str = CBuf->name; break;
 
 	   case 'p':
-	     str = buf;
 	     if (0 == User_Prefers_Line_Numbers)
 	       {
 		  top = JWindow->sy;
@@ -803,87 +863,65 @@ static void finish_status(int col_flag)
 		  else if (l == NULL) str = "Bot";
 		  else
 		    {
-		       sprintf(buf, "%d%%",
-			       (int) ((LineNum * 100L) / (long) Max_LineNum));
+		       SLsmg_printf (int_format, (int) ((LineNum * 100L) / (long) Max_LineNum));
+		       SLsmg_write_string ("%");
 		    }
 	       }
 	     else
 	       {
 		  if (User_Prefers_Line_Numbers == 1)
-		    sprintf(buf, "%u/%u", LineNum, Max_LineNum);
+		    (void) SLsnprintf (buf, sizeof(buf), "%u/%u", LineNum, Max_LineNum);
 		  else
 		    {
 		       if (col_flag) (void) calculate_column ();
-		       sprintf(buf, "%u/%u,%d", LineNum, Max_LineNum, Absolute_Column);
+		       (void) SLsnprintf (buf, sizeof(buf), "%u/%u,%d", LineNum, Max_LineNum, Absolute_Column);
 		    }
+		  str = buf;
 	       }
 	     break;
 
 	   case 'l':
-	     sprintf(buf, "%u", LineNum);
-	     str=buf;
+	     uvalue = LineNum;
+	     is_num = -1;
 	     break;
 
 	   case 'L':
-	     sprintf(buf, "%u", Max_LineNum);
-	     str=buf;
+	     uvalue = Max_LineNum;
+	     is_num = -1;
 	     break;
 
 	   case 'v':
-	     SLsmg_write_string (Jed_Version_String);
-	     if (Jed_UTF8_Mode)
-	       str = "U";
-	     else
-	       str = NULL;
+	     (void) SLsnprintf (buf, sizeof(buf), "%s%s",
+				Jed_Version_String,
+				(Jed_UTF8_Mode ? "U" : ""));
+	     str = buf;
 	     break;
 
 	   case 'm': str = CBuf->mode_string; break;
 	   case 't': str = status_get_time(); break;
 	   case 'c':
 	     if (col_flag) (void) calculate_column ();
-	     sprintf(buf, "%d",  Absolute_Column);
-	     str = buf;
+	     value = Absolute_Column;
+	     is_num = 1;
 	     break;
-
-	   case '0': case '1': case '2': case '3': case '4':
-	   case '5': case '6': case '7': case '8': case '9':
+#if 0
+          case 'T':
+	     value = CBuf->local_vars.tab;
+	     is_num = 1;
+	     if (CBuf->local_vars.use_tabs)
+	       SLsmg_write_string ("tab:");
+	     else
+               SLsmg_write_string ("spc:");
+	     break;
+#endif
+	   case 'W':
+	     if (CBuf->modes & WRAP_MODE)
 	       {
-		  char fmt[16];
-		  int num = ch - '0';
-		  while (isdigit(*v))
-		    {
-		       num = num * 10 + (*v - '0');
-		       v++;
-		    }
-
-		  if ((num < 0)
-		      || (-1 == SLsnprintf (fmt, sizeof(fmt), "%s%du", ((ch == '0') ? "%0" : "%"), num)))
-		    strcpy (fmt, "%u");
-
-		  str = "*";
-		  switch (*v++)
-		    {
-		     default:
-		       v--;
-		       break;
-
-		     case 'c':
-		       if (col_flag) (void) calculate_column ();
-		       if (-1 != SLsnprintf (buf, sizeof (buf), fmt, (unsigned int)Absolute_Column))
-			 str = buf;
-		       break;
-
-		     case 'l':
-		       if (-1 != SLsnprintf (buf, sizeof (buf), fmt, LineNum))
-			 str = buf;
-		       break;
-
-		     case 'L':
-		       if (-1 != SLsnprintf (buf, sizeof (buf), fmt, Max_LineNum))
-			 str = buf;
-		       break;
-		    }
+		  SLsmg_write_string ("wrap:");
+		  value = CBuf->local_vars.wrap_column;
+		  is_num = 1;
 	       }
+	     else str = "nowrap";
 	     break;
 
 	   case '%': str = "%"; break;
@@ -893,17 +931,22 @@ static void finish_status(int col_flag)
 	   default:
 	     str = NULL;
 	  }
+
 	if (str != NULL)
-	  SLsmg_write_string (str);
+	  SLsmg_printf (str_format, str);
+	else if (is_num > 0)
+	  SLsmg_printf (int_format, value);
+	else if (is_num < 0)
+	  SLsmg_printf (uint_format, uvalue);
      }
 }
 
 void set_status_format(char *f, int *local)
 {
    char *s;
-   if (*local) s = Default_Status_Line; else s = CBuf->status_line;
-   strncpy(s, f, 79);
-   s[79] = 0;
+   if (*local) s = Jed_Default_Status_Line; else s = CBuf->status_line;
+   strncpy(s, f, JED_MAX_STATUS_LEN-1);
+   s[JED_MAX_STATUS_LEN-1] = 0;
 }
 
 static int update_status_line (int col_flag)
@@ -951,9 +994,11 @@ static int update_status_line (int col_flag)
 #endif
    else *b++ = '-';
    if (CBuf->flags & UNDO_ENABLED) *b++ = '+'; else *b++ = '-';
+   if (CBuf->flags & OVERWRITE_MODE) *b++ = 'O'; else *b++ = '-';
    SLsmg_write_nchars (buf, (unsigned int) (b - buf));
 
    finish_status (col_flag);
+   SLsmg_set_color (JSTATUS_COLOR);    /* finish_status may have changed it */
 
    if (Defining_Keyboard_Macro) SLsmg_write_string (" [Macro]");
 

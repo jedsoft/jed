@@ -248,12 +248,26 @@
         %O   Overwrite/Insert flag - like %o, but shows INS/OVR
         %l   Shows current line number
         %L   Shows number of lines in the file
+        %C   Use the colour specified by the numeric prefix for the
+             remainder of the status line. For instance, %5C selects colour 5.
+        %T   Expands to 'tab:' or 'spc:' (depending on whether tabs or spaces are
+             being used to indent the current buffer) followed by the indentation
+             size
+        %W   If wrap mode is enabled, expands to 'wrap:' followed by the wrap size,
+             otherwise, expands to 'nowrap'
+        %S   The current S-Lang stack depth
 #v-
   For example, the default status line used by JED's EDT emulation uses
   the format string:
 #v+
         "(Jed %v) EDT: %b   (%m%a%n%o)  %p,%c   Advance   %t"
 #v-
+  All the format specifiers can include an optional number between the
+  '%' and the format character to indicate the width of the field into
+  which the value should be formatted, using an optional leading '-'
+  character to indicate that the data should be left-justified. For
+  example '%5c' will format the current column into a field at least 3
+  characters wide.
 \seealso{set_mode, narrow, whatbuf, getbuf_info}
 \seealso{DISPLAY_TIME,LINENUMBERS, Global_Top_Status_Line, Status_Line_String}
 \done

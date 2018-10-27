@@ -274,6 +274,8 @@ Changes since 0.99-19
 131. src/syntax.c: A typo caused the string-specific bits introduced
      in change #128 to be misinterpreted.
 132. lib/php.sl: Added the single quote as a string delimiter
+133. src/screen.c: Added additional status line options and format
+     specifiers (e.g., a width specifier).  (John Skilleter)
 
 {{{ Previous Versions
 
