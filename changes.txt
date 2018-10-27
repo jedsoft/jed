@@ -276,6 +276,12 @@ Changes since 0.99-19
 132. lib/php.sl: Added the single quote as a string delimiter
 133. src/screen.c: Added additional status line options and format
      specifiers (e.g., a width specifier).  (John Skilleter)
+134. src/buffer.c: USE_TABS is now a buffer-local variable, whose
+     default value is controlled by a new variable USE_TABS_DEFAULT.
+     This new capability allows TABs to be used for whitespace in one
+     buffer (USE_TABS=1), while another will not (USE_TABS=0). (John
+     Skilleter).
+
 
 {{{ Previous Versions
 

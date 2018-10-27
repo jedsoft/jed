@@ -904,7 +904,6 @@ static void finish_status(int col_flag)
 	     value = Absolute_Column;
 	     is_num = 1;
 	     break;
-#if 0
           case 'T':
 	     value = CBuf->local_vars.tab;
 	     is_num = 1;
@@ -913,7 +912,6 @@ static void finish_status(int col_flag)
 	     else
                SLsmg_write_string ("spc:");
 	     break;
-#endif
 	   case 'W':
 	     if (CBuf->modes & WRAP_MODE)
 	       {

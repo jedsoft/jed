@@ -972,7 +972,8 @@ static SLang_Intrin_Var_Type Jed_Variables [] =
 {
    MAKE_VARIABLE("Status_Line_String", &Default_Status_Line_Ptr, STRING_TYPE, 1),
    MAKE_VARIABLE("MINIBUFFER_ACTIVE", &MiniBuffer_Active, INT_TYPE, 1),
-   MAKE_VARIABLE("USE_TABS", &Jed_Use_Tabs, INT_TYPE, 0),
+   MAKE_VARIABLE("USE_TABS", &Buffer_Local.use_tabs, INT_TYPE, 0),
+   MAKE_VARIABLE("USE_TABS_DEFAULT", &Jed_Use_Tabs_Default, INT_TYPE, 0),
    MAKE_VARIABLE("TAB_DEFAULT", &Jed_Tab_Default, INT_TYPE, 0),
    MAKE_VARIABLE("CASE_SEARCH", &Buffer_Local.case_search, INT_TYPE, 0),
    MAKE_VARIABLE("CASE_SEARCH_DEFAULT", &Jed_Case_Search_Default, INT_TYPE, 0),

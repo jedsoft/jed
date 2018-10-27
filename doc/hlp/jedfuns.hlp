@@ -1826,12 +1826,32 @@ USE_TABS
   Int_Type USE_TABS
 
  DESCRIPTION
-  If `USE_TABS' is non-zero, the editor may use tab characters
-  when creating whitespace.  If the value of this variable is zero, no
-  tabs will be used.
+  `USE_TABS' is a buffer-local variable which defaults to the
+  current value of `USE_TABS_DEFAULT'. If `USE_TABS' is
+  non-zero, the editor may use tab characters when creating
+  whitespace.  If the value of this variable is zero, no tabs will be
+  used.
 
  SEE ALSO
-  TAB, TAB_DEFAULT
+  TAB, TAB_DEFAULT, USE_TABS_DEFAULT
+
+--------------------------------------------------------------
+
+USE_TABS_DEFAULT
+
+ SYNOPSIS
+  Control use of tabs in whitespace
+
+ USAGE
+  Int_Type USE_TABS_DEFAULT
+
+ DESCRIPTION
+  The `USE_TABS_DEFAULT' variable is used to set the default value
+  of the buffer-local variable `USE_TABS' for newly created buffers.
+  See its documentation for more information.
+
+ SEE ALSO
+  TAB, TAB_DEFAULT, USE_TABS
 
 --------------------------------------------------------------
 
@@ -7196,7 +7216,7 @@ TAB
  and that tabs are never used to produce whitespace.
 
  SEE ALSO
-  TAB_DEFAULT, USE_TABS
+  TAB_DEFAULT, USE_TABS, USE_TABS_DEFAULT
 
 --------------------------------------------------------------
 
@@ -7218,7 +7238,7 @@ TAB_DEFAULT
  buffer's tab setting.
 
  SEE ALSO
-  TAB, USE_TABS, TAB_DEFAULT
+  TAB, USE_TABS, TAB_DEFAULT, USE_TABS_DEFAULT
 
 --------------------------------------------------------------
 

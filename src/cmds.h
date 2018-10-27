@@ -56,7 +56,7 @@ extern int Jed_Tab_Default;
 extern int Jed_Wrap_Default;
 extern int Jed_Case_Search_Default;
 extern int Jed_Suspension_Not_Allowed;
-extern int Jed_Use_Tabs;
+extern int Jed_Use_Tabs_Default;
 #if 0
 extern int new_find_matching (int *, int *);
 #endif

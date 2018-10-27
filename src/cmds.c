@@ -62,7 +62,7 @@ int Jed_Tab_Default = 8;
 int Jed_Wrap_Default = 72;
 int Jed_Case_Search_Default = 0;
 int Jed_Suspension_Not_Allowed = 0;
-int Jed_Use_Tabs = 1;
+int Jed_Use_Tabs_Default = 1;
 
 /*}}}*/
 
@@ -897,7 +897,7 @@ void insert_whitespace(int *n)
      c1 = calculate_column() - 1;
    c2 = c1 + nspace;
 
-   if (tab && Jed_Use_Tabs)
+   if (tab && Buffer_Local.use_tabs)
      {
 	i = c1 / tab;
 	k = c2 / tab - i;

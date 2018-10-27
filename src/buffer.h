@@ -155,6 +155,7 @@ Jed_Save_Narrow_Type;
 typedef struct
 {
    int tab;			       /* tab width */
+   int use_tabs;		       /* whether tab characters are used in this buffer or not */
    int case_search;
    int is_utf8;
    int wrap_column;

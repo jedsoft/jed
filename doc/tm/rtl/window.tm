@@ -108,7 +108,7 @@
  This variable controls the tab width associated with the current
  buffer.  A value of zero means that tab characters are not expanded
  and that tabs are never used to produce whitespace.
-\seealso{TAB_DEFAULT, USE_TABS}
+\seealso{TAB_DEFAULT, USE_TABS, USE_TABS_DEFAULT}
 \done
 
 \variable{TAB_DEFAULT}
@@ -121,7 +121,7 @@
 \notes
  A related variable \var{TAB} may be used to change the current
  buffer's tab setting.
-\seealso{TAB, USE_TABS, TAB_DEFAULT}
+\seealso{TAB, USE_TABS, TAB_DEFAULT, USE_TABS_DEFAULT}
 \done
 
 \variable{TOP_WINDOW_ROW}

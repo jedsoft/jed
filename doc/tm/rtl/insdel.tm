@@ -2,10 +2,22 @@
 \synopsis{Control use of tabs in whitespace}
 \usage{Int_Type USE_TABS}
 \description
-  If \var{USE_TABS} is non-zero, the editor may use tab characters
-  when creating whitespace.  If the value of this variable is zero, no
-  tabs will be used.
-\seealso{TAB, TAB_DEFAULT}
+  \var{USE_TABS} is a buffer-local variable which defaults to the
+  current value of \var{USE_TABS_DEFAULT}. If \var{USE_TABS} is
+  non-zero, the editor may use tab characters when creating
+  whitespace.  If the value of this variable is zero, no tabs will be
+  used.
+\seealso{TAB, TAB_DEFAULT, USE_TABS_DEFAULT}
+\done
+
+\variable{USE_TABS_DEFAULT}
+\synopsis{Control use of tabs in whitespace}
+\usage{Int_Type USE_TABS_DEFAULT}
+\description
+  The \var{USE_TABS_DEFAULT} variable is used to set the default value
+  of the buffer-local variable \var{USE_TABS} for newly created buffers.
+  See its documentation for more information.
+\seealso{TAB, TAB_DEFAULT, USE_TABS}
 \done
 
 \variable{WRAP}
