@@ -281,6 +281,7 @@ Changes since 0.99-19
      This new capability allows TABs to be used for whitespace in one
      buffer (USE_TABS=1), while another will not (USE_TABS=0). (John
      Skilleter).
+135. lib/php.sl: Added "return" to the keyword list.
 
 
 {{{ Previous Versions

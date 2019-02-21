@@ -1129,7 +1129,7 @@ dfa_set_init_callback( &setup_dfa_callback, $1 );
                         5,0);
 
 () = define_keywords_n ($1,
-                        "elseifglobalphp_osswitch",
+                        "elseifglobalphp_osreturnswitch",
                         6,0);
 
 () = define_keywords_n ($1, strcat(
