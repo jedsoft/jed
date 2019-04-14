@@ -218,11 +218,14 @@ static char *get_hostname (void)
 	  return NULL;
      }
 
-#if HAS_TCPIP_CODE
-   /* gethostname may not provide the full name so use gethostbyname
-    * to get more information.  Why isn't there a simplified interface to
-    * get the FQDN!!!!
+   /* The machine that jed is running on may not have access to
+    * a DNS, e.g., the node on a compute cluster.  So, it the value
+    * returned by gethostname looks to be a FQDN, then use it.
     */
+   if (is_fqdn (buf))
+     return SLang_create_slstring (buf);
+
+#if HAS_TCPIP_CODE
    host_entry = gethostbyname (b);
 
 #if defined(TRY_AGAIN) && !defined(MULTINET)
