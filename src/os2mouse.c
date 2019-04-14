@@ -1,4 +1,4 @@
-/* Copyright (c) 1992-2010 John E. Davis
+/* Copyright (c) 1992-2019 John E. Davis
  *
  * This file is part of JED editor library source.
  *

@@ -1,7 +1,7 @@
 /* This file is included by ibmpc.c, i386.c, and os2.c.  It provides a
  * mapping from the scan code/shift state to an escape sequence.
  */
-/* Copyright (c) 1992-2010 John E. Davis
+/* Copyright (c) 1992-2019 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
