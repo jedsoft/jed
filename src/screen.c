@@ -368,13 +368,13 @@ static void display_line_numbers (void)
 #endif
 
 #if JED_HAS_LINE_ATTRIBUTES
-static int Non_Hidden_Point;
-Line *jed_find_non_hidden_line (Line *l)
+static Line *find_non_hidden_line (Line *l, int *non_hidden_pointp)
 {
    int dir;
    Line *cline;
 
-   Non_Hidden_Point = 0;
+   if (non_hidden_pointp != NULL) *non_hidden_pointp = 0;
+
    if (0 == (l->flags & JED_LINE_HIDDEN))
      {
 	return l;
@@ -399,10 +399,9 @@ Line *jed_find_non_hidden_line (Line *l)
 	  return NULL;
      }
 
-   if (dir == 1)
-     {
-	Non_Hidden_Point = cline->len;
-     }
+   if ((dir == 1)
+       && (non_hidden_pointp != NULL))
+     *non_hidden_pointp = cline->len;
 
    return cline;
 }
@@ -448,7 +447,7 @@ Line *find_top (void)
 
 #if JED_HAS_LINE_ATTRIBUTES
    if (cline->flags & JED_LINE_HIDDEN)
-     cline = jed_find_non_hidden_line (cline);
+     cline = find_non_hidden_line (cline, NULL);
    if (cline == NULL)
      return NULL;
 #endif
@@ -614,9 +613,10 @@ void point_cursor (int c)
 #if JED_HAS_LINE_ATTRIBUTES
    if (cline->flags & JED_LINE_HIDDEN)
      {
-	cline = jed_find_non_hidden_line (cline);
+	int non_hidden_point;
+	cline = find_non_hidden_line (cline, &non_hidden_point);
 	if (cline != NULL)
-	  c = Non_Hidden_Point;
+	  c = non_hidden_point;
      }
 #endif
 
@@ -1031,19 +1031,19 @@ static int screen_input_pending (int tsec)
  */
 static void mark_window_attributes (int wa)
 {
-   register Screen_Type *s = &JScreen[JWindow->sy],
+   Screen_Type *s = &JScreen[JWindow->sy],
      *smax = s + JWindow->rows, *s1, *s2;
    Mark *m;
    register Line *l = JWindow->beg.line, *ml, *cline;
    unsigned char *hi0, *hi1;
-   int mn, pn, dn, point, mpoint;
+   int mn, pn, dn, point, mpoint, non_hidden_point;
 
    s1 = s;
 
 #if JED_HAS_LINE_ATTRIBUTES
-   cline = jed_find_non_hidden_line (CLine);
-   if (cline != CLine) point = Non_Hidden_Point;   /* updated by jed_find_non_hidden_line */
-   else point = Point;
+   cline = find_non_hidden_line (CLine, &point);
+   if (cline == CLine)
+     point = Point;
 #else
    cline = CLine;
    point = Point;
@@ -1068,11 +1068,11 @@ static void mark_window_attributes (int wa)
    dn = pn - mn;
 
 #if JED_HAS_LINE_ATTRIBUTES
-   ml = jed_find_non_hidden_line (ml);
+   ml = find_non_hidden_line (ml, &non_hidden_point);
    if (ml == cline) dn = 0;
    if (ml != m->line)
      {
-	mpoint = Non_Hidden_Point;     /* updated by jed_find_non_hidden_line */
+	mpoint = non_hidden_point;
      }
    else mpoint = m->point;
 #else
@@ -1326,7 +1326,7 @@ static int update_1(Line *top, int force)
 	if (Wants_Syntax_Highlight) init_syntax_highlight ();
 
 #if JED_HAS_LINE_ATTRIBUTES
-	if (top != NULL) top = jed_find_non_hidden_line (top);
+	if (top != NULL) top = find_non_hidden_line (top, NULL);
 #endif
 
 	/* (void) SLsmg_utf8_enable (CBuf->local_vars.is_utf8); */
@@ -2111,7 +2111,7 @@ int window_line (void)
    top = find_top ();
 
 #if JED_HAS_LINE_ATTRIBUTES
-   cline = jed_find_non_hidden_line (CLine);
+   cline = find_non_hidden_line (CLine, NULL);
 #else
    cline = CLine;
 #endif

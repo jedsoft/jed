@@ -65,10 +65,6 @@ extern int jed_get_screen_size (int *, int *);
 extern unsigned char Output_Display_Table[256];
 #endif
 
-#if JED_HAS_LINE_ATTRIBUTES
-extern Line *jed_find_non_hidden_line (Line *);
-#endif
-
 extern int Jed_Version_Number;
 extern char *Jed_Version_String;
 
