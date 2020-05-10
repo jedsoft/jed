@@ -288,6 +288,9 @@ Changes since 0.99-19
      should avoid delays on some systems with no access to one.
 138. src/screen.c: Made jed_find_non_hidden_line private to screen.c
      for improved maintainability.
+139. src/site.sl: rmail.sl is nolonger autoloaded.  Its use has been
+     deprecated for a very long time and will be moved to a different
+     package.
 
 {{{ Previous Versions
 

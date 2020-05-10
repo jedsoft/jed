@@ -836,7 +836,7 @@ _autoload("mode_get_mode_info",		"modeinfo",
 	  "ispell",			"ispell",
 #endif
 #ifdef UNIX
-	  "rmail",			"rmail",
+%	  "rmail",			"rmail",
 	  "mail",			"sendmail",
 	  "mail_format_buffer",		"sendmail",
 	  %	    "gdb_mode",			"gdb",
