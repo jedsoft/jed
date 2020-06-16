@@ -1999,8 +1999,7 @@ void jed_resize_display (void)
    alloc_display ();
    SLsmg_reinit_smg ();
 
-   /* Add support for a resize-hook here */
-   /* (void) jed_va_run_hooks ("_jed_resize_display_hooks", JED_HOOKS_RUN_ALL, 0); */
+   (void) jed_va_run_hooks ("_jed_resize_display_hooks", JED_HOOKS_RUN_ALL, 0);
 
    jed_redraw_screen (0);
 }

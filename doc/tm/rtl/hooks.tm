@@ -15,6 +15,7 @@
     _jed_quit_hooks
     _jed_read_file_hooks
     _jed_reset_display_hooks
+    _jed_resize_display_hooks
     _jed_resume_hooks
     _jed_save_buffer_after_hooks
     _jed_save_buffer_before_hooks

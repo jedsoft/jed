@@ -445,6 +445,12 @@ _jed_init_display_hooks, _jed_reset_display_hooks
   take no parameters and return no values.  See lib/mousex.sl for an
   example of these hooks.
 
+_jed_resize_display_hooks
+-------------------------
+
+  These hooks are called after the terminal window has been resized.
+  The hook functions take no parameters and return no values.
+
 _jed_save_buffer_before_hooks, _jed_save_buffer_after_hooks
 ------------------------------------------------------------
 
