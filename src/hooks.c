@@ -359,7 +359,7 @@ static void run_hooks_cmd (void)
       case 3:
 	if (-1 == SLang_pop_array_of_type (&at, SLANG_STRING_TYPE))
 	  return;
-	/* drop */
+	/* fall through */
       case 2:
 	if (-1 == SLang_pop_integer (&method))
 	  goto the_return;

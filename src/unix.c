@@ -194,8 +194,17 @@ static int unix_set_abort_char (unsigned char ch)
    return 0;
 }
 
-#define HAS_GETSETPGID (defined(HAVE_GETPGID) && defined(HAVE_SETPGID))
-#define HAS_TCGETSETPGRP (defined(HAVE_TCSETPGRP) && defined(HAVE_TCGETPGRP))
+#if defined(HAVE_GETPGID) && defined(HAVE_SETPGID)
+# define HAS_GETSETPGID 1
+#else
+# define HAS_GETSETPGID 0
+#endif
+
+#if defined(HAVE_TCSETPGRP) && defined(HAVE_TCGETPGRP)
+# define HAS_TCGETSETPGRP 1
+#else
+# define HAS_TCGETSETPGRP 0
+#endif
 
 #if HAS_TCGETSETPGRP
 static pid_t Terminal_PGID = -1;

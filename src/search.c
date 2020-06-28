@@ -548,7 +548,8 @@ int replace_match(char *s, int *literal) /*{{{*/
 	       return -1;
 	     break;
 
-	   case '&': ch = 0; /* drop */
+	   case '&': ch = 0;
+	     /* fall through */
 	   case '0': case '1': case '2': case '3': case '4':
 	   case '5': case '6': case '7': case '8': case '9':
 	     nmax = ch - '0';

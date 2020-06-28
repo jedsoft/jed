@@ -513,7 +513,7 @@ static int get_lexeme (char **text, int *length)
 	if (*length == 1)
 	  return '\\';
 	t++;
-	/* drop */
+	/* fall through */
       default:
 	return (int) ((unsigned char) *t);
      }
