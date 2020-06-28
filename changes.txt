@@ -293,6 +293,9 @@ Changes since 0.99-19
      package.
 140. src/screen.c: Added support for _jed_resize_display_hooks, which
      get called after the terminal window has been resized.
+141. src/syntax.c: syntax highlighting for non-ascii keywords was not
+     working.  Initial support added by making use of the S-Lang
+     character tables.
 
 {{{ Previous Versions
 

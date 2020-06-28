@@ -129,6 +129,54 @@ static int try_keyword (register unsigned char *q, int n, register char *t, unsi
 
 /*}}}*/
 
+static unsigned char *get_wchar_syntax (unsigned char *p, unsigned char *pmax, unsigned short *syntaxp)
+{
+   SLwchar_Type wch;
+   unsigned int n;
+   unsigned short syntax;
+
+   if (Jed_UTF8_Mode == 0)
+     {
+	if (p >= pmax)
+	  {
+	     *syntaxp = 0;
+	     return p;
+	  }
+	*syntaxp = Char_Syntax[*p];
+	return p+1;
+     }
+
+   syntax = 0;
+   if (NULL != SLutf8_decode (p, pmax, &wch, &n))
+     {
+	if (SLwchar_isalpha (wch)) syntax |= WORD_SYNTAX;
+     }
+
+   *syntaxp = syntax;
+   return p + n;
+}
+
+static unsigned char *find_word_end (unsigned char *p, unsigned char *pmax)
+{
+   while (p < pmax)
+     {
+	if (*p & 0x80)
+	  {
+	     unsigned short syntax;
+	     unsigned char *p1 = get_wchar_syntax (p, pmax, &syntax);
+	     if (0 == (syntax & WORD_SYNTAX))
+	       return p;
+	     p = p1;
+	     continue;
+	  }
+	if (0 == (Char_Syntax[*p] & WORD_SYNTAX))
+	  return p;
+
+	p++;
+     }
+   return p;
+}
+
 static unsigned char *highlight_word (unsigned char *p, unsigned char *pmax) /*{{{*/
 {
    char **kwds;
@@ -137,9 +185,7 @@ static unsigned char *highlight_word (unsigned char *p, unsigned char *pmax) /*{
    int i;
    int color;
 
-   q = p;
-   while ((q < pmax) && (Char_Syntax[*q] & WORD_SYNTAX)) q++;
-
+   q = find_word_end (p, pmax);
    n = (int) (q - p);
 
    kwds = Keywords;
@@ -376,7 +422,13 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
    /* Now the preliminary stuff is done so do the hard part */
    while (p < pmax)
      {
-	syntax = Char_Syntax[*p];
+	if (*p & 0x80)
+	  {
+	     p1 = get_wchar_syntax (p, pmax, &syntax);
+	     /* This p1 not currently used below */
+	  }
+	else
+	  syntax = Char_Syntax[*p];
 
 	/* Do comment syntax before word syntax since the comment start
 	 * may be a word.
@@ -414,8 +466,26 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 	if (syntax == 0)
 	  {
 	     p1 = p;
-	     while ((p1 < pmax) && (Char_Syntax[*p1] == 0))
-	       p1++;
+	     while (p1 < pmax)
+	       {
+		  unsigned char *p2;
+		  if (*p1 & 0x80)
+		    {
+		       p2 = get_wchar_syntax (p1, pmax, &syntax);
+		       if (syntax == 0)
+			 {
+			    p1 = p2;
+			    continue;
+			 }
+		       break;
+		    }
+
+		  if (Char_Syntax[*p1] != 0)
+		    break;
+
+		  p1++;
+	       }
+
 	     if ((p1 != pmax)
 		 || ((Jed_Highlight_WS & HIGHLIGHT_WS_TRAILING) == 0))
 	       {

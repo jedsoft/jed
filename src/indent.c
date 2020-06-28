@@ -1184,7 +1184,7 @@ static void define_syntax (int *what, char *name) /*{{{*/
 {
    Syntax_Table_Type *table;
    int c2;
-   unsigned int i;
+   unsigned int i, imax;
    char *s1 = NULL, *s2 = NULL;
    unsigned char lut[256], *s;
 
@@ -1329,7 +1329,14 @@ static void define_syntax (int *what, char *name) /*{{{*/
 	if (SLang_pop_slstring (&s1)) break;
 	SLmake_lut (lut, (unsigned char *) s1, 0);
 
-	for (i = 0; i < 256; i++)
+	/* The char_syntax lookup table does not handle UTF-8.  If any of the
+	 * input characters are not ASCII, then do not process them here.  Instead,
+	 * when encountered, the SLwchar_isalpha will be used.
+	 */
+	imax = 256;
+	if (Jed_UTF8_Mode) imax = 128;
+
+	for (i = 0; i < imax; i++)
 	  {
 	     if (lut[i]) table->char_syntax[i] |= WORD_SYNTAX;
 	     else table->char_syntax[i] &= ~WORD_SYNTAX;
