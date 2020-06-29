@@ -95,9 +95,12 @@ static void color_columns (int row, register unsigned char *p, register unsigned
 static int try_keyword (register unsigned char *q, int n, register char *t, unsigned char color) /*{{{*/
 {
    unsigned char *p;
+   int ignore_case = Keyword_Not_Case_Sensitive;
 
    while (*t)
      {
+	unsigned char ch;
+
 	p = q - n;
 	if (Keyword_Not_Case_Sensitive == 0)
 	  {
@@ -117,9 +120,12 @@ static int try_keyword (register unsigned char *q, int n, register char *t, unsi
 	     write_using_color (p, q, color);
 	     return 0;
 	  }
+	ch = *p;
+
+	if (ignore_case && (0 == (ch & 0x80))) ch |= 0x20;
 
 	/* alphabetical */
-	if (*t > ((char) *p | Keyword_Not_Case_Sensitive))
+	if ((unsigned char) *t > ch)
 	  break;
 
 	t += (int) (q - p);
