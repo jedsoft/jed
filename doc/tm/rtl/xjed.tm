@@ -54,7 +54,7 @@
 \synopsis{Associate a string with a key}
 \usage{x_set_keysym (Int_Type keysym, Int_Type shift, String_Type str)}
 \description
- This function may be used to assocate a string \exmp{str} with a key
+ This function may be used to associate a string \exmp{str} with a key
  \exmp{keysym} modified by mask \exmp{shift}. Pressing the key
  associated with \exmp{keysym} will then generate the keysequence
  given by \exmp{str}. The function keys are mapped to integers in the
@@ -80,11 +80,11 @@
 \done
 
 \function{x_set_meta_keys}
-\synopsis{Specify which modifier keys are to be interpreteted as meta keys}
+\synopsis{Specify which modifier keys are to be interpreted as meta keys}
 \usage{x_set_meta_keys (Int_Type mod_mask)}
 \description
   The \var{x_set_meta_keys} function allows the user to specify which
-  modifier keys are to be interpreteted as meta keys.  The parameter
+  modifier keys are to be interpreted as meta keys.  The parameter
   \var{mod_mask} is a bitmapped value whose bits correspond to a
   modifier mask:
 #v+
@@ -107,12 +107,12 @@
 \synopsis{Shows or hides the window}
 \usage{x_toggle_visibility([Integer_Type hide])}
 \description
- Makes the window visible or invisible. If the argument \exmp{hide} is
- not given, the visility of the windows is toggled, e.g. if the window
- is invisible it becomes visible and vice versa. If the optional
- argument \exmp{hide} is given the state to the window becomes visible
- if \exmp{hide} is non-zero or invisible if \exmp{hide} is zero,
- independent of the current state.
+ Makes the xjed display window visible or invisible. If the argument
+ \exmp{hide} is not given, the visibility of the window is toggled,
+ e.g. if the window is invisible it becomes visible and vice versa. If
+ the optional argument \exmp{hide} is given, the state of the window
+ becomes visible if \exmp{hide} is non-zero or invisible if
+ \exmp{hide} is zero, independent of the current state.
 \notes
  You can also hide the window by calling \ifun{suspend}, but you can not show
  it, if the window doesn't have the focus.

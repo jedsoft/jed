@@ -58,7 +58,7 @@
 \synopsis{Set the horizontal panning mode}
 \usage{Int_Type HORIZONTAL_PAN}
 \description
-  If the value of this variable is non-zero, the window wil pan when
+  If the value of this variable is non-zero, the window will pan when
   the cursor goes outside the border of the window.  More precisely, 
   if the value is less than zero, the entire window will pan.  If the
   value is positive, only the current line will pan.  The

@@ -25,7 +25,7 @@ xjed recognizes the following resources:
    bgMessage  [bgms] Background color for messages
    fgError    [fger] Foreground color for error messages
    bgError    [bger] Background color for messages
-   
+
 These resources specify color syntax highlighting options:
 
    fgOperator    [fgop]   foreground color for operators (+, -, etc...)
@@ -43,7 +43,7 @@ These resources specify color syntax highlighting options:
    fgKeyword2    [fgkw2]  foreground color for keywords2
    bgKeyword2    [bgkw2]  background color for keywords2
    fgDelimiter   [fgde]   foreground color for delimiters
-   bgDelimiter   [bgde]   background color for delimeters
+   bgDelimiter   [bgde]   background color for delimiters
    fgPreprocess  [fgpr]   foreground color for preprocessor lines
    bgPreprocess  [bgpr]   background color for preprocessor lines
 
@@ -51,7 +51,7 @@ Any of the above items may be specified on the xjed command line. Quantities
 enclosed in square brackets may be used as a short form of their longer
 counterparts.
 
-For example, 
+For example,
 
  xjed -d space:0.0 -font 9x15 -bg blue -fg white
 
@@ -101,7 +101,6 @@ to delete the character under the cursor by putting:
 
 in your .jedrc file.
 
-
 ------------------------------------------------------------------------
 Mouse Usage:
 
@@ -115,18 +114,18 @@ Xjed S-Lang specific functions:
                        :  insert a region in system cutbuffer
    x_set_keysym        :  define an equivalence string to be returned
                           when a function key is pressed.
-			  
+
   also, set_color() may be used to set colors of mouse, cursor, normal,
   region, and status line as well as the colors used by the syntax
   highlighting routines.  For example,
-  
+
       set_color ("mouse", "red", "blue");
 
   gives the mouse cursor a red foreground with a blue background.  The color
   values must be recognizable by the X server.
-  
+
   In addition to the usual keybindings, the X version binds:
-  
+
      Control-UP     :  goto top of buffer
      Control-DOWN   :  goto end of buffer
      Shift-UP       :  move to top of window
@@ -135,16 +134,15 @@ Xjed S-Lang specific functions:
      Control-LEFT   :  Pan the window to the left
      Shift-RIGHT    :  skip to next word
      Shift-LEFT     :  skip to previous word
-     
+
 Miscellaneous:
 
    Suspending xjed is not allowed.  If ^Z is pressed, the window is raised
    if it is obscured, or lowered if it is totally visible.
 
+EDT emulation under Linux.
 
-EDT emulation under Linux.  
-
-Angelo Pagan (pagan@astrpd.pd.astro.it) suggests putting 
+Angelo Pagan (pagan@astrpd.pd.astro.it) suggests putting
 
 	keycode 22  = Delete
 	keycode 77  = KP_F1
@@ -157,5 +155,3 @@ in the .xmodmap file to enable EDT keypad emulation.
 
 Send comments and suggestions to jed@jedsoft.org.
 
-
-   

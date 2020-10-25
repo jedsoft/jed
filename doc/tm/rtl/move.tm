@@ -199,7 +199,7 @@
 \description
   This fnction may be used to move the editing point forward past all
   characters in string \var{s} which contains the chars to skip, or a range
-  of characters.  A character range is denoted by two charcters
+  of characters.  A character range is denoted by two characters
   separated by a hyphen.  If the first character of the string \var{s} is a
   \exmp{'^'} character, then the list of characters actually denotes the
   complement of the set of characters to be skipped.  To explicitly

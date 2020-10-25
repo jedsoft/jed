@@ -52,7 +52,7 @@
 \usage{Void call(String f)}
 \description
   The \var{call} function is used to execute an internal function which is
-  not directly accessable to the S-Lang interpreter.
+  not directly accessible to the S-Lang interpreter.
 \seealso{is_internal}
 \done
 
@@ -130,7 +130,7 @@
 \usage{String get_last_macro ()}
 \description
   This function returns characters composing the last keyboard macro.  The
-  charactors that make up the macro are encoded as themselves except the
+  characters that make up the macro are encoded as themselves except the
   following characters:
 #v+
         '\n'    ---->   \J
@@ -149,7 +149,7 @@
 #v+
         dir:     login directory
         shell:   login shell
-        pwd:     encripted password
+        pwd:     encrypted password
         uid:     user identification number
         gid:     group identification number
 #v-
@@ -171,7 +171,7 @@
 \description
   \var{is_internal} returns non-zero is function \var{f} is defined as an
   internal function or returns zero if not.  Internal functions not
-  immediately accessable from S-Lang; rather, they must be called using
+  immediately accessible from S-Lang; rather, they must be called using
   the \var{call} function.  See also the related S-Lang function
   \var{is_defined} in the S-Lang Programmer's Reference.
 \seealso{call}
@@ -204,7 +204,7 @@
   Example: generate 1000 random integers in the range 0-500 and insert
   them into buffer:
 #v+
-        () = random (-1, 0);  % seed generator usingtime and pid
+        () = random (-1, 0);  % seed generator using time and pid
         loop (1000)
           insert (Sprintf ("%d\n", random (0, 500), 1));
 #v-
@@ -220,7 +220,7 @@
 \description
   This function may be used to turn on or off the read-only state of the
   current line.  If the integer parameter \var{flag} is non-zero, the line
-  will be made read-only.  If the paramter is zero, the read-only state
+  will be made read-only.  If the parameter is zero, the read-only state
   will be turned off.
 \seealso{getbuf_info}
 \done
@@ -230,7 +230,7 @@
 \usage{set_undo_position ()}
 \description
  This function adds the current position to the buffer's undo stack.
- Ocassionally this may be necessary when using
+ Occasionally this may be necessary when using
  \ifun{narrow_to_region} to prevent the cursor from moving to the
  beginning or the end of a previously narrowed region during "undo".
 \seealso{narrow_to_region}

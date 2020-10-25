@@ -4,7 +4,6 @@ IDE Mode for Jed
 By Guido Gonzato, <ggonza@tin.it>
 Version 1.3.0. 27 February 2001.
 
-
 Introduction
 -------------
 
@@ -23,7 +22,6 @@ IDE mode is based on John E. Davis' original wordstar.sl, which IMHO should
 be considered obsolete. This version works with Jed B0.99.12 upwards, under
 Linux (console, xterms and Xjed) and DOS/Windows; it won't work with Wjed.
 
-
 Installation
 ============
 
@@ -32,7 +30,7 @@ To enable IDE mode, include this line in your .jedrc (Linux) or jed.rc
 
   () = evalfile ("ide");
 
-Make sure that all references to emacs.sl, brief.sl, and wordstar.sl 
+Make sure that all references to emacs.sl, brief.sl, and wordstar.sl
 are commented out.
 
 IDE mode has been tested on a wide range of terminals, and should work well
@@ -53,7 +51,6 @@ redefine the TERM variable to `xterm-color' or `vt220':
 
 This may be required for recent rxvts and xterms. Your mileage may vary.
 
-
 Note for EDT users
 -------------------
 
@@ -65,7 +62,6 @@ try out IDE and EDT mode together, edit your .jedrc so that it reads:
 
 That way you can use *both* EDT and IDE keybindings, taking advantage of
 some of the features that EDT mode doesn't offer.
-
 
 Main Features
 --------------
@@ -100,7 +96,7 @@ Press `q' to quit this help screen; F6 or ^KP to switch to the next buffer
 CURSOR              GO TO               BLOCK          DELETE       EXIT
 ^S left  ^D right   ^R  prev. screen    ^KB begin      M-G char     ^KX save
 ^E up    ^Z down    ^C^C next screen    ^KY cut        ^Y  line     ^KZ shell
-^A <word ^F >word   ^QS beg. of line    ^KH copy       ^T  >word    
+^A <word ^F >word   ^QS beg. of line    ^KH copy       ^T  >word
                     ^QD end of line     ^KC paste      M-BS <word   BUFFER
 SEARCH              ^QE screen top      ^KW to file    ^QY >line    ^KE new
 ^QF find text       ^QX screen end      ^KT word       ^U undo      ^KR insert
@@ -130,13 +126,12 @@ Other features you may find handy:
 
   o macros: Alt-( or ESC-( to start defining a macro, Alt-) or ESC-) to end,
   Alt-R or ESC-R to run the macro.
-  
+
   o special characters: press ^P + ASCII code to insert a special character
   (e.g., ^P123 inserts a left curly bracket '{').
-  
+
 There could be many more things to say. If you are curious, browse the file
 ide.sl for a complete list of available features.
-
 
 Differences
 ------------
@@ -170,10 +165,9 @@ includes:
       for instance, ^K/ filters the block to an external filter.
 
   ^QB and ^QK work as usual.
-  
+
 Can you think of any other differences? If so, please let me know and I'll
 try and see to it.
-
 
 Better Windows Compatibility
 -----------------------------
@@ -183,12 +177,10 @@ I strongly suggest that you put these lines in your .jedrc file:
   () = evalfile ("wmark.sl");    % Windows-like regions
   () = evalfile ("mousex.sl");   % use the mouse in xterm
 
-
 wmark.sl provides the capability of defining blocks using Shift-arrow, plus
 a few other features: Ctrl-Ins to copy the block to the clipboard, Shift-Ins
 to paste the clipboard contents, Bs to delete the block, etc. Unfortunately,
-it doesn't work in Linux console but only in Xjed. 
-
+it doesn't work in Linux console but only in Xjed.
 
 Final Remarks
 --------------
@@ -197,7 +189,6 @@ I use IDE Mode every day and I'm very satisfied with it. I hope I have done
 something useful for other people too.
 
 Special thanks to John E. Davis for writing Jed!
-
 
 Cheers,
 	Guido =8-)

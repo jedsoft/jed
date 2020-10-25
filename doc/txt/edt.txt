@@ -1,5 +1,5 @@
 To enable EDT emulation, put the line
- 
+
    require ("edt");
 
 in your jed.rc (.jedrc) file.
@@ -9,24 +9,24 @@ and VMS systems, it corresponds to the actual Gold key on a vtXXX
 terminal.  Such a key sends "\eOP".  Unfortunately most users are
 not using a terminal that has such a key.  For such users a
 different key can be used as the Gold-Key, as described below.
- 
+
 Versions of jed for DOS/Windows can use the NumLock key as the
 Gold-Key.  This is controlled by the NUMLOCK_IS_GOLD variable.  If
 that variable has a non-zero value when this file is loaded, then
 the NumLock key will generate "\eOP".  Otherwise, it is assumed
-that the Gold-Key corresponds to the F1 key.  
+that the Gold-Key corresponds to the F1 key.
 
 To specify a different value, e.g., the value of the F7 key, use
- 
+
    require ("keydefs");
    variable Key_Gold = Key_F7;
    require ("edt");
- 
-in your jedrc file.  
+
+in your jedrc file.
 
 Differences between EDT and Jed's EDT emulation
 -----------------------------------------------
-	      
+
 Hopefully, you will not notice any difference if you use the keypad keys. I
 have done my best to ensure that the functionality of the application-keypad
 is preserved.
@@ -35,7 +35,7 @@ By default, JED binds Ctrl-H to help.  EDT on VMS uses Ctrl-H to move
 to the beginning of the line.  If you want this behavior instead of
 JED's, then put the lines
 
-   unsetkey ("^H"); 
+   unsetkey ("^H");
    setkey ("bol", "^H");
 
 in your jed.rc (.jedrc) file AFTER the require("edt.sl") statement.
@@ -45,7 +45,7 @@ character in the set [A-Z]) key definitions.  For this reason, I have
 defined only a few combinations. However, this should not stop you
 from defining your own.
 
-I have defined 2 GOLD key combinitions:  GOLD-E and GOLD-Q.  Both of these
+I have defined 2 GOLD key combinations:  GOLD-E and GOLD-Q.  Both of these
 are bound to the "exit" command.
 
 If you would like to bind additional GOLD-X key combinations, then it

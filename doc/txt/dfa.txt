@@ -35,7 +35,7 @@ Limitations
 - Jed's DFA highlight rules work only on a line-by-line basis. Using
   the DFA scheme, it is impossible to highlight multiline comments or
   string literals.
-  
+
 - DFA rules replace the "traditional" highlighting scheme, so you
   cannot have both highlight of multiline tokens and
   regualar-expression based highlight rules.
@@ -75,7 +75,7 @@ installation step
 
 On systems such as Unix, the average user has no permission to create
 cache files in $JED_ROOT/lib.  Hence, if the necessary cache files
-were not ceated during the installation step, it may be advantageous
+were not created during the installation step, it may be advantageous
 for the user to set the `Jed_Highlight_Cache_Dir' variable to a
 directory where cache files may be created.
 

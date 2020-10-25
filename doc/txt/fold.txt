@@ -39,7 +39,7 @@ following functions/key bindings will be made available by this mode:
     fold_close_fold           "^C^X"
     fold_search_forward       "^Cf"
     fold_search_backward      "^Cb"
-    
+
 I realize that these key bindings are sub-optimal.  However, they are
 consistent with the Emacs bindings.  Of course, you are always free to
 re-bind them via a `fold_mode_hook', e.g.,
@@ -67,13 +67,13 @@ cause an error to be generated when attempting to cross the boundary
 of a fold, add the line
 
     variable Fold_Bob_Eob_Error_Action = 0;
-    
+
 to your jedrc startup initialization file.  To automatically enter the
-next (previous) fold, use    
+next (previous) fold, use
 
     variable Fold_Bob_Eob_Error_Action = 2;
-    
-The default value of this variable is 1.    
+
+The default value of this variable is 1.
 
 Of course, the easiest way to learn the folding mode is to fold a buffer and
 use the folding_mode key bindings to navigate it.  Since this file
@@ -89,7 +89,7 @@ into the editor.  To automatically fold a file, set the variable,
 Fold_Mode_Ok to a non-zero value in your .jedrc file:
 
     Fold_Mode_Ok = 1;
-    
+
 Then any file that contains the line of the form
 
     -*- bla bla...  mode: fold; -*-
@@ -98,12 +98,12 @@ near the top will be folded.  For example, the first line of both site.sl
 and folding.sl look like:
 
     % -*- mode: slang; mode: fold -*-
-  
+
 This tells the editor to load slang mode, then load fold mode.  A C file
 might contain the line
 
     /* -*- mode: C; mode: fold -*- */
-   
+
 as its first line.  It is important to note that `mode: fold' must
 follow the main mode of the buffer, i.e., using
 
@@ -117,7 +117,7 @@ The function `fold_mode', defined in os.sl looks like:
      {
         if (Fold_Mode_Ok) folding_mode ();
      }
-     
+
 That is, it is simply a wrapper around `folding_mode'.
 }}}
 
@@ -170,5 +170,5 @@ See the folding.sl file for examples of both kinds of start-fold marks.
   The bottom line is that if you need to modify text within a fold,
   either enter the fold (fold_enter_fold) or unfold the buffer
   (fold_open_buffer).
-  
+
 }}}

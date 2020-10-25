@@ -48,7 +48,7 @@ means that it was Forwarded.
 The arrow keys may be used to move the cursor from one line to another.
 Pressing the spacebar will cause the message associated with the line the
 cursor is on to be displayed in a second (larger) window.  Use the spacebar
-and the DELETE key to scroll through the message.  
+and the DELETE key to scroll through the message.
 
 The following keys are defined:
 
@@ -67,13 +67,13 @@ The following keys are defined:
                Use this key to unhide them.
    O         Output message to a different folder.  One will be created if
                necessary.
-	   
+
 Replying and Forwarding use JED's mail facility.  The relevant keys are:
 
    F       Forward message
    R       Reply
    M       mail
-   
+
 To actually send the message after composing it. press `ESC-X mail_send' to
 actually send it.  See the description of the Mail facility in the JED
 documentation for more discussion.  I personally have bound this to a key
@@ -85,12 +85,7 @@ via the `mail_hook', i.e., in my .jedrc I have:
         local_setkey("mail_send", "^C^C");
       }
 
-
-
-	        
 Not implemented but will be:
 
    Read compressed email.
-   
 
-  

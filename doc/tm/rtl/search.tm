@@ -255,7 +255,7 @@
 \synopsis{Replace all occurances of "old" with "new"}
 \usage{Void replace(String old, String new)}
 \description
-  This function may be used to replace all occurances of the string
+  This function may be used to replace all occurrences of the string
   \var{old} with the string, \var{new}, from current editing point to the end
   of the buffer. The editing point is returned to the initial location.
   That is, this function does not move the editing point.

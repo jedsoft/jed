@@ -29,7 +29,7 @@ Frequently asked questions:
 19. When running Jed in an xterm, alt is not sending meta.  So, how do
     I make alt-f skip word forwards?
 20. How do I cancel a command that prompts me with "y/n" choices,
-    without a "cancel" otpion?
+    without a "cancel" option?
 21. I define keybindings in my jed.rc file but they are not working.
     What is wrong?
 
@@ -43,29 +43,29 @@ Answers:
 
 	 jedxxx.tar.gz     unix distribution for version xxx
 	 jedxxx.zip       PC distribution with precompiled jed.exe
-	 
+
    All distributions are identical except that the zip file also contains a
    precompiled executable for PC systems.
 
 <2> How do I disable JED's C mode.
 
-   The startup file `site.sl' contains the function `mode_hook' which is 
+   The startup file `site.sl' contains the function `mode_hook' which is
    called whenever a file is loaded.  This function is passed the filename
    extension.  If a file with `c' or `h' extension is read, this function
    will turn on C-mode for that buffer.  You could modify this function to
    not select C-mode.  However, this is not recommended.  Rather, it is
    recommended that you simply rebind the offending keybinding.  These
    include: `{`, `}`, the TAB key, and the RETURN key.
-   
+
    Simply put any or all of:
-   
-      "self_insert_cmd"  "{"   setkey 
+
+      "self_insert_cmd"  "{"   setkey
       "self_insert_cmd"  "}"   setkey
       "self_insert_cmd"  "^I"  setkey
       "newline"          "^M"  setkey
-      
+
    in your personal startup file (jed.rc or .jedrc).
-   
+
    Before you do this, are you sure that you really understand what C mode
    does?  If not, please read on.
 
@@ -79,7 +79,7 @@ Answers:
    28 characters (no newline, TAB, etc...)
 
    `main (){if (x == 2){x = 4;}}'
-   
+
    should result in:
 
    main () {
@@ -88,7 +88,7 @@ Answers:
       }
    }
 
-   which would take alot more time using the TAB and NEWLINE keys.  If you
+   which would take a lot more time using the TAB and NEWLINE keys.  If you
    do not like the indentation style, you can customize it by setting the
    appropriate variables in jed.rc.  My preference is to set the variables
    such that the SAME characters above yield:
@@ -119,9 +119,8 @@ Answers:
 
    Using the C mode and the TAB key as indent_line also helps you avoid
    syntax errors.  Basically, a line simply will not indent properly.  This
-   indicats that you left off a brace, mismatched parenthesis, etc...  If
+   indicates that you left off a brace, mismatched parenthesis, etc...  If
    you bind TAB away from indent_line, you lose some of this.
-
 
    Note that these same comments apply to Fortran mode.  Get a file called
    `x.for'.  Enter the characters:
@@ -129,7 +128,7 @@ Answers:
    TABprogram mainRETinteger*4 iRETdo 10 i=1,3RETcall f(i)RET10continueRETend
 
    Here TAB means hit TAB and RET means hit return.  This will result in:
- 
+
          program main
 	 integer*4 i
 	 do 10 i=1,3
@@ -146,26 +145,25 @@ Answers:
       setkey("indent_line_cmd", "\t");
       setkey("newline_and_indent_cmd", "^M");
 
-   AFTER edt.sl is loaded.        
+   AFTER edt.sl is loaded.
 
-   
 <4> How do I turn on wrap mode or turn it off?
 
    Normally, this is done automatically when JED loads a file with extensions
    .txt, .doc, etc...  See question 2 for a discussion of how this is done.
-   To turn on wrap mode for the current buffer, simply press Escape-X and 
+   To turn on wrap mode for the current buffer, simply press Escape-X and
    enter:
            text_mode
-	
+
    at the prompt.  To turn it off, you must change the mode to something
    else.  A fairly generic choice is the `no_mode' mode.  To do this, press
    Escape-X and enter:
-   
+
            no_mode
-	   
+
    at the prompt.  It is easy to write a function to toggle the mode for
    you that can be bound to a key.  This one (toggle_wrapmode) will work:
-   
+
    define toggle_wrapmode ()
    {
       variable mode, modestr;
@@ -188,7 +186,7 @@ Answers:
    insertion. Then the screen is updated.  Here lies the essential
    difference between the two types of functions.  If the screen was in sync
    before the insertion, JED can simply put the terminal in insert mode,
-   send out the character and take the terminal back out of insert mode. 
+   send out the character and take the terminal back out of insert mode.
    However, this requires knowing the state of the screen.  If called from a
    S-Lang routine, all bets are off.  Since the screen update is not
    performed until after any S-Lang function has returned to JED, the buffer
@@ -198,7 +196,7 @@ Answers:
    distinction between the two types of functions by making the most common
    ones internal.  The upshot is this: intrinsic functions will cause a full
    screen update while internal ones may not.
-   
+
 <6> Sometimes during screen updates, JED pauses.  Why is this?
 
    Since version 0.91, JED checks the baud rate and tries to output
@@ -207,7 +205,7 @@ Answers:
    should first check to see that terminal driver has the baud rate set
    appropriately.  On Unix, this is done by typing `stty -a' at the shell
    prompt. If setting the baud rate to the correct value does not help, set
-   the internal global variable `OUTPUT_RATE' to zero.  This is achived by
+   the internal global variable `OUTPUT_RATE' to zero.  This is achieved by
    uncommenting the line referring to OUTPUT_RATE in the jed.rc
    initialization file.  If there is still a problem, contact me.
 
@@ -219,18 +217,18 @@ Answers:
    simply avoid using ^S and ^Q altogether.  This may require the user to
    rebind those those functions that have key bindings composed of these
    characters.
-   
+
    JED is able to enable or disable flow control on the system that it is
    running.  This may be done by putting the line:
-   
+
       enable_flow_control (0);  % turn flow control off
-       
+
    in your .jedrc file.  Using a value of 1 turns flow control on.
-   
+
    Another solution is to use the `map_input' function to map a different
    key to ^S (and ^Q).  For example, one might simply choose to map ^\ to ^S
    and ^^ (Control-^) to ^Q.  To do this, simply put:
-   
+
      map_input (28, 19);    % ^\ --> ^S
      map_input (30, 17);    % ^^ --> ^Q
 
@@ -244,23 +242,23 @@ Answers:
 
    Many users simply want to use the ALT key as a Meta Character.  To have
    JED interpret ALT-X as ESC-X, put
-   
+
          ALT_CHAR = 27;
-	 
+
    int your jed.rc file.  Here `X' is any key.  (Actually, this should
    not be necessary-- the default value for ALT_CHAR is 27).
 
 <9> How do I find out what characters a particular key generates?
 
-   The simpliest way is to start JED via the command:
-   
+   The simplest way is to start JED via the command:
+
        jed -l keycode -f keycode
-       
+
    JED will then prompt for a key to be pressed and return the escape
    sequence that the key sends.  If Xjed is used, it will also return
    the keysym (See online help on the x_set_keysym function for more
    information).
-   
+
    An alternative approach is to use the quoted insert function.  By
    default, this is bound to the backquote (`) key.  Simply switch to
    the `*scratch*' buffer, press the backquote key followed by the key
@@ -270,7 +268,7 @@ Answers:
    characters.
 
    If this fails, the following function will suffice:
-   
+
       define insert_this_key ()
       {
         variable c;
@@ -296,7 +294,7 @@ Answers:
    state of the art terminal, you have told unix it is a vt100.  Even if you
    have set the TERM variable to the appropriate value for you terminal, the
    termcap file may be missing entries for your ``WizBang'' features.  This
-   is particularly the case for Ultrix systems--- the vt102, vt200, and 
+   is particularly the case for Ultrix systems--- the vt102, vt200, and
    vt300 termcap entries are missing the AL and DL termcap flags.  In fact,
    the Ultrix man page for termcap does not even mention these capabilities!
 
@@ -423,7 +421,7 @@ Answers:
 
 <18> Why is jed linked against libncurses when it uses slang?
 
-  Because it has GPM mouse support and the GPM librares use ncurses.
+  This will happen when compiled with GPM mouse support, and the GPM libraries use ncurses.
 
 <19> When running Jed in an xterm, alt is not sending meta (and meta is not
    sending escape) so that alt-f and alt-b e.g., don't skip words forwards and
@@ -436,7 +434,7 @@ Answers:
   somewhere at X-startup (modify e.g., ~/.Xmodmap).
 
 <20> How do I cancel a command that prompts me with "y/n" choices, without a
-   "cancel" otpion?
+   "cancel" option?
 
   In Jed, (almost all) actions can be aborted by pressing a configurable
   "abort character" or calling the function kbd_quit().  The most used
@@ -464,7 +462,6 @@ Answers:
   mode, set the variable _Jed_Emulation (e.g. _Jed_Emulation = "cool") to
   prevent loading the _Jed_Default_Emulation fallback.
 
-
 -------------------------------------------------------------------------------
 This is a useful function used to maintain numbers in this faq.
 
@@ -481,10 +478,10 @@ define faq_fix ()
 	replace_match (strcat(string(n), "."), 1); pop();
 	++n;
      }
-  
+
    widen();
    n = 1;
-   
+
    while (re_fsearch("^<[0-9]+>"))
      {
 	replace_match (Sprintf("<%d>", n, 1), 1); pop();

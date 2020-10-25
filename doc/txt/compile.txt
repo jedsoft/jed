@@ -37,7 +37,7 @@ asynchronously in a buffer named `*compile*'.  However, some systems
 (e.g., msdos) do not support asynchronous processes and jed will have
 wait for the process to complete before returning to the user.
 However, on Unix, Win32, and OS/2 systems, the process will run
-asynchrounously allowing the user to continue editing while the
+asynchronously allowing the user to continue editing while the
 compile process is running.
 
 To go from one error message to another, use the "Ctrl-X '" key
@@ -46,5 +46,4 @@ sequence (Ctrl-X apostrophe), which is bound to the
 compiler properly as described above, jed will find the file causing
 the error and put the cursor on the guilty line.  After correcting the
 errors, run the compile process again.
-
 

@@ -1,9 +1,9 @@
-Matti-Oskari Lepp‰nen <mongrel@mindless.com> suggested the following:
+Matti-Oskari Lepp√§nen <mongrel@mindless.com> suggested the following:
 
-I think that you should mention somewhere in documents howto make
+I think that you should mention somewhere in documents how to make
 shift-arrow etc. work under linux-console ... because it's quite simple
 
-just make file that has following lines save it as some.map and 
+just make file that has following lines save it as some.map and
 loadkeys some.map then you have same keysyms as used in wmark.sl
 ________________________________________________
 # S+Up

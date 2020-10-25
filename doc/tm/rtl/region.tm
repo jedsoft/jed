@@ -7,7 +7,7 @@
  including the value of \var{KILL_ARRAY_SIZE} may be used as an
  argument in the functions that manipulate this array.
 \notes
- This variable is a read-only varaible and may not available on 16
+ This variable is a read-only variable and may not available on 16
  bit systems.
 \seealso{insert_from_kill_array, copy_region_to_kill_array, append_region_to_kill_array}
 \done
@@ -108,13 +108,13 @@
 \done
 
 \function{narrow}
-\synopsis{Restict editing to the region (complete lines)}
+\synopsis{Restrict editing to the region (complete lines)}
 \usage{Void narrow ()}
 \description
   This function may be used to restict editing to the region of lines
   between the mark and the editing point.  The region includes the line
   containing the mark as well as the line at the current point. All
-  other lines outside this region are completely inacessable without
+  other lines outside this region are completely inacessible without
   first lifting the restriction using the \var{widen} function. As a simple
   example, suppose that there is a function called \var{print_buffer} that
   operates on the entire buffer.  Then the following function will work
@@ -136,7 +136,7 @@
 \done
 
 \function{narrow_to_region}
-\synopsis{Restict editing exactly to the region}
+\synopsis{Restrict editing exactly to the region}
 \usage{Void narrow_to_region (void)}
 \description
   The \var{narrow_to_region} function behaves like the \var{narrow} function

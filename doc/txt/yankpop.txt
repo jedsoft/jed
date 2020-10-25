@@ -12,7 +12,7 @@ functions:
      yp_kill_line                   Ctrl-K
      yp_kill_region                 Ctrl-W
      yp_copy_region_as_kill         ESC W
-     
+
 which are meant to be bound to keys.  The second column shows the default
 emacs bindings.
 

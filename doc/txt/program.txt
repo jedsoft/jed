@@ -2,7 +2,7 @@ NOTE: This document was written with version 1 of the S-Lang
       interpreter in mind.  However, version 2 has several levels of
       optimization that obsolete some of the recommendations given
       here. For example, recent versions of the interpreter execute
-      the "naive" version of the Fibonicci function faster than the
+      the "naive" version of the Fibonacci function faster than the
       "optimized" version given below.  Rather, the user is urged to
       write clean code and make use of the S-Lang profiler when
       performance matters.

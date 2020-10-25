@@ -53,7 +53,7 @@
  Using "default" as a foreground or background color instructs the
  editor to tell the terminal to use the default foreground and
  background colors of the window.  If you use a terminal that uses a
- transparant background, then you need to specify "default" as the
+ transparent background, then you need to specify "default" as the
  background color.  Not all terminals support the notion of the
  "default" color.
 
@@ -94,7 +94,7 @@
    "trailing_whitespace"
    "html"        <html> and '<' syntax objects.
 #v-
- If line attributes are available, then you may also specifiy the color
+ If line attributes are available, then you may also specify the color
  of the hidden line indicator:
 #v+
    "..."         Hidden line indicator
@@ -110,7 +110,7 @@
  Xjed defines the following objects:
 #v+
    "mouse"                  Mouse cursor color
-   "border"                 Window borde color
+   "border"                 Window border color
 #v-
 \seealso{define_syntax, set_color_esc, set_column_colors, set_color_object}
 \seealso{WANT_SYNTAX_HIGHLIGHT, USE_ANSI_COLORS}

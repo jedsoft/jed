@@ -2,7 +2,7 @@
 \synopsis{Add a function to a hook (as first one)}
 \usage{add_to_hook (String_Type hook_name, Ref_Type funct)}
 \description
-  \var{add_to_hook} adds the function \var{funct} to the beginnning of the
+  \var{add_to_hook} adds the function \var{funct} to the beginning of the
   list of hooks associated with \var{hook_name}.  The currently
   supported hooks include:
 #v+

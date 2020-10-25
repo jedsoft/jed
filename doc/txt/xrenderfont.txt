@@ -13,7 +13,7 @@ steps:
    will revert to traditional font rendering.  When -fs is specified, the -fn
    parameter is treated as facename, so you can do things like:
    xjed -fn trebuc -fs 16 bomb.c
-   
+
 This functionality was brought to you by:
 Charl P. Botha <http://cpbotha.net>
 March 26, 2001

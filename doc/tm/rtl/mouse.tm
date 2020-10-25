@@ -74,7 +74,7 @@
   and it must return an integer.  The parameters \var{line} and
   \var{column} correspond to the line and column numbers in the
   buffer where the event took place. \var{btn} is an integer that
-  corresonds to the button triggering the event.  It can take
+  corresponds to the button triggering the event.  It can take
   on values \var{1}, \var{2}, and \var{4} corresponding to the left,
   middle, and right buttons, respectively.  \var{shift} can take on
   values \exmp{0}, \var{1}, or \var{2} where \exmp{0} indicates that no modifier
@@ -84,7 +84,7 @@
   the function \var{mouse_get_event_info}.
 
   When the hook is called, the editor will automatically change
-  to the window where the event occured.  The return value of
+  to the window where the event occurred.  The return value of
   the hook is used to dictate whether or not hook handled the
   event or whether the editor should switch back to the window
   prior to the event.  Specifically, the return value is interpreted

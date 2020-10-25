@@ -48,7 +48,7 @@
 \usage{Int_Type delete_file (String_Type file)}
 \description
   This function may be used to delete a file specified by the \var{file}
-  parameter.  It returns non-zero if the file was sucessfully deleted
+  parameter.  It returns non-zero if the file was successfully deleted
   or zero otherwise.
 \seealso{rmdir}
 \done

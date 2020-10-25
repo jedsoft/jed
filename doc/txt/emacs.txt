@@ -14,7 +14,6 @@ KEY         ACTION                        JED FUNCTION (Invoke via ESC X)
  Up Arrow   Move backward by lines        previous_line_cmd
  Down Arrow Move forward by lines         next_line_cmd
 
-
 CONTROL
 
  ^A   Go to start of line                 beg_of_line
@@ -55,7 +54,6 @@ CONTROL
  ^Z   Suspend JED                         sys_spawn_cmd
  ^_   Undo                                undo
  ^@   Start to define region (set mark)   smart_set_mark_cmd
-
 
 ESCAPE
 
@@ -145,7 +143,6 @@ CONTROL-X
  ^X ^W  Write buffer to file              write_buffer
  ^X ^X  Go to other end of region         exchange
  ^X ESC Invoke S-LANG Interpreter         evaluate_cmd
-
 
      JED FUNCTIONS NOT BOUND TO KEYS - ACCESS VIA ESC X
      (OR BIND TO KEYS IN YOUR .jedrc FILE)

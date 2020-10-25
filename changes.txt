@@ -300,6 +300,7 @@ Changes since 0.99-19
      avoid gcc warnings.
 143. src/syntax.c: fixed a signed vs unsigned char comparison
      involving non-ascii characters (brought about by change #142)
+144. doc/: Spelling corrections (Morten Bo Johansen)
 
 {{{ Previous Versions
 

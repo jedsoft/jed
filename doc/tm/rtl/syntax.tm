@@ -76,7 +76,7 @@
 
   If \var{type} is \exmp{'+'}, the first parameter is a string whose characters
   are given the operator syntax.  If type is \exmp{','}, the first parameter
-  is a string composed of characters that are condered to be
+  is a string composed of characters that are considered to be
   delimiters.  If type is '0', the first parameter is a string composed
   of characters that make up a number.
 
@@ -227,7 +227,7 @@
   The string \var{list} is simply a set of characters and may include
   character ranges.  If the first character of \var{list} is
   \var{'^'}, then the meaning is that only those characters that do
-  not specify fortran sytle comments are included in the list.
+  not specify Fortran style comments are included in the list.
 \example
   Fortran mode uses the following:
 #v+
@@ -278,7 +278,7 @@
   \var{set_fortran_comment_chars} function.
 
   If the \exmp{0x04} bit is set, then whitespace at the beginning of a
-  line in a C comment preceeding a \exmp{'*'} character will not be 
+  line in a C comment preceding a \exmp{'*'} character will not be 
   highlighted.
 
   A TeX-like keyword is any word that follows the quote character.

@@ -98,7 +98,7 @@
 \usage{Void bury_buffer (String name)}
 \description
   The \var{bury_buffer} function may be used to make it unlikely for the
-  buffer specified by the paramter \var{name} to appear in a window.
+  buffer specified by the parameter \var{name} to appear in a window.
 \seealso{sw2buf, getbuf_info}
 \done
 
@@ -108,7 +108,7 @@
 \description
   The \var{check_buffers} function checks to see whether or not any of
   the disk files that are associated with the editor's buffers have been
-  modified since the assocation was made.  The buffer flags are
+  modified since the association was made.  The buffer flags are
   updated accordingly.
 \seealso{file_time_compare, file_changed_on_disk}
 \done

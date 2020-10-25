@@ -12,7 +12,7 @@ character based terminal.
 	 color model.
 
 To use JED with a color terminal, it is necessary that the terminal
-understand ANSI color escape sequences.  If so, then it is possble to set
+understand ANSI color escape sequences.  If so, then it is possible to set
 up JED to use different foreground and background colors for the modeline,
 region highlighting, syntax highlighting, etc...
 
@@ -26,8 +26,8 @@ terminal is a color one or not. To interactively set USE_ANSI_COLORS, simply
 press `Ctrl-X ESC' and enter
 
      USE_ANSI_COLORS = 1
-     
-at the `S-Lang>' prompt.  
+
+at the `S-Lang>' prompt.
 
 This variable is automatically set to a non-zero value by jed if
 environment variable COLORTERM exists.
@@ -35,11 +35,8 @@ environment variable COLORTERM exists.
 Finally, you could simply put:
 
   define term_use_colors () { USE_ANSI_COLORS = 1; }
-  
+
 in your jed.rc (.jedrc) and define (alias) jed to be:
 
   alias colorjed 'jed -f term_use_colors'
-
-
-  
 

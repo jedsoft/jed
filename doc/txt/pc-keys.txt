@@ -14,15 +14,15 @@ define ibmpc_showkey()
 {
    variable c, ch, key = Null_String;
    variable timeout = 50;  % 5 seconds
-   
+
    flush ("Press key:");
-   
+
    while (input_pending(timeout))
      {
 	timeout = 0;
 	c = getkey();
-	if (c == 0) ch = "^@"; 
-	else 
+	if (c == 0) ch = "^@";
+	else
 	  {
 	     if (c == 224) ch = "\\xE0";
 	     else if (c > 127) ch = strcat ("\\d", string (c));
@@ -34,9 +34,8 @@ define ibmpc_showkey()
    message (key);
 }
 
-
 % Alt-1	^@x
-% Alt-2	^@y 
+% Alt-2	^@y
 % Alt-3	^@z
 % Alt-4	^@{
 % Alt-5	^@|
@@ -61,7 +60,7 @@ define ibmpc_showkey()
 % Alt-P	^@^Y
 % Alt-Q	^@^P
 % Alt-R	^@^S
-% Alt-S	^@^_ 
+% Alt-S	^@^_
 % Alt-T	^@^T
 % Alt-U	^@^V
 % Alt-V	^@/
@@ -103,8 +102,8 @@ define ibmpc_showkey()
 %  Minus         OS          ^@\d142       OS      ^@J
 %  Plus          Om          ^@\d144       Om      ^@N
 %  Enter         OM                        OM      ^@\d166
-% 
-% 
+%
+%
 %   Key         No-modifier     Ctrl        Shift        Alt
 % -------------------------------------------------------------
 %   F1:           ^@;           ^@^          ^@T         ^@h

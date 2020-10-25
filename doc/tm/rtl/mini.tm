@@ -66,7 +66,7 @@
 \description
   This function may be used to get a yes or no response from the
   user.  The string parameter \var{s} will be used to construct the prompt
-  by concating the string \exmp{"? (yes/no)"} to \var{s}.
+  by concatenating the string \exmp{"? (yes/no)"} to \var{s}.
   It returns \var{1} if the answer is yes or \exmp{0} if the answer is no.
 \seealso{getkey, flush, message}
 \done

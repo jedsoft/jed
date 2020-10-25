@@ -200,7 +200,7 @@
 \done
 
 \function{menu_set_object_available}
-\synopsis{Set the availablity of a menu item}
+\synopsis{Set the availability of a menu item}
 \usage{menu_set_object_available (String_Type menuitem, Int_Type flag)}
 \description
   The \var{menu_set_object_available} function may be used to activate

@@ -8,14 +8,14 @@ To control how to do color syntax highlight highlighting, use the
 what to color and the last two specify what foreground and background colors
 to use.  The `what' parameter can be any one of:
 
-    "operator"      
-    "number"     
-    "comment"    
-    "string"     
-    "keyword"    
-    "delimiter"  
-    "preprocess" 
-    
+    "operator"
+    "number"
+    "comment"
+    "string"
+    "keyword"
+    "delimiter"
+    "preprocess"
+
 What these actually refer to is mode dependent.  For C mode, they have the
 following meaning:
 
@@ -36,10 +36,10 @@ In TeX mode only
     "keyword"      : Anything following a slash(e.g., \begin) and `{', `}',
                       `&', etc...
 
-have meaning.  
+have meaning.
 
 Any other object not falling in any of the above categories is not
-highlighted.  
+highlighted.
 
 In C mode, to avoid the task of parsing the buffer on every screen update,
 comments must either be confined to a single line, or have the following
@@ -56,11 +56,11 @@ That is, the second, third, and lines must start with one or more `*'
 followed by at least one whitespace character.  This means that
 
       *p++ = ' ';
-      
-will not be interpreted as comment but 
+
+will not be interpreted as comment but
 
       * p++ = ' ';
-      
+
 will be flagged by the editor as a comment line.
 
 Finally, if the screen is panned to the right, syntax highlighting will

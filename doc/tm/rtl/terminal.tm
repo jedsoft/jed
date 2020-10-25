@@ -115,7 +115,7 @@
   takes a single integer parameter.  If non-zero, the terminal type is set
   for a vt100.  This means the terminal lacks the ability to insert/delete
   lines and characters.  If the parameter is zero, the terminal is assumed
-  to be vt102 compatable.  Unless you are using a VERY old terminal or
+  to be vt102 compatible.  Unless you are using a VERY old terminal or
   a primitive emulator, use zero as the parameter.
 \done
 
