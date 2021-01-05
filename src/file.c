@@ -1501,6 +1501,7 @@ char *jed_expand_link (char *f)
 #else
    char *f1, *f2;
    unsigned int len;
+   int fd;
 
    /* Look for, e.g., /usr/local//tmp/foo and extract /tmp/foo.
     * Do this before attempting to expand a link since links could
@@ -1519,6 +1520,20 @@ char *jed_expand_link (char *f)
     * /tmp/a/c.txt.
     */
 #if 1
+
+   if (-1 == (fd = open (f, O_RDONLY)))
+     {
+# ifdef ELOOP
+	if (errno == ELOOP)
+	  {
+	     jed_verror ("%s: Too many levels of symbolic links", f);
+	     return NULL;
+	  }
+# endif
+     }
+   else
+     (void) close (fd);
+
    len = strlen (f);
    if (NULL == (f = SLmake_nstring (f, len)))
      return NULL;
