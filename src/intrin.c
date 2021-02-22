@@ -1070,6 +1070,9 @@ int init_jed_intrinsics (void) /*{{{*/
        || (-1 == jed_init_color_intrinsics ())
        || (-1 == jed_init_keymap_intrinsics ())
        || (-1 == jed_init_window_intrinsics ())
+#if JED_HAS_BUFFER_LOCAL_VARS
+       || (-1 == jed_blocal_init ())
+#endif
        )
      return -1;
 
@@ -1116,9 +1119,6 @@ int init_jed_intrinsics (void) /*{{{*/
 #endif
 #if JED_HAS_LINE_ATTRIBUTES
    SLdefine_for_ifdef("HAS_LINE_ATTR");
-#endif
-#if JED_HAS_BUFFER_LOCAL_VARS
-   SLdefine_for_ifdef("HAS_BLOCAL_VAR");
 #endif
 
    if (SLang_get_error ()) return -1;

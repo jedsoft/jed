@@ -18,10 +18,29 @@
 #include "buffer.h"
 #include "misc.h"
 
-static Jed_BLocal_Type *find_blocal_var (char *name, int err) /*{{{*/
+typedef struct
+{
+   char *name;			       /* slstring */
+   SLang_Any_Type *value;
+}
+BLocal_Type;
+
+/* Each buffer can have a set of buffer-local variables.  The buffer-local
+ * variables for a given buffer are stored in a linked list of tables
+ * instead of one large table.
+ */
+struct _Jed_BLocal_Table_Type
+{
+   unsigned int num;
+#define MAX_BLOCAL_VARS_PER_TABLE	10
+   BLocal_Type local_vars[MAX_BLOCAL_VARS_PER_TABLE];
+   Jed_BLocal_Table_Type *next;
+};
+
+static BLocal_Type *find_blocal_var (char *name, int err) /*{{{*/
 {
    Jed_BLocal_Table_Type *table;
-   Jed_BLocal_Type *lv, *lv_max;
+   BLocal_Type *lv, *lv_max;
 
    table = CBuf->blocal_table;
 
@@ -52,15 +71,15 @@ static Jed_BLocal_Type *find_blocal_var (char *name, int err) /*{{{*/
 
 /*}}}*/
 
-int jed_blocal_var_exists (char *name)
+static int blocal_var_exists (char *name)
 {
    return (NULL != find_blocal_var (name, 0));
 }
 
-void jed_make_blocal_var (char *name) /*{{{*/
+static void make_blocal_var (char *name) /*{{{*/
 {
    Jed_BLocal_Table_Type *table;
-   Jed_BLocal_Type *lv;
+   BLocal_Type *lv;
 
    if (NULL != find_blocal_var (name, 0))
      return;
@@ -91,7 +110,7 @@ void jed_make_blocal_var (char *name) /*{{{*/
 
 void jed_delete_blocal_vars (Jed_BLocal_Table_Type *table) /*{{{*/
 {
-   Jed_BLocal_Type *lv, *lv_max;
+   BLocal_Type *lv, *lv_max;
    Jed_BLocal_Table_Type *next;
 
    while (table != NULL)
@@ -114,9 +133,9 @@ void jed_delete_blocal_vars (Jed_BLocal_Table_Type *table) /*{{{*/
 
 /*}}}*/
 
-void jed_set_blocal_var (char *name) /*{{{*/
+static void set_blocal_var (char *name) /*{{{*/
 {
-   Jed_BLocal_Type *lv;
+   BLocal_Type *lv;
 
    lv = find_blocal_var (name, 1);
    if (lv == NULL)
@@ -130,9 +149,9 @@ void jed_set_blocal_var (char *name) /*{{{*/
 
 /*}}}*/
 
-void jed_get_blocal_var (char *name) /*{{{*/
+static void get_blocal_var (char *name) /*{{{*/
 {
-   Jed_BLocal_Type *lv;
+   BLocal_Type *lv;
 
    lv = find_blocal_var (name, 1);
    if (lv == NULL)
@@ -142,5 +161,25 @@ void jed_get_blocal_var (char *name) /*{{{*/
 }
 
 /*}}}*/
+
+static SLang_Intrin_Fun_Type BLocal_Intrinsics [] = /*{{{*/
+{
+   MAKE_INTRINSIC_S("blocal_var_exists", blocal_var_exists, SLANG_INT_TYPE),
+   MAKE_INTRINSIC_S("set_blocal_var", set_blocal_var, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_S("_get_blocal_var", get_blocal_var, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC_S("create_blocal_var", make_blocal_var, SLANG_VOID_TYPE),
+   MAKE_INTRINSIC(NULL, NULL, 0, 0)
+};
+/*}}}*/
+
+int jed_blocal_init (void)
+{
+   if (-1 == SLadd_intrin_fun_table (BLocal_Intrinsics, NULL))
+     return -1;
+   if (-1 == SLdefine_for_ifdef("HAS_BLOCAL_VAR"))
+     return -1;
+
+   return 0;
+}
 
 #endif				       /* JED_HAS_BUFFER_LOCAL_VARS */

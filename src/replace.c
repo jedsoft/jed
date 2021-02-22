@@ -369,13 +369,6 @@ SLang_Intrin_Fun_Type Jed_Other_Intrinsics [] = /*{{{*/
    MAKE_INTRINSIC("push_narrow", jed_push_narrow, VOID_TYPE, 0),
    MAKE_INTRINSIC("pop_narrow", jed_pop_narrow, VOID_TYPE, 0),
 #endif
-#if JED_HAS_BUFFER_LOCAL_VARS
-   MAKE_INTRINSIC_S("blocal_var_exists", jed_blocal_var_exists, SLANG_INT_TYPE),
-
-   MAKE_INTRINSIC_S("set_blocal_var", jed_set_blocal_var, VOID_TYPE),
-   MAKE_INTRINSIC_S("_get_blocal_var", jed_get_blocal_var, VOID_TYPE),
-   MAKE_INTRINSIC_S("create_blocal_var", jed_make_blocal_var, VOID_TYPE),
-#endif
    MAKE_INTRINSIC("count_narrows", jed_count_narrows, INT_TYPE, 0),
    MAKE_INTRINSIC("widen_buffer", widen_this_buffer, VOID_TYPE, 0),
    MAKE_INTRINSIC(NULL, NULL, 0, 0)
