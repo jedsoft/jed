@@ -1389,24 +1389,15 @@ dfa_set_init_callback (&setup_dfa_callback, "C");
 %%% DFA_CACHE_END %%%
 #endif
 
-% Type 0 keywords (include C++ trigraphs)
-#iffalse
+% Type 0 keywords - without (deprecated) C++ trigraphs
 () = define_keywords_n ("C", "doif", 2, 0);
-#else
-() = define_keywords_n ("C", "doifor", 2, 0);
-#endif
-() = define_keywords_n ("C", "andasmforintnewnottryxor", 3, 0);
+() = define_keywords_n ("C", "asmforintnewtry", 3, 0);
 () = define_keywords_n ("C", "autoboolcasecharelseenumgotolongthistruevoid", 4, 0);
-#iffalse
 () = define_keywords_n ("C", "breakcatchclassconstfalsefloatshortthrowunionusingwhile", 5, 0);
 () = define_keywords_n ("C", "deletedoubleexternfriendinlinepublicreturnsignedsizeofstaticstructswitchtypeid", 6, 0);
-#else
-() = define_keywords_n ("C", "bitorbreakcatchclasscomplconstfalsefloator_eqshortthrowunionusingwhile", 5, 0);
-() = define_keywords_n ("C", "and_eqbitanddeletedoubleexportexternfriendinlinenot_eqpublicreturnsignedsizeofstaticstructswitchtypeidxor_eq", 6, 0);
-#endif
 () = define_keywords_n ("C", "defaultmutableprivatetypedefvirtualwchar_t", 7, 0);
-() = define_keywords_n ("C", "continueexplicitoperatorregistertemplatetypenameunsignedvolatile", 8, 0);
-() = define_keywords_n ("C", "namespaceprotected", 9, 0);
+() = define_keywords_n ("C", "continuedecltypeexplicitnoexceptoffsetofoperatoroverrideregistertemplatetypenameunsignedvolatile", 8, 0);
+() = define_keywords_n ("C", "constexprnamespaceprotected", 9, 0);
 () = define_keywords_n ("C", "const_cast", 10, 0);
 () = define_keywords_n ("C", "static_cast", 11, 0);
 () = define_keywords_n ("C", "dynamic_cast", 12, 0);
@@ -1430,7 +1421,7 @@ dfa_set_init_callback (&setup_dfa_callback, "C");
 		       5, 1);
 
 () = define_keywords_n("C",
-		       "assertatexitcallocfcloseferrorfflushfscanf"
+		       "assertatexitcallocexportfcloseferrorfflushfscanf"
 		       + "fwritegetenvgmtimemallocmemchrmemcmpmemcpy"
 		       + "memsetmktimeperrorprintfremoverenamerewind"
 		       + "setbufsetjmpsignalsize_tsscanfstderrstdout"
@@ -1442,7 +1433,7 @@ dfa_set_init_callback (&setup_dfa_callback, "C");
 		       "asctimebsearchclock_tfgetposfprintffreopen"
 		       + "fsetposgetcharisalnumisalphaiscntrlisdigit"
 		       + "isgraphislowerisprintispunctisspaceisupper"
-		       + "jmp_buflongjmpmemmoveputcharreallocsetvbuf"
+		       + "jmp_buflongjmpmemmovenullptrputcharreallocsetvbuf"
 		       + "sprintfstrcspnstrncatstrncmpstrncpystrpbrk"
 		       + "strrchrstrtoultmpfiletolowertoupperva_list"
 		       + "vprintf",
@@ -1765,7 +1756,9 @@ define c_set_style (name)
      }
      {
       case "kw":
-	(0,2,1,2,1,2,2,2,0,0,2);
+	%(0,2,1,2,1,2,2,2,0,0,2);
+	(C_Switch_Offset, C_Param_Offset_Max) = (2, -1);
+	(2,0,0,2,0,2,0,2,0,0,0);
      }
      {
 	if (is_defined ("c_set_style_hook") > 0)

@@ -303,6 +303,9 @@ Changes since 0.99-19
 144. doc/: Spelling corrections (Morten Bo Johansen)
 145. src/file.c: Added a check for circular symbolic links when
      opening a file.
+146. lib/slmode.sl,lib/cmode.sl: Removed highlighting of deprecated
+     orelse/andelse slang keywords; removed highlighting of deprecated
+     C++ trigraphs and added C++11 keywords (Mark Olesen)
 
 {{{ Previous Versions
 
