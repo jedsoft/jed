@@ -812,16 +812,10 @@ static int jed_close (int fp, int use_fsync) /*{{{*/
 	     continue;
 	  }
 # endif
-# ifdef EIO
-	if (errno == EIO)
-	  {
-	     msg_error ("Error fsyncing file.  File system may be full.");
-	     return -1;
-	  }
-# endif
-	break;
+	SLang_verror (SL_INTRINSIC_ERROR, "Error fsyncing file.  File system may be full: %s", strerror(errno));
+	return -1;
      }
-#endif
+#endif				       /* HAVE_FSYNC */
 
    while (-1 == close(fp))
      {

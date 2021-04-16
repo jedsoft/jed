@@ -308,6 +308,7 @@ Changes since 0.99-19
      C++ trigraphs and added C++11 keywords (Mark Olesen)
 147. src/blocal.h, ...: Made the buffer-local variable structure and
      associated functions opaque for easier code maintanence
+148. src/file.c: fsync errors were being ignored.
 
 {{{ Previous Versions
 
