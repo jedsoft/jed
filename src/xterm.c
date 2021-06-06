@@ -1262,7 +1262,7 @@ static int X_process_events (int force, char *buf, unsigned int buflen,
 	   case ButtonPress:
 	     /* Prohibit dragging more than one button at a time. */
 	     if (last_event == MotionNotify) break;
-	     /* drop */
+	     /* fall through */
 
 	   case ButtonRelease:
 	     if ((last_event == MotionNotify) &&
@@ -2389,6 +2389,12 @@ static int init_Xdisplay (void) /*{{{*/
 static void reset_Xdisplay (void) /*{{{*/
 {
    free_color_cache ();
+   if (XWin != NULL)
+     {
+#if XJED_HAS_XRENDERFONT
+	if (XWin->xftfont != NULL) XftFontClose (This_XDisplay, XWin->xftfont);
+#endif
+     }
    if (This_XDisplay != NULL) XCloseDisplay(This_XDisplay);
 }
 
