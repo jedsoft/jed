@@ -309,6 +309,8 @@ Changes since 0.99-19
 147. src/blocal.h, ...: Made the buffer-local variable structure and
      associated functions opaque for easier code maintanence
 148. src/file.c: fsync errors were being ignored.
+149. src/main.c: Moved the the initialization of the signal handlers
+     to a point just prior to initializing the display.
 
 {{{ Previous Versions
 

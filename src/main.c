@@ -405,6 +405,9 @@ static int main_initialize (int argc, char **argv)
    if (-1 == init_tty ())
      exit_error ("Unable to initialize tty.", 0);
 
+#if !defined(IBMPC_SYSTEM) && !defined(VMS)
+   init_signals();
+#endif
    jed_init_display ();         /* sets up virtual screen */
 
    (*tt_set_mono) (JMESSAGE_COLOR, NULL, 0);
@@ -457,9 +460,6 @@ static int main_initialize (int argc, char **argv)
    bol ();
 
    window_buffer(CBuf);
-#if !defined(IBMPC_SYSTEM) && !defined(VMS)
-   init_signals();
-#endif
 
    (void) SLang_set_argc_argv (argc, argv);
 

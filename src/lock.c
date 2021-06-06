@@ -508,8 +508,9 @@ int jed_unlock_buffer_files (void)
    int status;
    Buffer *b;
 
+   if (NULL == (b = CBuf)) return 0;
+
    status = 0;
-   b = CBuf;
    do
      {
 	b = b->next;
