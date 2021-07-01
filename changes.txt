@@ -313,6 +313,8 @@ Changes since 0.99-19
      to a point just prior to initializing the display.
 150. src/xterm.c: Call XftFontClose prior to exiting xjed to avoid a
      leak.
+151. lib/ctags.sl: Previous changes to ctags.sl broke the processing
+     of etags-formatted files.  The code was updated to correct this.
 
 {{{ Previous Versions
 

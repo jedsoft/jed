@@ -155,25 +155,26 @@ private define _ctags_find (tag, sinfo)
 %  ^L
 %  filename,some-number
 %  [function-type] function-name ^?line-name,some-number
-private define etags_find (tag)
+private define etags_find (tag, sinfo)
 {
-   variable file, line, tmptag, msg = "Tag file needs updated?";
+   variable file, line;
 
-   % we do the re_fsearch in order of preference: user->function->array
-   tmptag = strcat ("[: ]", tag);
-   ifnot (re_fsearch (strcat (tmptag, "[\t ]+\x7F\\(\\d+\\),")))
-     ifnot (re_fsearch (strcat (tmptag, "[\t \\(]+\x7F\\(\\d+\\),")))
-       ifnot (re_fsearch (strcat (tmptag, "[\t \\[]+\x7F\\(\\d+\\),")))
-	 error (msg);
+   variable re = "\x7F" + tag + "\x01" + `\(\d+\)`;
+   ifnot (re_fsearch (re))
+     return NULL;
    line = integer (regexp_nth_match (1));
+   eol();
+   push_spot ();
 
    () = bol_bsearch (char (014));	% previous ^L
    go_down_1 ();
    push_mark (); skip_chars ("^,\n");
    file = bufsubstr ();
 
-   ifnot (read_file (file)) error ("File not found.");
-   goto_line (line);
+   pop_spot ();
+   sinfo.line = line;
+   sinfo.file = file;
+   return sinfo;
 }
 
 private define tag_search_forward (tag)
