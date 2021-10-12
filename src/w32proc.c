@@ -652,7 +652,6 @@ int jed_open_process (int *np)
    for (i = 0; i < num; i++)
      {
 	SLang_free_slstring (argv[i]); /* NULL ok */
-	i++;
      }
 
    return fd;

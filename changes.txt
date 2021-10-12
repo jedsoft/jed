@@ -315,6 +315,8 @@ Changes since 0.99-19
      leak.
 151. lib/ctags.sl: Previous changes to ctags.sl broke the processing
      of etags-formatted files.  The code was updated to correct this.
+152. src/w32proc.c: A loop variable was getting incremented twice
+     causing a leak on on win32 systems. (Reported by Gisle Vanem)
 
 {{{ Previous Versions
 
