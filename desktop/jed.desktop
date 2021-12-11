@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=Jed
+GenericName=Text Editor
+Comment=Edit text files
+Type=Application
+TryExec=jed
+Exec=jed %F
+Terminal=true
+Categories=Utility;TextEditor;
+MimeType=text/plain;text/html;
+Keywords=Text;editor
+Icon=jed

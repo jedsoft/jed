@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Name=XJed
+GenericName=Text Editor
+Comment=X version of Jed Editor
+Type=Application
+TryExec=jed
+Exec=xjed %F
+Categories=Utility;TextEditor;
+MimeType=text/plain;text/html;
+Keywords=Text;editor
+Icon=xjed

@@ -325,6 +325,8 @@ Changes since 0.99-19
       * documentation fix for whatbuf() function
       * spelling error in jed.1 and file.c
       * Changed the default binding of the backquote key to self-insert
+154. Added jed.svg and xjed.svg desktop icons (provided by Rafael
+     Laboissière)
 
 {{{ Previous Versions
 
