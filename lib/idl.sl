@@ -129,23 +129,25 @@ define idl_is_block_beginnning ()
 {
    push_spot ();
    bol_skip_white ();
-   orelse
-     {idl_looking_at_block ("if", " begin")}
-     {idl_looking_at_block ("while", " begin")}
-     {idl_looking_at_block ("else ", " begin")}
-     {idl_looking_at_block ("for", " begin")}
-     {idl_looking_at_block ("case", " of")}
-     {idl_looking_at_block ("endif else", " begin")}
-     {idl_looking_at_block ("repeat", " begin")}
-     {looking_at ("function ")}
-     {looking_at ("pro ")}
+   variable ret;
+   if (idl_looking_at_block ("if", " begin")
+       || idl_looking_at_block ("while", " begin")
+       || idl_looking_at_block ("else ", " begin")
+       || idl_looking_at_block ("for", " begin")
+       || idl_looking_at_block ("case", " of")
+       || idl_looking_at_block ("endif else", " begin")
+       || idl_looking_at_block ("repeat", " begin")
+       || looking_at ("function ")
+       || looking_at ("pro "))
+     ret = 1;
+   else
      {
-	idl_find_effective_eol (),
-	bskip_chars ("$ \t"),
-	blooking_at ("BEGIN") and bfind(":")
+	idl_find_effective_eol ();
+	bskip_chars ("$ \t");
+	ret = blooking_at ("BEGIN") && bfind(":");
      };
-
    pop_spot ();
+   return ret;
 }
 
 custom_variable ("Idl_Indent_Amount", 2);

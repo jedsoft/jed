@@ -327,6 +327,7 @@ Changes since 0.99-19
       * Changed the default binding of the backquote key to self-insert
 154. Added jed.svg and xjed.svg desktop icons (provided by Rafael
      Laboissière)
+155. lib/idl.sl: Removed obsolete "orelse" constructs
 
 {{{ Previous Versions
 
