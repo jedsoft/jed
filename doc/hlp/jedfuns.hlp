@@ -634,7 +634,7 @@ whatbuf
   Return the name of the current buffer
 
  USAGE
-  String what_buffer()
+  String whatbuf()
 
  DESCRIPTION
   `whatbuf' returns the name of the current buffer.  It is usually used
