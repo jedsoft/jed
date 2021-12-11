@@ -581,7 +581,7 @@ static int jed_write1(int fd, char *b, unsigned int n) /*{{{*/
 		  return total;
 	       }
 #endif
-	     jed_verror ("Write Failed: (%d bytes attemped, errno = %d)", len, errno);
+	     jed_verror ("Write Failed: (%d bytes attempted, errno = %d)", len, errno);
 	     return total;
 	  }
 

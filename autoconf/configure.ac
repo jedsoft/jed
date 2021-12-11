@@ -138,7 +138,7 @@ AC_SUBST(MOUSE_OBJ_FILE)
 #---------------------------------------------------------------------------
 AC_DEFUN([WITH_GTK],[
   AC_ARG_WITH( [gtk],
-               AC_HELP_STRING([--with-gtk=PATH], [Directory where the pkg-config file gtk+-2.0.pc can be found. This is often /usr/lib/pkgconfig, /usr/lib64/pkgconfig or in a default garnome build of gnome $HOME/garnome/lib/pkgconfig]),
+               AS_HELP_STRING([--with-gtk=PATH], [Directory where the pkg-config file gtk+-2.0.pc can be found. This is often /usr/lib/pkgconfig, /usr/lib64/pkgconfig or in a default garnome build of gnome $HOME/garnome/lib/pkgconfig]),
 	       GTK_DIR="$withval", GTK_DIR="" )
   PKG_CONFIG_PATH="$GTK_DIR"
   export PKG_CONFIG_PATH
@@ -176,7 +176,7 @@ AC_SUBST(JED_ROOT)dnl
 dnl JD_GET_MODULES(src/modules.unx)
 dnl JD_CREATE_MODULE_ORULES
 
-AC_CONFIG_HEADER(src/sysconf.h:src/config.hin)
+AC_CONFIG_HEADER([src/sysconf.h:src/config.hin])
 AC_CONFIG_FILES([Makefile:autoconf/Makefile.in src/Makefile])
 AC_OUTPUT
 

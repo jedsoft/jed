@@ -1,4 +1,6 @@
 dnl# -*- mode: sh; mode: fold -*-
+dnl# 0.3.4.1: Added /{lib,etc}/terminfo to terminfo directory list
+dnl# 0.3.4.0: Added $(CPPFLAGS)
 dnl# 0.3.3-1: Use INSTALL instead of INSTALL_DATA to install modules to get executable permissions
 dnl# 0.3.3-0: Added $(OBJ_O_DEPS) and $(ELF_O_DEPS) to PROGRAM_OBJECT_RULES
 dnl# 0.3.2-0: Add rpath support for freebsd
@@ -352,7 +354,7 @@ dnl#}}}
 AC_DEFUN([JD_GCC_WARNINGS], dnl#{{{
 [
 AC_ARG_ENABLE(warnings,
-	      AC_HELP_STRING([--enable-warnings],[turn on GCC compiler warnings]),
+	      AS_HELP_STRING([--enable-warnings],[turn on GCC compiler warnings]),
 	      [gcc_warnings=$enableval])
 if test -n "$GCC"
 then
@@ -511,7 +513,8 @@ JD_Terminfo_Dirs="$MISC_TERMINFO_DIRS \
                   /usr/lib/terminfo \
                   /usr/share/terminfo \
                   /usr/share/lib/terminfo \
-		  /usr/local/lib/terminfo"
+		  /usr/local/lib/terminfo \
+                  /etc/terminfo /lib/terminfo"
 TERMCAP=-ltermcap
 
 for terminfo_dir in $JD_Terminfo_Dirs
@@ -535,11 +538,12 @@ dnl#}}}
 
 AC_DEFUN([JD_ANSI_CC], dnl#{{{
 [
-AC_AIX
+dnl# AC_AIX
+AC_USE_SYSTEM_EXTENSIONS
 AC_REQUIRE([AC_PROG_CC])
 AC_REQUIRE([AC_PROG_CPP])
 AC_REQUIRE([AC_PROG_GCC_TRADITIONAL])
-AC_ISC_POSIX
+dnl# AC_ISC_POSIX
 
 dnl #This stuff came from Yorick config script
 dnl
@@ -615,30 +619,30 @@ case "$host_os" in
   *linux*|*gnu*|k*bsd*-gnu )
     DYNAMIC_LINK_FLAGS="-Wl,-export-dynamic"
     ELF_CC="\$(CC)"
-    ELF_CFLAGS="\$(CFLAGS) -fPIC"
+    ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
     ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR)"
     ELF_DEP_LIBS="\$(DL_LIB) -lm -lc"
     CC_SHARED_FLAGS="-shared -fPIC"
-    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
     ;;
   *solaris* )
     if test "$GCC" = yes
     then
       DYNAMIC_LINK_FLAGS=""
       ELF_CC="\$(CC)"
-      ELF_CFLAGS="\$(CFLAGS) -fPIC"
+      ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
       ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-ztext -Wl,-h,\$(ELFLIB_MAJOR)"
       ELF_DEP_LIBS="\$(DL_LIB) -lm -lc"
       CC_SHARED_FLAGS="-G -fPIC"
-      CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+      CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
     else
       DYNAMIC_LINK_FLAGS=""
       ELF_CC="\$(CC)"
-      ELF_CFLAGS="\$(CFLAGS) -K PIC"
+      ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -K PIC"
       ELF_LINK="\$(CC) \$(LDFLAGS) -G -h\$(ELFLIB_MAJOR)"
       ELF_DEP_LIBS="\$(DL_LIB) -lm -lc"
       CC_SHARED_FLAGS="-G -K PIC"
-      CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+      CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
     fi
     ;;
    # osr5 or unixware7 with current or late autoconf
@@ -647,20 +651,20 @@ case "$host_os" in
      then
        DYNAMIC_LINK_FLAGS=""
        ELF_CC="\$(CC)"
-       ELF_CFLAGS="\$(CFLAGS) -fPIC"
+       ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
        ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-h,\$(ELFLIB_MAJOR)"
        ELF_DEP_LIBS=
        CC_SHARED_FLAGS="-G -fPIC"
-       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
      else
        DYNAMIC_LINK_FLAGS=""
        ELF_CC="\$(CC)"
-       ELF_CFLAGS="\$(CFLAGS) -K pic"
+       ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -K pic"
        # ELF_LINK="ld -G -z text -h#"
        ELF_LINK="\$(CC) \$(LDFLAGS) -G -z text -h\$(ELFLIB_MAJOR)"
        ELF_DEP_LIBS=
        CC_SHARED_FLAGS="-G -K pic"
-       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
      fi
      ;;
   *irix6.5* )
@@ -671,29 +675,29 @@ case "$host_os" in
        # not tested
        DYNAMIC_LINK_FLAGS=""
        ELF_CC="\$(CC)"
-       ELF_CFLAGS="\$(CFLAGS) -fPIC"
+       ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
        ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-h,\$(ELFLIB_MAJOR)"
        ELF_DEP_LIBS=
        CC_SHARED_FLAGS="-shared -fPIC"
-       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
      else
        DYNAMIC_LINK_FLAGS=""
        ELF_CC="\$(CC)"
-       ELF_CFLAGS="\$(CFLAGS)"     # default anyhow
+       ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS)"     # default anyhow
        ELF_LINK="\$(CC) \$(LDFLAGS) -shared -o \$(ELFLIB_MAJOR)"
        ELF_DEP_LIBS=
        CC_SHARED_FLAGS="-shared"
-       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
      fi
      ;;
   *darwin* )
      DYNAMIC_LINK_FLAGS=""
      ELF_CC="\$(CC)"
-     ELF_CFLAGS="\$(CFLAGS) -fno-common"
+     ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fno-common"
      ELF_LINK="\$(CC) \$(LDFLAGS) -dynamiclib -install_name \$(install_lib_dir)/\$(ELFLIB_MAJOR) -compatibility_version \$(ELF_MAJOR_VERSION) -current_version \$(ELF_MAJOR_VERSION).\$(ELF_MINOR_VERSION)"
      ELF_DEP_LIBS="\$(LDFLAGS) \$(DL_LIB)"
      CC_SHARED_FLAGS="-bundle -flat_namespace -undefined suppress -fno-common"
-     CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+     CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
      ELFLIB="lib\$(THIS_LIB).dylib"
      ELFLIB_MAJOR="lib\$(THIS_LIB).\$(ELF_MAJOR_VERSION).dylib"
      ELFLIB_MAJOR_MINOR="lib\$(THIS_LIB).\$(ELF_MAJOR_VERSION).\$(ELF_MINOR_VERSION).dylib"
@@ -701,7 +705,7 @@ case "$host_os" in
      ;;
   *freebsd* )
     ELF_CC="\$(CC)"
-    ELF_CFLAGS="\$(CFLAGS) -fPIC"
+    ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
     #if test "X$PORTOBJFORMAT" = "Xelf" ; then
     #  ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-soname,\$(ELFLIB_MAJOR)"
     #else
@@ -710,19 +714,19 @@ case "$host_os" in
     ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-soname,\$(ELFLIB_MAJOR)"
     ELF_DEP_LIBS="\$(DL_LIB) -lm"
     CC_SHARED_FLAGS="-shared -fPIC"
-    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
     ;;
   *cygwin* )
     DYNAMIC_LINK_FLAGS=""
     ELF_CC="\$(CC)"
     SLANG_DLL_CFLAGS="-DSLANG_DLL=1"
-    ELF_CFLAGS="\$(CFLAGS) -DBUILD_DLL=1"
+    ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -DBUILD_DLL=1"
     DLL_IMPLIB_NAME="lib\$(THIS_LIB)\$(ELFLIB_MAJOR_VERSION).dll.a"
     #ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR) -Wl,--out-implib=\$(DLL_IMPLIB_NAME) -Wl,-export-all-symbols -Wl,-enable-auto-import"
     ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR) -Wl,--out-implib=\$(DLL_IMPLIB_NAME)"
     ELF_DEP_LIBS="\$(DL_LIB) -lm"
     CC_SHARED_FLAGS="-shared -DSLANG_DLL=1"
-    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
     dnl# CYGWIN prohibits undefined symbols when linking shared libs
     SLANG_LIB_FOR_MODULES="-L\$(ELFDIR) -lslang"
     INSTALL_MODULE="\$(INSTALL)"
@@ -737,20 +741,20 @@ case "$host_os" in
     M_LIB=""
     DYNAMIC_LINK_FLAGS="-Wl,-export-dynamic"
     ELF_CC="\$(CC)"
-    ELF_CFLAGS="\$(CFLAGS) -fPIC"
+    ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
     ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR)"
     ELF_DEP_LIBS="\$(DL_LIB)"
     CC_SHARED_FLAGS="-shared -fPIC"
-    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
     ;;
   * )
     echo "Note: ELF compiler for host_os=$host_os may be wrong"
     ELF_CC="\$(CC)"
-    ELF_CFLAGS="\$(CFLAGS) -fPIC"
+    ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
     ELF_LINK="\$(CC) \$(LDFLAGS) -shared"
     ELF_DEP_LIBS="\$(DL_LIB) -lm -lc"
     CC_SHARED_FLAGS="-shared -fPIC"
-    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
 esac
 
 AC_SUBST(ELF_CC)

@@ -308,7 +308,7 @@
 
 \function{whatbuf}
 \synopsis{Return the name of the current buffer}
-\usage{String what_buffer()}
+\usage{String whatbuf()}
 \description
   \var{whatbuf} returns the name of the current buffer.  It is usually used
   in functions when one wants to work with more than one buffer.  The

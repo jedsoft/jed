@@ -317,6 +317,14 @@ Changes since 0.99-19
      of etags-formatted files.  The code was updated to correct this.
 152. src/w32proc.c: A loop variable was getting incremented twice
      causing a leak on on win32 systems. (Reported by Gisle Vanem)
+153. Integrated the following Debian patches provided by Rafael
+     Laboissière:
+      * INFO-DIR-SECTION and INFO-DIR-ENTRY added to the info files
+      * Updates to aclocal.m4, configure.ac
+      * Use UTF-8 encoding in iso2xxx.sl
+      * documentation fix for whatbuf() function
+      * spelling error in jed.1 and file.c
+      * Changed the default binding of the backquote key to self-insert
 
 {{{ Previous Versions
 

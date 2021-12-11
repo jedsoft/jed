@@ -713,6 +713,7 @@ infodir
 docdir
 oldincludedir
 includedir
+runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -797,6 +798,7 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
+runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE_TARNAME}'
@@ -1049,6 +1051,15 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
+  -runstatedir | --runstatedir | --runstatedi | --runstated \
+  | --runstate | --runstat | --runsta | --runst | --runs \
+  | --run | --ru | --r)
+    ac_prev=runstatedir ;;
+  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
+  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
+  | --run=* | --ru=* | --r=*)
+    runstatedir=$ac_optarg ;;
+
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1186,7 +1197,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir
+		libdir localedir mandir runstatedir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1339,6 +1350,7 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
+  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -4117,62 +4129,6 @@ fi
 
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing strerror" >&5
-$as_echo_n "checking for library containing strerror... " >&6; }
-if ${ac_cv_search_strerror+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char strerror ();
-int
-main ()
-{
-return strerror ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' cposix; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_strerror=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_strerror+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_strerror+:} false; then :
-
-else
-  ac_cv_search_strerror=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_strerror" >&5
-$as_echo "$ac_cv_search_strerror" >&6; }
-ac_res=$ac_cv_search_strerror
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-
-fi
-
 
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4314,30 +4270,30 @@ case "$host_os" in
   *linux*|*gnu*|k*bsd*-gnu )
     DYNAMIC_LINK_FLAGS="-Wl,-export-dynamic"
     ELF_CC="\$(CC)"
-    ELF_CFLAGS="\$(CFLAGS) -fPIC"
+    ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
     ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR)"
     ELF_DEP_LIBS="\$(DL_LIB) -lm -lc"
     CC_SHARED_FLAGS="-shared -fPIC"
-    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
     ;;
   *solaris* )
     if test "$GCC" = yes
     then
       DYNAMIC_LINK_FLAGS=""
       ELF_CC="\$(CC)"
-      ELF_CFLAGS="\$(CFLAGS) -fPIC"
+      ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
       ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-ztext -Wl,-h,\$(ELFLIB_MAJOR)"
       ELF_DEP_LIBS="\$(DL_LIB) -lm -lc"
       CC_SHARED_FLAGS="-G -fPIC"
-      CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+      CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
     else
       DYNAMIC_LINK_FLAGS=""
       ELF_CC="\$(CC)"
-      ELF_CFLAGS="\$(CFLAGS) -K PIC"
+      ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -K PIC"
       ELF_LINK="\$(CC) \$(LDFLAGS) -G -h\$(ELFLIB_MAJOR)"
       ELF_DEP_LIBS="\$(DL_LIB) -lm -lc"
       CC_SHARED_FLAGS="-G -K PIC"
-      CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+      CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
     fi
     ;;
    # osr5 or unixware7 with current or late autoconf
@@ -4346,20 +4302,20 @@ case "$host_os" in
      then
        DYNAMIC_LINK_FLAGS=""
        ELF_CC="\$(CC)"
-       ELF_CFLAGS="\$(CFLAGS) -fPIC"
+       ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
        ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-h,\$(ELFLIB_MAJOR)"
        ELF_DEP_LIBS=
        CC_SHARED_FLAGS="-G -fPIC"
-       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
      else
        DYNAMIC_LINK_FLAGS=""
        ELF_CC="\$(CC)"
-       ELF_CFLAGS="\$(CFLAGS) -K pic"
+       ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -K pic"
        # ELF_LINK="ld -G -z text -h#"
        ELF_LINK="\$(CC) \$(LDFLAGS) -G -z text -h\$(ELFLIB_MAJOR)"
        ELF_DEP_LIBS=
        CC_SHARED_FLAGS="-G -K pic"
-       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
      fi
      ;;
   *irix6.5* )
@@ -4370,29 +4326,29 @@ case "$host_os" in
        # not tested
        DYNAMIC_LINK_FLAGS=""
        ELF_CC="\$(CC)"
-       ELF_CFLAGS="\$(CFLAGS) -fPIC"
+       ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
        ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-h,\$(ELFLIB_MAJOR)"
        ELF_DEP_LIBS=
        CC_SHARED_FLAGS="-shared -fPIC"
-       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
      else
        DYNAMIC_LINK_FLAGS=""
        ELF_CC="\$(CC)"
-       ELF_CFLAGS="\$(CFLAGS)"     # default anyhow
+       ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS)"     # default anyhow
        ELF_LINK="\$(CC) \$(LDFLAGS) -shared -o \$(ELFLIB_MAJOR)"
        ELF_DEP_LIBS=
        CC_SHARED_FLAGS="-shared"
-       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+       CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
      fi
      ;;
   *darwin* )
      DYNAMIC_LINK_FLAGS=""
      ELF_CC="\$(CC)"
-     ELF_CFLAGS="\$(CFLAGS) -fno-common"
+     ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fno-common"
      ELF_LINK="\$(CC) \$(LDFLAGS) -dynamiclib -install_name \$(install_lib_dir)/\$(ELFLIB_MAJOR) -compatibility_version \$(ELF_MAJOR_VERSION) -current_version \$(ELF_MAJOR_VERSION).\$(ELF_MINOR_VERSION)"
      ELF_DEP_LIBS="\$(LDFLAGS) \$(DL_LIB)"
      CC_SHARED_FLAGS="-bundle -flat_namespace -undefined suppress -fno-common"
-     CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+     CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
      ELFLIB="lib\$(THIS_LIB).dylib"
      ELFLIB_MAJOR="lib\$(THIS_LIB).\$(ELF_MAJOR_VERSION).dylib"
      ELFLIB_MAJOR_MINOR="lib\$(THIS_LIB).\$(ELF_MAJOR_VERSION).\$(ELF_MINOR_VERSION).dylib"
@@ -4400,7 +4356,7 @@ case "$host_os" in
      ;;
   *freebsd* )
     ELF_CC="\$(CC)"
-    ELF_CFLAGS="\$(CFLAGS) -fPIC"
+    ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
     #if test "X$PORTOBJFORMAT" = "Xelf" ; then
     #  ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-soname,\$(ELFLIB_MAJOR)"
     #else
@@ -4409,19 +4365,19 @@ case "$host_os" in
     ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-soname,\$(ELFLIB_MAJOR)"
     ELF_DEP_LIBS="\$(DL_LIB) -lm"
     CC_SHARED_FLAGS="-shared -fPIC"
-    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
     ;;
   *cygwin* )
     DYNAMIC_LINK_FLAGS=""
     ELF_CC="\$(CC)"
     SLANG_DLL_CFLAGS="-DSLANG_DLL=1"
-    ELF_CFLAGS="\$(CFLAGS) -DBUILD_DLL=1"
+    ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -DBUILD_DLL=1"
     DLL_IMPLIB_NAME="lib\$(THIS_LIB)\$(ELFLIB_MAJOR_VERSION).dll.a"
     #ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR) -Wl,--out-implib=\$(DLL_IMPLIB_NAME) -Wl,-export-all-symbols -Wl,-enable-auto-import"
     ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR) -Wl,--out-implib=\$(DLL_IMPLIB_NAME)"
     ELF_DEP_LIBS="\$(DL_LIB) -lm"
     CC_SHARED_FLAGS="-shared -DSLANG_DLL=1"
-    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
         SLANG_LIB_FOR_MODULES="-L\$(ELFDIR) -lslang"
     INSTALL_MODULE="\$(INSTALL)"
     INSTALL_ELFLIB_TARGET="install-elf-cygwin"
@@ -4435,20 +4391,20 @@ case "$host_os" in
     M_LIB=""
     DYNAMIC_LINK_FLAGS="-Wl,-export-dynamic"
     ELF_CC="\$(CC)"
-    ELF_CFLAGS="\$(CFLAGS) -fPIC"
+    ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
     ELF_LINK="\$(CC) \$(LDFLAGS) -shared -Wl,-O1 -Wl,--version-script,\$(VERSION_SCRIPT) -Wl,-soname,\$(ELFLIB_MAJOR)"
     ELF_DEP_LIBS="\$(DL_LIB)"
     CC_SHARED_FLAGS="-shared -fPIC"
-    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
     ;;
   * )
     echo "Note: ELF compiler for host_os=$host_os may be wrong"
     ELF_CC="\$(CC)"
-    ELF_CFLAGS="\$(CFLAGS) -fPIC"
+    ELF_CFLAGS="\$(CFLAGS) \$(CPPFLAGS) -fPIC"
     ELF_LINK="\$(CC) \$(LDFLAGS) -shared"
     ELF_DEP_LIBS="\$(DL_LIB) -lm -lc"
     CC_SHARED_FLAGS="-shared -fPIC"
-    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS)"
+    CC_SHARED="\$(CC) $CC_SHARED_FLAGS \$(CFLAGS) \$(CPPFLAGS)"
 esac
 
 
@@ -6296,7 +6252,8 @@ JD_Terminfo_Dirs="$MISC_TERMINFO_DIRS \
                   /usr/lib/terminfo \
                   /usr/share/terminfo \
                   /usr/share/lib/terminfo \
-		  /usr/local/lib/terminfo"
+		  /usr/local/lib/terminfo \
+                  /etc/terminfo /lib/terminfo"
 TERMCAP=-ltermcap
 
 for terminfo_dir in $JD_Terminfo_Dirs

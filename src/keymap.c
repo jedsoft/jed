@@ -398,7 +398,7 @@ void init_keymaps(void) /*{{{*/
    SLkm_define_key ("^[X", (FVOID_STAR) evaluate_cmd, Global_Map);
    SLkm_define_key ("^[\\", (FVOID_STAR) jed_trim_whitespace, Global_Map);
    SLkm_define_key ("^\\", (FVOID_STAR) goto_match, Global_Map);
-   SLkm_define_key ("`", (FVOID_STAR) quoted_insert, Global_Map);
+   /* SLkm_define_key ("`", (FVOID_STAR) quoted_insert, Global_Map); */
 
    if (X_Define_Keys_Hook != NULL)  (*X_Define_Keys_Hook)(Global_Map);
 }
