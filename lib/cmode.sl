@@ -1255,11 +1255,16 @@ define c_insert_bra ()
      }
 
    push_spot ();
-   c_bskip_over_comment (0);
+   variable is_slang_mode = cmode_is_slang_mode ();
+   if (is_slang_mode ())
+     bskip_white ();
+   else
+     c_bskip_over_comment (0);
    variable ch = what_char (-1);
    pop_spot ();
 
-   if (any (ch == [',', '[', '=', '+', '-', '*', '/', '(']))
+   if ((any (ch == [',', '[', '=', '+', '-', '*', '/', '(']))
+       || (is_slang_mode && (ch == '{')))
      {
 	insert_char ('{');
 	return;

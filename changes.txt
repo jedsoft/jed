@@ -329,6 +329,8 @@ Changes since 0.99-19
      Laboissière)
 155. lib/idl.sl: Removed obsolete "orelse" constructs
 156. Rebuilt libfuns.hlp
+157. lib/cmode.sl: Tweaked the c_insert_bra function to better detect
+     the insertion of a '{' in list context
 
 {{{ Previous Versions
 
