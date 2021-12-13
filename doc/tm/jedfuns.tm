@@ -43,7 +43,7 @@
 \begin{\documentstyle}
 
 \title Jed Intrinsic Function Reference Manual
-\author John E. Davis, \tt{davis@space.mit.edu}
+\author John E. Davis, \tt{jed@jedsoft.org}
 \date \__today__
 
 \toc

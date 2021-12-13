@@ -6,7 +6,7 @@ IBMPC (DOS, Win9X, NT, and OS/2) installation specific functions.
     The `real-mode' version of jed is no longer distributed.  This
     version of jed will work only with 386+ class pcs.  It will not
     work on earlier systems.
-    
+
     This distribution includes following jed executables in the bin
     subdirectory.
 
@@ -16,7 +16,7 @@ IBMPC (DOS, Win9X, NT, and OS/2) installation specific functions.
 
     Do NOT run these executables without first properly installing the
     editor.
-    
+
 Brief installation overview.
 ============================
 
@@ -79,7 +79,7 @@ Step 2: Environment variables
 
   Long File Names:
   ---------------
-  
+
   The win32 versions of jed (jed.exe, wjed.exe) support long file
   names.  The DJGPP version (jed386.exe) supports long file names on a
   win32 system provided that
@@ -91,7 +91,7 @@ Step 2: Environment variables
   Unfortunately, it looks like NT does not support the long filename
   API used by jed386.exe.  This is not important since one would
   probably use the win32 versions of jed on such systems.
-  
+
 ===========================================================================
   Step 3: Install jed*.exe
 ===========================================================================
@@ -107,7 +107,7 @@ Step 4: The DPMI Server
 
   The executable jed386.exe is a flat 32 bit djgpp compiled executable
   requiring a 386 class machine.  It also requires the presence of DPMI
-  server. 
+  server.
 
   Windows, QDPMI, 386Max, NWDOS, OS/2, Win/NT and Linux DOSEmu all
   provide DPMI services that jed386 can use.  If you do not have a
@@ -137,9 +137,9 @@ Step 6: Test
 
   JED should now be installed on your system.  To test to see if it
   properly installed, run the editor in batch mode:
-  
+
         jed -batch -f quit_jed
-  
+
   This should produce something like (the actual output may vary):
 
         loading C:\editors\jed\lib\site.slc
@@ -162,7 +162,7 @@ Step 6: Test
   !!!Note: If you see an error message of the form:
 
      Load Error: no DPMI
-   
+
   then your need to re-read the above comments about a DPMI server.
 
 ===========================================================================
@@ -198,5 +198,5 @@ work on the OS/2 port.  In addition, I am very grateful to Darrel Hankerson
 emx/gcc versions, as well Dominik Wujastyk (ucgadkw@ucl.ac.uk) for his
 contribution to the OS/2 version.
 
-Any questions should be emailed to me at davis@space.mit.edu.
+Any questions should be emailed to me at jed@jedsoft.org.
 

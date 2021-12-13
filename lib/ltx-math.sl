@@ -2,7 +2,7 @@
 %
 % AUC-TeX style LaTeX-math-mode (v0.2) by Kevin Humphreys <kwh@cogsci.ed.ac.uk>
 %
-% For JED (v0.97.9b) by John E. Davis <davis@space.mit.edu>
+% For JED (v0.97.9b) by John E. Davis <jed@jedsoft.org>
 %
 % Based on AUC-TeX (v9.1i) by Per Abrahamsen <auc_tex_mgr@iesd.auc.dk>
 

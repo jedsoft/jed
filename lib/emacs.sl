@@ -2,7 +2,7 @@
 %   Emacs like bindings for Jed.
 %
 %      A subset of the emacs global map is implemented here.  If you
-%      are lacking a useful keybinding, contact davis@space.mit.edu
+%      are lacking a useful keybinding, contact jed@jedsoft.org
 
 _Jed_Emulation = "emacs";
 

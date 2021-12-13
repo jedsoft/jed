@@ -7,24 +7,24 @@
 .SH NAME
 rgrep \- a recursive, highlighting grep program
 .SH SYNOPSIS
-.B rgrep 
+.B rgrep
 .I [ options ]
 .I pattern
 .I [ file ]
 .B ...
 .SH DESCRIPTION
 .I rgrep,
-unlike 
-.I grep(1) 
-and 
-.I egrep(1) 
+unlike
+.I grep(1)
+and
+.I egrep(1)
 rgrep has the ability to recursively descend
 directories. The traditional way of performing this kind of search
 on Unix
-systems utilizes the 
-.I find(1) 
-command in conjunction with 
-.I grep(1). 
+systems utilizes the
+.I find(1)
+command in conjunction with
+.I grep(1).
 However,
 this results in very poor performance.
 .SH COMMAND LINE OPTIONS
@@ -50,7 +50,7 @@ Output match instead of entire line containing match
 ignore case
 .RE
 .I -l
-.RS 
+.RS
 list filename only
 .RE
 .I -n
@@ -126,25 +126,25 @@ matches beginning of line
 .RS
 matches end of line
 .RE
-.I [ ... ]            
+.I [ ... ]
 .RS
 matches any single character between brackets.
-For example, 
-.I [-02468] 
-matches 
-.I '-' 
+For example,
+.I [-02468]
+matches
+.I '-'
 or any even digit.
-and 
-.I [-0-9a-z] 
-matches 
-.I '-' 
-and any digit between 
-.I 0 
-and 
+and
+.I [-0-9a-z]
+matches
+.I '-'
+and any digit between
+.I 0
+and
 .I 9
-as well as letters 
-.I a 
-through 
+as well as letters
+.I a
+through
 .I z.
 .RE
 .LP
@@ -152,11 +152,11 @@ through
 .LP
 .I \\\\( ... \\\\)
 .LP
-.I \\\\1, \\\\2, ..., \\\\9    
+.I \\\\1, \\\\2, ..., \\\\9
 .RS
 matches match
-specified by nth 
-.I '\\\\( ... \\\\)' 
+specified by nth
+.I '\\\\( ... \\\\)'
 expression.
 For example,
 .I '\\\\([\ \\\\t][a-zA-Z]+\\\\)\\\\1[\ \\\\t]'
@@ -175,10 +175,10 @@ methods)
 .I rgrep -n -R '*.c' '^int ' .
 .LP
 .I rgrep -n -x c '^int ' .
-.LP	
+.LP
 Highlight all matches of repeated words in file 'paper.tex':
 .LP
-.I rgrep -h 
+.I rgrep -h
 .I '[\ \\\\t]\\\\([a-zA-Z]+\\\\)[\ \\\\t]+\\\\1[\ \\\\t\\\\n]' paper.tex
 .LP
 .I rgrep -h '^\\\\([a-zA-Z]+\\\\)[\ \\\\t]+\\\\1[\ \\\\t\\\\n]' paper.tex
@@ -191,19 +191,19 @@ looking
 for the string 'mouse' without regard to case:
 .LP
 .I rgrep -i -R '*.[^ao]' mouse /usr/src/linux
-.LP     
+.LP
 Search a fixed record length FITS file for the keyword EXTNAME:
 .LP
 .I rgrep -W80 ^EXTNAME file.fits
 .LP
-(Note that the regular expression 
-.I '^[A-Z]+' 
+(Note that the regular expression
+.I '^[A-Z]+'
 will dump all fits headers.)
 .SH AUTHOR
 .LP
 .RS
 .I \
-"""John E. Davis""" <davis@space.mit.edu>
+"""John E. Davis""" <jed@jedsoft.org>
 .RE
 .LP
 -- This manpage was translated to troff by

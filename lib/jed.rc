@@ -33,8 +33,6 @@ if (BATCH == 0)
 %  () = evalfile ("brief");          % Brief Keybindings (MSDOS only!!)
 %  () = evalfile("wordstar");        % obsolete --- use ide instead)
 %  () = evalfile ("cua");            % CUA-like key bindings
-%  Note: For EDT emulation, jed386.exe requires that the GOLD.COM TSR 
-%        be loaded.  This TSR is available from space.mit.edu:/pub/davis/jed.
 
 % Some of the above emulations may set keys that conflict with access to
 % the menubars.  For example, emacs uses ESC-f to move by words.  The 

@@ -1,5 +1,5 @@
 .\" ==================================================================
-.\" Jed programmers editor, this manpage was writen by 
+.\" Jed programmers editor, this manpage was writen by
 .\" "Boris D. Beletsky" <borik@isracom.co.il> copyright(c) 1996
 .\" This manpage may be freely distrebuted as part of GNU Debian Linux
 .\" ==================================================================
@@ -29,13 +29,13 @@ Jed \- programmers editor
 .LP
 Features:
 .LP
-Color syntax 
-.I highlighting. 
-Emulation of 
+Color syntax
+.I highlighting.
+Emulation of
 .B Emacs,
 .B EDT,
-.B Wordstar, 
-and Brief editors. 
+.B Wordstar,
+and Brief editors.
 Extensible in a language resembling C. Completely customizable.
 Editing TeX files with AUC-TeX style editing (BiBTeX support too).
 Folding support, and much more...
@@ -76,10 +76,10 @@ the same as calling
 .B jed\-script.
 .SS minor options
 .LP
-.I \-n             
+.I \-n
 .RS
-do not load 
-.I .jedrc 
+do not load
+.I .jedrc
 file.
 .RE
 .I \-a 'file'
@@ -97,35 +97,35 @@ appear before the file name in the command line, like 'jed +3 file')
 .RE
 .I \-g 'n'
 .RS
-goto line 
-.I n 
+goto line
+.I n
 in buffer (notice that in order to this option to take effect, if must
 appear after the file name in the command line, like 'jed file \-g 3')
 .RE
-.I \-l 'file'      
+.I \-l 'file'
 .RS
-load 
-.I file 
+load
+.I file
 as S\-Lang code.
 .RE
-.I \-f 'function' 
+.I \-f 'function'
 .RS
 execute S\-Lang function named
 .I function
 .RE
 .I \-s 'string'
 .RS
-search forward for 
+search forward for
 .I string
 .RE
-.I \-2             
+.I \-2
 .RS
 split window
 .RE
 .I \-i 'file'
 .RS
-insert 
-.I file 
+insert
+.I file
 into current buffer.
 .RE
 .LP
@@ -176,8 +176,8 @@ For more options look at
 .I Emulating Other Editors
 .RE
 .LP
-JED's ability to create new functions using the 
-.I S\-Lang 
+JED's ability to create new functions using the
+.I S\-Lang
 programming language as well as allowing the user to choose key bindings,
 makes the emulation of other editors possible. Currently, JED provides
 reasonable emulation of the
@@ -197,7 +197,7 @@ should have no problem with JED.  To enable Emacs emulation in JED, make sure
 that the line:
 .LP
 .RS
-.I () = evalfile ("emacs"); 
+.I () = evalfile ("emacs");
 .RE
 .LP
 is in your
@@ -241,7 +241,7 @@ Wordstar emulation.
 .I Status line and Windows
 .RE
 .LP
-.I JED 
+.I JED
 supports multiple windows.  Each window may contain the same
 buffer or
 different buffers.  A status line is displayed immediately below
@@ -300,7 +300,7 @@ buffer.  For example, when you search for a string, JED will prompt you
 for the string in the Mini-Buffer.
 .LP
 The
-.I Mini-Buffer 
+.I Mini-Buffer
 also provides a direct link to the S\-Lang interpreter.
 To access the interpreter, press
 .I Ctrl-X Esc
@@ -399,7 +399,7 @@ Execute shell command
 .RE
 .I Esc $
 .RS
-Ispell word 
+Ispell word
 .RE
 .I Ctrl-X ?
 .RS
@@ -505,11 +505,10 @@ The system wide configuration file.
 .RS
 Per user configuration file.
 .SH AUTHOR
-.I "John E. Davis" <davis@space.mit.edu>
+.I "John E. Davis" <jed@jedsoft.org>
 .RS
 Jed's Author
 .RE
-
 
 --- This document was
 .I translated

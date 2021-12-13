@@ -537,21 +537,21 @@ by JED as a marker. After you have composed the mail message, press
 `ESC X' and enter `send' at the `M-x' prompt.  For example, the
 following is an email requesting to be put on the JED mailing list:
 
-           To: davis@space.mit.edu
+           To: jed@jedsoft.org
            Subject: jed mailing list
            ---text follows this line---
            Hi,
-     
+
               Please add me to the JED mailing list so that I may be notified
            of upcoming releases of JED.
-     
+
            --Maria
 
    For VMS systems, the above example will probably fail because an
 internet address has been used for the example.  For systems using a
 TCP/IP package, it may be necessary to change
-`davis@space.mit.edu' to something like
-`smtp%"davis@space.mit.edu"'.
+`jed@jedsoft.org' to something like
+`smtp%"jed@jedsoft.org"'.
 
    The mail function looks for a user defined hook called `mail_hook'
 and execute it if it exists.  This hook may be used to bind certain

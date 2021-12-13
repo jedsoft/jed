@@ -35,4 +35,4 @@ JED Wordstar mode notes
     to the default ones.
 
 Mail comments and suggestions for the wordstar mode to
-davis@space.mit.edu.
+jed@jedsoft.org.

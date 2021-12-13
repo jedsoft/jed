@@ -1739,14 +1739,18 @@ what_char
   Return the ASCII-value of the character at the current position
 
  USAGE
-  ULong_Type what_char ()
+  ULong_Type what_char ([n])
 
  DESCRIPTION
-  The `what_char' function returns the value of the character at the
-  current position as an unsigned long value.  If UTF-8 mode is active
-  and the current character is part of an illegal byte sequence, then
-  the function returns a negative value equal in magnitude to the
-  value of the byte.
+  The `what_char' function returns the value of the character at
+  the current position as an unsigned long value.  If the optional
+  integer argument `n' is negative, then it returns the value of the
+  character `-|n|' positions to the left of the current position,
+  or, if positive, `n' positions to the right.
+
+  If UTF-8 mode is active and the current character is part
+  of an illegal byte sequence, then the function returns a negative
+  value equal in magnitude to the value of the byte.
 
  EXAMPLE
 

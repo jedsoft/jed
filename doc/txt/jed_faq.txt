@@ -6,7 +6,7 @@ enclosed in <>, e.g., <3> for question 3.
 ----------------------------------------------------------------------------
 Frequently asked questions:
 
-1. How do I obtain JED?  (ftp and email)
+1. How do I obtain JED?
 2. How do I disable JED's C mode?
 3. What is C mode?
 4. How do I turn on wrap mode or turn it off?
@@ -36,16 +36,9 @@ Frequently asked questions:
 ----------------------------------------------------------------------------
 Answers:
 
-<1> How do I obtain JED? (ftp and email)
+<1> How do I obtain JED?
 
-   JED is available via anonymous ftp from space.mit.edu in the pub/davis/jed
-   directory.  JED comes in three forms:
-
-	 jedxxx.tar.gz     unix distribution for version xxx
-	 jedxxx.zip       PC distribution with precompiled jed.exe
-
-   All distributions are identical except that the zip file also contains a
-   precompiled executable for PC systems.
+   See <https://www.jedsoft.org/jed/download.html>
 
 <2> How do I disable JED's C mode.
 

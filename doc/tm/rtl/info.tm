@@ -69,13 +69,17 @@
 
 \function{what_char}
 \synopsis{Return the ASCII-value of the character at the current position}
-\usage{ULong_Type what_char ()}
+\usage{ULong_Type what_char ([n])}
 \description
-  The \var{what_char} function returns the value of the character at the
-  current position as an unsigned long value.  If UTF-8 mode is active
-  and the current character is part of an illegal byte sequence, then
-  the function returns a negative value equal in magnitude to the
-  value of the byte.
+  The \var{what_char} function returns the value of the character at
+  the current position as an unsigned long value.  If the optional
+  integer argument \exmp{n} is negative, then it returns the value of the
+  character \exmp{-|n|} positions to the left of the current position,
+  or, if positive, \exmp{n} positions to the right.
+
+  If UTF-8 mode is active and the current character is part
+  of an illegal byte sequence, then the function returns a negative
+  value equal in magnitude to the value of the byte.
 \example
 #v+
         while (not (eolp ()))
