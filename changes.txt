@@ -334,6 +334,8 @@ Changes since 0.99-19
 158. Documentation updates:
        - Optional argument to `what_char()' function (Morten Bo Johansen)
        - References to space.mit.edu changed to jedsoft.org
+159. lib/jed.sl: Changed the backquote key to run the quoted_insert
+     command for jed-mode bindings.
 
 {{{ Previous Versions
 

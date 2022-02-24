@@ -110,7 +110,7 @@ setkey("mail",			"^XM");
 setkey ("sys_spawn_cmd",	"^Z");
 setkey ("goto_match",		"^\\");
 setkey ("undo",			"^_");
-
+setkey ("quoted_insert",	"`");
 setkey("bob",			"^K"+Key_Up);
 setkey("bob",			"^K"+Key_Up);
 setkey("eob",			"^K"+Key_Down);
