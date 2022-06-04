@@ -338,6 +338,7 @@ static int get_username_info (void)
    return 0;
 }
 
+#if 0
 static int get_user_info (void)
 {
    if (-1 == get_hostname_info ())
@@ -348,15 +349,11 @@ static int get_user_info (void)
 
    return 0;
 }
+#endif
 
 char *jed_get_username (void)
 {
    return SLang_create_slstring (User_Info.username);
-}
-
-char *jed_get_hostname (void)
-{
-   return SLang_create_slstring (User_Info.hostname);
 }
 
 static void get_passwd_cmd (char *name) /*{{{*/
@@ -405,7 +402,16 @@ static char *get_realname_cmd (void)
 }
 static char *get_hostname_cmd (void)
 {
+   if (User_Info.hostname == NULL)
+     (void) get_hostname_info ();
+
    return User_Info.hostname;
+}
+
+char *jed_get_hostname (void)
+{
+   char *h = get_hostname_cmd ();
+   return SLang_create_slstring (h);   /* NULL ok */
 }
 static void set_username_cmd (char *s)
 {
@@ -436,7 +442,7 @@ static SLang_Intrin_Fun_Type User_Intrinsics [] =
 
 int jed_init_userinfo (void)
 {
-   (void) get_user_info ();
+   (void) get_username_info ();
 
    if (-1 == SLadd_intrin_fun_table (User_Intrinsics, NULL))
      return -1;

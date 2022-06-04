@@ -336,6 +336,9 @@ Changes since 0.99-19
        - References to space.mit.edu changed to jedsoft.org
 159. lib/jed.sl: Changed the backquote key to run the quoted_insert
      command for jed-mode bindings.
+160. src/userinfo.sl: Defer the querying of the hostname from the OS
+     until the get_hostname function has been called.  To avoid the
+     query, add `get_hostname("localhost.local");' to your .jedrc file.
 
 {{{ Previous Versions
 
