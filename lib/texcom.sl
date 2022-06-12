@@ -181,7 +181,7 @@ define tex_insert_quote ()
 	return;
      }
 
-   if (is_substr("[({\t ", char(c)))
+   if (is_substr("[({\t ~", char(c)))
      {
 	insert_char ('`');
 	if (LAST_CHAR == '"') insert_char ('`');
