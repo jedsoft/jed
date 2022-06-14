@@ -339,6 +339,8 @@ Changes since 0.99-19
 160. src/userinfo.sl: Defer the querying of the hostname from the OS
      until the get_hostname function has been called.  To avoid the
      query, add `get_hostname("localhost.local");' to your .jedrc file.
+161. lib/texcom.sl: Turn off smart quoting of ~ characters
+     (matthias314 via github)
 
 {{{ Previous Versions
 
