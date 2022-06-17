@@ -204,7 +204,8 @@ static char *This_App_Title = "XJed";
 static char *This_Geometry = NULL;
 static char *This_Font_Name = "fixed";
 #if XJED_HAS_XRENDERFONT
-static char *This_Face_Size = "                           ";
+/* static char *This_Face_Size = "                           "; */
+static char *This_Face_Size = NULL;
 #endif
 static char *This_Border_Width_Name = "0";
 static char *This_Internal_Border_Name = "0";
@@ -463,7 +464,7 @@ static int xdraw (GC_Info_Type *gc, int row, int col, SLwchar_Type *w, int nchar
    int y = row * XWin->font_height;
 
 #if XJED_HAS_XRENDERFONT
-   if ((XWin->face_size > 0) && (XWin->xftdraw != NULL))
+   if (XWin->xftdraw != NULL)
      {
 	/* if (!XWin->xftdraw) */
 	/*   XWin->xftdraw = XftDrawCreate(This_XDisplay, This_XWindow, DefaultVisual(This_XDisplay, This_XScreen), XWin->color_map); */
@@ -1616,16 +1617,25 @@ static int get_font_width (XFontStruct *f, int *wp, int *is_dualp)
 static int load_font (char *font) /*{{{*/
 {
    static XFontStruct *xfont;
-
 #if XJED_HAS_XRENDERFONT
-   if (XWin->face_size > 0)
+   int use_xft = 0;
+
+   if (0 == strncmp (font, "xft:", 4))
      {
-	/* the user wants xrender */
+	use_xft = 1;
+	XWin->xftfont = XftFontOpenName (This_XDisplay, This_XScreen, font + 4);
+     }
+   else if (XWin->face_size > 0)
+     {
+	use_xft = 1;
 	XWin->xftfont = XftFontOpen(This_XDisplay, This_XScreen,
-				    XFT_FAMILY, XftTypeString, font,
-				    XFT_SIZE, XftTypeDouble, XWin->face_size,
-				    XFT_SPACING, XftTypeInteger, XFT_MONO,
-				    NULL);
+                                    XFT_FAMILY, XftTypeString, font,
+                                    XFT_SIZE, XftTypeDouble, XWin->face_size,
+                                    XFT_SPACING, XftTypeInteger, XFT_MONO,
+                                    NULL);
+     }
+   if (use_xft)
+     {
 	if (XWin->xftfont == NULL) return -1;
 	XWin->font_name = font;
 	XWin->font_height = XWin->xftfont->ascent + XWin->xftfont->descent;
@@ -1633,7 +1643,10 @@ static int load_font (char *font) /*{{{*/
 	XWin->font_base = XWin->xftfont->ascent;
 	return 0;
      }
+
+   /* drop */
 #endif
+
    xfont = XLoadQueryFont(This_XDisplay, font);
    if (xfont == NULL) return -1;
    XWin->font = xfont;
@@ -2068,31 +2081,23 @@ static void set_mouse_color (char *fgc, char *bgc) /*{{{*/
 
 static void create_needed_gcs (void) /*{{{*/
 {
-   int i;
    XGCValues xgcv;
+   unsigned long valuemask;
+   int i;
 
-#if XJED_HAS_XRENDERFONT
-   if (XWin->face_size == 0)
-#endif
-     xgcv.font = XWin->font->fid;
+   valuemask = GCForeground | GCBackground;
+
+   if (XWin->font != NULL)
+     {
+	xgcv.font = XWin->font->fid;
+	valuemask |= GCFont;
+     }
 
    for (i = 0; i < JMAX_COLORS; i++)
      {
 	xgcv.foreground = XWin->text_gc[i].fg;
 	xgcv.background = XWin->text_gc[i].bg;
-
-#if XJED_HAS_XRENDERFONT
-	if (XWin->face_size > 0)
-	  {
-	     XWin->text_gc[i].gc = XCreateGC(This_XDisplay, This_XWindow,
-					     GCForeground | GCBackground /*| GCFont*/, /* XFT */
-					     &xgcv);
-	  }
-	else
-#endif
-	  XWin->text_gc[i].gc = XCreateGC(This_XDisplay, This_XWindow,
-					  GCForeground | GCBackground | GCFont,
-					  &xgcv);
+	XWin->text_gc[i].gc = XCreateGC(This_XDisplay, This_XWindow, valuemask, &xgcv);
      }
 }
 
@@ -2307,9 +2312,10 @@ static int init_Xdisplay (void) /*{{{*/
      XWin->border = 0;
 
    XWin->font_name = This_Font_Name;
+
 #if XJED_HAS_XRENDERFONT
    /* if a parameter to -fs was supplied, we assume the user wants XFT */
-   if (strlen(This_Face_Size))
+   if (This_Face_Size != NULL)
      {
 	if ((XWin->face_size = atof(This_Face_Size))<=0)
 	  /* we couldn't convert the value, or a negative value was specified */
@@ -2354,7 +2360,8 @@ static int init_Xdisplay (void) /*{{{*/
 
 #if XJED_HAS_XRENDERFONT
    /* we only XSetFont() if we're NOT using renderfont */
-   if (XWin->face_size != 0)
+   XWin->xftdraw = NULL;
+   if (XWin->xftfont != NULL)
      {
 	XWin->xftdraw = XftDrawCreate(This_XDisplay, This_XWindow, DefaultVisual(This_XDisplay, This_XScreen), XWin->color_map);
 	if (NULL == XWin->xftdraw)
