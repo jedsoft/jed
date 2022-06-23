@@ -108,7 +108,7 @@ else
     [XRENDERFONTLIBS="$XRENDERFONTLIBS -lfontconfig"
      AC_DEFINE(HAVE_LIBFONTCONFIG)
     ],
-    [AC_MSG_FAILURE([libfontconfig not found])
+    [
     ])
 fi
 

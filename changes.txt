@@ -353,6 +353,7 @@ Changes since 0.99-19
      macro execution while the key is read
 166. site.sl, help.sl: Use the get_mini_response() function in the
      help functions that prompt for a key
+167. configure: Removed failure message when libfontconfig is not found
 
 {{{ Previous Versions
 
