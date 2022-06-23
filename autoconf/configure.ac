@@ -104,8 +104,14 @@ else
      then
        AC_MSG_FAILURE([libXft not found])
      fi])
+  AC_CHECK_LIB(fontconfig, FcPatternGetString,
+    [XRENDERFONTLIBS="$XRENDERFONTLIBS -lfontconfig"
+     AC_DEFINE(HAVE_LIBFONTCONFIG)
+    ],
+    [AC_MSG_FAILURE([libfontconfig not found])
+    ])
 fi
- 
+
 dnl #------------------------------------------------------------------------
 AC_ARG_ENABLE(gpm,
   AS_HELP_STRING([--disable-gpm], [disable gpm mouse support]),

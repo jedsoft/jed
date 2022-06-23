@@ -6691,6 +6691,55 @@ See \`config.log' for more details" "$LINENO" 5; }
      fi
 fi
 
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for FcPatternGetString in -lfontconfig" >&5
+$as_echo_n "checking for FcPatternGetString in -lfontconfig... " >&6; }
+if ${ac_cv_lib_fontconfig_FcPatternGetString+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lfontconfig  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char FcPatternGetString ();
+int
+main ()
+{
+return FcPatternGetString ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_fontconfig_FcPatternGetString=yes
+else
+  ac_cv_lib_fontconfig_FcPatternGetString=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_fontconfig_FcPatternGetString" >&5
+$as_echo "$ac_cv_lib_fontconfig_FcPatternGetString" >&6; }
+if test "x$ac_cv_lib_fontconfig_FcPatternGetString" = xyes; then :
+  XRENDERFONTLIBS="$XRENDERFONTLIBS -lfontconfig"
+     $as_echo "#define HAVE_LIBFONTCONFIG 1" >>confdefs.h
+
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "libfontconfig not found
+See \`config.log' for more details" "$LINENO" 5; }
+
+fi
+
 fi
 
 # Check whether --enable-gpm was given.

@@ -9,6 +9,8 @@
 #include "config.h"
 #include "jed-feat.h"
 
+static int XJed_Debug = 0;
+
 #define USE_NEW_META_CODE	1
 #define HAS_IBM_NUMLOCK_CODE	0
 #define SKIP_LOCALE_CODE	0
@@ -978,7 +980,6 @@ static void cover_exposed_area (int x, int y, int width, int height, int count) 
  * harmless means that the events can be processesed while checking for
  * pending input.
  */
-static int Debug_Xjed = 0;
 static int x_handle_harmless_events (XEvent *report) /*{{{*/
 {
    switch (report->type)
@@ -1063,12 +1064,21 @@ static int x_handle_harmless_events (XEvent *report) /*{{{*/
 	  update_cmd (&Number_One);
 	break;
 
+      case SelectionClear:
+	SLfree (Selection_Send_Data);   /* NULL ok */
+	Selection_Send_Data = NULL;
+	break;
+
+      case SelectionRequest:
+	(void) send_selection (report);
+	break;
+
       case MappingNotify:
 	XRefreshKeyboardMapping (&report->xmapping);
 	break;
 
       default:
-	if (Debug_Xjed)
+	if (XJed_Debug)
 	  fprintf(stderr, "harmless: %d\n", report->type);
 	return 0;
      }
@@ -1409,6 +1419,8 @@ static int X_process_events (int force, char *buf, unsigned int buflen,
 
 	   case SelectionNotify:
 	     (void) receive_selection (&report);
+	     if (Performing_Update == 0)
+	       update_cmd (&Number_One);
 	     break;
 	   case SelectionClear:
 	     SLfree (Selection_Send_Data);   /* NULL ok */
@@ -1631,16 +1643,59 @@ static int load_font (char *font) /*{{{*/
 	XWin->xftfont = XftFontOpen(This_XDisplay, This_XScreen,
                                     XFT_FAMILY, XftTypeString, font,
                                     XFT_SIZE, XftTypeDouble, XWin->face_size,
-                                    XFT_SPACING, XftTypeInteger, XFT_MONO,
+                                    XFT_SPACING, XftTypeInteger, XFT_CHARCELL,
                                     NULL);
      }
    if (use_xft)
      {
+	FcChar8 *font0;
+	int verbose = XJed_Debug;
+
 	if (XWin->xftfont == NULL) return -1;
+#ifdef HAVE_LIBFONTCONFIG
+	if (verbose == 1)
+	  {
+	     /* Note that after this call, font0 refers to elements of the pattern
+	      * and not be freed (according to the documentaton)
+	      */
+	     (void) FcPatternGetString (XWin->xftfont->pattern, FC_FULLNAME, 0, &font0);
+	     if (font0 != NULL)
+	       fprintf (stderr, "Using font %s\n", font0);
+	  }
+	else if (verbose > 1)
+	  {
+	     font0 = FcNameUnparse(XWin->xftfont->pattern);
+	     if (font0 != NULL)
+	       {
+		  fprintf (stderr, "Using font %s\n", font0);
+		  free (font0);
+	       }
+	  }
+#endif
 	XWin->font_name = font;
 	XWin->font_height = XWin->xftfont->ascent + XWin->xftfont->descent;
 	XWin->font_width = XWin->xftfont->max_advance_width;
 	XWin->font_base = XWin->xftfont->ascent;
+
+	if (verbose > 1)
+	  {
+	     XGlyphInfo ex;
+	     FcChar16 ch[2];
+
+	     ch[0] = 9130;
+	     ch[1] = '_';
+
+	     XftTextExtents16 (This_XDisplay, XWin->xftfont, ch, 2, &ex);
+	     if (verbose)
+	       {
+		  fprintf (stderr, "w=%u, h=%u, x=%u, y=%u, dx=%u, dy=%u\n",
+			   ex.width, ex.height, ex.x, ex.y, ex.xOff, ex.yOff);
+		  fprintf (stderr, "font_height=%u, font_width = %u\n",
+			   XWin->font_height, XWin->font_width);
+	       }
+	     /* if (ex.height > XWin->font_height) XWin->font_height = ex.height; */
+	  }
+
 	return 0;
      }
 
@@ -2438,7 +2493,7 @@ static int X_eval_command_line (int argc, char **argv) /*{{{*/
 	if (*arg != '-') break;
 	if (0 == strcmp ("--debug-xjed", arg))
 	  {
-	     Debug_Xjed = 1;
+	     XJed_Debug = 1;
 	     continue;
 	  }
 
@@ -2834,6 +2889,7 @@ static int x_insert_cutbuffer (void) /*{{{*/
      dat = XFetchBytes (This_XDisplay, &nbytes);
    if (nbytes && (dat != NULL)) jed_insert_nbytes ((unsigned char *) dat, nbytes);
    if (dat != NULL) XFree (dat);
+   touch_screen ();
    return nbytes;
 }
 
@@ -3123,6 +3179,8 @@ static int receive_selection (XEvent *ev)
    XDeleteProperty (This_XDisplay, This_XWindow, property);
    if (list == NULL)
      return -1;
+
+   touch_screen ();
    while (list != NULL)
      {
 	Selection_Data_Type *next = list->next;
@@ -3213,13 +3271,20 @@ static int send_selection (XEvent *ev)
 	  style = XTextStyle;
 	else
 	  {
-	     char *name = XGetAtomName(This_XDisplay, target);
-	     if (name != NULL)
+	     if (XJed_Debug)
 	       {
-		  (void) fprintf (stderr, "Unsupported selection target: %s\n", name);
-		  XFree (name);
+		  char *name = XGetAtomName(This_XDisplay, target);
+		  if (name != NULL)
+		    {
+		       (void) fprintf (stderr, "Unsupported selection target: %s\n", name);
+		       XFree (name);
+		    }
 	       }
-	     return -1;
+#if USE_XUTF8_CODE
+	     style = XUTF8StringStyle;
+#else
+	     style = XTextStyle;
+#endif
 	  }
 	status = (*text_to_property) (This_XDisplay, &Selection_Send_Data, 1, style, &tp);
 

@@ -343,6 +343,10 @@ Changes since 0.99-19
      (matthias314 via github)
 162. src/xterm.c: If the font name is prefixed with "xft:", then pass
      it to XftFontOpenName, otherwise use XftFontOpen.
+163. src/xterm.c, unix.c: The xjed display was not always being updated
+     after inserting a selection.  If the target for a selection
+     request is unknown, then use a default.  Additional xjed debugging
+     messages were also added.
 
 {{{ Previous Versions
 

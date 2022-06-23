@@ -114,6 +114,8 @@
 /* For antialiased fonts, set this to 1 */
 #undef XJED_HAS_XRENDERFONT
 
+#undef HAVE_LIBFONTCONFIG
+
 /* Undefine this to disable floating point support. */
 #define FLOAT_TYPE
 

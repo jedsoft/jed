@@ -448,6 +448,12 @@ unsigned char sys_getkey (void) /*{{{*/
 	if (kb)
 	  break;
 
+	/* The screen updates below will force the screen to be updated and
+	 * avoid recursive calls to this function.
+	 */
+	if (JWindow->trashed)
+	  update((Line *) NULL, 1, 1, 0);
+
 	/* sleep for 45 second and try again */
 	if (sys_input_pending(&n, all) > 0)
 	  break;
@@ -457,11 +463,11 @@ unsigned char sys_getkey (void) /*{{{*/
 	  break;
 
 	/* update status line in case user is displaying time */
-	if (Display_Time || all)
+	if (Display_Time || all || JWindow->trashed)
 	  {
 	     check_buffers ();
-	     JWindow->trashed = 1;
-	     update((Line *) NULL, 0, 1, 0);
+	     JWindow->trashed = 1;     /* force update for time */
+	     update((Line *) NULL, 1, 1, 0);
 	  }
      }
 
