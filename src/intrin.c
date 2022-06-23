@@ -700,6 +700,11 @@ static int intrin_strwidth (char *s)
    return (int) SLsmg_strwidth ((SLuchar_Type *)s, (SLuchar_Type *)smax);
 }
 
+static int intrin_get_mini_response (char *s)
+{
+   return jed_get_mini_response (s, 0);
+}
+
 #if 0
 static int get_utf8_mode (void)
 {
@@ -862,7 +867,7 @@ static SLang_Intrin_Fun_Type Jed_Intrinsics [] = /*{{{*/
    MAKE_INTRINSIC("count_chars", jed_count_chars, VOID_TYPE, 0),
    MAKE_INTRINSIC_S("get_yes_no", jed_get_yes_no, INT_TYPE),
    MAKE_INTRINSIC_S("get_y_or_n", jed_get_y_n, INT_TYPE),
-   MAKE_INTRINSIC_S("get_mini_response", jed_get_mini_response, INT_TYPE),
+   MAKE_INTRINSIC_S("get_mini_response", intrin_get_mini_response, INT_TYPE),
    MAKE_INTRINSIC_SS("rename_file", rename_file, INT_TYPE),
    MAKE_INTRINSIC_S("change_default_dir", ch_dir, INT_TYPE),
    MAKE_INTRINSIC_0("prefix_argument",  do_prefix_argument, VOID_TYPE),

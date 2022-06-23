@@ -347,6 +347,8 @@ Changes since 0.99-19
      after inserting a selection.  If the target for a selection
      request is unknown, then use a default.  Additional xjed debugging
      messages were also added.
+164. src/sysdep.c: Avoid recursion into the input_pending function.
+     This corrects a bug introduced by #163
 
 {{{ Previous Versions
 
