@@ -247,7 +247,7 @@ public define showkey ()
 {
    variable f, type;
 
-   flush("Show Key: ");
+   ungetkey (get_mini_response ("Show Key: "));
 
    (type, f) = get_key_binding ();
 

@@ -2366,9 +2366,12 @@ define help_prefix()
 {
    variable c;
 
-   ifnot (input_pending(7)) flush (help_for_help_string);
-   c = toupper (getkey());
-   switch (c)
+   if (input_pending(7))
+     c = getkey ();
+   else
+     c = get_mini_response (help_for_help_string);
+
+   switch (toupper(c))
      { case  8 or case 'H': help (); }
      { case  'A' : apropos (); }
      { case  'B' : describe_bindings (); }

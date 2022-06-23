@@ -351,6 +351,8 @@ Changes since 0.99-19
      This corrects a bug introduced by #163
 165. Added an additional argument to jed_get_mini_response to suspend
      macro execution while the key is read
+166. site.sl, help.sl: Use the get_mini_response() function in the
+     help functions that prompt for a key
 
 {{{ Previous Versions
 
