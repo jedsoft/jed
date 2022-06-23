@@ -229,19 +229,19 @@ int kill_buffer_cmd(char *name) /*{{{*/
    do_kill = 1;
    if ((*name != ' ') && (kill_buf->flags & BUFFER_MODIFIED))
      {
-	jed_vmessage (1, "Buffer %s modified. (K)ill, (S)ave first, (A)bort:",
-		      name);
+	char msg[256];
 
+	(void) SLsnprintf (msg, sizeof(msg), "Buffer %s modified. (K)ill, (S)ave first, (A)bort:", name);
 	/* This does not go through keyboard macro routines
 	 * on purpose!
 	 */
-	switch (my_getkey())
+	switch (jed_get_mini_response (msg, 1))
 	  {
 	   case 'k': case 'K': do_kill = 1; break;
 	   case 's': case 'S': do_kill = 2; break;
 	   default: msg_error("Aborted."); return(0);
 	  }
-	clear_message ();
+	/* clear_message (); */
      }
 
    if (do_kill == 2)
@@ -564,17 +564,20 @@ int set_buffer(char *name) /*{{{*/
 
 /*}}}*/
 
-int jed_get_mini_response (char *s)
+int jed_get_mini_response (char *s, int suspend_macro)
 {
    int ch;
    int len;
 
+   if (suspend_macro) jed_suspend_macro_state ();
    if (Batch)
      {
 	if (EOF == fputs (s, stdout))
 	  exit_error ("Failed to write to stdout", 0);
 
-	return jed_getkey ();
+	ch = jed_getkey ();
+	if (suspend_macro) jed_resume_macro_state ();
+	return ch;
      }
 
    len = strlen (s);
@@ -585,6 +588,8 @@ int jed_get_mini_response (char *s)
    update (NULL, 0, 0, 0);
    ch = jed_getkey ();
    MiniBuf_Get_Response_String = NULL;
+
+   if (suspend_macro) jed_resume_macro_state ();
    return ch;
 }
 
@@ -611,7 +616,7 @@ int jed_get_y_n (char *question)
    if (NULL == (yn_quest = strcat_malloc (question, "? (y/n)")))
      return -1;
 
-   ans = jed_get_mini_response (yn_quest);
+   ans = jed_get_mini_response (yn_quest, 0);
    SLfree (yn_quest);
 
    if ((ans == 'y') || (ans == 'Y'))

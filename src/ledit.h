@@ -73,7 +73,7 @@ extern void set_expansion_hook (char *);
 
 extern int jed_vget_y_n (char *, char *);
 extern int jed_get_y_n (char *);
-extern int jed_get_mini_response (char *);
+extern int jed_get_mini_response (char *, int);
 extern int jed_get_yes_no( char *);
 
 extern int Jed_Load_Quietly;

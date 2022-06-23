@@ -300,16 +300,24 @@ void ungetkey(int *ci) /*{{{*/
 
 int input_pending (int *tsecs) /*{{{*/
 {
+   static int is_active = 0;
    int n;
    int c;
 
+   if (is_active) return 0;
    /* FIXME!!  This should affect the macro buffer */
    if (Executing_Keyboard_Macro) return 1;
+
+   is_active = 1;
 
    if (Jed_Sig_Exit_Fun != NULL)
      (*Jed_Sig_Exit_Fun) ();
 
-   if (Input_Buffer_Len) return Input_Buffer_Len;
+   if (Input_Buffer_Len)
+     {
+	is_active = 0;
+	return Input_Buffer_Len;
+     }
 
    n = sys_input_pending (tsecs, 0);
    if (n < 0)
@@ -325,6 +333,8 @@ int input_pending (int *tsecs) /*{{{*/
 	c = my_getkey ();
 	ungetkey (&c);
      }
+   is_active = 0;
+
    return n;
 }
 

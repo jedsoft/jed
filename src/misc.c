@@ -78,15 +78,7 @@ static void macro_store_key(char ch) /*{{{*/
 
 /*}}}*/
 
-static void restore_macro_state(void) /*{{{*/
-{
-   Defining_Keyboard_Macro = Macro_State.def;
-   Executing_Keyboard_Macro = Macro_State.exe;
-}
-
-/*}}}*/
-
-static void set_macro_state(void) /*{{{*/
+static void save_macro_state(void) /*{{{*/
 {
    Macro_State.def = Defining_Keyboard_Macro;
    Macro_State.exe = Executing_Keyboard_Macro;
@@ -94,10 +86,22 @@ static void set_macro_state(void) /*{{{*/
 
 /*}}}*/
 
+void jed_suspend_macro_state (void)
+{
+   save_macro_state ();
+   Defining_Keyboard_Macro = Executing_Keyboard_Macro = 0;
+}
+
+void jed_resume_macro_state (void)
+{
+   Defining_Keyboard_Macro = Macro_State.def;
+   Executing_Keyboard_Macro = Macro_State.exe;
+}
+
 void jed_abort_keyboard_macro (void)
 {
    Defining_Keyboard_Macro = Executing_Keyboard_Macro = 0;
-   set_macro_state();
+   save_macro_state();
 }
 
 /* if not in the mini buffer and if during keyboard macro, allow user to enter
@@ -405,7 +409,7 @@ static char *read_from_minibuffer_1 (char *prompt, char *deflt, char *what, int 
 
    Exit_From_MiniBuffer = 0;
    MiniBuffer_Active = 0;
-   restore_macro_state();
+   jed_resume_macro_state ();
 
    if (!SLKeyBoard_Quit)
      {
@@ -500,7 +504,7 @@ int begin_keyboard_macro() /*{{{*/
    Macro_Buffer_Ptr = Macro_Buffer;
    message("Defining Macro.");
    Defining_Keyboard_Macro = 1;
-   set_macro_state();
+   save_macro_state ();
    return(1);
 }
 
@@ -519,7 +523,7 @@ int end_keyboard_macro() /*{{{*/
 
    /* Macro_Ptr_Max = Macro_Buffer_Ptr; */
    Defining_Keyboard_Macro = 0;
-   set_macro_state();
+   save_macro_state();
    return(1);
 }
 
@@ -538,7 +542,7 @@ int execute_keyboard_macro() /*{{{*/
      }
 
    Executing_Keyboard_Macro = 1;
-   set_macro_state();
+   save_macro_state();
    Macro_Buffer_Ptr = Macro_Buffer;
 
    /* save the repeat context */
@@ -568,7 +572,7 @@ int execute_keyboard_macro() /*{{{*/
    if (Jed_Menus_Active)
      (void) jed_exit_menu_bar ();
 #endif
-   set_macro_state();
+   save_macro_state();
    return(1);
 }
 

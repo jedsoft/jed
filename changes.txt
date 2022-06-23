@@ -349,6 +349,8 @@ Changes since 0.99-19
      messages were also added.
 164. src/sysdep.c: Avoid recursion into the input_pending function.
      This corrects a bug introduced by #163
+165. Added an additional argument to jed_get_mini_response to suspend
+     macro execution while the key is read
 
 {{{ Previous Versions
 

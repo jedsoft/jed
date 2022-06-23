@@ -181,7 +181,7 @@ static int ask_about_lock (char *file, Lock_Info_Type *l)
 
    while (1)
      {
-	switch (jed_get_mini_response (buf))
+	switch (jed_get_mini_response (buf, 1))   /* suspend macro */
 	  {
 	   case 's':
 	   case 'S':

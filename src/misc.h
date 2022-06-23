@@ -30,6 +30,8 @@ extern int execute_keyboard_macro(void);
 extern void get_last_macro(void);
 extern int Defining_Keyboard_Macro;
 extern int Executing_Keyboard_Macro;
+extern void jed_suspend_macro_state (void);
+extern void jed_resume_macro_state (void);
 
 extern char Error_Buffer[256];
 
