@@ -336,7 +336,7 @@ Changes since 0.99-19
        - References to space.mit.edu changed to jedsoft.org
 159. lib/jed.sl: Changed the backquote key to run the quoted_insert
      command for jed-mode bindings.
-160. src/userinfo.sl: Defer the querying of the hostname from the OS
+160. src/userinfo.c: Defer the querying of the hostname from the OS
      until the get_hostname function has been called.  To avoid the
      query, add `get_hostname("localhost.local");' to your .jedrc file.
 161. lib/texcom.sl: Turn off smart quoting of ~ characters
@@ -354,6 +354,9 @@ Changes since 0.99-19
 166. site.sl, help.sl: Use the get_mini_response() function in the
      help functions that prompt for a key
 167. configure: Removed failure message when libfontconfig is not found
+168. lib/*.sl: Replaced some combinations of flush/getkey with
+     get_mini_response
+
 
 {{{ Previous Versions
 

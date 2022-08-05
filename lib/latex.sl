@@ -216,9 +216,8 @@ define tex_font ()
    variable arg = prefix_argument(-1);
    variable brace = "}";
    variable ch;
-   flush ("\\text??: b(bf) c(sc) e(em) f(sf) i(it) m(md) n r(rm) s(sl) t(tt) u(up)");
 
-   ch = getkey ();
+   ch = get_mini_response ("\\text??: b(bf) c(sc) e(em) f(sf) i(it) m(md) n r(rm) s(sl) t(tt) u(up)");
    if (ch > ' ') ch = (ch | 0x20) - 96;
    switch (ch)
      { case 2  : "\\textbf{";}	       % C-b

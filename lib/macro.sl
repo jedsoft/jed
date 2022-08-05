@@ -99,12 +99,10 @@ define macro_to_function ()
 define macro_assign_macro_to_key ()
 {
    variable key = Null_String;
-   variable ch = 0;
-   flush ("Press key to assign macro to:");
-
+   variable ch;
    do
      {
-	ch = getkey ();
+	ch = get_mini_response ("Press key to assign macro to:");
 	if (ch == 0) ch = "^@"; else ch = char (ch);
 	key = strcat (key, ch);
      }

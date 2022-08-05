@@ -1,0 +1,32 @@
+Recently edited files
+---------------------
+
+The `recentx.sl' library file contains functions that enable jed to
+maintain a cache of recently edited file names.  The older version,
+`recent.sl' is deprecated.
+
+recentx.sl adds the following additional menu entries to the the "File"
+menu:
+
+   Recent Files
+   Recent Files by Ext
+
+The "Recent Files" menu contains a list of the recently accessed
+files.  The number displayed is configurable via the
+`Recentx_Max_Files' variable.  The default is 15.
+
+The "Recent Files by Ext" menu organizes recently accessed files by
+extension.  The number per extension is also controlled by the
+`Recentx_Max_Files' variable.
+
+To enable this feature, add the following lines to your .jedrc file:
+
+    require ("recentx");
+    Recentx_Cache_Filename = ".jedrecent";
+    Recentx_Max_Files = 15;     % The number of files per extension
+    Recentx_Cache_Exclude_Patterns = {"^/tmp/", "\.tmp$"R};
+
+The value of the Recentx_Cache_Exclude_Patterns variable is a list of
+regular expressions that exclude the caching of filenames that match
+any of the patterns.  In the above example, files with a ".tmp"
+extension or are under the /tmp directory are excluded.

@@ -1,0 +1,48 @@
+JED save/restore editor sessions
+=================================
+
+The session.sl file contains functions that may be used to save and
+restore the partial state of a jed session.  By partial, it is meant
+that only the names of the files that are associated with buffers, the
+positions within those buffers, and some of the buffer flags are
+saved.  Other state information such as undo information,
+paste-buffers, etc are not saved.
+
+To enable this feature, add the following near the end of your .jedrc file:
+
+  require ("session");
+
+Then when jed starts up with no filenames specified on the command
+line, it will attempt to load a session file from the current
+directory. The files specified in the session file will be
+subsequently read.  If jed is started with one or more files given on
+the command-line, the previous session will not be loaded, nor will
+the current one be automatically saved.
+
+By default, no session will be loaded or saved unless the startup
+directory contains a session file.  To initiate the saving of a
+session, you can either execute the save_session function, or create
+an empty session file in the startup directory.  To create an empty
+session file, simply execute the shell command:
+
+   touch .jedsession
+
+If the save_session function is used, then the directory associated
+with the *scratch* buffer will be used for the session file.
+
+The name of the session file may be set using
+the Session_Filename variable.  The default value is ".jedsession".
+
+The Session_Exclude_Patterns variable is a list of regular
+expressions that are matched against a filename.  If a filename
+matches one of the patterns in the list, that filename will not be
+saved to the session file.  The function session_add_exclude_pattern
+may be used to add patterns to this variable.  Also, buffers that
+have the buffer-local variable save_session defined and set to 0
+will not be saved, as well as any buffer whose name begins with a
+space or '*' character.
+
+The format of the session file is very simple.  It consists of zero
+or more lines formatted as:
+
+    filename|linenumber|column|flags

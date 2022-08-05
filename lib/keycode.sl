@@ -25,17 +25,19 @@ define keycode ()
    forever
      {
 	timeout = 100;		%  5 second delay
+	variable msg;
 #ifdef XWINDOWS
-	flush (sprintf (fmt, key, to_exit, X_LAST_KEYSYM));
+	msg = sprintf (fmt, key, to_exit, X_LAST_KEYSYM);
 #else
-	flush (sprintf (fmt, to_exit, key));
+	msg = sprintf (fmt, to_exit, key);
 #endif
+	flush (msg);
 
 	key = "";
 	while (input_pending (timeout))
 	  {
 	     timeout = 2;	       %  1/5 second
-	     ch = getkey ();
+	     ch = get_mini_response (msg);
 	     switch (ch)
 	       { case 0:	"^@"; }
 	       { case 27:	"\\e"; }

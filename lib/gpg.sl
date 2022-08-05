@@ -25,18 +25,16 @@ private define read_mini_hidden (prompt, default)
 
    prompt += ":";
 
-   flush (prompt);
-
    variable s = "";
    forever
      {
-	variable ch = getkey ();
+	variable ch = get_mini_response (prompt);
 	if (ch == '\r')
 	  break;
 	s += char (ch);
      }
 
-   if ((s == "") and (default != NULL))
+   if ((s == "") && (default != NULL))
      s = default;
 
    return s;

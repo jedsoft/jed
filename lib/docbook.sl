@@ -479,14 +479,12 @@ define sgml_arg (do_push_spot, do_pop_spot)
   rep = "";
   sep1 = " "; sep2 = " ";
 
-  flush ("Choice:  Req  Plain (Enter=nothing) ");
-  ch = tolower (getkey ());
+  ch = tolower (get_mini_response ("Choice:  Req  Plain (Enter=nothing) "));
   switch (ch)
     {case 'r': choice =  "choice=req"; }
     {case 'p': choice =  "req=plain"; }
 
-  flush ("Rep:  Repeat (Enter=nothing) ");
-  ch = tolower (getkey ());
+  ch = tolower (get_mini_response ("Rep:  Repeat (Enter=nothing) "));
   switch (ch)
     {case 'r': rep =  "rep=repeat"; }
 
@@ -757,9 +755,7 @@ define sgml_align ()
 {
   variable ch, align;
 
-  flush
-    ("Align (Center cHar Justify Left Right)? ");
-  ch = tolower (getkey ());
+  ch = tolower (get_mini_response ("Align (Center cHar Justify Left Right)? "));
   switch (ch)
     {case 'c': align = "center"; }
     {case 'h': align = "char"; }
@@ -784,9 +780,7 @@ define sgml_table (informal_table)
   else
     type_of_table = "table";
 
-  flush
-    ("Frame (All, Bottom, None, Sides, Top, tOpbot)? ");
-  ch = tolower (getkey ());
+  ch = tolower (get_mini_response ("Frame (All, Bottom, None, Sides, Top, tOpbot)? "));
   switch (ch)
     {case 'a': frame = "all"; }
     {case 'b': frame = "bottom"; }
