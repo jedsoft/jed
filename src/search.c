@@ -126,7 +126,7 @@ int search (char *str, int dir, int n) /*{{{*/
         /* We want the actual number of multibyte chars */
         if (Jed_UTF8_Mode)
           {
-             unsigned int len;
+             SLstrlen_Type len;
              unsigned char *p, *pmax;
              p = CLine->data + Point;
              pmax = p + key_len;
@@ -412,7 +412,7 @@ static int re_search_dir(unsigned char *pat, int dir) /*{{{*/
 	  }
 	if (match != NULL)
 	  {
-	     unsigned int ofs, len;
+	     SLstrlen_Type ofs, len;
 	     jed_position_point ((unsigned char *)match);
 
 	     (void) SLregexp_nth_match (Regexp, 0, &ofs, &len);
@@ -483,7 +483,7 @@ int replace_match(char *s, int *literal) /*{{{*/
 
    for (i = 0; i < 10; i++)
      {
-	unsigned int bm, lm;
+	SLstrlen_Type bm, lm;
 	if (-1 == SLregexp_nth_match (Regexp, i, &bm, &lm))
 	  {
 	     beg_matches[i] = -1;
@@ -604,7 +604,7 @@ static int push_string(char *b, int n) /*{{{*/
 
 void regexp_nth_match (int *np) /*{{{*/
 {
-   unsigned int ofs, len;
+   SLstrlen_Type ofs, len;
    unsigned char *p, *pmax;
 
    if (Regexp == NULL)

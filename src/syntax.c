@@ -138,7 +138,7 @@ static int try_keyword (register unsigned char *q, int n, register char *t, unsi
 static unsigned char *get_wchar_syntax (unsigned char *p, unsigned char *pmax, unsigned short *syntaxp)
 {
    SLwchar_Type wch;
-   unsigned int n;
+   SLstrlen_Type n;
    unsigned short syntax;
 
    if (Jed_UTF8_Mode == 0)

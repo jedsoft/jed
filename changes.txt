@@ -356,6 +356,8 @@ Changes since 0.99-19
 167. configure: Removed failure message when libfontconfig is not found
 168. lib/*.sl: Replaced some combinations of flush/getkey with
      get_mini_response
+169. src/*.c: Changed `unsigned int' to SLstring_Type, use of `const',
+     etc for migration to slang-3
 
 
 {{{ Previous Versions

@@ -261,7 +261,7 @@ int sys_chmod (SLFUTURE_CONST char *file, int what, mode_t *mode, uid_t *uid, gi
 	strcpy (filebuf, file);
 	file = filebuf;
 	len--;
-	file[len] = 0;
+	filebuf[len] = 0;
      }
 
    if (

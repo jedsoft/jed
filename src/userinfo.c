@@ -169,11 +169,11 @@ static int get_domainname (char *dom, unsigned int domlen)
 
 static char *combine_host_and_domain (char *a, char *b)
 {
-   unsigned int len;
+   SLstrlen_Type len;
    char *c, *cc;
 
    len = strlen (a) + strlen (b) + 2;
-   if (NULL == (c = SLmalloc (len)))
+   if (NULL == (c = (char *)SLmalloc (len)))
      return NULL;
 
    if (*b == '.') b++;

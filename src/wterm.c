@@ -1237,7 +1237,7 @@ static void msw_reverse_index(int n)
    blank_rect(0, r1, MSW_Screen_Cols, r1 + n);
 }
 
-static void msw_write_string (char *s)
+static void msw_write_string (SLFUTURE_CONST char *s)
 {
    get_dc();
    /* tt_write(s, strlen(s)); */
@@ -1313,7 +1313,7 @@ static char *convert_color (char *c, char *buf)
    return buf;
 }
 
-static JX_SETXXX_RETURN_TYPE msw_set_color (int i, char *what, char *fg, char *bg)
+static JX_SETXXX_RETURN_TYPE msw_set_color (int i, SLFUTURE_CONST char *what, SLFUTURE_CONST char *fg, SLFUTURE_CONST char *bg)
 {
    int r, g, b;
    char buf[64];
@@ -2733,7 +2733,7 @@ static void msw_get_display_size (int *rows, int *cols)
    *rows = MSW_Screen_Rows = This_Window.height / This_Window.font_height;
 }
 
-static JX_SETXXX_RETURN_TYPE msw_set_mono (int i, char *what , SLtt_Char_Type unused)
+static JX_SETXXX_RETURN_TYPE msw_set_mono (int i, SLFUTURE_CONST char *what , SLtt_Char_Type unused)
 {
    (void)i;
    (void)what;
@@ -2889,9 +2889,9 @@ int PASCAL WinMain(HINSTANCE inst, HINSTANCE pinst, LPSTR lpszCmdLine, int nCmdS
 #endif				       /* __BORLANDC__ || __VC__ */
 
 void (*tt_beep)(void);
-void (*tt_write_string)(char *);
-JX_SETXXX_RETURN_TYPE (*tt_set_color)(int, char *, char *, char *);
-JX_SETXXX_RETURN_TYPE (*tt_set_mono) (int, char *, SLtt_Char_Type);
+void (*tt_write_string)(SLFUTURE_CONST char *);
+JX_SETXXX_RETURN_TYPE (*tt_set_color)(int, SLFUTURE_CONST char *, SLFUTURE_CONST char *, SLFUTURE_CONST char *);
+JX_SETXXX_RETURN_TYPE (*tt_set_mono) (int, SLFUTURE_CONST char *, SLtt_Char_Type);
 void (*tt_get_screen_size)(int *, int *);
 int *tt_Ignore_Beep;
 int *tt_Use_Ansi_Colors;

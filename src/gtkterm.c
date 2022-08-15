@@ -4264,7 +4264,7 @@ toggle_cursor (int on ) /*{{{*/
 ************************************/
 
 static void
-JX_write_string (char *s ) /*{{{*/
+JX_write_string (SLFUTURE_CONST char *s ) /*{{{*/
 {
    unsigned int nchars;
    SLwchar_Type *w;
@@ -6418,7 +6418,7 @@ set_border_color (char *fgc, char *bgc ) /*{{{*/
 ************************************/
 
 static JX_SETXXX_RETURN_TYPE
-JX_set_mono (int obj_unused, char *unused, SLtt_Char_Type c_unused )
+JX_set_mono (int obj_unused, SLFUTURE_CONST char *unused, SLtt_Char_Type c_unused )
 {
    (void) obj_unused;
    (void) unused;
@@ -6498,7 +6498,7 @@ jGtkSetColor (int i, char *what, char *fg, char *bg )
 ************************************/
 
 static JX_SETXXX_RETURN_TYPE
-JX_set_color (int i, char *what, char *fg, char *bg )
+JX_set_color (int i, SLFUTURE_CONST char *what, SLFUTURE_CONST char *fg, SLFUTURE_CONST char *bg )
 {
 
    jGtkSetColor( i, what, fg, bg );

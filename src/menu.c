@@ -1502,7 +1502,7 @@ static char *get_full_popup_name (Menu_Popup_Type *p)
 	parent = parent->parent;
      }
 
-   name = SLmalloc (len + 1);
+   name = (char *)SLmalloc (len + 1);
    if (name == NULL)
      return NULL;
 

@@ -485,7 +485,7 @@ static char *strcat_malloc (char *a, char *b)
    unsigned int lena = strlen (a);
    unsigned int lenb = strlen (b);
 
-   if (NULL == (c = SLmalloc (lena + lenb + 1)))
+   if (NULL == (c = (char *)SLmalloc (lena + lenb + 1)))
      return NULL;
 
    strcpy (c, a);

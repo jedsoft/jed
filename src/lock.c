@@ -121,7 +121,7 @@ static char *make_lockfile_name (char *file)
    SLfree (file);
 
    len = strlen (dir) + strlen (name) + 3;
-   if (NULL != (buf = SLmalloc (len)))
+   if (NULL != (buf = (char *)SLmalloc (len)))
      sprintf (buf, "%s.#%s", dir, name);
 
    SLfree (dir);
@@ -173,7 +173,7 @@ static int ask_about_lock (char *file, Lock_Info_Type *l)
    len = 64 + strlen (file)
      + strlen (l->host) + strlen (l->user);
 
-   if (NULL == (buf = SLmalloc (len)))
+   if (NULL == (buf = (char *)SLmalloc (len)))
      return -1;
 
    sprintf (buf, "%s is locked by %s@%s.%d.  (S)teal, (P)roceed, (A)bort?",
@@ -289,7 +289,7 @@ static int perform_lock (char *lockfile, Lock_Info_Type *l, int force)
    int not_supported = 0;
 
    len = 32 + strlen (l->host) + strlen (l->user);
-   if (NULL == (buf = SLmalloc (len)))
+   if (NULL == (buf = (char *)SLmalloc (len)))
      return -1;
 
    sprintf (buf, "%s@%s.%d", l->user, l->host, l->pid);

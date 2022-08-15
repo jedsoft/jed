@@ -1368,7 +1368,7 @@ static void make_keymap_cmd (char *km)
 
 static void get_keymaps (void)
 {
-   int j, n;
+   SLindex_Type j, n;
    char **keymaps;
    SLang_Array_Type *at;
    SLkeymap_Type *km;

@@ -1634,7 +1634,7 @@ char *jed_dir_file_merge(SLFUTURE_CONST char *dir, SLFUTURE_CONST char *file) /*
    if ((file == NULL) || (*file == 0))
      return jed_standardize_filename (dir);
 
-   dirfile = SLmalloc (strlen (dir) + strlen (file) + 2);
+   dirfile = (char *)SLmalloc (strlen (dir) + strlen (file) + 2);
    if (dirfile == NULL)
      return NULL;
    strcpy (dirfile, dir);

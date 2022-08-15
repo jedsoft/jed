@@ -383,7 +383,7 @@ static void set_buffer_info(char *file, char *dir, char *name, int *flagsp) /*{{
    if (NULL == (b = pop_buffer (5)))
      return;
 
-   tmp = SLmalloc (strlen (dir) + 2);
+   tmp = (char *)SLmalloc (strlen (dir) + 2);
    if (tmp == NULL)
      return;
    strcpy (tmp, dir);
@@ -504,7 +504,7 @@ static void insert_string (void)
 {
    char *s;
    SLang_BString_Type *bs;
-   unsigned int len;
+   SLstrlen_Type len;
    int ret = 0;
 
    switch (SLang_peek_at_stack ())

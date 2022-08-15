@@ -600,7 +600,7 @@ static char *strcat_malloc (char *a, char *b)
 
    len = strlen (a);
 
-   if (NULL == (c = SLmalloc (len + strlen (b) + 1)))
+   if (NULL == (c = (char *) SLmalloc (len + strlen (b) + 1)))
      return NULL;
 
    strcpy (c, a);

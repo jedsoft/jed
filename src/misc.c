@@ -719,7 +719,7 @@ int jed_case_strcmp (char *a, char *b)
 
 char *jed_malloc0 (unsigned int len)
 {
-   char *s = SLmalloc (len);
+   char *s = (char *)SLmalloc (len);
    if (s != NULL)
      memset ((char *) s, 0, len);
    return s;
@@ -760,7 +760,7 @@ int jed_getkey_wchar (SLwchar_Type *wchp)
    i = 1;
    while (1)
      {
-	unsigned int n;
+	SLstrlen_Type n;
 	if (NULL != SLutf8_decode (buf, buf+i, wchp, &n))
 	  break;
 	if ((i == SLUTF8_MAX_MBLEN) || (ch < 128))

@@ -260,7 +260,7 @@ static void parse_flags(char *f)
 	   case '-':
 	     if (!strcmp (f, "version"))
 	       version ();
-	     /* drop */
+	     /* fall through */
 	   default: usage ();
 	  }
      }
@@ -383,7 +383,7 @@ static void grep(char *file)
 
    do
      {
-	unsigned int ofs, len;
+	SLstrlen_Type ofs, len;
 
 	line++;
 	if (Must_Match)

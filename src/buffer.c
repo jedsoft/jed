@@ -253,7 +253,10 @@ unsigned char *jed_multibyte_chars_forward (unsigned char *p, unsigned char *pma
 					    unsigned int n, unsigned int *dn,
                                             int ignore_combining)
 {
+   SLstrlen_Type dn1;
+
    (void) ignore_combining;
+
    if (Jed_UTF8_Mode == 0)
      {
 	if (p + n > pmax)
@@ -263,13 +266,18 @@ unsigned char *jed_multibyte_chars_forward (unsigned char *p, unsigned char *pma
 	if (dn != NULL) *dn = n;
 	return p;
      }
-   return SLutf8_skip_chars (p, pmax, n, dn, ignore_combining);
+
+   p = SLutf8_skip_chars (p, pmax, n, &dn1, ignore_combining);
+   if (dn != NULL) *dn = (unsigned int) dn1;
+   return p;
 }
 
 unsigned char *jed_multibyte_chars_backward (unsigned char *pmin, unsigned char *p,
 					     unsigned int n, unsigned int *dn,
                                              int ignore_combining)
 {
+   SLstrlen_Type dn1;
+
    (void) ignore_combining;
    if (Jed_UTF8_Mode == 0)
      {
@@ -280,7 +288,9 @@ unsigned char *jed_multibyte_chars_backward (unsigned char *pmin, unsigned char 
 	if (dn != NULL) *dn = n;
 	return p;
      }
-   return SLutf8_bskip_chars (pmin, p, n, dn, ignore_combining);
+   p = SLutf8_bskip_chars (pmin, p, n, &dn1, ignore_combining);
+   if (dn != NULL) *dn = (unsigned int) dn1;
+   return p;
 }
 
 int jed_multibyte_charcasecmp (unsigned char **ap, unsigned char *amax,
@@ -297,7 +307,7 @@ int jed_multibyte_charcasecmp (unsigned char **ap, unsigned char *amax,
 
    if (Jed_UTF8_Mode)
      {
-        unsigned int na, nb;
+        SLstrlen_Type na, nb;
         int aok, bok;
 
         aok = (NULL != SLutf8_decode (a, amax, &cha, &na));
@@ -430,7 +440,7 @@ void jed_count_chars (void) /*{{{*/
 	     /* Check for combining */
 	     if ((skip_combining == 0) && Jed_UTF8_Mode)
 	       {
-		  unsigned int dn;
+		  SLstrlen_Type dn;
 		  unsigned int count = 1;
 		  p = SLutf8_decode (p, pmax, &w, &dn);   /* skip first */
 		  while ((p != NULL) && (p < pmax) && (count < SLSMG_MAX_CHARS_PER_CELL))
@@ -954,7 +964,7 @@ void uniquely_name_buffer (Buffer *b, SLFUTURE_CONST char *trry) /*{{{*/
    char *name;
 
    n = strlen(trry);
-   neew = SLmalloc (n + 12);
+   neew = (char *)SLmalloc (n + 12);
    if (neew == NULL)
      exit_error ("Out of memory", 0);
 

@@ -432,7 +432,7 @@ static SLwchar_Type *utf8nt_to_wchars(unsigned char *s, unsigned int len, unsign
    smax = s + len;
    for (i = 0; i < nchars; i++)
      {
-	unsigned int n;
+	SLstrlen_Type n;
 	if (SLutf8_decode(s, smax, &w[i], &n) == NULL)
 	  w[i] = '?';
 	s += n;
@@ -758,7 +758,7 @@ static void toggle_cursor (int on) /*{{{*/
  * that the XWin cursor is correct.
  */
 
-static void JX_write_string (char *s) /*{{{*/
+static void JX_write_string (SLFUTURE_CONST char *s) /*{{{*/
 {
    unsigned int nchars;
    SLwchar_Type *w;
@@ -1953,7 +1953,7 @@ static void free_color_cache (void)
    Color_Cache_List = NULL;
 }
 
-static int alloc_color(char* color_name, XColor* color_info)
+static int alloc_color (char *color_name, XColor* color_info)
 {
    XColor exact_info;
    int status = 0;
@@ -2022,7 +2022,7 @@ static void setup_ith_color (int i) /*{{{*/
  * the previous definitions are freed.  f is 0 when the colors correspond to the
  * default. */
 
-static void x_set_color_free (int i, char *fgcolor, char *bgcolor, int do_free) /*{{{*/
+static void x_set_color_free (int i, const char *fgcolor, const char *bgcolor, int do_free) /*{{{*/
 {
    char *save_fg, *save_bg, *fg, *bg;
 
@@ -2032,11 +2032,11 @@ static void x_set_color_free (int i, char *fgcolor, char *bgcolor, int do_free) 
    if ((*bgcolor == 0) || !strcmp (bgcolor, "default"))
      bgcolor = XWin->text_gc[0].bg_name;
 
-   if (NULL == (fg = SLmalloc(strlen(fgcolor) + 1)))
+   if (NULL == (fg = (char *)SLmalloc(strlen(fgcolor) + 1)))
      return;
 
    strcpy (fg, fgcolor);
-   if (NULL == (bg = SLmalloc (strlen(bgcolor) + 1)))
+   if (NULL == (bg = (char *)SLmalloc (strlen(bgcolor) + 1)))
      {
 	SLfree (fg);
 	return;
@@ -2114,16 +2114,16 @@ static int setup_and_parse_colors (void) /*{{{*/
 
 /*}}}*/
 
-static void set_mouse_color (char *fgc, char *bgc) /*{{{*/
+static void set_mouse_color (const char *fgc, const char *bgc) /*{{{*/
 {
    XColor xfg, xbg;
 
    if (0 == Term_Supports_Color)
      return;
 
-   if (-1 == alloc_color(fgc, &xfg))
+   if (-1 == alloc_color((char *)fgc, &xfg))
      return;
-   if (-1 == alloc_color(bgc, &xbg))
+   if (-1 == alloc_color((char *)bgc, &xbg))
      {
 	free_color (&xfg);
 	return;
@@ -2793,7 +2793,7 @@ static void i18init (void) /*{{{*/
 /*}}}*/
 #endif
 
-static void set_border_color (char *fgc, char *bgc) /*{{{*/
+static void set_border_color (SLFUTURE_CONST char *fgc, SLFUTURE_CONST char *bgc) /*{{{*/
 {
    XColor xfg;
    unsigned int bdr = atoi(bgc);
@@ -2801,7 +2801,7 @@ static void set_border_color (char *fgc, char *bgc) /*{{{*/
    if (!Term_Supports_Color)
      return;
 
-   if (-1 == alloc_color(fgc, &xfg))
+   if (-1 == alloc_color((char *)fgc, &xfg))
      return;
 
    XSetWindowBorder (This_XDisplay, XWin->w, xfg.pixel);
@@ -2810,7 +2810,7 @@ static void set_border_color (char *fgc, char *bgc) /*{{{*/
 }
 
 /*}}}*/
-static JX_SETXXX_RETURN_TYPE JX_set_mono (int obj_unused, char *unused, SLtt_Char_Type c_unused)
+static JX_SETXXX_RETURN_TYPE JX_set_mono (int obj_unused, SLFUTURE_CONST char *unused, SLtt_Char_Type c_unused)
 {
    (void) obj_unused;
    (void) unused;
@@ -2818,7 +2818,7 @@ static JX_SETXXX_RETURN_TYPE JX_set_mono (int obj_unused, char *unused, SLtt_Cha
    return JX_SETXXX_RETURN_VAL;
 }
 
-static JX_SETXXX_RETURN_TYPE JX_set_color (int i, char *what, char *fg, char *bg)
+static JX_SETXXX_RETURN_TYPE JX_set_color (int i, SLFUTURE_CONST char *what, SLFUTURE_CONST char *fg, SLFUTURE_CONST char *bg)
 {
    if (XWin == NULL)
      return JX_SETXXX_RETURN_VAL;
@@ -3507,11 +3507,11 @@ static void get_screen_size (int *r, int *c)
 
 /* the links to functions and variables here */
 void (*tt_beep)(void);
-void (*tt_write_string)(char *);
+void (*tt_write_string)(SLFUTURE_CONST char *);
 
-JX_SETXXX_RETURN_TYPE (*tt_set_color)(int, char *, char *, char *);
-JX_SETXXX_RETURN_TYPE (*tt_set_color_esc)(int, char *);
-JX_SETXXX_RETURN_TYPE (*tt_set_mono) (int, char *, SLtt_Char_Type);
+JX_SETXXX_RETURN_TYPE (*tt_set_color)(int, SLFUTURE_CONST char *, SLFUTURE_CONST char *, SLFUTURE_CONST char *);
+JX_SETXXX_RETURN_TYPE (*tt_set_color_esc)(int, SLFUTURE_CONST char *);
+JX_SETXXX_RETURN_TYPE (*tt_set_mono) (int, SLFUTURE_CONST char *, SLtt_Char_Type);
 
 void (*tt_wide_width)(void);
 void (*tt_narrow_width)(void);
