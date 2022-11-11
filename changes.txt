@@ -358,6 +358,7 @@ Changes since 0.99-19
      get_mini_response
 169. src/*.c: Changed `unsigned int' to SLstring_Type, use of `const',
      etc for migration to slang-3
+170. lib/shmode.sl: Added exec keyword (Ulli Horlacher)
 
 
 {{{ Previous Versions

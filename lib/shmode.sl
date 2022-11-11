@@ -46,7 +46,7 @@ dfa_set_init_callback (&setup_dfa_callback, "SH");
 
 () = define_keywords ($1, "cddofiifin", 2);
 () = define_keywords ($1, "forletpwdset", 3);
-() = define_keywords ($1, "casedoneechoelifelseesacevalexitifeqreadtestthentype", 4);
+() = define_keywords ($1, "casedoneechoelifelseesacevalexecexitifeqreadtestthentype", 4);
 () = define_keywords ($1, "aliasbreakendifendswifdefifneqlocalshiftumaskunsetuntilwhile", 5);
 () = define_keywords ($1, "exportifndefreturnsetenvsourceswitch", 6);
 () = define_keywords ($1, "breaksw", 7);
