@@ -33,12 +33,12 @@ Limitations
 -----------
 
 - Jed's DFA highlight rules work only on a line-by-line basis. Using
-  the DFA scheme, it is impossible to highlight multiline comments or
+  the DFA scheme, it is impossible to highlight multi-line comments or
   string literals.
 
 - DFA rules replace the "traditional" highlighting scheme, so you
-  cannot have both highlight of multiline tokens and
-  regualar-expression based highlight rules.
+  cannot have both highlight of multi-line tokens and
+  regular-expression based highlight rules.
 
 Using DFA Highlighting
 ----------------------

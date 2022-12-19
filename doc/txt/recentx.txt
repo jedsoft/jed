@@ -30,3 +30,17 @@ The value of the Recentx_Cache_Exclude_Patterns variable is a list of
 regular expressions that exclude the caching of filenames that match
 any of the patterns.  In the above example, files with a ".tmp"
 extension or are under the /tmp directory are excluded.
+
+Recentx_Cache_Filename specifies the name of the list of filenames in
+the cache.  Its value may either be an absolute pathname or a relative
+pathname.  If relative, then its value will be interpreted as relative
+to the value of Jed_Home_Directory.
+
+The file format of the Recentx_Cache_Filename consists of lines of the
+form:
+
+   time|filename
+
+Here, `|' is a field delimiter.  The time field represents the number
+of seconds the file was last accesses since the Unix epoch.  The
+filename field gives the absolute pathname of the file.

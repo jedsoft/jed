@@ -82,7 +82,7 @@ Note the following points:
    3. `quit_jed' is called to exit the editor.  `exit_jed' could also be
       used when it is necessary to run the exit hooks.
 
-To exectute this script, type:
+To execute this script, type:
 
    % jed -script count-lines.sl
 

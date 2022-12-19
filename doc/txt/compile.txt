@@ -27,7 +27,7 @@ them properly.  The currently supported compilers include:
       vc               (Microsoft Visual C)
 
 To run a compiler from within the editor, type `ESC-x compile'.  You
-will then be prompted for the command to run in a subshell.
+will then be prompted for the command to run in a sub-shell.
 Usually, this will be something like `make', or `make -k', assuming of
 course that you are using makefiles.  If not, then just give some
 other command that has the desired effect, e.g., `cc -g myfile.c'.

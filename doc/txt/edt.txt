@@ -60,7 +60,7 @@ switch to a previous buffer.  Then add the following to your .jedrc
 
 In addition to the standard keypad, newer DEC terminals (vt220 etc)
 have a smaller keypad (Find, Insert here, Prev SCreen, etc....).  Key
-sequences corresponfing to these keys have also been bound.
+sequences corresponding to these keys have also been bound.
 
 Finally, JED does not support any EDT line editing commands, nor are
 there any plans to do so.

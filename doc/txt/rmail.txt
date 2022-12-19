@@ -46,8 +46,8 @@ The 3rd field contains flags.  R means that the message was replied to, F
 means that it was Forwarded.
 
 The arrow keys may be used to move the cursor from one line to another.
-Pressing the spacebar will cause the message associated with the line the
-cursor is on to be displayed in a second (larger) window.  Use the spacebar
+Pressing the space-bar will cause the message associated with the line the
+cursor is on to be displayed in a second (larger) window.  Use the space-bar
 and the DELETE key to scroll through the message.
 
 The following keys are defined:
@@ -59,8 +59,8 @@ The following keys are defined:
    N         move to next Non-deleted message
    P         move to previously Non-deleted message
    D         Tag message for deletion
-   X         Really delete tagged messages and resequence folder.
-   G         Get newmail
+   X         Really delete tagged messages and re-sequence folder.
+   G         Get new mail
    ESC 1 G   Prompt for a mail box and get new mail from that.
    Q         Quit this folder returning to top level (folder index).
    T         Toggle headers.  By default, JED will hide most of the headers.

@@ -370,7 +370,7 @@ Answers:
   keyboard, another program, or the mouse (XJed can).
 
   There is more than one answer to how you can prevent it:
-  1: Use xjed.
+  1: Use Xjed.
   2: Use the `paste' function
       1. M-x paste  (or bind "paste" to a key)
       2. Now paste your text...

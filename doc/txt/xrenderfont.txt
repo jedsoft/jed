@@ -1,4 +1,4 @@
-XJed is able to utilise the X Render extensions in order to display
+XJed is able to utilize the X Render extensions in order to display
 anti-aliased fonts.  If you're going to use this, do the following easy
 steps:
 

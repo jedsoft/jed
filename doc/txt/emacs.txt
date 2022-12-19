@@ -172,7 +172,7 @@ CONTROL-X
   insert_buffer         Insert buffer
   isearch_backward      Incremental search backward
   isearch_forward       Incremental search forward
-  latex_mode            Set LaTex mode
+  latex_mode            Set LaTeX mode
   mini_complete
   narrow
   no_mode               Set no mode

@@ -33,7 +33,7 @@ with the *scratch* buffer will be used for the session file.
 The name of the session file may be set using
 the Session_Filename variable.  The default value is ".jedsession".
 
-The Session_Exclude_Patterns variable is a list of regular
+The Session_Exclude_Patterns variable is a list of slang regular
 expressions that are matched against a filename.  If a filename
 matches one of the patterns in the list, that filename will not be
 saved to the session file.  The function session_add_exclude_pattern
