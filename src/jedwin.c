@@ -1,5 +1,5 @@
 /* -*- default window hooks for non-GUI jed */
-/* Copyright (c) 2009-2019 John E. Davis
+/* Copyright (c) 2009-2022 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public

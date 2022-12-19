@@ -359,6 +359,8 @@ Changes since 0.99-19
 169. src/*.c: Changed `unsigned int' to SLstring_Type, use of `const',
      etc for migration to slang-3
 170. lib/shmode.sl: Added exec keyword (Ulli Horlacher)
+171. src/*.{c,h}: Updated copyright year
+
 
 
 {{{ Previous Versions

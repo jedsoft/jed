@@ -1,9 +1,9 @@
 #ifndef JED_VERSION
 #define JED_VERSION	9920
 
-#define JED_VERSION_STR "pre0.99.20-170"
+#define JED_VERSION_STR "pre0.99.20-171"
 
-/* Copyright (c) 1999, 2000, 2001, 2005-2019 John E. Davis
+/* Copyright (c) 1999, 2000, 2001, 2005-2022 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
