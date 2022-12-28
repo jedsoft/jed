@@ -1,0 +1,43 @@
+-*- text -*-
+
+This file contains the instructions for building jed using the MinGW
+(mingw32/64) compiler suite.  The compiler and related tools may be obtained
+from <https://osdn.net/projects/mingw/releases/>.
+
+Other than the C compiler, the main prerequisite is the slang library.
+Version pre2.3.4-5 or later is required.  It is availble from
+<https://www.jedsoft.org/snapshots/>.  Compile and install it first.
+By default, the library will be installed under C:\MinGW\local.  This
+installation directory is assumed in what follows below.
+
+  1.  In a CMD window, make sure that the library is installed and in
+      your path by running the command:
+
+        C:\path\to\jed> slsh --version
+	slsh version 0.9.4-0; S-Lang version: pre2.3.4-5
+
+  2.  From the top of the jed source distribution, create the
+      makefiles by running:
+
+        C:\path\to\jed> mkfiles\m32init.bat
+
+  3.  Now compile the code to create jed.exe (console mode editor) and
+      wjed.exe (GUI version).
+
+        C:\path\to\jed> mingw32-make
+
+  4.  The next step is to install the editor:
+
+        C:\path\to\slang> mingw32-make install
+
+Finally you will need to make sure that the $PREFIX/jed/bin directory is
+in your PATH.  Here, $PREFIX refers to the value of the PREFIX
+variable in the Makefile.  Assuming the default value for PREFIX, then
+a command such as:
+
+   set PATH=C:\MinGW\local\jed\bin;%PATH%
+
+will add the appropriate value to the path.
+
+More information on the makefile generation process is available in
+src/mkfiles/README.

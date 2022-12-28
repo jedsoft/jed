@@ -1,5 +1,5 @@
 w32shell.exe and g32shell.exe are necessary for the win32 versions of
-jed to execute shell commands.  Do NOT move it from this directory.
+jed to execute shell commands.  Do NOT move them from this directory.
 
 g32shell.exe performs globbing on its command line arguments, but
 w32shell.exe does not.

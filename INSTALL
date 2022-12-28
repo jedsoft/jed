@@ -1,8 +1,10 @@
-Before reading this, read the appropriate install file for you system, e.g.,
-INSTALL.unx.  For MSDOS, WINDOWS, or OS/2, read INSTALL.pc.
+To build and install the editor, see the appropriate installation file:
 
-This file contains hints for customizing jed in such a way that it is easy
-to upgrade to later releases.
+  INSTALL.unx:   Unix systems (including Cygwin)
+  INSTALL.w32:   Windows (MingW compiler suite)
+
+The rest of this file contains hints for customizing jed in such a way
+that it is easy to upgrade to later releases.
 
 When jed starts up, it loads the file `site.sl' which is located in the lib
 directory under $JED_ROOT.  This file contains much of the code that defines
@@ -12,7 +14,7 @@ initialization file.
 
 One could always edit site.sl and tailor it to the needs of a given system.
 However, one would have to do this with every upgrade.  There is a better
-way.  
+way.
 
 Immediately after loading site.sl, the editor will attempt to load a
 file called `defaults.sl' from $JED_ROOT/lib.  If it fails to find

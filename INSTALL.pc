@@ -1,4 +1,10 @@
 -*- mode: text -*-
+
+The contents of this file are obsolete and are no longer relevant.
+They have been left here for historical purposes.
+
+--------------------------------------------------------------------
+
 IBMPC (DOS, Win9X, NT, and OS/2) installation specific functions.
 
 !!! Important News:

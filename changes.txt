@@ -361,6 +361,8 @@ Changes since 0.99-19
 170. lib/shmode.sl: Added exec keyword (Ulli Horlacher)
 171. src/*.{c,h}: Updated copyright year
 172. doc/txt/*.txt: Some doc updates
+173. INSTALL.m32, mkfiles/*: Instructions and scripts for building the
+     editor using the MinGW compiler suite under windows.
 
 
 {{{ Previous Versions

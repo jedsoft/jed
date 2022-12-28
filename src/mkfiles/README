@@ -20,7 +20,7 @@ If you want to submit a makefile to me, please make additions to
 makefile.all.
 
 Notes:
-  
+
   1. I have only tested makefiles for BCC, DJGPP, and MINGW32
      development environments.  It is conceivable that makefile.all
      may need modifed for other systems.
