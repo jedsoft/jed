@@ -39,7 +39,7 @@ private define install_file (file, dir)
 	() = fprintf (stdout, "%s does not exist -- skipping it\n", file);
 	return;
      }
-   () = fprintf (stdout, "Installing %s in %s\n", file, dir);
+   () = fprintf (stdout, "Copying %s to %s\n", file, dir);
    dir = convert_path (dir);
    file = convert_path (file);
 
@@ -76,7 +76,6 @@ private define install_libfiles (libdir)
    install_files ("lib/*.sl", dir);
    install_files ("lib/*.dat", dir);
    install_files ("lib/*.hlp", dir);
-   install_files ("lib/jed.rc", dir);
 
    dir = path_concat (libdir, "colors");
    () = mkdir_p (dir);
@@ -89,6 +88,11 @@ private define install_conffiles (confdir)
    variable dir = confdir;
    () = mkdir_p (dir);
    install_files ("lib/jed.rc", dir);
+   variable file = path_concat (dir, "jed.conf");
+   if (NULL == stat_file (file))
+     {
+	install_file ("lib/jed.rc", file);
+     }
 }
 
 private define install_docfiles (docdir)

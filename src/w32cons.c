@@ -105,6 +105,8 @@ static void process_key_event(KEY_EVENT_RECORD *key)
    if (d & ENHANCED_KEY)
      scan |= 0x100;
 
+   /* fprintf (stderr, "Keycode=%X\n", scan); */
+
    switch (scan)
      {
       case 0x00F:		       /* TAB */
@@ -117,8 +119,19 @@ static void process_key_event(KEY_EVENT_RECORD *key)
 	break;
 
       case 0x00E:		       /* backspace */
-	_putkey (127);
+       if (key_state & KEY_CONTROL)
+	  _putkey (8);
+	else
+	  _putkey (127);
 	return;
+
+      case 0x23:
+	if (key_state & KEY_CONTROL)
+	  {
+	     _putkey (8);	       /* Ctrl-H */
+	     return;
+	  }
+	break;
 
       case 0x039: 		       /* space */
 	if (key_state & KEY_CONTROL)

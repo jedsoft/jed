@@ -18,6 +18,7 @@ SLANG_DEFS = prefix=$(PREFIX)
 
 all:
 	cd src && $(MAKE) $(MFLAGS) $(SLANG_DEFS)
+	cd src && $(MAKE) $(MFLAGS) $(SLANG_DEFS) wjed
 	@echo .
 	@echo To install it, run $(MAKE) install.
 	@echo .
@@ -26,13 +27,11 @@ clean:
 	cd src && $(MAKE) $(MFLAGS) clean
 #
 # Note the use of X- below.  Windows regards '=' as a commandline whitespace
-# character and needs to be quoted.  However I have not been able to figure
+# character that needs to be quoted.  However I have not been able to figure
 # out how to do that in the context of the mingw32-make command parser.
 # As a major hack, I added the X- prefix and modified mkfiles/install.sl
 # to remove the X-.
 #
-# If the command below fails with an error message involving /usr/bin/sh, then
-# change "mkfiles\runslsh.bat" to "mkfiles/runslsh.bat"
 install: all
 	slsh mkfiles/install.sl --destdir="X-$(DESTDIR)" --prefix="$(PREFIX)" install
 #

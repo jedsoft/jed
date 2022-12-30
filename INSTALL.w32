@@ -2,7 +2,12 @@
 
 This file contains the instructions for building jed using the MinGW
 (mingw32/64) compiler suite.  The compiler and related tools may be obtained
-from <https://osdn.net/projects/mingw/releases/>.
+from
+
+   <https://nuwen.net/mingw.html>
+   <https://github.com/skeeto/w64devkit>
+
+and other places.
 
 Other than the C compiler, the main prerequisite is the slang library.
 Version pre2.3.4-5 or later is required.  It is availble from
@@ -14,7 +19,7 @@ installation directory is assumed in what follows below.
       your path by running the command:
 
         C:\path\to\jed> slsh --version
-	slsh version 0.9.4-0; S-Lang version: pre2.3.4-5
+	slsh version 0.9.4-0; S-Lang version: pre2.3.4-6
 
   2.  From the top of the jed source distribution, create the
       makefiles by running:

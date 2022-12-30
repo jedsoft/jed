@@ -1,7 +1,8 @@
 -*- mode: text -*-
 
 The contents of this file are obsolete and are no longer relevant.
-They have been left here for historical purposes.
+They have been left here for historical purposes.  Read INSTALL.w32
+for installation instructions for windows.
 
 --------------------------------------------------------------------
 

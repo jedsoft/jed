@@ -3367,7 +3367,6 @@ foreach ([
 %
 if (strlen(expand_jedlib_file("defaults.sl")))
   () = evalfile("defaults");
-#ifdef UNIX
 else
   {
      % Map /install/prefix/bin/jed to /install/prefix/etc/
@@ -3384,12 +3383,16 @@ else
        }
      if ($1 != NULL)
        {
-	  $1 = path_concat ($1, "jed.conf");
-	  if (1 == file_status ($1))
-	    () = evalfile ($1);
+	  foreach $2 (["jed.conf", "jed.rc"])
+	    {
+	       $2 = path_concat ($1, $2);
+	       if (1 != file_status ($2))
+		 continue;
+	       () = evalfile ($2);
+	       break;
+	    }
        }
   }
-#endif
 
 %require ("profile");
 %_boseos_info = 0;
