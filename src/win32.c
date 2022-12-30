@@ -96,6 +96,8 @@ int init_tty(void)
    if (-1 == jed_add_init_slang_hook (init_intrinsics))
      return -1;
 
+   if (Batch) return 0;
+
    if (X_Init_Term_Hook != NULL)
      return (*X_Init_Term_Hook) ();
 

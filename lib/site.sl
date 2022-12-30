@@ -3383,7 +3383,7 @@ else
        }
      if ($1 != NULL)
        {
-	  foreach $2 (["jed.conf", "jed.rc"])
+	  foreach $2 (["jed.conf"])
 	    {
 	       $2 = path_concat ($1, $2);
 	       if (1 != file_status ($2))

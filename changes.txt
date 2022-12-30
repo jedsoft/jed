@@ -368,6 +368,8 @@ Changes since 0.99-19
 175. src/w32cons.c: In a windows console window, Ctrl-H and the
      backspace key return the same scan code.  A change was made to
      use the Control key modifier flag to distinguish them.
+176. src/win32.c: Do not initialize the tty in batch mode (windows);
+     Install jed.rc (windows)
 
 {{{ Previous Versions
 

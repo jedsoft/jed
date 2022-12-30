@@ -76,6 +76,7 @@ private define install_libfiles (libdir)
    install_files ("lib/*.sl", dir);
    install_files ("lib/*.dat", dir);
    install_files ("lib/*.hlp", dir);
+   install_files ("lib/jed.rc", dir);
 
    dir = path_concat (libdir, "colors");
    () = mkdir_p (dir);
@@ -87,11 +88,10 @@ private define install_conffiles (confdir)
 {
    variable dir = confdir;
    () = mkdir_p (dir);
-   install_files ("lib/jed.rc", dir);
    variable file = path_concat (dir, "jed.conf");
    if (NULL == stat_file (file))
      {
-	install_file ("lib/jed.rc", file);
+	install_file ("lib/jed.conf", file);
      }
 }
 
