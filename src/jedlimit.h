@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2022 John E. Davis
+/* Copyright (c) 2007-2023 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public

@@ -1,5 +1,5 @@
 /* -*- mode: c; mode: fold -*- */
-/* Copyright (c) 1992-2022 John E. Davis
+/* Copyright (c) 1992-2023 John E. Davis
  * This file is part of JED editor library source.
  *
  * You may distribute this file under the terms the GNU General Public
