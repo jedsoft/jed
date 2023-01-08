@@ -1208,7 +1208,7 @@ static void mark_window_attributes (int wa)
      {
 	if (s1->hi0 != NULL)
 	  {
-	     s2->hi1 = s1->hi0 = NULL;
+	     s1->hi1 = s1->hi0 = NULL;
 	     s1->is_modified = 1;
 	  }
 	s1--;

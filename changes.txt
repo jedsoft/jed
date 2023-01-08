@@ -371,6 +371,8 @@ Changes since 0.99-19
 176. src/win32.c: Do not initialize the tty in batch mode (windows);
      Install jed.rc (windows)
 177. Updated copyright to 2023
+178. src/screen.c: In mark_window_attributes, the s2->hi1 was being
+     set to NULL instead of s1->hi1 (bug found by yifungkhong at github)
 
 {{{ Previous Versions
 
