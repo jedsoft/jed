@@ -375,6 +375,8 @@ Changes since 0.99-19
      set to NULL instead of s1->hi1 (bug found by yifungkhong at github)
 179. src/search.c: The regular expression \&, which matches the whole
      match, was not being handled properly (yifungkhong at github)
+180. lib/mime.sl: Use insert_byte instead of insert_char when decoding
+     quoted-printable
 
 {{{ Previous Versions
 
