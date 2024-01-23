@@ -15,30 +15,35 @@
 %  To enable numbered backups, put this line in your .jedrc:
 %  backups_on ();
 
+autoload ("glob", "glob");
+
 private variable DO_BACKUPS = 1;
 
 private define numbered_backups (buf)
 {
-   variable status, version;
-   variable file;
+   variable version, max_version;
+   variable file, files, pattern;
 
    if (0 == DO_BACKUPS)
      return;
 
    % check whether an old copy or backup files exist
+   pattern = sprintf("%s.~*~", buf);
+   files = glob(pattern);
+   max_version = 0;
 
-   version = 0;
-   do {
-      version++;
-      file = sprintf ("%s.~%d~", buf, version);
-   }
-   while (1 == file_status (file));
+   foreach file (files) {
+        if (sscanf(file, sprintf("%s.~%%d~", buf), &version) == 1)
+          {          
+             if (version > max_version)
+               max_version = version;
+          }
+     }
 
    % mark the whole buffer and write it to file - don't use write_buffer ()
-
    push_spot ();
    mark_buffer ();
-   () = write_region_to_file (sprintf ("%s.~%d~", buf, version));
+   () = write_region_to_file (sprintf ("%s.~%d~", buf, max_version+1));
    pop_spot();
 }
 %
