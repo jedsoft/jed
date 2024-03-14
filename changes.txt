@@ -377,6 +377,7 @@ Changes since 0.99-19
      match, was not being handled properly (yifungkhong at github)
 180. lib/mime.sl: Use insert_byte instead of insert_char when decoding
      quoted-printable
+181. lib/slmode.sl: Added "abs" to the keyword list (Klaus Alexander)
 
 {{{ Previous Versions
 

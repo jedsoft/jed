@@ -42,7 +42,7 @@ dfa_set_init_callback (&setup_dfa_callback, "SLANG");
 #endif
 
 () = define_keywords ($1, "doifor", 2);
-() = define_keywords ($1, "andchsformodnotpopshlshrsqrtryxor", 3);
+() = define_keywords ($1, "absandchsformodnotpopshlshrsqrtryxor", 3);
 () = define_keywords ($1, "NULL_forcaseelseexchloopmul2signthen", 4);
 () = define_keywords ($1, "__tmpbreakcatchifnotthrowusingwhile", 5);
 () = define_keywords ($1, "definepublicreturnstaticstructswitch", 6);
