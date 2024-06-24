@@ -1956,10 +1956,17 @@ static void free_color_cache (void)
 static int alloc_color (char *color_name, XColor* color_info)
 {
    XColor exact_info;
+   char *s;
    int status = 0;
 
-   if (NULL == (color_name = SLang_create_slstring (color_name)))
+   if (NULL == (color_name = SLmake_string (color_name)))
      return -1;
+
+   /* X does not understand S-Lang color qualifiers, so
+    * omit them.
+    */
+   s = strchr (color_name, ';');
+   if (s != NULL) *s = 0;
 
    if (1 == alloc_color_from_cache (color_name, color_info))
      goto free_and_return;
@@ -1987,7 +1994,7 @@ static int alloc_color (char *color_name, XColor* color_info)
 
 free_and_return:
 
-   SLang_free_slstring (color_name);
+   SLfree (color_name);
    return status;
 }
 

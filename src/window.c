@@ -108,6 +108,7 @@ void window_buffer(Buffer *b) /*{{{*/
    touch_window();
 
    jed_init_mark_for_buffer (&JWindow->beg, b, 0);
+   JWindow->beg_winrow = 0;
    jed_init_mark_for_buffer (&JWindow->mark, b, 0);
    JWindow->hscroll_column = 1;
    JWindow->buffer = b;
@@ -442,30 +443,43 @@ void touch_screen_for_buffer(Buffer *b) /*{{{*/
 }
 
 /*}}}*/
-int is_line_visible (int lnum) /*{{{*/
+int jed_is_point_visible (int lnum, int point) /*{{{*/
 {
-   int n = JWindow->rows;
+   Scrwrap_Type wt;
    Line *l, *beg = JWindow->beg.line;
+   int dr_point, r, n = JWindow->rows;
+
+   if (JWindow->trashed) return 0;
 
    push_spot ();
    goto_line (&lnum);
    l = CLine;
+   point = Point;
    pop_spot ();
 
 #if JED_HAS_LINE_ATTRIBUTES
    if (l->flags & JED_LINE_HIDDEN) return 0;
 #endif
 
-   while (n && (beg != NULL))
+   scrwrap_init (&wt, JWindow, CBuf->flags & VISUAL_WRAP);
+   scrwrap_calculate_rel_position (&wt, l, point, &dr_point, NULL);
+   r = JWindow->beg_winrow;	       /* could be negative */
+   while ((r < n) && (beg != NULL))
      {
-	if (l == beg) return 1;
+	int dr;
+	scrwrap_calculate_rel_position (&wt, beg, beg->len, &dr, NULL);
+	if (beg == l)
+	  {
+	     r +=  dr_point;
+	     return ((r>=0) && (r<n));
+	  }
 
-#if JED_HAS_LINE_ATTRIBUTES
-	if (0 == (beg->flags & JED_LINE_HIDDEN))
-#endif
-	  n--;
-
+	r += dr;
 	beg = beg->next;
+#if JED_HAS_LINE_ATTRIBUTES
+	while ((beg != NULL) && (beg->flags & JED_LINE_HIDDEN))
+	  beg = beg->next;
+#endif
      }
    return 0;
 }

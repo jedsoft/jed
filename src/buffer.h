@@ -301,7 +301,9 @@ extern char Jed_Default_Status_Line[JED_MAX_STATUS_LEN];
 #ifndef VMS
 # define MAP_CR_TO_NL_FLAG		0x10000
 #endif
+#define VISUAL_WRAP 			0x20000
 
+extern int Jed_Visual_Wrap_Default;
 extern char *Read_Only_Error;
 extern char *Line_Read_Only_Error;
 

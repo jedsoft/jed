@@ -1094,7 +1094,7 @@ void blink_match (void) /*{{{*/
 	if ((! (CBuf->modes == WRAP_MODE)) && (!IN_MINI_WINDOW))
 	  message("Mismatch??");
      }
-   else if ((code == 1) && is_line_visible (LineNum))
+   else if ((code == 1) && jed_is_point_visible (LineNum, Point))
      {
 	point_cursor(0);
 	input_pending(&Number_Ten);

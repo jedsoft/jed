@@ -50,8 +50,9 @@ int Jed_Simulate_Graphic_Chars;
 typedef struct Screen_Type
 {
    Line *line;		       /* buffer line structure */
-   int is_modified;
+   int wrapno;
    unsigned char *hi0, *hi1;	       /* beg end of hilights */
+   int is_modified;
 }
 Screen_Type;
 
@@ -72,7 +73,7 @@ int Wants_Syntax_Highlight = 1;	       /* if non-zero, highlight the syntax.
 int Wants_Attributes = 1;
 int Wants_HScroll = 20;		       /* controls automatic horizontal
 					* scrolling.  If positive, scroll
-					* only line, if negative, whole wind
+					* only line, if negative, whole window
 					*/
 int Term_Supports_Color = 1;	       /* optimistic assumption */
 
@@ -106,17 +107,68 @@ static Line Eob_Line =
 #endif
 };
 
-static void display_line (Line *line, int sy, int sx)
+static void highlight_line_region (Line *line, int lineno, int sy,
+				   int n0, int p0, int n1, int p1,
+				   int color)
+{
+   Scrwrap_Type wt1;
+   SLuchar_Type *hi0, *hi1;
+   int dn, c;
+
+   lineno += CBuf->nup;
+
+   if ((n0 > n1) || ((n0 == n1) && (p0 > p1)))
+     {
+	int tmp;
+	tmp = n0; n0 = n1; n1 = tmp;
+	tmp = p0; p0 = p1; p1 = tmp;
+     }
+   if ((lineno < n0) || (lineno > n1)) return;
+
+   hi0 = line->data;
+
+   if (lineno == n0) hi0 += p0;
+   if (lineno == n1)
+     hi1 = line->data + p1;	       /* last line of region */
+   else
+     hi1 = line->data + (line->len - 1); /* line is interior to region; don't include \n */
+
+   scrwrap_init (&wt1, JWindow, CBuf->flags & VISUAL_WRAP);
+   scrwrap_calculate_rel_position (&wt1, line, hi0-line->data, &dn, &c);
+   c--;		       /* convert to 0-based */
+   wt1.row = sy + dn;
+   wt1.col = c;
+   wt1.column = dn*(wt1.cmax-1) + c;
+   SLsmg_gotorc (wt1.row, wt1.col);
+   scrwrap_write_bytes (&wt1, hi0, hi1, color);
+}
+
+static void highlight_line (Line *line, int lineno, int sy, Mark *vismark)
+{
+   highlight_line_region (line, lineno, sy,
+			  vismark->n, vismark->point,
+			  LineNum + CBuf->nup, Point,
+			  JREGION_COLOR);
+}
+
+static void display_line (Scrwrap_Type *wt, Line *line, int lineno, int sy, int sx, Mark *vismark)
 {
    unsigned int len;
    int hscroll_col;
    int is_mini;
-   Screen_Type *s;
+   Screen_Type *s, *smin, *smax;
 #if JED_HAS_LINE_MARKS
    Mark *line_marks;
 #endif
    int num_columns;
-   int color_set;
+   int color;
+   int i, num_wraps;
+
+   wt->row = sy;
+   wt->column = wt->col = 0;
+   wt->num_wraps = 0;
+
+   s = JScreen + sy;
 
    SLsmg_Tab_Width = Buffer_Local.tab;
    (void) SLsmg_embedded_escape_mode (CBuf->flags & SMG_EMBEDDED_ESCAPE);
@@ -125,24 +177,24 @@ static void display_line (Line *line, int sy, int sx)
    SLsmg_gotorc (sy, sx);
    SLsmg_set_color (0);
 
-   s = JScreen + sy;
-
-   s->line = line;
-   s->is_modified = 0;
-
    if (line == NULL)
      {
 	SLsmg_erase_eol ();
-	return;
+	goto finish;
      }
 
-   hscroll_col = JWindow->hscroll_column - 1;
+   if (wt->wrap_mode)
+     hscroll_col = 0;
+   else
+     {
+	hscroll_col = JWindow->hscroll_column - 1;
 
-   if ((line == HScroll_Line)
-       && Wants_HScroll && HScroll)
-     hscroll_col += HScroll;
+	if ((line == HScroll_Line)
+	    && Wants_HScroll && HScroll)
+	  hscroll_col += HScroll;
+     }
 
-   num_columns = JWindow->width;
+   num_columns = wt->cmax;
 
    if (hscroll_col || sx
 #if JED_HAS_DISPLAY_LINE_NUMBERS
@@ -153,7 +205,6 @@ static void display_line (Line *line, int sy, int sx)
 	int tmp = hscroll_col - sx;
 #if JED_HAS_DISPLAY_LINE_NUMBERS
 	tmp -= CBuf->line_num_display_size;
-	num_columns -= CBuf->line_num_display_size;
 #endif
 	SLsmg_set_screen_start (NULL, &tmp);
 	sx = 0;
@@ -173,24 +224,22 @@ static void display_line (Line *line, int sy, int sx)
 	  len--;
      }
 
-   color_set = 0;
+   color = -1;
 #if JED_HAS_LINE_ATTRIBUTES
    if (line->flags & JED_LINE_COLOR_BITS)
      {
-	SLsmg_set_color (JED_GET_LINE_COLOR(line));
-	color_set = 1;
+	color = JED_GET_LINE_COLOR(line);
      }
 #endif
 
 #if JED_HAS_LINE_MARKS
    line_marks = CBuf->user_marks;
-   if (color_set == 0) while (line_marks != NULL)
+   if (color == -1) while (line_marks != NULL)
      {
 	if ((line_marks->line == line)
 	    && (line_marks->flags & JED_LINE_MARK))
 	  {
-	     SLsmg_set_color (line_marks->flags & MARK_COLOR_MASK);
-	     color_set = 1;
+	     color = line_marks->flags & MARK_COLOR_MASK;
 	     break;
 	  }
 	line_marks = line_marks->next;
@@ -199,14 +248,14 @@ static void display_line (Line *line, int sy, int sx)
 
    if (len)
      {
-	if ((color_set == 0)
+	if ((color == -1)
 	    && Mode_Has_Syntax_Highlight
 	    && (line != &Eob_Line)
 #if !defined(IBMPC_SYSTEM)
 	    && (*tt_Use_Ansi_Colors && Term_Supports_Color)
 #endif
 	    && Wants_Syntax_Highlight)
-	  write_syntax_highlight (sy, line, len);
+	  write_syntax_highlight (wt, sy, line, len);
 	else
 	  {
 	     if ((is_mini == 0)
@@ -224,15 +273,17 @@ static void display_line (Line *line, int sy, int sx)
 			    break;
 			 }
 		    }
-		  SLsmg_write_nchars ((char *)pmin, p - pmin);
+		  scrwrap_write_bytes (wt, pmin, p, color);
+		  /* SLsmg_write_nchars ((char *)pmin, p - pmin); */
 		  if (p != pmax)
 		    {
-		       SLsmg_set_color (JTWS_COLOR);
-		       SLsmg_write_nchars ((char *)p, pmax - p);
+		       scrwrap_write_bytes (wt, p, pmax, JTWS_COLOR);
+		       /* SLsmg_write_nchars ((char *)p, pmax - p); */
 		       SLsmg_set_color (0);
 		    }
 	       }
-	     else SLsmg_write_nchars ((char *)line->data, len);
+	     else scrwrap_write_bytes (wt, line->data, line->data+len, color);
+	     /* else SLsmg_write_nchars ((char *)line->data, len); */
 	  }
      }
 #if JED_HAS_LINE_ATTRIBUTES
@@ -244,9 +295,10 @@ static void display_line (Line *line, int sy, int sx)
 	SLsmg_set_color (0);
      }
 #endif
-   SLsmg_erase_eol ();
+   if ((wt->row >= wt->rmin) && (wt->row < wt->rmax))
+     SLsmg_erase_eol ();
 
-   if (Jed_Dollar)
+   if (Jed_Dollar && (wt->wrap_mode == 0))
      {
 	char dollar = (char) Jed_Dollar;
 
@@ -264,28 +316,28 @@ static void display_line (Line *line, int sy, int sx)
 	  }
      }
 
-   if ((s->hi0 != NULL) && Wants_Attributes)
+   if (vismark != NULL)
      {
-	int c;
-	len = (int) (s->hi1 - s->hi0);
-
-	if (len && (s->hi0[len - 1] == '\n'))
-	  len--;
-
-	if (len)
-	  {
-	     c = jed_compute_effective_length (line->data, s->hi0);
-	     if (is_mini)
-	       c += Mini_Info.effective_prompt_len;
-	     SLsmg_gotorc (sy, c);
-	     SLsmg_set_color (JREGION_COLOR);
-	     SLsmg_write_nchars ((char *)s->hi0, len);
-	  }
+	highlight_line (line, lineno, sy, vismark);
      }
 
-   /* if (hscroll_col + sx) */
-   SLsmg_set_screen_start (NULL, NULL);
+finish:
 
+   smax = JScreen + wt->rmax;
+   smin = JScreen + wt->rmin;
+   num_wraps = wt->num_wraps;
+   for (i = 0; i <= num_wraps; i++)
+     {
+	if ((s >= smin) && (s < smax))
+	  {
+	     s->line = line;
+	     s->wrapno = i;
+	     s->is_modified = 0;
+	  }
+	s++;
+     }
+
+   SLsmg_set_screen_start (NULL, NULL);
    SLsmg_set_color (0);
 }
 
@@ -294,13 +346,17 @@ static void display_line_numbers (void)
 {
    unsigned int i, imin, imax, linenum;
    Line *line_start, *line;
-   char buf[32];
+   char buf[32], spaces[32];
    unsigned int c;
+
+   memset (spaces, ' ', CBuf->line_num_display_size);
+   spaces[CBuf->line_num_display_size] = 0;
 
    imin = JWindow->sy;
    imax = imin + JWindow->rows;
    line = NULL;
 
+   /* Search for the current line in the window */
    for (i = imin; i < imax; i++)
      {
 	if (JScreen[i].line != CLine)
@@ -327,12 +383,14 @@ static void display_line_numbers (void)
    SLsmg_set_color (JLINENUM_COLOR);
    c = JWindow->sx;
 
-   for (i = imin; i < imax; i++)
+   i = imin;
+   while (i < imax)
      {
 	line_start = JScreen[i].line;
 	if (line_start == NULL)
 	  break;
 
+	/* Skip past lines not displayed (hidden) in the window */
         while (line != line_start)
 	  {
 	     if (line == NULL)
@@ -346,19 +404,24 @@ static void display_line_numbers (void)
 	sprintf (buf, "%*u ", CBuf->line_num_display_size-1, linenum);
 	SLsmg_write_string (buf);
 
+	i++;
+	/* Skip past continuations */
+	while ((i < imax) && (JScreen[i].line == line))
+	  {
+	     SLsmg_gotorc (i, c);
+	     SLsmg_write_string (spaces);
+	     i++;
+	  }
 	line = line->next;
 	linenum++;
      }
 
    if (i < imax)
      {
-	memset (buf, ' ', CBuf->line_num_display_size);
-	buf[CBuf->line_num_display_size] = 0;
-
 	while (i < imax)
 	  {
 	     SLsmg_gotorc (i, c);
-	     SLsmg_write_string (buf);
+	     SLsmg_write_string (spaces);
 	     i++;
 	  }
      }
@@ -408,145 +471,160 @@ static Line *find_non_hidden_line (Line *l, int *non_hidden_pointp)
 
 #endif
 
-Line *jed_find_top_to_recenter (Line *cline)
+/* This function computes the line to appear at the top of
+ * the current window such that the specified line+point will appear
+ * in the specified row in the window, where row is numbered from 0
+ * and is relative to the top of the window.
+ *
+ * Upon return, *winrowp will get the row offset of the start of the line
+ * that is to appear at the top of the window.  It will either be 0, which
+ * indicates that line to appear at the top actually starts at the top of the window,
+ * or negative, which means that the start of the line occurs above the window by |*winrowp|
+ * rows and then wraps to the top row of the window.
+ */
+static Line *jed_find_top_to_recenter (Scrwrap_Type *wt, Line *cline, int point, int cline_dr, int target_row, int *winrowp)
 {
+   Line *top;
    int n;
-   Line *prev, *last_prev;
 
-   n = JWindow->rows / 2;
+   top = cline;
+   if (cline_dr == -1)
+     scrwrap_calculate_rel_position (wt, top, point, &cline_dr, NULL);
 
-   last_prev = prev = cline;
+   n = target_row - cline_dr;
+   /* Case 1: If target_row > cline_dr, n>0, then a previous line will be at the top.
+    * Case 2: If target_row == cline_dr, n==0, then the start of the cline will be at the top
+    * Case 3: If target_row < cline, n<0, then the start of cline will appear
+    *   -n rows above the window
+    */
 
-   while ((n > 0) && (prev != NULL))
+   while ((n > 0) && (top->prev != NULL))
      {
-	n--;
-	last_prev = prev;
-#if JED_HAS_LINE_ATTRIBUTES
-	do
-	  {
-	     prev = prev->prev;
-	  }
-	while ((prev != NULL)
-	       && (prev->flags & JED_LINE_HIDDEN));
-#else
-	prev = prev->prev;
-#endif
-     }
+	/* Case 1 */
+	Line *prev;
+	int dn;
 
-   if (prev != NULL) return prev;
-   return last_prev;
+	prev = top->prev;
+	/* Skip past hidden rows */
+	while ((prev != NULL) && (prev->flags & JED_LINE_HIDDEN))
+	  prev = prev->prev;
+	if (prev == NULL) break;
+
+	top = prev;
+	scrwrap_calculate_rel_position (wt, top, top->len, &dn, NULL);
+	/* If dn is 0, top does not wrap, but occupies a row */
+	n -= (1+dn);
+     }
+   if (n > 0) n = 0;
+   /* n<0 implies that the line to appear at the top of the screen is wrapped */
+   *winrowp = n;
+   return top;
 }
 
-Line *find_top (void)
+/* Compute the line to appear at the top of the window such
+ * that the current line will appear somewhere in the window.
+ * Note that the solution is not unique.
+ */
+static Line *find_line_for_top_of_window (Scrwrap_Type *wt, Line *cline, int point, int cline_dr, int *winrowp)
 {
-   int nrows, i;
-   Line *cline, *prev, *next;
-   Line *top_window_line;
+   Screen_Type *s_top;
+   Line *prev, *next;
+   int i, n, n1;
 
+   if (cline_dr == -1)
+     scrwrap_calculate_rel_position (wt, cline, point, &cline_dr, NULL);
+
+   s_top = JScreen + JWindow->sy;
+   n = JWindow->rows;
+   for (i = 0; i < n; i++)
+     {
+	Screen_Type *s = s_top + i;
+	if (s->line != cline)
+	  continue;
+
+	n1 = i + cline_dr - s->wrapno;
+	/* case 1: n1 >= 0, the point occurs at window row n1
+	 * case 2: n1 < 0, the point lies -n1 rows above this one
+	 */
+	if (n1 >= 0)
+	  {
+	     if (n1 == n) n1 = n-1;    /* scroll one line  */
+	     else if (n1 > n) n1 = n/2;/* recenter */
+	  }
+	else if (n1 == -1) n1 = 0;     /* scroll back one line */
+	else n1 = n/2;		       /* recenter */
+	return jed_find_top_to_recenter (wt, cline, point, cline_dr, n1, winrowp);
+     }
+
+   /* Not found.  Look to see if the previous or next line is in the window */
+
+   /* Check the previous line.  If it is in the window, then cline is below the window */
+   prev = cline->prev;
+   while ((prev != NULL) && (prev->flags & JED_LINE_HIDDEN)) prev = prev->prev;
+   if (prev == NULL) return jed_find_top_to_recenter (wt, cline, point, cline_dr, n/2, winrowp);
+   i = 0;
+   while (i < n)
+     {
+	Screen_Type *s = s_top + i;
+
+	i++;
+	if (s->line != prev) continue;
+	while ((i < n) && (s_top[i].line == prev))
+	  i++;			       /* handle wrapping of prev */
+	if (i < n)
+	  {
+	     /* prev is in window */
+	     n1 = i + cline_dr;
+	     if (n1 == n) n1 = n-1;
+	     else if (n1 > n) n1 = n/2;
+	  }
+	else n1 = n-1;		       /* put it on the bottom row */
+	return jed_find_top_to_recenter (wt, cline, point, cline_dr, n1, winrowp);
+     }
+
+   /* See if the next line is in the window.  If so, the cline is above the window */
+   next = cline->next;
+   while ((next != NULL) && (next->flags & JED_LINE_HIDDEN)) next = next->next;
+   if (next == NULL) return jed_find_top_to_recenter (wt, cline, point, cline_dr, n/2, winrowp);
+   i = 0;
+   while (i < n)
+     {
+	Screen_Type *s = s_top + i;
+
+	if (s->line != next)
+	  {
+	     i++;
+	     continue;
+	  }
+	if (i != 0) i--;
+	return jed_find_top_to_recenter (wt, cline, point, cline_dr, i, winrowp);
+     }
+   return jed_find_top_to_recenter (wt, cline, point, cline_dr, n/2, winrowp);
+}
+
+static Line *find_top (Scrwrap_Type *wt, int *winrowp)
+{
+   Line *cline;
+   int point;
+
+   *winrowp = 0;
    cline = CLine;
+   point = Point;
 
 #if JED_HAS_LINE_ATTRIBUTES
    if (cline->flags & JED_LINE_HIDDEN)
-     cline = find_non_hidden_line (cline, NULL);
+     cline = find_non_hidden_line (cline, &point);
    if (cline == NULL)
      return NULL;
 #endif
-
-   nrows = JWindow->rows;
-
-   if (nrows <= 1)
-     return cline;
-
-   /* Note: top_window_line might be a bogus pointer.  This means that I cannot
-    * access it unless it really corresponds to a pointer in the buffer.
-    */
-   top_window_line = JScreen [JWindow->sy].line;
-
-   if (top_window_line == NULL)
-     return jed_find_top_to_recenter (cline);
-
-   /* Chances are that the current line is visible in the window.  This means
-    * that the top window line should be above it.
-    */
-   prev = cline;
-
-   i = 0;
-   while ((i < nrows) && (prev != NULL))
-     {
-	if (prev == top_window_line)
-	  {
-	     return top_window_line;
-	  }
-
-#if JED_HAS_LINE_ATTRIBUTES
-	do
-	  {
-	     prev = prev->prev;
-	  }
-	while ((prev != NULL)
-	       && (prev->flags & JED_LINE_HIDDEN));
-#else
-	prev = prev->prev;
-#endif
-	i++;
-     }
-
-   /* Now check the borders of the window.  Perhaps the current line lies
-    * outsider the border by a line.  Only do this if terminal can scroll.
-    */
-
-   if ((*tt_Term_Cannot_Scroll)
-       && (*tt_Term_Cannot_Scroll != -1))
-     return jed_find_top_to_recenter (cline);
-
-   next = cline->next;
-#if JED_HAS_LINE_ATTRIBUTES
-   while ((next != NULL) && (next->flags & JED_LINE_HIDDEN))
-     next = next->next;
-#endif
-
-   if ((next != NULL)
-       && (next == top_window_line))
-     return cline;
-
-   prev = cline->prev;
-#if JED_HAS_LINE_ATTRIBUTES
-   while ((prev != NULL) && (prev->flags & JED_LINE_HIDDEN))
-     prev = prev->prev;
-#endif
-
-   top_window_line = JScreen [nrows + JWindow->sy - 1].line;
-
-   if ((prev == NULL)
-       || (prev != top_window_line))
-     return jed_find_top_to_recenter (cline);
-
-   /* It looks like cline is below window by one line.  See what line should
-    * be at top to scroll it into view.
-    */
-
-   i = 2;
-   while ((i < nrows) && (prev != NULL))
-     {
-#if JED_HAS_LINE_ATTRIBUTES
-	do
-	  {
-	     prev = prev->prev;
-	  }
-	while ((prev != NULL)
-	       && (prev->flags & JED_LINE_HIDDEN));
-#else
-	prev = prev->prev;
-#endif
-	i++;
-     }
-
-   if (prev != NULL)
-     return prev;
-
-   return jed_find_top_to_recenter (cline);
+   return find_line_for_top_of_window (wt, cline, point, -1, winrowp);
 }
 
+/* Set the SLSMG variables for values appropriate for the current buffer.
+ * Then move the cursor to (0,0).  The screen position of the cursor
+ * before the move is returned via the (*rowp,*colp) parameters.  This routine
+ * is used in conjunction with SLsmg_strwidth
+ */
 static void init_smg_for_buffer (int *rowp, int *colp)
 {
    SLsmg_Tab_Width = Buffer_Local.tab;
@@ -561,6 +639,8 @@ static void init_smg_for_buffer (int *rowp, int *colp)
    SLsmg_gotorc (0, 0);
 }
 
+/* Move the editing point to the specified screen column.
+ */
 void point_column (int n)
 {
    SLuchar_Type *p, *pmax;
@@ -581,6 +661,7 @@ void point_column (int n)
 
    jed_set_point (n);
 }
+
 int jed_compute_effective_length (unsigned char *pos, unsigned char *pmax)
 {
    int len, row, col;
@@ -604,8 +685,8 @@ int calculate_column (void)
 
 void point_cursor (int c)
 {
-   int r, row;
    Line *tthis, *cline;
+   int r, row, wrapno;
 
    if (JWindow->trashed) return;
 
@@ -620,19 +701,6 @@ void point_cursor (int c)
      }
 #endif
 
-   r = JWindow->sy + 1;
-   Point_Cursor_Flag = 0;
-   for (row = r; row < r + JWindow->rows; row++)
-     {
-	tthis = JScreen[row-1].line;
-	if (tthis == NULL) break;
-	if ((tthis == cline) || (tthis == &Eob_Line))
-	  {
-	     r = row;
-	     break;
-	  }
-     }
-
    if (Point >= CLine->len)
      {
 	Point = CLine->len - 1;
@@ -642,9 +710,31 @@ void point_cursor (int c)
 		 || (CBuf == MiniBuffer)) Point++;
      }
 
-   if (c == 0)
-     c = calculate_column ();
-   c -= (JWindow->hscroll_column - 1);
+   wrapno = 0;
+   if ((c == 0) || CBuf->flags & VISUAL_WRAP)
+     {
+	int dr;
+	Scrwrap_Type wt;
+	scrwrap_init (&wt, JWindow, CBuf->flags & VISUAL_WRAP);
+	scrwrap_calculate_rel_position (&wt, CLine, Point, &dr, &c);
+	wrapno = dr;
+     }
+   else c -= (JWindow->hscroll_column - 1);
+
+   r = JWindow->sy;		       /* 0-based */
+   Point_Cursor_Flag = 0;
+   for (row = r; row < r + JWindow->rows; row++)
+     {
+	Screen_Type *s = JScreen + row;
+	tthis = s->line;
+	if (tthis == NULL) break;
+	if (((tthis == cline) && (s->wrapno == wrapno))
+	    || (tthis == &Eob_Line))
+	  {
+	     r = row;
+	     break;
+	  }
+     }
 
    if (cline == HScroll_Line) c -= HScroll;
    if (c < 1) c = 1; else if (c > JWindow->width) c = JWindow->width;
@@ -654,8 +744,8 @@ void point_cursor (int c)
    c += CBuf->line_num_display_size;
 #endif
 
-   SLsmg_gotorc (r - 1, c - 1);
-   Screen_Row = r;
+   SLsmg_gotorc (r, c - 1);
+   Screen_Row = r+1;
    Screen_Col = c;
 
    SLsmg_refresh ();
@@ -1024,208 +1114,25 @@ static int screen_input_pending (int tsec)
    return input_pending (&tsec);
 }
 
-/* This routine is called before the window is updated.  This means that the
- * line structures attached to the screen array cannot be trusted.  However,
- * the current line (or nearest visible one) can be assumed to lie in
- * the window.
- */
-static void mark_window_attributes (int wa)
+static Mark *mark_window_attributes (int wa)
 {
-   Screen_Type *s = &JScreen[JWindow->sy],
-     *smax = s + JWindow->rows, *s1, *s2;
    Mark *m;
-   register Line *l = JWindow->beg.line, *ml, *cline;
-   unsigned char *hi0, *hi1;
-   int mn, pn, dn, point, mpoint, non_hidden_point;
 
-   s1 = s;
-
-#if JED_HAS_LINE_ATTRIBUTES
-   cline = find_non_hidden_line (CLine, &point);
-   if (cline == CLine)
-     point = Point;
-#else
-   cline = CLine;
-   point = Point;
-#endif
-
-   if ((CBuf->vis_marks == 0) || (wa == 0) || (Wants_Attributes == 0)
-#if JED_HAS_LINE_ATTRIBUTES
-       || (l->flags & JED_LINE_HIDDEN)
-#endif
-       )
+   if ((CBuf->vis_marks == 0) || (wa == 0) || (Wants_Attributes == 0))
      {
-	s2 = s;
-	goto done;		       /* I hate gotos but they are convenient */
+	return NULL;
      }
 
    m = CBuf->marks;
 
-   while ((m->flags & VISIBLE_MARK_MASK) == 0) m = m->next;
-   ml = m->line;
-   mn = m->n;			       /* already in canonical form */
-   pn = LineNum + CBuf->nup;	       /* not in canonical form */
-   dn = pn - mn;
+   while ((m != NULL)
+	  && ((m->flags & VISIBLE_MARK_MASK) == 0))
+     m = m->next;
 
-#if JED_HAS_LINE_ATTRIBUTES
-   ml = find_non_hidden_line (ml, &non_hidden_point);
-   if (ml == cline) dn = 0;
-   if (ml != m->line)
-     {
-	mpoint = non_hidden_point;
-     }
-   else mpoint = m->point;
-#else
-   mpoint = m->point;
-#endif
-
-   /* find Screen Pos of point in window.  It has to be there */
-   while (l != cline)
-     {
-	l = l->next;
-#if JED_HAS_LINE_ATTRIBUTES
-	if (l->flags & JED_LINE_HIDDEN) continue;
-#endif
-	s1++;
-     }
-
-   /* s1 now points at current line */
-   /* The whole point of all of this is to preserve the screen flags without
-    * touching the screen.
-    */
-
-   if (dn > 0)			       /* mark on prev lines */
-     {
-	s2 = s1 + 1;
-	hi0 = l->data;
-	hi1 = l->data + point;
-	if ((s1->hi0 != hi0) || (s1->hi1 != hi1))
-	  {
-	     s1->hi0 = hi0; s1->hi1 = hi1;
-	     s1->is_modified = 1;
-	  }
-
-	l = l->prev; s1--;
-	while ((s1 >= s) && (l != ml) && (l != NULL))
-	  {
-#if JED_HAS_LINE_ATTRIBUTES
-	     if (l->flags & JED_LINE_HIDDEN)
-	       {
-		  l = l->prev;
-		  continue;
-	       }
-#endif
-	     hi0 = l->data;
-	     hi1 = l->data + l->len;
-	     if ((s1->hi0 != hi0) || (s1->hi1 != hi1))
-	       {
-		  s1->hi0 = hi0; s1->hi1 = hi1;
-		  s1->is_modified = 1;
-	       }
-	     s1--;
-	     l = l->prev;
-	  }
-
-	if (s1 >= s)
-	  {
-	     hi0 = ml->data + mpoint;
-	     hi1 = ml->data + ml->len;
-	     if ((s1->hi0 != hi0) || (s1->hi1 != hi1))
-	       {
-		  s1->hi0 = hi0; s1->hi1 = hi1;
-		  s1->is_modified = 1;
-	       }
-	     s1--;
-	  }
-     }
-   else if (dn < 0)		       /* mark ahead of point */
-     {
-	s2 = s1;
-	s1--;
-	hi0 = l->data + point;
-	hi1 = l->data + l->len;
-	if ((s2->hi0 != hi0) || (s2->hi1 != hi1))
-	  {
-	     s2->hi0 = hi0; s2->hi1 = hi1;
-	     s2->is_modified = 1;
-	  }
-
-	l = l->next;
-	s2++;
-	while ((s2 < smax) && (l != ml) && (l != NULL))
-	  {
-#if JED_HAS_LINE_ATTRIBUTES
-	     if (l->flags & JED_LINE_HIDDEN)
-	       {
-		  l = l->next;
-		  continue;
-	       }
-#endif
-	     hi0 = l->data;
-	     hi1 = l->data + l->len;
-	     if ((s2->hi0 != hi0) || (s2->hi1 != hi1))
-	       {
-		  s2->hi0 = hi0; s2->hi1 = hi1;
-		  s2->is_modified = 1;
-	       }
-	     l = l->next;
-	     s2++;
-	  }
-
-	if (s2 < smax)
-	  {
-	     hi0 = ml->data;
-	     hi1 = ml->data + mpoint;
-	     if ((s2->hi0 != hi0) || (s2->hi1 != hi1))
-	       {
-		  s2->hi0 = hi0; s2->hi1 = hi1;
-		  s2->is_modified = 1;
-	       }
-	     s2++;
-	  }
-     }
-   else				       /* same line */
-     {
-	if (point < mpoint)
-	  {
-	     s1->hi0 = l->data + point;
-	     s1->hi1 = l->data + mpoint;
-	  }
-	else
-	  {
-	     s1->hi1 = l->data + point;
-	     s1->hi0 = l->data + mpoint;
-	  }
-	s1->is_modified = 1;
-	s2 = s1 + 1;
-	s1--;
-     }
-
-   done:			       /* reached if there is no mark */
-
-   /* now do area outside the region */
-   while (s1 >= s)
-     {
-	if (s1->hi0 != NULL)
-	  {
-	     s1->hi1 = s1->hi0 = NULL;
-	     s1->is_modified = 1;
-	  }
-	s1--;
-     }
-
-   while (s2 < smax)
-     {
-	if (s2->hi0 != NULL)
-	  {
-	     s2->hi1 = s2->hi0 = NULL;
-	     s2->is_modified = 1;
-	  }
-	s2++;
-     }
+   return m;
 }
 
-static void compute_line_display_size (void)
+static void compute_linenum_display_size (void)
 {
 #if JED_HAS_DISPLAY_LINE_NUMBERS
    int max_num_len = 0;
@@ -1249,23 +1156,34 @@ static void compute_line_display_size (void)
 #endif
 }
 
+static int get_top_lineno (Line *top)
+{
+   int dn = 0;
+
+   /* CLine is below top by construction */
+   while ((top != NULL) && (top != CLine))
+     {
+	top = top->next;
+	dn++;
+     }
+   return LineNum - dn;
+}
+
 /* if force then do update otherwise return 1 if update or 0 if not */
 static int update_1(Line *top, int force)
 {
-   int i;
    Window_Type *start_win;
+   int i;
    int did_eob, time_has_expired = 0;
+   int winrow = 0;
 
-   if (Batch ||
-       (!force
-	&& (Executing_Keyboard_Macro || (Repeat_Factor != NULL)
-	    || screen_input_pending (0)
-	    || (Read_This_Character != NULL)))
+   if (Batch
+       || ((force == 0)
+	   && (Executing_Keyboard_Macro || (Repeat_Factor != NULL)
+	       || screen_input_pending (0)
+	       || (Read_This_Character != NULL)))
        || (CBuf != JWindow->buffer))
-
-     {
-	return(0);
-     }
+     return 0;
 
    if (Suspend_Screen_Update != 0)
      {
@@ -1279,7 +1197,9 @@ static int update_1(Line *top, int force)
    CBuf->linenum = LineNum;
    CBuf->max_linenum = Max_LineNum;
 
-   if (Wants_Attributes && CBuf->vis_marks)
+   if ((Wants_Attributes && CBuf->vis_marks)
+       || (CLine == JScreen[JWindow->sy].line)   /* moving cursor left at top */
+       || (CLine == JScreen[JWindow->sy + JWindow->rows-1].line))   /* moving cursor right at bottom */
      {
 	JWindow->trashed = 1;
      }
@@ -1291,17 +1211,17 @@ static int update_1(Line *top, int force)
 	time_has_expired = (Status_This_Time > Status_Last_Time + 45);
      }
 
-   /* if cursor moves just left right, do not update status line */
-   if (!force && !JWindow->trashed &&
-       ((JWindow == JWindow->next) || (User_Prefers_Line_Numbers && Cursor_Motion))
+   /* if cursor moves just left or right, do not update status line */
+   if ((force == 0)
+       && !JWindow->trashed
+       && ((JWindow == JWindow->next) || (User_Prefers_Line_Numbers && Cursor_Motion))
        /* if % wanted, assume user is like me and gets annoyed with
 	* screen updates
 	*/
-       && (User_Prefers_Line_Numbers
-	   || time_has_expired))
+       && (User_Prefers_Line_Numbers || time_has_expired))
      {
 	update_status_line(0);
-	return(1);
+	return 1;
      }
 
    if (!JWindow->trashed && Cursor_Motion)
@@ -1316,7 +1236,9 @@ static int update_1(Line *top, int force)
    start_win = JWindow;
    do
      {
-	int imax;
+	Scrwrap_Type wt;
+	Mark *vismark;
+	int imin, imax, lineno;
 	unsigned int start_column;
 
 #if JED_HAS_LINE_ATTRIBUTES
@@ -1329,27 +1251,36 @@ static int update_1(Line *top, int force)
 	if (top != NULL) top = find_non_hidden_line (top, NULL);
 #endif
 
+	compute_linenum_display_size ();
+	scrwrap_init (&wt, JWindow, CBuf->flags & VISUAL_WRAP);	       /* This requires the display size to be set */
+
 	/* (void) SLsmg_utf8_enable (CBuf->local_vars.is_utf8); */
 	if (top == NULL)
 	  {
-	     top = find_top();
+	     top = find_top (&wt, &winrow);
 	     if (top == NULL) top = CLine;
 	  }
 
+	lineno = get_top_lineno (top);
+
 	JWindow->beg.line = top;
+	JWindow->beg_winrow = winrow;
+
+	vismark = NULL;
+
 #if JED_HAS_LINE_ATTRIBUTES
 	if (top->flags & JED_LINE_HIDDEN)
 	  top = NULL;
 	else
 #endif
-	  mark_window_attributes ((start_win == JWindow) || (start_win->buffer != CBuf));
+	  vismark = mark_window_attributes ((start_win == JWindow) || (start_win->buffer != CBuf));
 
 	did_eob = 0;
 
-	i = JWindow->sy;
-	imax = i + JWindow->rows;
+	imin = JWindow->sy;
+	imax = imin + JWindow->rows;
+	i = imin + winrow;      /* winrow<= 0 ==> i could be less than imin if the start of the line is above the window */
 
-	compute_line_display_size ();
 	start_column = JWindow->sx;
 
 	while (i < imax)
@@ -1358,18 +1289,21 @@ static int update_1(Line *top, int force)
 	     if ((top != NULL) && (top->flags & JED_LINE_HIDDEN))
 	       {
 		  top = top->next;
+		  lineno++;
 		  continue;
 	       }
 #endif
 
 	     /* the next line is really optional */
 #if 0
-	     if (!force && (Exit_From_MiniBuffer ||
-			    screen_input_pending (0))) break;
+	     if (!force && (Exit_From_MiniBuffer || screen_input_pending (0))) break;
 #endif
 
-	     if ((JScreen[i].line != top)
+	     if ((i < imin)
+		 || (JScreen[i].line != top)
 		 || JScreen[i].is_modified
+		 || (JScreen[i].wrapno != 0)
+		 || (vismark != NULL)
 		 || (Want_Eob
 		     && !did_eob
 		     && (i != Jed_Num_Screen_Rows - 1)
@@ -1378,17 +1312,25 @@ static int update_1(Line *top, int force)
 		  if (((top == NULL) || (top->len == 0))
 		      && (Want_Eob && !did_eob && !(CBuf->flags & READ_ONLY)))
 		    {
-		       display_line(&Eob_Line, i, start_column);
-
-		       /* JScreen[i].line = top; */
+		       display_line(&wt, &Eob_Line, lineno, i, start_column, vismark);
 		       did_eob = 1;
 		    }
-		  else display_line(top, i, start_column);
+		  else display_line (&wt, top, lineno, i, start_column, vismark);
+		  i += 1 + wt.num_wraps;
 	       }
-
+	     else
+	       {
+		  i++;
+		  /* Skip wrapped continuations */
+		  while ((i < imax)
+			 && (JScreen[i].line == top))
+		    i++;
+	       }
 	     if (top != NULL)
-	       top = top->next;
-	     i++;
+	       {
+		  top = top->next;
+		  lineno++;
+	       }
 	  }
 
 	HScroll_Line = NULL;
@@ -1509,18 +1451,24 @@ void flush_message (char *m)
 
 static void update_minibuffer(void)
 {
+   Scrwrap_Type wt;
    Window_Type *w;
+   int wrapmode = 0;
 
    if (Executing_Keyboard_Macro) return;
 
    if (MiniBuffer != NULL)
      {
+	Mark *vismark;
 	w = JWindow;
 	while (!IN_MINI_WINDOW) other_window();
 
 	JWindow->beg.line = CLine;
-	mark_window_attributes (1);
-	display_line(CLine, Jed_Num_Screen_Rows-1, 0);
+	JWindow->beg_winrow = 0;
+
+	vismark = mark_window_attributes (1);
+	scrwrap_init (&wt, JWindow, wrapmode);	       /* This requires the display size to be set */
+	display_line (&wt, CLine, 1, Jed_Num_Screen_Rows-1, 0, vismark);
 	while (w != JWindow) other_window();
 	Mini_Ghost = 1;
      }
@@ -1533,85 +1481,13 @@ static void update_minibuffer(void)
    else Mini_Ghost = ((*Message_Buffer) || (*Error_Buffer));
 
    if (Mini_Ghost == 0)
-     display_line(NULL, Jed_Num_Screen_Rows-1, 0);
-}
-
-#if 0
-static void set_hscroll(int col)
-{
-   int hdiff, whs = abs(Wants_HScroll), wc = JWindow->hscroll_column - 1;
-   int sw = Jed_Num_Screen_Cols - 1;
-   static Line *last;
-   Line *tmp;
-
-#if JED_HAS_DISPLAY_LINE_NUMBERS
-   sw -= CBuf->line_num_display_size;
-#endif
-   if (sw < 1)
-     sw = 1;
-
-   /* take care of last effect of horizontal scroll */
-   if (last != NULL)
      {
-	tmp = CLine;
-	CLine = last;
-	register_change(0);
-	CLine = tmp;
-	if (last != CLine)
-	  {
-#if 0
-	     /* I need to think about this more */
-	     if (Wants_HScroll < 0)
-	       {
-		  if (wc != 0)
-		    {
-		       JWindow->column = 1;
-		       wc = 0;
-		       touch_window ();
-		    }
-	       }
-#endif
-	     HScroll = 0;
-	  }
-
-	last = NULL;
-     }
-
-   col--;			       /* use 0 origin */
-   hdiff = col - wc;
-   if ((HScroll >= hdiff)
-       || (HScroll <= hdiff - sw))
-     {
-	if (hdiff >= sw)
-	  {
-	     HScroll = hdiff - sw + whs;
-	  }
-	else if ((hdiff == 0) && (wc == 0)) HScroll = 0;
-	else if (hdiff <= 1)
-	  {
-	     HScroll = hdiff - whs - 1;
-	  }
-	else HScroll = 0;
-     }
-
-   if (HScroll)
-     {
-	if (wc + HScroll < 0) HScroll = -wc;
-
-	if (Wants_HScroll < 0)
-	  {
-	     JWindow->hscroll_column += HScroll;
-	     touch_window();
-	     HScroll = 0;
-	  }
-	else
-	  {
-	     register_change(0);
-	     last = HScroll_Line = CLine;
-	  }
+	scrwrap_init (&wt, JWindow, wrapmode);	       /* This requires the display size to be set */
+	display_line (&wt, NULL, 1, Jed_Num_Screen_Rows-1, 0, NULL);
      }
 }
-#endif
+
+
 /* Let "|" denote the window edges,
  *   "." denote text, "*" denotes the current location
  *
@@ -1798,7 +1674,9 @@ void update(Line *line, int force, int flag, int run_update_hook)
 #endif
    col = calculate_column ();
    HScroll_Line = NULL;
-   if (Wants_HScroll) set_hscroll(col); else HScroll = 0;
+   if (Wants_HScroll && (0 == (CBuf->flags & VISUAL_WRAP)))
+     set_hscroll(col);
+   else HScroll = 0;
    hscroll_line_save = HScroll_Line;
 
    if (SLang_get_error ()) flag = 0;	       /* update hook invalidates flag */
@@ -2047,87 +1925,171 @@ void jed_redraw_screen (int force)
    update(l, force, 0, 1);
 }
 
-void recenter(int *np)
+void recenter (int *np)
 {
-   Line *l = CLine;
-   int i, n = *np;
-
-   if (Batch)
-     return;
+   Scrwrap_Type wt;
+   Line *cline = CLine, *top;
+   int point = Point;
+   int dr, winrow, i, n;
+   Screen_Type *s, *smax;
 
    JWindow->trashed = 1;
+   n = *np;
+
    if (n == 0)
      {
-	n = JWindow->rows / 2;
-	i = 0;
-	while (i < n)
-	  {
-	     if (l->prev == NULL) break;
-	     l = l->prev;
-#if JED_HAS_LINE_ATTRIBUTES
-	     if (l->flags & JED_LINE_HIDDEN) continue;
-#endif
-	     i++;
-	  }
-	JWindow->beg.line = l;
-	JWindow->beg.n -= i;
-	JWindow->beg.point = 0;
 	jed_redraw_screen (0);
 	return;
      }
 
-   if (CBuf != JWindow->buffer) return;
+   n--;				       /* convert to 0 based */
 
-   if ((n <= 0) || (n > JWindow->rows)) n = JWindow->rows / 2;
+   if ((n < 0) || (n >= JWindow->rows)) n = JWindow->rows / 2;
 
-   while (n > 1)
+   scrwrap_init (&wt, JWindow, CBuf->flags & VISUAL_WRAP);
+   scrwrap_calculate_rel_position (&wt, cline, point, &dr, NULL);
+   top = jed_find_top_to_recenter (&wt, cline, point, dr, n, &winrow);
+   scrwrap_calculate_rel_position (&wt, top, top->len, &dr, NULL);
+
+   winrow = -winrow;
+   s = JScreen + JWindow->sy;
+   smax = s + JWindow->rows;
+   while ((s < smax) && (winrow <= dr))
      {
-	l = l->prev;
-	if (l == NULL)
-	  {
-	     l = CBuf->beg;
-	     break;
-	  }
-#if JED_HAS_LINE_ATTRIBUTES
-	if (l->flags & JED_LINE_HIDDEN) continue;
-#endif
-	n--;
+	s->line = top;
+	s->wrapno = winrow;
+	s->is_modified = 1;
+	winrow++;
+	s++;
      }
+   while (s < smax)
+     {
+	if (top == NULL)
+	  {
+	     s->line = top;
+	     s->wrapno = 0;
+	     s->is_modified = 1;
+	     s++;
+	     continue;
+	  }
 
-   /* update(l, 1, 0, 1); */
-   JScreen [JWindow->sy].line = l;
-   JScreen [JWindow->sy].is_modified = 1;
+	top = top->next;
+	while ((top != NULL) && (top->flags & JED_LINE_HIDDEN))
+	  top = top->next;
+	if (top == NULL) continue;
+
+	scrwrap_calculate_rel_position (&wt, top, cline->len, &dr, NULL);
+	i = 0;
+	while ((s < smax) && (i <= dr))
+	  {
+	     s->line = top;
+	     s->wrapno = i;
+	     s->is_modified = 1;
+	     i++;
+	     s++;
+	  }
+     }
 }
+
 
 int window_line (void)
 {
+   Scrwrap_Type wt;
    Line *cline;
    Line *top;
-   int n;
+   int n, dn;
+   int winrow, point;
 
    if (CBuf != JWindow->buffer) return 0;
 
-   top = find_top ();
+   scrwrap_init (&wt, JWindow, CBuf->flags & VISUAL_WRAP);
+   top = find_top (&wt, &winrow);
 
 #if JED_HAS_LINE_ATTRIBUTES
-   cline = find_non_hidden_line (CLine, NULL);
+   cline = find_non_hidden_line (CLine, &point);
 #else
    cline = CLine;
+   point = Point;
 #endif
 
-   n = 1;
+   n = winrow;
 
    while ((top != NULL) && (top != cline))
      {
+	scrwrap_calculate_rel_position (&wt, top, top->len, &dn, NULL);
+	n += 1 + dn;
+
 	top = top->next;
 #if JED_HAS_LINE_ATTRIBUTES
 	while ((top != NULL) && (top->flags & JED_LINE_HIDDEN))
 	  top = top->next;
 #endif
-	n++;
      }
-   return n;
+   if (top == cline)
+     {
+	scrwrap_calculate_rel_position (&wt, cline, point, &dn, NULL);
+	n += dn;
+     }
+
+   return 1 + n;		       /* 1-based */
 }
+
+/* returns the buffer line and wrap number
+ * at the 1-based window row
+ */
+Line *jed_get_window_line (int row, int *wrapnop, int *pointp)
+{
+   Scrwrap_Type wt;
+   Line *top;
+   int winrow;
+   int nrows, i;
+
+   *wrapnop = 0;
+   *pointp = 0;
+
+   if (CBuf != JWindow->buffer) return NULL;
+
+   scrwrap_init (&wt, JWindow, CBuf->flags & VISUAL_WRAP);
+   top = find_top (&wt, &winrow);
+   if (top == NULL) return NULL;
+
+   nrows = JWindow->rows;
+
+   row--;			       /* make 0-based */
+   if ((row < 0) || (row >= nrows)) return NULL;
+
+   i = 0;
+   while (i < nrows)
+     {
+	int dr;
+	scrwrap_calculate_rel_position (&wt, top, top->len, &dr, NULL);
+	if ((i >= row) && (i <= row + dr))
+	  {
+	     int wrapno;
+
+	     *wrapnop = wrapno = (row - i) + winrow;   /* winrow<=0 for top-line, 0 for others */
+	     if (wrapno > 0)
+	       {
+		  int col, srow, scol;
+
+		  /* Compute the unwrapped column for the character at the beginning of the window row */
+		  col = wrapno * (wt.cmax-1) + 1;
+		  init_smg_for_buffer (&srow, &scol);
+		  *pointp = SLsmg_strbytes (top->data, top->data + top->len, col);
+		  SLsmg_gotorc (srow, scol);
+	       }
+	     return top;
+	  }
+	winrow = 0;		       /* reset */
+	i += (1+dr);
+	top = top->next;
+	while ((top != NULL) && (top->flags & JED_LINE_HIDDEN))
+	  top = top->next;
+	if (top == NULL) return NULL;
+     }
+   return NULL;
+}
+
 
 void touch_window (void)
 {
@@ -2234,6 +2196,7 @@ void touch_window_hard(Window_Type *w, int all)
 	  {
 	     s->is_modified = 1;
 	     s->line = NULL;
+	     s->wrapno = 0;
 	     s++;
 	  }
 	w->trashed = 1;

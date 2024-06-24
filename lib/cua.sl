@@ -73,7 +73,7 @@ setkey("repeat_search",                        Key_F3);
 setkey("backward_delete_char_untabify",    Key_BS);
 setkey("delete_char_cmd",                  Key_Del);
 setkey("toggle_overwrite",                 Key_Ins);
-setkey("beg_of_line",                      Key_Home);
+setkey("bol_cmd",                      Key_Home);
 setkey("eol_cmd",                          Key_End);
 setkey("page_up",                          Key_PgUp);
 setkey("page_down",                        Key_PgDn);

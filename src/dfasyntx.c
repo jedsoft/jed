@@ -1136,7 +1136,7 @@ static int get_keyword_color (Syntax_Table_Type *st, unsigned char *p, int n, in
    return -1;
 }
 
-static void dfa_syntax_highlight (unsigned char *p, unsigned char *pmax,
+static void dfa_syntax_highlight (Scrwrap_Type *wt, unsigned char *p, unsigned char *pmax,
 				  Syntax_Table_Type *st)
 {
    DFA *d;
@@ -1202,7 +1202,7 @@ static void dfa_syntax_highlight (unsigned char *p, unsigned char *pmax,
 	     else if ((preproc != -1) && (colour != JCOM_COLOR))
 	       colour = preproc;
 
-             p = write_using_color(p, last_acc_pos, colour);
+             p = write_using_color(wt, p, last_acc_pos, colour);
 	  }
 	else
 	  {
@@ -1210,9 +1210,9 @@ static void dfa_syntax_highlight (unsigned char *p, unsigned char *pmax,
 	      * and either q == pmax or d==NULL
 	      */
 	     if (preproc != -1)
-	       p = write_using_color (p, q, preproc);
+	       p = write_using_color (wt, p, q, preproc);
 	     else
-	       p = write_using_color (p, q, JNORMAL_COLOR);
+	       p = write_using_color (wt, p, q, JNORMAL_COLOR);
 	  }
 	d = h->dfa;
      }

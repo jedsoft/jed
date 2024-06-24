@@ -78,6 +78,8 @@ int Number_Two = 2;
 int Number_Ten = 10;
 char *Read_Only_Error = (char *) "Buffer is read only!";
 
+int Jed_Visual_Wrap_Default = 0;
+
 unsigned int LineNum = 1;
 unsigned int Max_LineNum;
 int Point = 0;
@@ -1033,6 +1035,9 @@ Buffer *make_buffer (char *name, char *dir, char *file) /*{{{*/
 #ifdef IBMPC_SYSTEM
    newB->flags |= ADD_CR_ON_WRITE_FLAG;
 #endif
+   if (Jed_Visual_Wrap_Default)
+     newB->flags |= VISUAL_WRAP;
+
    newB->syntax_table = Default_Syntax_Table;
 
    buffer_filename (newB, dir, file);

@@ -110,7 +110,7 @@ COMMON_OFILES = buffer.o cmds.o misc.o file.o ins.o sig.o sysdep.o \
   screen.o paste.o ledit.o line.o search.o text.o keymap.o replace.o \
   window.o undo.o vfile.o intrin.o syntax.o abbrev.o indent.o \
   jprocess.o lineattr.o blocal.o mouse.o userinfo.o lock.o \
-  version.o hooks.o colors.o main.o
+  version.o hooks.o colors.o main.o scrwrap.o
 COMMON_OBJS = $(OBJDIR)/buffer.o $(OBJDIR)/cmds.o $(OBJDIR)/misc.o \
   $(OBJDIR)/file.o $(OBJDIR)/ins.o $(OBJDIR)/sig.o $(OBJDIR)/sysdep.o \
   $(OBJDIR)/screen.o $(OBJDIR)/paste.o $(OBJDIR)/ledit.o $(OBJDIR)/line.o \
@@ -120,11 +120,12 @@ COMMON_OBJS = $(OBJDIR)/buffer.o $(OBJDIR)/cmds.o $(OBJDIR)/misc.o \
   $(OBJDIR)/jprocess.o $(OBJDIR)/lineattr.o $(OBJDIR)/blocal.o \
   $(OBJDIR)/mouse.o $(OBJDIR)/menu.o $(OBJDIR)/userinfo.o $(OBJDIR)/lock.o \
   $(OBJDIR)/version.o $(OBJDIR)/hooks.o $(OBJDIR)/colors.o \
-  $(OBJDIR)/main.o
+  $(OBJDIR)/main.o $(OBJDIR)/scrwrap.o
 main_C_FLAGS = -DJED_ROOT='"$(JED_ROOT)"'
 main_O_DEP = Makefile
 jprocess_O_DEP = $(SRCDIR)/pty.c
 version_O_DEP = $(SRCDIR)/version.h
+screen_O_DEP = $(SRCDIR)/screen.h $(SRCDIR)/scrwrap.h
 DOT_O_DEPS = $(SRCDIR)/buffer.h $(SRCDIR)/jed-feat.h $(SRCDIR)/misc.h \
  $(SRCDIR)/jedlimit.h $(CONFIG_H)
 COMMON_LIBS = $(LDFLAGS) $(RPATH) $(SLANG_LIB) -lslang $(MISCLIBS)
@@ -344,6 +345,9 @@ $(OBJDIR)/sysdep.o : $(SRCDIR)/sysdep.c $(DOT_O_DEPS) $(sysdep_O_DEP)
 
 $(OBJDIR)/screen.o : $(SRCDIR)/screen.c $(DOT_O_DEPS) $(screen_O_DEP)
 	cd $(OBJDIR); $(COMPILE_CMD) $(screen_C_FLAGS) $(SRCDIR)/screen.c
+
+$(OBJDIR)/scrwrap.o : $(SRCDIR)/scrwrap.c $(DOT_O_DEPS) $(scrwrap_O_DEP)
+	cd $(OBJDIR); $(COMPILE_CMD) $(scrwrap_C_FLAGS) $(SRCDIR)/scrwrap.c
 
 $(OBJDIR)/paste.o : $(SRCDIR)/paste.c $(DOT_O_DEPS) $(paste_O_DEP)
 	cd $(OBJDIR); $(COMPILE_CMD) $(paste_C_FLAGS) $(SRCDIR)/paste.c

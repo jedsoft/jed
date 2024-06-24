@@ -23,6 +23,7 @@ extern int jed_trim_whitespace(void);
 extern int indent_line(void);
 extern int transpose_lines(void);
 extern int newline_and_indent(void);
+extern int bol_cmd(void);
 extern int eol_cmd(void);
 extern int sys_spawn_cmd(void);
 extern int jed_spawn_fg_process (int (*)(VOID_STAR), VOID_STAR);
@@ -57,6 +58,7 @@ extern int Jed_Wrap_Default;
 extern int Jed_Case_Search_Default;
 extern int Jed_Suspension_Not_Allowed;
 extern int Jed_Use_Tabs_Default;
+
 #if 0
 extern int new_find_matching (int *, int *);
 #endif

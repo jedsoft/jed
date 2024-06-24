@@ -495,7 +495,7 @@ setkey("self_insert_cmd",	"'");
 %% In addition, if you want the ^H key to move to the beginning of line
 %% then uncomment the next two lines.
 %    unsetkey("^H");
-%  setkey("beg_of_line",	"^H");  %% beginning of line
+%  setkey("bol_cmd",	"^H");  %% beginning of line
 %% By default, these are bound
 %% to help functions (man page, etc...).
 

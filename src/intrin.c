@@ -705,6 +705,13 @@ static int intrin_get_mini_response (char *s)
    return jed_get_mini_response (s, 0);
 }
 
+static void intrin_set_viswrap_indicator (long *wchp)
+{
+   SLwchar_Type wch = (long) *wchp;
+   if (wch < 0x20) return;	       /* should we error here? */
+   scrwrap_set_visual_wrap_indicator (wch);
+}
+
 #if 0
 static int get_utf8_mode (void)
 {
@@ -965,6 +972,7 @@ static SLang_Intrin_Fun_Type Jed_Intrinsics [] = /*{{{*/
    MAKE_INTRINSIC_I("set_line_number_mode", set_line_number_mode, INT_TYPE),
    MAKE_INTRINSIC_S("strwidth", intrin_strwidth, INT_TYPE),
    MAKE_INTRINSIC_0("set_undo_position", jed_undo_record_position, VOID_TYPE),
+   MAKE_INTRINSIC_1("set_visual_wrap_indicator", intrin_set_viswrap_indicator, VOID_TYPE, SLANG_LONG_TYPE),
    SLANG_END_INTRIN_FUN_TABLE
 };
 
@@ -979,6 +987,7 @@ static SLang_Intrin_Var_Type Jed_Variables [] =
    MAKE_VARIABLE("MINIBUFFER_ACTIVE", &MiniBuffer_Active, INT_TYPE, 1),
    MAKE_VARIABLE("USE_TABS", &Buffer_Local.use_tabs, INT_TYPE, 0),
    MAKE_VARIABLE("USE_TABS_DEFAULT", &Jed_Use_Tabs_Default, INT_TYPE, 0),
+   MAKE_VARIABLE("VISUAL_WRAP_DEFAULT", &Jed_Visual_Wrap_Default, INT_TYPE, 0),
    MAKE_VARIABLE("TAB_DEFAULT", &Jed_Tab_Default, INT_TYPE, 0),
    MAKE_VARIABLE("CASE_SEARCH", &Buffer_Local.case_search, INT_TYPE, 0),
    MAKE_VARIABLE("CASE_SEARCH_DEFAULT", &Jed_Case_Search_Default, INT_TYPE, 0),

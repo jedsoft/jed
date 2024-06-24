@@ -29,7 +29,7 @@ setkey("backward_paragraph",	"\e{");
 setkey("forward_paragraph",	"\e}");
 
 setkey("dabbrev", 		"^A");
-setkey("beg_of_line",		"^B");
+setkey("bol_cmd",		"^B");
 setkey("page_down",		"^D");
 setkey("eol_cmd",		"^E");
 
@@ -121,7 +121,7 @@ setkey("next_wind_up",		"^W"+Key_Up);
 setkey("next_wind_dn",		"^W"+Key_Down);
 setkey("page_down",		Key_PgDn);
 setkey("page_up",		Key_PgUp);
-setkey("beg_of_line",		Key_Home);
+setkey("bol_cmd",		Key_Home);
 setkey("eol_cmd",		Key_End);
 setkey("delete_char_cmd",	Key_Del);
 setkey("toggle_overwrite",	Key_Ins);

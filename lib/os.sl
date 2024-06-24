@@ -63,7 +63,7 @@ define enable_menu_keys ();
 . "bskip_word"		"\e[d" setkey      %/* shift-left */
 . "goto_top_of_window"	"\e[a" setkey      %/* shift-up */
 . "goto_bottom_of_window"	"\e[b" setkey      %/* shift-down */
-. "beg_of_line"		"\e[1~" setkey		% Home
+. "bol_cmd"		"\e[1~" setkey		% Home
 . "eol_cmd"		"\e[4~" setkey		% End
 
 . 0xFFFF '$' "\e[3$" x_set_keysym     % Key_Shift_Del

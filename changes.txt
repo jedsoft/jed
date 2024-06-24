@@ -383,6 +383,10 @@ Changes since 0.99-19
      Recentx_Display_Timestamp variable
 183. lib/dired.sl: The target of symbolic links were getting removed
      instead of the symbolic link itself
+184. Added visual wrapping of long lines.  This is distinct from
+     wrapping where newline characters are added to force a line wrap.
+     Visual wrapping is purely a visual effect.  See
+     doc/txt/viswrap.txt for more information.
 
 {{{ Previous Versions
 

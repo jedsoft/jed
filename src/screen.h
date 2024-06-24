@@ -7,6 +7,7 @@
  * License.  See the file COPYING for more information.
  */
 #include "window.h"
+#include "scrwrap.h"
 
 /* JED screen management routines */
 
@@ -29,8 +30,8 @@ extern int calculate_column(void);
 extern void register_change(int);
 extern void touch_window(void);
 extern int cursor_visible(void);
-extern Line *find_top(void);
-extern Line *jed_find_top_to_recenter (Line *);
+/* extern Line *find_top(int *winrowp); */
+/* extern Line *jed_find_top_to_recenter (Line *line, int point, int *winrowp); */
 
 extern char Message_Buffer[256];
 extern void message(char *);
@@ -47,7 +48,7 @@ extern int Want_Eob;
 extern void set_status_format(char *, int *);
 
 extern void init_syntax_highlight (void);
-extern void write_syntax_highlight (int, Line *, unsigned int);
+extern void write_syntax_highlight (Scrwrap_Type *wt, int, Line *, unsigned int);
 extern int Mode_Has_Syntax_Highlight;
 extern int Wants_HScroll;
 extern int Mini_Ghost;
@@ -80,5 +81,8 @@ extern char *MiniBuf_Get_Response_String;
 extern int Jed_Simulate_Graphic_Chars;
 
 extern int Jed_Display_Initialized;
+
+extern Line *jed_get_window_line (int row, int *wrapnop, int *pointp);
+
 #endif
 /* #ifdef _JED_SCREEN_H_ */

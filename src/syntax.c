@@ -22,7 +22,8 @@ static unsigned short *Char_Syntax;
 static char **Keywords = NULL;	       /* array of keywords */
 static int Keyword_Not_Case_Sensitive;
 
-static unsigned char *write_using_color (unsigned char *p,
+static unsigned char *write_using_color (Scrwrap_Type *wt,
+					 unsigned char *p,
 					 unsigned char *pmax,
 					 int color)
 {
@@ -39,33 +40,33 @@ static unsigned char *write_using_color (unsigned char *p,
 
 	     if (p1 != p)
 	       {
-		  SLsmg_set_color (0);
-		  SLsmg_write_nchars ((char *)p, (unsigned int)(p1-p));
+		  /* SLsmg_write_nchars ((char *)p, (unsigned int)(p1-p)); */
+		  scrwrap_write_bytes (wt, p, p1, 0);
 		  p = p1;
 	       }
 	     while ((p1 < pmax) && (*p1 == '\t'))
 	       p1++;
-	     SLsmg_set_color (JTAB_COLOR);
-	     SLsmg_write_nchars ((char *)p, (unsigned int)(p1-p));
+	     /* SLsmg_write_nchars ((char *)p, (unsigned int)(p1-p)); */
+	     scrwrap_write_bytes (wt, p, p1, JTAB_COLOR);
 	     p = p1;
 	  }
      }
    /* drop */
-   SLsmg_set_color (color);
-   SLsmg_write_chars (p, pmax);
+   /* SLsmg_write_chars (p, pmax); */
+   scrwrap_write_bytes (wt, p, pmax, color);
    SLsmg_set_color (0);
    return pmax;
 }
 
 #if JED_HAS_COLOR_COLUMNS
-static void color_columns (int row, register unsigned char *p, register unsigned char *pmax)
+static void color_columns (Scrwrap_Type *wt, int row, register unsigned char *p, register unsigned char *pmax)
 {
    unsigned char *c;
    int color;
    int x0, x1, nx;
 
    if (p != pmax)
-     (void) write_using_color (p, pmax, 0);
+     (void) write_using_color (wt, p, pmax, 0);
 
    if (NULL == (c = CBuf->column_colors))
      return;
@@ -92,7 +93,7 @@ static void color_columns (int row, register unsigned char *p, register unsigned
 }
 #endif				       /* JED_HAS_COLOR_COLUMNS */
 
-static int try_keyword (register unsigned char *q, int n, register char *t, unsigned char color) /*{{{*/
+static int try_keyword (Scrwrap_Type *wt, unsigned char *q, int n, char *t, unsigned char color) /*{{{*/
 {
    unsigned char *p;
    int ignore_case = Keyword_Not_Case_Sensitive;
@@ -117,7 +118,7 @@ static int try_keyword (register unsigned char *q, int n, register char *t, unsi
 	if (p == q)
 	  {
 	     p = q - n;
-	     write_using_color (p, q, color);
+	     write_using_color (wt, p, q, color);
 	     return 0;
 	  }
 	ch = *p;
@@ -183,10 +184,10 @@ static unsigned char *find_word_end (unsigned char *p, unsigned char *pmax)
    return p;
 }
 
-static unsigned char *highlight_word (unsigned char *p, unsigned char *pmax) /*{{{*/
+static unsigned char *highlight_word (Scrwrap_Type *wt, unsigned char *p, unsigned char *pmax) /*{{{*/
 {
    char **kwds;
-   register unsigned char *q;
+   unsigned char *q;
    int n;
    int i;
    int color;
@@ -204,18 +205,19 @@ static unsigned char *highlight_word (unsigned char *p, unsigned char *pmax) /*{
 	     if (t != NULL)
 	       {
 		  color = (JKEY_COLOR + i);
-		  if (0 == try_keyword (q, n, t, color))
+		  if (0 == try_keyword (wt, q, n, t, color))
 		    return q;
 	       }
 	     kwds += MAX_KEYWORD_LEN;
 	  }
      }
-   return write_using_color (p, q, 0);
+   return write_using_color (wt, p, q, 0);
 }
 
 /*}}}*/
 
-static unsigned char *highlight_string (unsigned char *p, unsigned char *pmax, /*{{{*/
+static unsigned char *highlight_string (Scrwrap_Type *wt,
+					unsigned char *p, unsigned char *pmax, /*{{{*/
 					unsigned char quote, unsigned char str_char,
 					int ofs)
 {
@@ -230,12 +232,12 @@ static unsigned char *highlight_string (unsigned char *p, unsigned char *pmax, /
 	if ((ch == quote) && (p1 < pmax))
 	  p1++;
      }
-   return write_using_color (p, p1, JSTR_COLOR);
+   return write_using_color (wt, p, p1, JSTR_COLOR);
 }
 
 /*}}}*/
 
-static unsigned char *highlight_number (unsigned char *p, unsigned char *pmax) /*{{{*/
+static unsigned char *highlight_number (Scrwrap_Type *wt, unsigned char *p, unsigned char *pmax) /*{{{*/
 {
    unsigned char *p1;
    unsigned char ch;
@@ -248,7 +250,7 @@ static unsigned char *highlight_number (unsigned char *p, unsigned char *pmax) /
 	if ((p1 < pmax) && (Char_Syntax[*p1] & NUMBER_SYNTAX))
 	  p1++;
 	else
-	  return write_using_color (p, p1, JOP_COLOR);
+	  return write_using_color (wt, p, p1, JOP_COLOR);
      }
 
    while ((p1 < pmax) && (Char_Syntax[*p1] & NUMBER_SYNTAX))
@@ -262,12 +264,13 @@ static unsigned char *highlight_number (unsigned char *p, unsigned char *pmax) /
 	p1++;
      }
 
-   return write_using_color (p, p1, JNUM_COLOR);
+   return write_using_color (wt, p, p1, JNUM_COLOR);
 }
 
 /*}}}*/
 
-static unsigned char *highlight_comment (unsigned char *p,
+static unsigned char *highlight_comment (Scrwrap_Type *wt,
+					 unsigned char *p,
 					 unsigned char *p1,
 					 unsigned char *pmax, /*{{{*/
 					 Syntax_Table_Type *st)
@@ -295,7 +298,7 @@ static unsigned char *highlight_comment (unsigned char *p,
 	p1++;
      }
 
-   return write_using_color (p, p1, JCOM_COLOR);
+   return write_using_color (wt, p, p1, JCOM_COLOR);
 }
 
 /*}}}*/
@@ -304,7 +307,7 @@ static unsigned char *highlight_comment (unsigned char *p,
 # include "dfasyntx.c"
 #endif
 
-static unsigned char *write_whitespace (unsigned char *p, unsigned char *pmax, int trailing_color)
+static unsigned char *write_whitespace (Scrwrap_Type *wt, unsigned char *p, unsigned char *pmax, int trailing_color)
 {
    unsigned char *p1;
 
@@ -315,12 +318,12 @@ static unsigned char *write_whitespace (unsigned char *p, unsigned char *pmax, i
      return p;
 
    if ((p1 == pmax) && (Jed_Highlight_WS & HIGHLIGHT_WS_TRAILING))
-     return write_using_color (p, pmax, trailing_color);
+     return write_using_color (wt, p, pmax, trailing_color);
 
-   return write_using_color (p, p1, 0);
+   return write_using_color (wt, p, p1, 0);
 }
 
-void write_syntax_highlight (int row, Line *l, unsigned int len)
+void write_syntax_highlight (Scrwrap_Type *wt, int row, Line *l, unsigned int len)
 {
    Syntax_Table_Type *st = CBuf->syntax_table;
    unsigned char ch;
@@ -337,7 +340,7 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 #if JED_HAS_COLOR_COLUMNS
    if (CBuf->coloring_style)
      {
-	color_columns (row, p, pmax);
+	color_columns (wt, row, p, pmax);
 	return;
      }
 #endif
@@ -349,7 +352,7 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
        && (st->hilite != NULL)
        && (st->hilite->dfa != NULL))
      {
-	dfa_syntax_highlight (p, pmax, st);
+	dfa_syntax_highlight (wt, p, pmax, st);
 	return;
      }
 #endif
@@ -373,15 +376,15 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 	       p1++;
 
 	     if ((p1 < pmax) && (*p1 == '*'))
-	       p = write_using_color (p, p1, 0);
+	       p = write_using_color (wt, p, p1, 0);
 	  }
 
-	p = highlight_comment (p, p, pmax, st);
+	p = highlight_comment (wt, p, p, pmax, st);
      }
    else if (JED_IS_LINE_IN_STRING_VAL(context))
      {
 	int i = context - JED_LINE_IN_STRING_MINVAL;
-	p = highlight_string (p, pmax, st->quote_char, st->string_chars[i], 0);
+	p = highlight_string (wt, p, pmax, st->quote_char, st->string_chars[i], 0);
      }
    else if (JED_IS_LINE_IN_HTML_VAL(context))
      {
@@ -389,13 +392,13 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 	ch = st->sgml_stop_char;
 	while ((p1 < pmax) && (*p1++ != ch))
 	  ;
-	p = write_using_color (p, p1, JHTML_KEY_COLOR);
+	p = write_using_color (wt, p, p1, JHTML_KEY_COLOR);
      }
    else
 #endif /* JED_HAS_LINE_ATTRIBUTES */
    if ((flags & FORTRAN_TYPE) && st->fortran_comment_chars[*p])
      {
-	(void) write_using_color (p, pmax, JCOM_COLOR);
+	(void) write_using_color (wt, p, pmax, JCOM_COLOR);
 	return;
      }
    else
@@ -403,7 +406,7 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 	/* Handle the preprocessor */
 	if (flags & PREPROCESS_IGNORE_WHITESPACE)
 	  {
-	     p = write_whitespace (p, pmax, JTWS_COLOR);
+	     p = write_whitespace (wt, p, pmax, JTWS_COLOR);
 	     if (p == pmax)
 	       return;
 	  }
@@ -411,7 +414,7 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 	  {
 	     if (flags & PREPROCESS_COLOR_WHOLE_LINE)
 	       {
-		  (void) write_using_color (p, pmax, JPREPROC_COLOR);
+		  (void) write_using_color (wt, p, pmax, JPREPROC_COLOR);
 		  return;
 	       }
 	     p1 = p + 1;
@@ -421,7 +424,7 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 	     while ((p1 < pmax) && (Char_Syntax[*p1] != 0))
 	       p1++;
 
-	     p = write_using_color (p, p1, JPREPROC_COLOR);
+	     p = write_using_color (wt, p, p1, JPREPROC_COLOR);
 	  }
      }
 
@@ -449,13 +452,13 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 		 && (p + st->comment_start_len <= pmax)
 		 && (0 == strncmp ((char *)p, st->comment_start, st->comment_start_len)))
 	       {
-		  p = highlight_comment (p, p + st->comment_start_len, pmax, st);
+		  p = highlight_comment (wt, p, p + st->comment_start_len, pmax, st);
 		  continue;
 	       }
 
 	     if (_jed_is_eol_comment_start (st, l, p, pmax, NULL))
 	       {
-		  (void) write_using_color (p, pmax, JCOM_COLOR);
+		  (void) write_using_color (wt, p, pmax, JCOM_COLOR);
 		  return;
 	       }
 	  }
@@ -464,7 +467,7 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 	  {
 	     if ((*p > '9') || (0 == (syntax & NUMBER_SYNTAX)))
 	       {
-		  p = highlight_word (p, pmax);
+		  p = highlight_word (wt, p, pmax);
 		  continue;
 	       }
 	  }
@@ -495,7 +498,7 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 	     if ((p1 != pmax)
 		 || ((Jed_Highlight_WS & HIGHLIGHT_WS_TRAILING) == 0))
 	       {
-		  p = write_using_color (p, p1, 0);
+		  p = write_using_color (wt, p, p1, 0);
 		  continue;
 	       }
 	     while (p1 > p)
@@ -507,33 +510,33 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 		       break;
 		    }
 	       }
-	     p = write_using_color (p, p1, 0);
+	     p = write_using_color (wt, p, p1, 0);
 	     if (p1 != pmax)
-	       (void) write_using_color (p1, pmax, JTWS_COLOR);
+	       (void) write_using_color (wt, p1, pmax, JTWS_COLOR);
 	     return;
 	  }
 
 	if (syntax & DELIM_SYNTAX)
 	  {
-	     p = write_using_color (p, p + 1, JDELIM_COLOR);
+	     p = write_using_color (wt, p, p + 1, JDELIM_COLOR);
 	     continue;
 	  }
 
 	if (syntax & STRING_SYNTAX)
 	  {
-	     p = highlight_string (p, pmax, st->quote_char, *p, 1);
+	     p = highlight_string (wt, p, pmax, st->quote_char, *p, 1);
 	     continue;
 	  }
 
 	if (syntax & OP_SYNTAX)
 	  {
-	     p = write_using_color (p, p + 1, JOP_COLOR);
+	     p = write_using_color (wt, p, p + 1, JOP_COLOR);
 	     continue;
 	  }
 
 	if (syntax & NUMBER_SYNTAX)
 	  {
-	     p = highlight_number (p, pmax);
+	     p = highlight_number (wt, p, pmax);
 	     continue;
 	  }
 
@@ -549,20 +552,20 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 		    }
 		  p1++;
 	       }
-	     p = write_using_color (p, p1, JHTML_KEY_COLOR);
+	     p = write_using_color (wt, p, p1, JHTML_KEY_COLOR);
 	     continue;
 	  }
 
 	if (syntax & HTML_END_SYNTAX)  /* missed start from previous line */
 	  {
 	     /* FIXME!!! Start from beginning */
-	     p = write_using_color (p, p + 1, JHTML_KEY_COLOR);
+	     p = write_using_color (wt, p, p + 1, JHTML_KEY_COLOR);
 	     continue;
 	  }
 
 	if ((syntax & OPEN_DELIM_SYNTAX) || (syntax & CLOSE_DELIM_SYNTAX))
 	  {
-	     p = write_using_color (p, p + 1, JDELIM_COLOR);
+	     p = write_using_color (wt, p, p + 1, JDELIM_COLOR);
 	     continue;
 	  }
 
@@ -581,7 +584,7 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 		    }
 		  else p1++;
 	       }
-	     p = write_using_color (p, p1, JKEY_COLOR);
+	     p = write_using_color (wt, p, p1, JKEY_COLOR);
 	     continue;
 	  }
 
@@ -591,13 +594,13 @@ void write_syntax_highlight (int row, Line *l, unsigned int len)
 	     /* p1 = p + 2; */
 	     if (p1 < pmax)
 	       {
-		  p = write_using_color (p, p1, 0);
+		  p = write_using_color (wt, p, p1, 0);
 		  continue;
 	       }
 	  }
 
 	/* Undefined. */
-	p = write_using_color (p, p + 1, 0);
+	p = write_using_color (wt, p, p + 1, 0);
      }
 }
 

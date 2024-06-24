@@ -34,6 +34,23 @@
 \seealso{set_status_line}
 \done
 
+\variable{VISUAL_WRAP_DEFAULT}
+\synopsis{Controls the visual wrapping for new buffers}
+\usage{Int_Type DISPLAY_WRAPS_DEFAULT}
+  The value of this variable controls the visual wrapping attribute
+  for newly created buffers.  If the value is non-zero, then
+  visual wrapping will be enabled for new buffers.  Otherwise visual
+  the visual wrapping attribute will be unset.
+
+  Long lines in buffers with visual wrapping enabled will
+  have their lines wrapped at the edge of the window for display
+  purposes.  When a line is visually wrapped, the a single backspace
+  character will be written to the last column of the window to
+  indicate that the line has been visually wrapped.  This wrapping
+  indicator may be changed to a different character via the
+  \ivar{Visual_Wrap_Char} variable.
+\seealso{set_visual_wrap, toggle_visual_wrap, Visual_Wrap_Char}
+
 \variable{DOLLAR_CHARACTER}
 \synopsis{The line continuation character}
 \usage{Int_Type DOLLAR_CHARACTER = '$'}
@@ -270,6 +287,22 @@
   characters wide.
 \seealso{set_mode, narrow, whatbuf, getbuf_info}
 \seealso{DISPLAY_TIME,LINENUMBERS, Global_Top_Status_Line, Status_Line_String}
+\done
+
+\function{set_visual_wrap_indicator (Long_Type wch)}
+\synopsis{Set the character used to denote visual wrapping}
+\description
+This function may be used to set the character that is used to
+indicate that a line has been visually wrapped.  The default character
+is a single backslash ('\\').  The value of \exmp{wch} may be any
+single-width unicode character.
+\example
+  set_visual_wrap_indicator ('\\\\');   % default
+  set_visual_wrap_indicator ('+');    % plus sign
+  set_visual_wrap_indicator (0x21b5); % unicode south west arrow
+\notes
+  The font must support the specified character for it to be displayed
+  properly.
 \done
 
 \function{splitwindow}

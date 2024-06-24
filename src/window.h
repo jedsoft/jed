@@ -17,6 +17,7 @@ typedef struct Window_Type
    int hscroll_column;		       /* numbered from 1 */
    Buffer *buffer;
    Mark beg;			       /* buffer position of top corner */
+   int beg_winrow;
    Mark mark;			       /* last cursor pos in window before switch */
    int trashed;			       /* true if one or more lines in window were changed */
 #define MINIBUFFER_WINDOW	0x01
@@ -50,7 +51,7 @@ extern int (*jed_window_geom_change_cb) (void);
 extern void touch_screen_for_buffer(Buffer *);
 extern void touch_window_hard(Window_Type *, int);
 
-extern int is_line_visible (int);
+extern int jed_is_point_visible (int lineno, int point);
 extern int split_window(void);
 extern int other_window(void);
 extern int one_window(void);

@@ -2206,6 +2206,34 @@ define toggle_line_number_mode ()
 }
 add_completion ("toggle_line_number_mode");
 
+%1%+
+%\function{set_visual_wrap(Int_Type state);}
+%\synopsis{Set the visual wrapping attribute}
+%\description
+% This function may used to enable or disable visual wrapping of the
+% current buffer.  If \exmp{state} is non-0, the visual wrapping will
+% be enabled.  Otherwise if will be disabled.
+%\seealso{toggle_visual_wrap, set_visual_wrap_indicator, VISUAL_WRAP_DEFAULT}
+%!%-
+define set_visual_wrap (onoff)
+{
+   _set_or_unset_buffer_flag (onoff, 0x20000);
+}
+
+%1%+
+%\function{toggle_visual_wrap()}
+%\synopsis{Toggle the current buffer's visual wrapping attribute}
+%\description
+% This function toggles the state of the buffer's visual wrapping
+% attribute.
+%\seealso{set_visual_wrap, set_visual_wrap_indicator, VISUAL_WRAP_DEFAULT}
+%!%-
+define toggle_visual_wrap ()
+{
+   _toggle_buffer_flag (0x20000);
+}
+add_completion ("toggle_visual_wrap");
+
 % Make this a wrapper around _set_color to allow the user to give it a more
 % sophisticated definition.
 define set_color (){_set_color;}

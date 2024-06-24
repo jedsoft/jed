@@ -143,6 +143,7 @@ WRAP_INDENTS	= 0;	% Non zero indents next line after wrapping current.
 			% If non-zero, kill line will kill through end of the 
 			%  line if Point is at the beginning of the line. For
 			%  emacs-like behavior, set this to zero.
+VISUAL_WRAP_DEFAULT = 0;% Visual wrapping disabled
 
 %---------------------------------------------------------------------------
 % C-mode indentation style

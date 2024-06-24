@@ -1,0 +1,48 @@
+JED's standard behavior for showing long lines is to cut off the
+display at the right edge of the window and to scroll the line or
+window horizontally to maintain visibility of the current editing
+position. Additionally, JED can visually wrap long lines at the right
+edge of the window. This wrapping is purely a visual effect and does
+not alter the actual content of the line.  This behavior is called
+"visual wrapping".
+
+The simplest way to enable visual wrapping for all buffers is to add
+the following line to your .jedrc file:
+
+  VISUAL_WRAP_DEFAULT = 1;
+
+Visual wrapping may be enabled or disabled on a per-buffer basis via
+the set_visual_wrap or toggle_visual_wrap functions, e.g.,
+
+   define text_mode_hook ()
+   {
+            .
+	    .
+      set_visual_wrap (1);  % Enable visual wrapping
+   }
+   define c_mode_hook ()
+   {
+            .
+	    .
+      set_visual_wrap (0);  % Disable visual wrapping
+   }
+
+When a long line becomes visually wrapped, a backslash character is
+displayed in the far right column to indicate that the line was
+visually wrapped.  This character may be changed to any single-width
+unicode character (supported by the terminal's font) via the
+set_visual_wrap_indicator function, e.g.,
+
+   set_visual_wrap_indicator ('\\');   % default
+   set_visual_wrap_indicator ('+');    % plus-sign
+   set_visual_wrap_indicator (0x21b5); % Unicode down-left arrow ("↵")
+
+Please be aware that functions like go_up, go_down, eol, and others
+are unaware of the visual wrapping of a line, as this is solely a
+visual effect. In contrast, the internal functions "previous_line_cmd"
+and "next_line_cmd", which are used for keybindings, do consider visual
+wrapping. As a result, they will move the editing point up or down a
+window row, which may not align with moving to the previous or next
+buffer line.
+
+

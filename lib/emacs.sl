@@ -43,7 +43,7 @@ setkey("smart_set_mark_cmd",		"^@^C");
 setkey("smart_set_mark_cmd",		"^@");
 #endif
 
-setkey("beg_of_line",		"^A");
+setkey("bol_cmd",		"^A");
 setkey("previous_char_cmd",	"^B");
 setkey("delete_char_cmd",	"^D");
 setkey("eol_cmd",		"^E");

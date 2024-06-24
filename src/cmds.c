@@ -63,6 +63,7 @@ int Jed_Wrap_Default = 72;
 int Jed_Case_Search_Default = 0;
 int Jed_Suspension_Not_Allowed = 0;
 int Jed_Use_Tabs_Default = 1;
+int Jed_Wrap_Mode_Default = 0;	       /* if non-0, wrap screen lines */
 
 /*}}}*/
 
@@ -85,63 +86,92 @@ static int check_line_attr_no_modify (Line *l)
 }
 #endif
 
+
 static int next_visible_lines (int n)
 {
 #if JED_HAS_LINE_ATTRIBUTES
-   int dn;
-   int i;
+   Scrwrap_Type wt;
+   int i, dn;
+
+   scrwrap_init (&wt, JWindow, CBuf->flags & VISUAL_WRAP);
 
    i = 0;
    while (i < n)
      {
 	Line *l = CLine;
+	int dr, dr1, c;
 
-	dn = 0;
-	do
+	scrwrap_calculate_rel_position (&wt, l, l->len, &dr1, &c);
+	dr = dr1;
+
+	if (dr1 != 0)
+	  scrwrap_calculate_rel_position (&wt, CLine, Point, &dr, &c);
+	if (dr != dr1) dr++;
+	else
 	  {
-	     l = l->next;
-	     dn++;
+	     dn = 0;
+	     do
+	       {
+		  l = l->next;
+		  dn++;
+	       }
+	     while ((l != NULL) && (l->flags & JED_LINE_HIDDEN));
+	     if (l == NULL) break;
+	     CLine = l;
+	     LineNum += dn;
+	     Point = 0;
+	     dr = 0;
 	  }
-	while ((l != NULL) && (l->flags & JED_LINE_HIDDEN));
-
-	if (l == NULL) break;
-
-	CLine = l;
-	LineNum += dn;
+	c = dr*(wt.cmax-1) + Goal_Column;
+	(void) goto_column1 (&c);
 	i++;
      }
-   if (i) Point = 0;
+   /* if (i) eol (); */			       /* leave point at eol */
    return i;
 #else
-   return jed_down(n);
+   return jed_down (n);
 #endif
 }
 
 static int prev_visible_lines (int n)
 {
 #if JED_HAS_LINE_ATTRIBUTES
+   Scrwrap_Type wt;
    int i, dn;
+
+   scrwrap_init (&wt, JWindow, CBuf->flags & VISUAL_WRAP);
 
    i = 0;
    while (i < n)
      {
 	Line *l = CLine;
+	int dr, c;
 
-	dn = 0;
-	do
+	scrwrap_calculate_rel_position (&wt, CLine, Point, &dr, &c);
+	if (dr) dr--;
+	else
 	  {
-	     l = l->prev;
-	     dn++;
+	     /* At top screen row of CLine.  Move to the previous
+	      * non-hidden line in the buffer
+	      */
+	     dn = 0;
+	     do
+	       {
+		  l = l->prev;
+		  dn++;
+	       }
+	     while ((l != NULL) && (l->flags & JED_LINE_HIDDEN));
+	     if (l == NULL) break;
+	     CLine = l;
+	     LineNum -= dn;
+	     eol ();
+	     scrwrap_calculate_rel_position (&wt, CLine, Point, &dr, NULL);
 	  }
-	while ((l != NULL) && (l->flags & JED_LINE_HIDDEN));
-
-	if (l == NULL) break;
-
-	CLine = l;
-	LineNum -= dn;
+	c = dr*(wt.cmax-1) + Goal_Column;
+	(void) goto_column1 (&c);
 	i++;
      }
-   if (i) eol ();			       /* leave point at eol */
+   /* if (i) eol (); */			       /* leave point at eol */
    return i;
 #else
    return jed_up (n);
@@ -195,15 +225,17 @@ static void check_last_key_function (FVOID_STAR f)
    /* For syntax highlighting */
    if (Last_Key_Function != f)
      touch_window ();
-#if 0
-       && ((Last_Key_Function == (FVOID_STAR) ins_char_cmd)
-	   || (Last_Key_Function == (FVOID_STAR) eol_cmd)
-	   || (Last_Key_Function == (FVOID_STAR) delete_char_cmd)
-	   || (Last_Key_Function == (FVOID_STAR) backward_delete_char_cmd)
-	   || (Last_Key_Function == (FVOID_STAR) backward_delete_char_untabify)))
+}
 
-     register_change(0);
-#endif
+static int calculate_wrapped_column (void)
+{
+   Scrwrap_Type wt;
+   int c;
+
+   scrwrap_init (&wt, JWindow, CBuf->flags & VISUAL_WRAP);
+
+   scrwrap_calculate_rel_position (&wt, CLine, Point, NULL, &c);
+   return c;			       /* 1-based */
 }
 
 static void next_line_prev_line_helper (int *gcp, int *ret, int dr, FVOID_STAR f)
@@ -212,7 +244,7 @@ static void next_line_prev_line_helper (int *gcp, int *ret, int dr, FVOID_STAR f
 
    (void) dr;
    check_line();
-   gc = calculate_column();
+   gc = calculate_wrapped_column ();
    if (Cursor_Motion <= 0) Goal_Column = gc;
    else if (Goal_Column < gc) Goal_Column = gc;
    *gcp = gc;
@@ -221,14 +253,6 @@ static void next_line_prev_line_helper (int *gcp, int *ret, int dr, FVOID_STAR f
 
    check_last_key_function (f);
    *ret = 1;
-#if 0
-   *ret = (JWindow->trashed
-	   || (CLine == JScreen[JWindow->sy + dr].line)
-#if JED_HAS_LINE_ATTRIBUTES
-	   || (CLine->flags & JED_LINE_IS_READONLY)
-#endif
-	   );
-#endif
 }
 
 static void eob_bob_error (int f)
@@ -617,14 +641,13 @@ int previous_line_cmd (void)
 
    next_line_prev_line_helper (&gc, &ret, 0, (FVOID_STAR) previous_line_cmd);
 
-   if ((CLine == CBuf->beg)
-       || (1 != prev_visible_lines (1)))
+   if (1 != prev_visible_lines (1))
      {
 	eob_bob_error (-1);
 	return 1;
      }
 
-   point_column(Goal_Column);
+   /* point_column(Goal_Column); */
    return(ret);
 }
 
@@ -634,14 +657,13 @@ int next_line_cmd (void)
 
    next_line_prev_line_helper (&gc, &ret, JWindow->rows - 1, (FVOID_STAR) next_line_cmd);
 
-   if ((CLine == CBuf->end)
-       || (1 != next_visible_lines (1)))
+   if (1 != next_visible_lines (1))
      {
 	eob_bob_error (1);
 	return 1;
      }
 
-   point_column(Goal_Column);
+   /* point_column(Goal_Column); */
    return(ret);
 }
 
@@ -658,7 +680,7 @@ int previous_char_cmd (void)
 	return 1;
      }
 
-   Goal_Column = calculate_column();
+   Goal_Column = calculate_wrapped_column();
    return b || JWindow->trashed;
 }
 
@@ -674,26 +696,56 @@ int next_char_cmd ()
 	return 1;
      }
 
-   Goal_Column = calculate_column ();
+   Goal_Column = calculate_wrapped_column ();
    return JWindow->trashed || bolp ();  /* Point = 0 ==> moved a line */
 }
 
 /*}}}*/
 
+static void goto_wrapped_column (int c)
+{
+   Scrwrap_Type wt;
+   int dr;
+
+   scrwrap_init (&wt, JWindow, CBuf->flags & VISUAL_WRAP);
+   scrwrap_calculate_rel_position (&wt, CLine, Point, &dr, NULL);
+   c = dr*(wt.cmax-1) + c;
+   (void) goto_column1 (&c);
+}
+
 /*{{{ eol_cmd */
 int eol_cmd (void)
 {
-   eol();
+   if (CBuf->flags & VISUAL_WRAP)
+     goto_wrapped_column (JWindow->width-1);
+   else
+     eol();
+
    if ((0 == (CBuf->flags & READ_ONLY))
 #if JED_HAS_LINE_ATTRIBUTES
        && (0 == (CLine->flags & JED_LINE_IS_READONLY))
 #endif
-       )
+       && eolp()
+      )
      (void) jed_trim_whitespace();
-   return(1);
+
+   Goal_Column = calculate_wrapped_column ();
+
+   return 1;
 }
 
 /*}}}*/
+
+int bol_cmd (void)
+{
+   if (CBuf->flags & VISUAL_WRAP)
+     goto_wrapped_column (1);
+   else
+     bol ();
+
+   Goal_Column = calculate_wrapped_column ();
+   return 1;
+}
 
 /*{{{ Scrolling/pageup/down functions */
 
@@ -724,21 +776,74 @@ static void scroll_completion (int dir)
      }
 }
 
+/* row is 1-based */
+static int goto_window_row (int row)
+{
+   Line *l, *next, *prev;
+   int point, wrapno;
+   int dn_prev, dn_next, nrows;
+
+   if (NULL == (l = jed_get_window_line (row, &wrapno, &point)))
+     {
+	eob ();
+	return 0;
+     }
+
+   /* We know (by construction) that CLine is in the window as well as
+    * the line l.  And: l-CLine <= n where n is the number of window
+    * rows
+    */
+   nrows = JWindow->rows;
+   next = prev = CLine;
+   dn_next = dn_prev = 0;
+   while (nrows)
+     {
+	nrows--;
+	if (l == next)
+	  {
+	     CLine = l;
+	     Point = point;
+	     LineNum += dn_next;
+	     return 1;
+	  }
+	if (l == prev)
+	  {
+	     CLine = l;
+	     Point = point;
+	     LineNum -= dn_prev;
+	     return 1;
+	  }
+	if (next != NULL)
+	  {
+	     do
+	       {
+		  next = next->next;
+		  dn_next++;
+	       }
+	     while ((next != NULL) && (next->flags & JED_LINE_HIDDEN));
+	  }
+	if (prev != NULL)
+	  {
+	     do
+	       {
+		  prev = prev->prev;
+		  dn_prev++;
+	       }
+	     while ((prev != NULL) && (prev->flags & JED_LINE_HIDDEN));
+	  }
+     }
+
+   return 0;
+}
+
 int goto_bottom_of_window (void)
 {
-   int n;
-
-   n = JWindow->rows - window_line ();
-
-   return n == next_visible_lines (n);
+   return goto_window_row (JWindow->rows);
 }
 
 void goto_top_of_window (void)
 {
-   int n;
-
-   n = window_line () - 1;
-   (void) prev_visible_lines (n);
+   (void) goto_window_row (1);
 }
 
 static int Last_Page_Line;

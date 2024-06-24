@@ -152,6 +152,7 @@
         bit 9: (0x200) File associated with buffer is a binary file
         bit 10: (0x400) Add CR to end of lines when writing buffer to disk.
         bit 11: (0x800) Abbrev mode
+        bit 17: (0x20000) Visual wrapping
 #v-
   For example,
 #v+
