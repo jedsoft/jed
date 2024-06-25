@@ -99,6 +99,25 @@ custom_variable ("Recentx_Cache_Ext_Exclude_Patterns", {});
 %\seealso{Recentx_Cache_Exclude_Patterns, Recentx_Cache_Filename, Recentx_Use_Cache}
 %!%-
 
+custom_variable ("Recentx_Display_Timestamp", 1);
+%!%+
+%\variable{Recentx_Display_Timestamp}
+%\synopsis{Control the display of timestamps in the recent file list}
+%\usage{Recentx_Display_Timestamp = 1;}
+%\description
+%  If the value of this variable is non-zero, then timestamps will be
+%  displayed in the recent files menu.  Otherwise, timestamps will not
+%  be displayed.  The default value is 1.
+%\example
+%#v+
+%   variable Recentx_Display_Timestamp = 1;
+%#v-
+%\notes
+% This variable is defined in \file{recentx.sl}.
+%\seealso{Recentx_Cache_Exclude_Patterns, Recentx_Cache_Filename, Recentx_Use_Cache}
+%!%-
+
+
 private variable Last_Sync_Time = 0;
 private define new_recent_files_database ()
 {
@@ -258,31 +277,45 @@ private define get_most_recent_files ()
 	files[ii] = assoc_get_keys (item);
 	i += num;
      }
-   (files, ) = sort_files_by_time (files, times);
-   return files;
+   (files, times) = sort_files_by_time (files, times);
+   return files, times;
 }
 
 private define get_most_recent_files_by_ext (ext)
 {
    variable item = Recentx_Cache[ext];
-   variable files;
-   (files, ) = sort_files_by_time (assoc_get_keys(item), assoc_get_values(item));
-   return files;
+   variable files, times;
+   (files, times) = sort_files_by_time (assoc_get_keys(item), assoc_get_values(item));
+   return files, times;
 }
 
 private define menu_select_file_callback (file)
 {
+   
    () = find_file (file);
 }
 
 % Build the menu of recent files.
-private define display_recent_files_menu (popup, files)
+private define display_recent_files_menu (popup, files, times)
 {
    variable i = '1'; % use 1-9 first, then a-z, then A-Z, then give up and restart
-   foreach (files)
+   variable j;
+   variable year = localtime (_time()).tm_year;
+
+   _for j (0, length(files)-1, 1)
      {
-	variable file = ();
-	menu_append_item (popup, sprintf ("&%c %s", i, file), 
+	variable file = files[j];
+	variable tstr = "";
+	if (Recentx_Display_Timestamp)
+	  {
+	     variable t = times[j], tm = localtime (t);
+	     if (tm.tm_year == year)
+	       tstr = strftime (" %b %d %H:%M ", tm);
+	     else
+	       tstr = strftime (" %b %d %Y ", tm);
+	  }
+
+	menu_append_item (popup, sprintf ("&%c%s%s", i, tstr, file),
 			  &menu_select_file_callback, file);
 	% check - what should we use?
 	switch (i)
@@ -299,15 +332,17 @@ private variable Recent_Files_Ext_Menu_Name = "Recent Files by Ex&t";
 private define recent_files_menu_callback (popup)
 {
    load_recent_file_list ();
-   variable files = get_most_recent_files ();
-   display_recent_files_menu (popup, files);
+   variable files, times;
+   (files, times) = get_most_recent_files ();
+   display_recent_files_menu (popup, files, times);
 }
 
 private define recent_files_specific_ext_menu_callback (popup)
 {
    variable ext = strchop (popup, '.', 0)[-1];
-   variable files = get_most_recent_files_by_ext (ext);
-   display_recent_files_menu (popup, files);
+   variable files, times;
+   (files, times) = get_most_recent_files_by_ext (ext);
+   display_recent_files_menu (popup, files, times);
 }
 
 private define recent_files_ext_menu_callback (popup)

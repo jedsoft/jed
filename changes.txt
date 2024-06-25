@@ -378,6 +378,10 @@ Changes since 0.99-19
 180. lib/mime.sl: Use insert_byte instead of insert_char when decoding
      quoted-printable
 181. lib/slmode.sl: Added "abs" to the keyword list (Klaus Alexander)
+182. lib/recentx.sl: Added an option to display the timestamp in the
+     recent file list menu item.  This can be turned off using the
+     Recentx_Display_Timestamp variable
+
 
 {{{ Previous Versions
 

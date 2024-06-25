@@ -2430,6 +2430,32 @@ Recentx_Cache_Ext_Exclude_Patterns
 
 --------------------------------------------------------------
 
+Recentx_Display_Timestamp
+
+ SYNOPSIS
+  Control the display of timestamps in the recent file list
+
+ USAGE
+  Recentx_Display_Timestamp = 1;
+
+ DESCRIPTION
+  If the value of this variable is non-zero, then timestamps will be
+  displayed in the recent files menu.  Otherwise, timestamps will not
+  be displayed.  The default value is 1.
+
+ EXAMPLE
+
+   variable Recentx_Display_Timestamp = 1;
+
+
+ NOTES
+ This variable is defined in `recentx.sl'.
+
+ SEE ALSO
+  Recentx_Cache_Exclude_Patterns, Recentx_Cache_Filename, Recentx_Use_Cache
+
+--------------------------------------------------------------
+
 Session_Filename
 
  SYNOPSIS
