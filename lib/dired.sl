@@ -80,7 +80,9 @@
 
 require ("glob");
 
-variable Dired_Quick_Help = "d:tag file, u:untag, x:delete tagged files, r:rename, h:more help, ?:this help";
+variable Dired_Quick_Help
+  = "d:tag, u:untag, x:delete tagged, r:rename, g:refresh, h:more help, ?:this help";
+%  = "d:tag file, u:untag, x:delete tagged files, r:rename, h:more help, ?:this help";
 variable Dired_Buffer = "*dired*";
 variable Dired_Current_Directory;
 variable Dired_Move_Target_Dir;
@@ -342,7 +344,8 @@ define dired_point (dirn)
 {
    if (dirn > 0) go_down_1 (); else if (dirn < 0) go_up_1 ();
 
-   bol_skip_white ();
+   bol (); go_right(2);			       %  skip possible tag char
+   %bol_skip_white ();
    if (looking_at_char ('l'))
      {
 	() = ffind ("->");
@@ -417,8 +420,10 @@ define dired_getfile ()
 
    dired_point (0);
    name = extract_filename_at_point ();
+
    if (type == 3)
      {
+#iffalse
 	% symbolic link
 	stat_buf = stat_file (name);
 	if (stat_buf != NULL)
@@ -426,6 +431,7 @@ define dired_getfile ()
 	     if (stat_is ("dir", stat_buf.st_mode)) type = 2;
 	     else if (stat_is ("reg", stat_buf.st_mode)) type = 1;
 	  }
+#endif
      }
    return (name, type);
 }
@@ -436,7 +442,7 @@ define dired_tag ()
    EXIT_BLOCK { dired_point (1); }
 
    (, type) = dired_getfile ();
-   if ( type != 1 ) return;		% only files!
+   if (type == 2) return;	       %  skip directories
 
    set_readonly (0);
    bol ();
@@ -467,16 +473,14 @@ define dired_untag (dirn)
 define dired_xop_tagged_files (prompt, msg, op_function)
 {
    variable lbuf = " *Deletions*";
-   variable stack, n, fails = Null_String;
+   variable n, fails = Null_String;
    variable file;
 
    setbuf (Dired_Buffer);
    push_spot_bob ();
 
-   stack = _stkdepth;			% save stack depth
    ERROR_BLOCK
      {
-	_pop_n ( _stkdepth - stack );
 	sw2buf (Dired_Buffer);
 	set_readonly (0);
 	bob ();
@@ -490,24 +494,22 @@ define dired_xop_tagged_files (prompt, msg, op_function)
 
    set_readonly (0);
 
+   variable tagged_files = {};
    while ( bol_fsearch_char ('D') )
      {
 	insert_char ('%'); del ();
-	dired_getfile ();
-	pop ();			% pop type, leave name on stack
+	(file, ) = dired_getfile ();
+	list_append (tagged_files, file);
      }
-
-   n = _stkdepth - stack;
+   n = length (tagged_files);
    ifnot (n) error ("No tags!");
 
    sw2buf (lbuf);
    erase_buffer ();
 
-   loop (n)
-     {
-	insert ();				% tagged files on stack
-	newline ();
-     }
+   foreach file (tagged_files)
+     vinsert ("%S\n", file);
+
    bob ();
    buffer_format_in_columns ();
    if ( get_yes_no (prompt) == 1)

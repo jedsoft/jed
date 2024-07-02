@@ -381,7 +381,8 @@ Changes since 0.99-19
 182. lib/recentx.sl: Added an option to display the timestamp in the
      recent file list menu item.  This can be turned off using the
      Recentx_Display_Timestamp variable
-
+183. lib/dired.sl: The target of symbolic links were getting removed
+     instead of the symbolic link itself
 
 {{{ Previous Versions
 
