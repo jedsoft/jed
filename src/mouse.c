@@ -306,10 +306,11 @@ static int switch_to_event_window (int x, int y, int *linep, int *colp, int *sta
 	return 0;
      }
 
+   (void) push_spot ();
    (void) jed_goto_window_rc (y-JWindow->sy, x);
    *colp = calculate_column ();
    *linep = LineNum;
-
+   (void) pop_spot ();
    return 0;
 }
 

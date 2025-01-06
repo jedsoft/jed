@@ -389,6 +389,10 @@ Changes since 0.99-19
      doc/txt/viswrap.txt for more information.
 185. src/mouse.c,screen.c: Added support for visual wrapping to
      mouse-specific functions
+186. src/mouse.c: The current point was being moved to the position of
+     the mouse prior to the call to the mouse handlers.  This would
+     sometimes incorrectly position the cursor for horizontally
+     scrolled lines/windows.
 
 {{{ Previous Versions
 
