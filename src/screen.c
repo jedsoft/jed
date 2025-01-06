@@ -317,9 +317,7 @@ static void display_line (Scrwrap_Type *wt, Line *line, int lineno, int sy, int 
      }
 
    if (vismark != NULL)
-     {
-	highlight_line (line, lineno, sy, vismark);
-     }
+     highlight_line (line, lineno, sy, vismark);
 
 finish:
 
@@ -2034,10 +2032,10 @@ int window_line (void)
    return 1 + n;		       /* 1-based */
 }
 
-/* returns the buffer line and wrap number
- * at the 1-based window row
+/* returns the buffer line, wrap number, and Point at the 1-based window row
+ * and column
  */
-Line *jed_get_window_line (int row, int *wrapnop, int *pointp)
+Line *jed_get_window_line (int row, int col, int *wrapnop, int *pointp)
 {
    Scrwrap_Type wt;
    Line *top;
@@ -2058,29 +2056,35 @@ Line *jed_get_window_line (int row, int *wrapnop, int *pointp)
    row--;			       /* make 0-based */
    if ((row < 0) || (row >= nrows)) return NULL;
 
-   i = 0;
+   i = winrow;
    while (i < nrows)
      {
 	int dr;
 	scrwrap_calculate_rel_position (&wt, top, top->len, &dr, NULL);
-	if ((i >= row) && (i <= row + dr))
+	if ((i <= row) && (row <= i + dr))
 	  {
 	     int wrapno;
+	     int srow, scol;
 
-	     *wrapnop = wrapno = (row - i) + winrow;   /* winrow<=0 for top-line, 0 for others */
-	     if (wrapno > 0)
+	     *wrapnop = wrapno = (row - i);
+
+	     if (0 == (CBuf->flags & VISUAL_WRAP))
 	       {
-		  int col, srow, scol;
-
-		  /* Compute the unwrapped column for the character at the beginning of the window row */
-		  col = wrapno * (wt.cmax-1) + 1;
-		  init_smg_for_buffer (&srow, &scol);
-		  *pointp = SLsmg_strbytes (top->data, top->data + top->len, col);
-		  SLsmg_gotorc (srow, scol);
+		  col += (JWindow->hscroll_column-1);
+		  if ((top == HScroll_Line)
+		      && (Wants_HScroll && HScroll))
+		    col += HScroll;
 	       }
+
+	     /* Compute the unwrapped column for the character at the beginning of the window row */
+	     col = wrapno * (wt.cmax-1) + col;
+	     init_smg_for_buffer (&srow, &scol);
+	     *pointp = SLsmg_strbytes (top->data, top->data + top->len, col);
+	     SLsmg_gotorc (srow, scol);
+
 	     return top;
 	  }
-	winrow = 0;		       /* reset */
+	/* winrow = 0;	*/	       /* reset */
 	i += (1+dr);
 	top = top->next;
 	while ((top != NULL) && (top->flags & JED_LINE_HIDDEN))
@@ -2088,6 +2092,66 @@ Line *jed_get_window_line (int row, int *wrapnop, int *pointp)
 	if (top == NULL) return NULL;
      }
    return NULL;
+}
+
+/* row is 1-based */
+int jed_goto_window_rc (int row, int col)
+{
+   Line *l, *next, *prev;
+   int point, wrapno;
+   int dn_prev, dn_next, nrows;
+
+   if (NULL == (l = jed_get_window_line (row, col, &wrapno, &point)))
+     {
+	eob ();
+	return 0;
+     }
+
+   /* We know (by construction) that CLine is in the window as well as
+    * the line l.  And: l-CLine <= n where n is the number of window
+    * rows
+    */
+   nrows = JWindow->rows;
+   next = prev = CLine;
+   dn_next = dn_prev = 0;
+   while (nrows)
+     {
+	nrows--;
+	if (l == next)
+	  {
+	     CLine = l;
+	     Point = point;
+	     LineNum += dn_next;
+	     return 1;
+	  }
+	if (l == prev)
+	  {
+	     CLine = l;
+	     Point = point;
+	     LineNum -= dn_prev;
+	     return 1;
+	  }
+	if (next != NULL)
+	  {
+	     do
+	       {
+		  next = next->next;
+		  dn_next++;
+	       }
+	     while ((next != NULL) && (next->flags & JED_LINE_HIDDEN));
+	  }
+	if (prev != NULL)
+	  {
+	     do
+	       {
+		  prev = prev->prev;
+		  dn_prev++;
+	       }
+	     while ((prev != NULL) && (prev->flags & JED_LINE_HIDDEN));
+	  }
+     }
+
+   return 0;
 }
 
 

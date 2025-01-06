@@ -776,74 +776,14 @@ static void scroll_completion (int dir)
      }
 }
 
-/* row is 1-based */
-static int goto_window_row (int row)
-{
-   Line *l, *next, *prev;
-   int point, wrapno;
-   int dn_prev, dn_next, nrows;
-
-   if (NULL == (l = jed_get_window_line (row, &wrapno, &point)))
-     {
-	eob ();
-	return 0;
-     }
-
-   /* We know (by construction) that CLine is in the window as well as
-    * the line l.  And: l-CLine <= n where n is the number of window
-    * rows
-    */
-   nrows = JWindow->rows;
-   next = prev = CLine;
-   dn_next = dn_prev = 0;
-   while (nrows)
-     {
-	nrows--;
-	if (l == next)
-	  {
-	     CLine = l;
-	     Point = point;
-	     LineNum += dn_next;
-	     return 1;
-	  }
-	if (l == prev)
-	  {
-	     CLine = l;
-	     Point = point;
-	     LineNum -= dn_prev;
-	     return 1;
-	  }
-	if (next != NULL)
-	  {
-	     do
-	       {
-		  next = next->next;
-		  dn_next++;
-	       }
-	     while ((next != NULL) && (next->flags & JED_LINE_HIDDEN));
-	  }
-	if (prev != NULL)
-	  {
-	     do
-	       {
-		  prev = prev->prev;
-		  dn_prev++;
-	       }
-	     while ((prev != NULL) && (prev->flags & JED_LINE_HIDDEN));
-	  }
-     }
-
-   return 0;
-}
-
 int goto_bottom_of_window (void)
 {
-   return goto_window_row (JWindow->rows);
+   return jed_goto_window_rc (JWindow->rows, 1);
 }
 
 void goto_top_of_window (void)
 {
-   (void) goto_window_row (1);
+   (void) jed_goto_window_rc (1,1);
 }
 
 static int Last_Page_Line;
@@ -967,6 +907,9 @@ int pageup_cmd (void)
 int jed_scroll_left_cmd (void)
 {
    int dc = JWindow->width/2;
+
+   if (CBuf->flags & VISUAL_WRAP) return 0;
+
    if (Repeat_Factor != NULL)
      {
 	dc = *Repeat_Factor;
@@ -979,6 +922,9 @@ int jed_scroll_left_cmd (void)
 int jed_scroll_right_cmd (void)
 {
    int dc = JWindow->width/2;
+
+   if (CBuf->flags & VISUAL_WRAP) return 0;
+
    if (Repeat_Factor != NULL)
      {
 	dc = *Repeat_Factor;

@@ -82,7 +82,9 @@ extern int Jed_Simulate_Graphic_Chars;
 
 extern int Jed_Display_Initialized;
 
-extern Line *jed_get_window_line (int row, int *wrapnop, int *pointp);
+extern Line *jed_get_window_line (int row, int col, int *wrapnop, int *pointp);
+extern int jed_goto_window_row (int row);
+extern int jed_goto_window_rc (int row, int col);
 
 #endif
 /* #ifdef _JED_SCREEN_H_ */

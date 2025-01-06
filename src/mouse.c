@@ -231,7 +231,6 @@ static int window_exists (Window_Type *win) /*{{{*/
 static int switch_to_event_window (int x, int y, int *linep, int *colp, int *status) /*{{{*/
 {
    Window_Type *w;
-   int delta_y;
    static int last_status;
 
    *status = 0;
@@ -307,58 +306,10 @@ static int switch_to_event_window (int x, int y, int *linep, int *colp, int *sta
 	return 0;
      }
 
-   /* What line does y correspond ??? */
-   delta_y = y - (Use_This_Window->sy + window_line ());
-   y = LineNum;
-#if JED_HAS_LINE_ATTRIBUTES
-   if (delta_y == 0)
-     {
-	Line *l = CLine;
-	while ((l != NULL)
-	       && (l->flags & JED_LINE_HIDDEN))
-	  {
-	     y--;
-	     l = l->prev;
-	  }
-     }
-   else if (delta_y > 0)
-     {
-	Line *l = CLine;
-	while (delta_y && (l != NULL))
-	  {
-	     if (0 == (l->flags & JED_LINE_HIDDEN))
-	       delta_y--;
-	     l = l->next;
-	     y++;
-	  }
+   (void) jed_goto_window_rc (y-JWindow->sy, x);
+   *colp = calculate_column ();
+   *linep = LineNum;
 
-	while ((l != NULL) && (l->flags & JED_LINE_HIDDEN))
-	  {
-	     l = l->next;
-	     y++;
-	  }
-     }
-   else if (delta_y < 0)
-     {
-	Line *l = CLine;
-	while (delta_y && (l != NULL))
-	  {
-	     if (0 == (l->flags & JED_LINE_HIDDEN))
-	       delta_y++;
-	     l = l->prev;
-	     y--;
-	  }
-
-	while ((l != NULL) && (l->flags & JED_LINE_HIDDEN))
-	  {
-	     l = l->prev;
-	     y--;
-	  }
-     }
-#endif
-
-   *linep = y + delta_y;
-   *colp = JWindow->hscroll_column + x - 1;
    return 0;
 }
 
