@@ -274,7 +274,8 @@ void scrwrap_write_bytes (Scrwrap_Type *wt, SLuchar_Type *u, SLuchar_Type *umax,
 	  {
 	     int dc;
 	     ddc = SLwchar_wcwidth (wc);
-	     dc = wt->col + ddc;
+	     wt->col = dc = wt->col + ddc;
+	     wt->column += ddc;
 	     if (dc > max_dc)
 	       {
 		  if ((wt->row >= r_min) && (wt->row < r_max))
@@ -293,8 +294,6 @@ void scrwrap_write_bytes (Scrwrap_Type *wt, SLuchar_Type *u, SLuchar_Type *umax,
 	     if ((wt->row >= wt->rmin) && (wt->row < wt->rmax))
 	       {
 		  SLsmg_write_chars (p, p + nconsumed);
-		  wt->column += ddc;
-		  wt->col += ddc;
 	       }
 	  }
 

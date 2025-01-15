@@ -826,12 +826,11 @@ int pagedown_cmd()
    this_line = LineNum;
    this_point = Point;
 
-   col = calculate_column ();
    if (goto_bottom_of_window ())
      {
 	recenter (&Number_One);
      }
-
+   col = calculate_column ();
    goto_column1 (&col);
 
    if ((Last_Key_Function == (FVOID_STAR) pageup_cmd)
@@ -842,7 +841,7 @@ int pagedown_cmd()
 	  Point = Last_Page_Point;
      }
    else if (CLine->next == NULL) eol();
-   else bol ();
+   /* else bol (); */
 
    Last_Page_Line = this_line;
    Last_Page_Point = this_point;

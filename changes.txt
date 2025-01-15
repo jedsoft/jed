@@ -393,6 +393,10 @@ Changes since 0.99-19
      the mouse prior to the call to the mouse handlers.  This would
      sometimes incorrectly position the cursor for horizontally
      scrolled lines/windows.
+187. src/{scrwrap.c,cmds.c}: Page-Down on very long lines that when
+     wrapped span the entire window was not working.  Also, the
+     virtual column number was not being updated when writing a
+     non-ascii character
 
 {{{ Previous Versions
 
