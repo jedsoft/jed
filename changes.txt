@@ -397,6 +397,9 @@ Changes since 0.99-19
      wrapped span the entire window was not working.  Also, the
      virtual column number was not being updated when writing a
      non-ascii character
+188. src/paste.c: Rewrote the delete_region function to improve its
+     performance
+
 
 {{{ Previous Versions
 

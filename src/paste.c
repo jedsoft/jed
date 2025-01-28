@@ -789,39 +789,26 @@ int delete_region (void) /*{{{*/
 {
    int beg_point, end_point;
    Line *beg, *end;
+   unsigned int nbytes;
 
    if (0 != jed_check_readonly_region ())
      return -1;
 
    /* make this go through standard ins/del routines to ensure undo */
-
    end = CLine; end_point = Point;
-   push_spot();
    jed_pop_mark(1);
    beg = CLine; beg_point = Point;
-   pop_spot();
 
-   if (end != beg)
+   nbytes = 0;
+   while (beg != end)
      {
-	bol ();
-
-	if (-1 == jed_del_nbytes (end_point))
-	  return -1;
-
-	/* go back because we do not want to mess with Line structures
-	   changing on us --- shouldn't happen anyway */
-
-	while (jed_up (1) && (CLine != beg))
-	  {
-	     bol ();
-	     if (-1 == jed_del_through_eol ())
-	       return -1;
-	  }
-	end_point = CLine->len;	       /* include \n */
+	nbytes += beg->len - beg_point;
+	beg = beg->next;
+	beg_point = 0;
      }
+   nbytes += end_point - beg_point;
 
-   jed_set_point (beg_point);
-   if (-1 == jed_generic_del_nbytes (end_point - Point))
+   if (-1 == jed_generic_del_nbytes (nbytes))
      return -1;
 
    return 1;
