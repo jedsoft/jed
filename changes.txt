@@ -399,7 +399,11 @@ Changes since 0.99-19
      non-ascii character
 188. src/paste.c: Rewrote the delete_region function to improve its
      performance
-
+189. lib/bookmark.sl: When setting a bookmark, update the
+     Bkmrk_Last_Position variable with the current buffer position so
+     that the bkmrk_goto_mark function to return to that position using the
+     space key. (Morten Bo Johansen).  Also allow the `bkmrk_set_mark`
+     function to accept a space as a default bookmark.
 
 {{{ Previous Versions
 
