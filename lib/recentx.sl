@@ -291,7 +291,6 @@ private define get_most_recent_files_by_ext (ext)
 
 private define menu_select_file_callback (file)
 {
-   
    () = find_file (file);
 }
 
@@ -321,7 +320,8 @@ private define display_recent_files_menu (popup, files, times)
 	switch (i)
 	  { case '9': i = 'a' - 1; }
 	  { case 'z': i = 'A' - 1; }
-	  { case 'Z': i = '1' - 1; }
+	  { case 'Z': i = ' ' - 1; }
+	  { case ' ': i = ' ' - 1; }
 	i++;
      }
 }

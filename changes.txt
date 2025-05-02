@@ -404,6 +404,9 @@ Changes since 0.99-19
      that the bkmrk_goto_mark function to return to that position using the
      space key. (Morten Bo Johansen).  Also allow the `bkmrk_set_mark`
      function to accept a space as a default bookmark.
+190. lib/recentx.sl: Avoid repeating the shortcut menu selectors when
+     there are more than 62 (10+26+26) files displayed in the Recent
+     Files menu.
 
 {{{ Previous Versions
 
