@@ -158,6 +158,8 @@ void scrwrap_write_bytes (Scrwrap_Type *wt, SLuchar_Type *u, SLuchar_Type *umax,
    int max_dc, tab, r_min, r_max;
    unsigned char display_8bit;
 
+   if (wt->row >= wt->rmax) return;
+
    if (color == -1) color = 0;
    SLsmg_set_color (color);
 

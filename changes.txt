@@ -407,6 +407,9 @@ Changes since 0.99-19
 190. lib/recentx.sl: Avoid repeating the shortcut menu selectors when
      there are more than 62 (10+26+26) files displayed in the Recent
      Files menu.
+191. src/scrwrap.c: If visual wrapping is on, check the current screen
+     row against the window limits before writing anything to the
+     screen.
 
 {{{ Previous Versions
 
