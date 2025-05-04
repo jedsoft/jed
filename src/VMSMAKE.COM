@@ -104,7 +104,9 @@ $ ccopt = "/define=(''defs'JED)/include=(''slanglib')"
 $ if its_decc 
 $  then 
 $   C_C = "CC"
-$   if f$getsyi("HW_MODEL").ge.1024
+$   hw_model = f$getsyi("HW_MODEL")
+$   ! for x86 hw_model is 0, VAXes are 1 .. 1023, Alpha and I64 are >= 1024
+$   if (hw_model .eq. 0) .or. (hw_model.ge.1024)
 $    then
 $     ccopt = "/float=ieee/name=(as_is,short)/prefix=all" + "''ccopt'"
 $    else
@@ -148,6 +150,7 @@ $ bfiles = "abbrev," -
 $!
 $ bfiles = bfiles -
 	+ ",screen," -
+	+ "scrwrap," -
 	+ "search," -
 	+ "sig," -
 	+ "syntax," -

@@ -143,8 +143,10 @@
  */
 /* typedef int mode_t; */
 /* typedef int pid_t; */
+#if !defined(VMS) || (__CRTL_VER < 70301000)
 typedef int uid_t;
 typedef int gid_t;
+#endif
 /* typedef unsigned int dev_t; */
 /* typedef unsigned long ino_t; */
 
