@@ -412,6 +412,9 @@ Changes since 0.99-19
      screen.
 192. src/{VMSMAKE.COM,jedconf.h}: VMS specific changes: Added typedefs
      for gid_t and uid_t (Harmut Becker)
+193. lib/backups.sl: Use the highest numbered backup as the basis for
+     the next backup number rather than the lowest free number
+     (test-erik from github)
 
 {{{ Previous Versions
 
