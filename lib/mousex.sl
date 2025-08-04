@@ -350,3 +350,60 @@ define mousex_18 (status)
      mousex_report (status);
 }
 #endif
+
+private define init_bracketed_mode ()
+{
+   tt_send ("\e[?2004h");
+}
+private define reset_bracketed_mode ()
+{
+   tt_send ("\e[?2004l");
+}
+
+private define bracketed_paste ()
+{
+   variable endseq = "\e[201~", n = strlen (endseq);
+   variable as = _test_buffer_flag (2);
+   try
+     {
+	_unset_buffer_flag (2);
+	while (input_pending (50))
+	  {
+	     variable ch = getkey ();
+	     if (ch != '\e')
+	       {
+		  if (ch == '\r') ch = '\n';
+		  insert_byte (ch);
+		  continue;
+	       }
+
+	     variable i = 1;
+	     while (i < n)
+	       {
+		  ch = getkey ();
+		  if (ch == endseq[i])
+		    {
+		       i++;
+		       continue;
+		    }
+		  break;
+	       }
+	     then return;
+	     insert (endseq[[0:i-1]]);
+	  }
+     }
+   finally
+     {
+	if (as) _set_buffer_flag (2);
+     }
+}
+
+define mousex_use_bracketed_paste ()
+{
+   %remove_from_hook ("_jed_reset_display_hooks", &mousex_reset_display_hook);
+   %remove_from_hook ("_jed_init_display_hooks", &mousex_init_display_hook);
+   add_to_hook ("_jed_reset_display_hooks", &reset_bracketed_mode);
+   add_to_hook ("_jed_init_display_hooks", &init_bracketed_mode);
+   setkey (&bracketed_paste, "\e[200~");
+   init_bracketed_mode ();
+}

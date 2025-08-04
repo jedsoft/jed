@@ -415,6 +415,8 @@ Changes since 0.99-19
 193. lib/backups.sl: Use the highest numbered backup as the basis for
      the next backup number rather than the lowest free number
      (test-erik from github)
+194. lib/mousex.sl: Support for bracketed paste added.  See
+     doc/txt/mouse.txt for more information
 
 {{{ Previous Versions
 

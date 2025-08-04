@@ -137,13 +137,20 @@ performed:
 
    2.  Put the following on your .jedrc file:
 
-          () = evalfile ("mousex");
+          require ("mousex");
 
        The file `mousex.sl' creates three hooks: `exit_hook', `suspend_hook',
        and `resume_hook'.  If you have already defined these hooks for
        yourself, look at `mousex.sl' and modify your hooks appropriately.
        These hooks are necessary so that the `selection' state can be
        properly initialized and restored.
+
+       The `mousex.sl' file also implements bracketed paste.  More
+       information about this may be found at
+       <https://en.wikipedia.org/wiki/Bracketed-paste>.  To enable
+       bracketed paste, add the following line to your .jedrc file:
+
+         mousex_use_bracketed_paste ();
 
 Mouse Usage
 ===========
