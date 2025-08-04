@@ -66,8 +66,8 @@ item_list_3;
 
 static int TTY_Inited;
 
-#if 0
-/* This feature appears to trigger a bug in the C RTL access function. */
+#if __CRTL_VER>=80500000
+/* This feature triggered a bug in the access function of older C RTLs. */
 
 /*
  * VMS image initialization code to set DECC features
@@ -94,7 +94,7 @@ static void vms_init ()
    if (index == -1 || decc$feature_set_value(index, 0, 1) == -1)
      perror("DECC$ACL_ACCESS_CHECK");
 }
-#endif				       /* #if 0 */
+#endif				       /* #if __CRTL_VER>=80500000 */
 
 
 void vms_exit_handler(int not_used) /*{{{*/
