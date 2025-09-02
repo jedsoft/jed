@@ -33,7 +33,7 @@ set_color("menu_selection", $1, $2);
 set_color("menu_selection_char", "yellow", $2);
 #else
 % gray menu - ok except the shadow looks a bit odd
-% set_color("menu", "lightgray", "gray");
+% set_color("menu", $1, "gray");
 % set_color("menu_char", "yellow", "gray");
 % set_color("menu_popup", $1, "gray");
 % set_color("menu_shadow", $4, "black");
@@ -46,7 +46,7 @@ set_color("cursorovr", "black", "red");
 set_color("mouse",     "green", $2);
 
 %% some of the following have been automatically generated:
-set_color("linenum", "yellow", "blue");
+set_color("linenum", $4, $2);
 set_color("trailing_whitespace", $1, "brown");
 set_color("tab", $1, "cyan");
 set_color("url", $6, $2);

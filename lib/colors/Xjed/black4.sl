@@ -24,10 +24,10 @@ set_color("message",    $3, $2);
 set_color("error",      $4, $2);
 
 % gray menu -
-set_color("menu", $1, "gray50");
-set_color("menu_char",  "yellow",       "gray50");
-set_color("menu_popup", $1, "gray50");
-set_color("menu_shadow", $4, "gray25");
+set_color("menu", $1, "gray25");
+set_color("menu_char",  "yellow", "gray25");
+set_color("menu_popup", $1, "gray25");
+set_color("menu_shadow", $4, "gray15");
 set_color("menu_selection", $1, $2);
 set_color("menu_selection_char", "yellow", $2);
 
@@ -36,7 +36,7 @@ set_color("cursorovr", "black", "red");
 set_color("mouse",     "green", $2);
 
 %% some of the following have been automatically generated:
-set_color("linenum", "yellow", "blue");
+set_color("linenum", "sandybrown", $2);
 set_color("trailing_whitespace", $1, "sienna");
 set_color("tab", $1, "gray40");
 set_color("url", $6, $2);
@@ -44,7 +44,7 @@ set_color("italic", $1, $2);
 set_color("underline", "green", $2);
 set_color("bold", $1, $2);
 set_color("html", "sandybrown", $2);
-set_color("keyword2", $1, $2);
+set_color("keyword2", "sandybrown", $2);
 set_color("keyword3", $1, $2);
 set_color("keyword4", $1, $2);
 set_color("keyword5", $1, $2);
