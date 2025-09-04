@@ -419,6 +419,9 @@ Changes since 0.99-19
      doc/txt/mouse.txt for more information
 195. src/vms.c: Support for ACLs on VMS added (Harmut Becker)
 196. lib/colors/[Xjed/]black4.sl: Updated (Mark Olesen)
+197. src/screen.c: The point_cursor function was not accounting for a
+     horizontally scrolled window (regression introduced in change
+     #184).
 
 {{{ Previous Versions
 

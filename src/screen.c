@@ -717,7 +717,8 @@ void point_cursor (int c)
 	scrwrap_calculate_rel_position (&wt, CLine, Point, &dr, &c);
 	wrapno = dr;
      }
-   else c -= (JWindow->hscroll_column - 1);
+   if (0 == (CBuf->flags & VISUAL_WRAP))
+     c -= (JWindow->hscroll_column - 1);
 
    r = JWindow->sy;		       /* 0-based */
    Point_Cursor_Flag = 0;
