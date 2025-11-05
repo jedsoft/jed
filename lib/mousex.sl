@@ -369,7 +369,7 @@ private define bracketed_paste ()
 	_unset_buffer_flag (2);
 	while (input_pending (50))
 	  {
-	     variable ch = getkey ();
+	     variable ch = _getkey ();
 	     if (ch != '\e')
 	       {
 		  if (ch == '\r') ch = '\n';
@@ -380,7 +380,7 @@ private define bracketed_paste ()
 	     variable i = 1;
 	     while (i < n)
 	       {
-		  ch = getkey ();
+		  ch = _getkey ();
 		  if (ch == endseq[i])
 		    {
 		       i++;

@@ -422,6 +422,11 @@ Changes since 0.99-19
 197. src/screen.c: The point_cursor function was not accounting for a
      horizontally scrolled window (regression introduced in change
      #184).
+198. lib/mousex.sl: The bracketed paste mode was designed to use
+     byte-sematics.  However, the code used the wide-character
+     jed_getkey function.  This was updated to to use _jed_getkey,
+     which uses byte-sematics.  (Based on a patch by Morten Bo
+     Johansen)
 
 {{{ Previous Versions
 
