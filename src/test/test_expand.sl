@@ -29,13 +29,19 @@ test_expand_filename ("//./bar//gamma/.", "/bar/gamma/");
 test_expand_filename ("//./bar//gamma/..", "/bar/");
 test_expand_filename ("/..", "/");
 test_expand_filename ("/.", "/");
-test_expand_filename ("~/foo", "$HOME/foo"$);
-test_expand_filename ("/foo/bar/~/xx/..", "$HOME/"$);
-test_expand_filename ("/foo/bar/~/~/xx/..", "$HOME/"$);
-test_expand_filename ("~/foo/bar/~/~/xx/..", "$HOME/"$);
-test_expand_filename ("~/foo/bar/~/~xx", "$HOME/~xx"$);
-test_expand_filename ("~/foo/bar/~/xx~", "$HOME/xx~"$);
-test_expand_filename ("~/foo/bar/~", "$HOME/foo/bar/~"$);
+
+private variable HOME = getenv ("HOME");
+if (HOME != NULL)
+{
+   HOME = strtrim_end(HOME, "/");
+   test_expand_filename ("~/foo", "$HOME/foo"$);
+   test_expand_filename ("/foo/bar/~/xx/..", "$HOME/"$);
+   test_expand_filename ("/foo/bar/~/~/xx/..", "$HOME/"$);
+   test_expand_filename ("~/foo/bar/~/~/xx/..", "$HOME/"$);
+   test_expand_filename ("~/foo/bar/~/~xx", "$HOME/~xx"$);
+   test_expand_filename ("~/foo/bar/~/xx~", "$HOME/xx~"$);
+   test_expand_filename ("~/foo/bar/~", "$HOME/foo/bar/~"$);
+}
 
 #ifntrue
 % Only for __QNX__

@@ -427,6 +427,9 @@ Changes since 0.99-19
      jed_getkey function.  This was updated to to use _jed_getkey,
      which uses byte-sematics.  (Based on a patch by Morten Bo
      Johansen)
+199. src/test/test_expand.sl: Drop trailing slashes from the value of
+     $HOME before comparing to the expansion of ~.  This addresses an
+     issue with the test reported by Rafael Laboissière.
 
 {{{ Previous Versions
 
