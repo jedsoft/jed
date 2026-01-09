@@ -469,6 +469,7 @@ static Line *find_non_hidden_line (Line *l, int *non_hidden_pointp)
 
 #endif
 
+
 /* This function computes the line to appear at the top of
  * the current window such that the specified line+point will appear
  * in the specified row in the window, where row is numbered from 0
@@ -519,6 +520,69 @@ static Line *jed_find_top_to_recenter (Scrwrap_Type *wt, Line *cline, int point,
    return top;
 }
 
+/* If the line that is currently at the top of the window is valid,
+ * and if the current point would lie in the window using that top
+ * line, then return the window row of the point.  Otherwise return -1.
+ */
+static int is_top_valid (Scrwrap_Type *wt, Line *cline, int cline_dr)
+{
+   Screen_Type *s;
+   Line *line, *top;
+   int row, nrows, drow;
+
+   s = JScreen + JWindow->sy;
+   if (s->is_modified) return -1;
+
+   top = s->line;
+   if (top == NULL) return -1;
+
+   nrows = JWindow->rows;
+   if (cline_dr >= nrows) return -1;
+
+   if (top == cline)
+     {
+	/* The desired buffer line is at the top.  Determine
+	 * the screen row for the point.  If wrapping is in effect,
+	 * the text that appears at the top of the window may be a
+	 * portion of the line thas wrapped s->wrapno times.
+	 *
+	 * If cline_dr >= s->wrapno and cline_dr - s->wrapno <= nrows, then
+	 * the line should appear at row cline_dr - s->wrapno
+	 */
+	row = cline_dr - s->wrapno;
+	if (row < nrows) return row;
+	return -1;
+     }
+
+   /* It is not the line at the top.  So initialize the starting row
+    * and see if it appears below
+    */
+   scrwrap_calculate_rel_position (wt, top, top->len, &drow, NULL);
+   row = drow - s->wrapno;
+
+   line = top->next;
+   row++;
+   while ((line != NULL) && (row < nrows))
+     {
+	if (line->flags & JED_LINE_HIDDEN)
+	  {
+	     line = line->next;
+	     continue;
+	  }
+
+	if (line == cline)
+	  {
+	     row += cline_dr;
+	     if (row >= nrows) return -1;
+	     return row;
+	  }
+	scrwrap_calculate_rel_position (wt, line, line->len, &drow, NULL);
+	row += 1 + drow;
+	line = line->next;
+     }
+   return -1;
+}
+
 /* Compute the line to appear at the top of the window such
  * that the current line will appear somewhere in the window.
  * Note that the solution is not unique.
@@ -531,6 +595,9 @@ static Line *find_line_for_top_of_window (Scrwrap_Type *wt, Line *cline, int poi
 
    if (cline_dr == -1)
      scrwrap_calculate_rel_position (wt, cline, point, &cline_dr, NULL);
+
+   if (-1 != (i = is_top_valid (wt, cline, cline_dr)))
+     return jed_find_top_to_recenter (wt, cline, point, cline_dr, i, winrowp);
 
    s_top = JScreen + JWindow->sy;
    n = JWindow->rows;

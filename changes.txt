@@ -430,6 +430,10 @@ Changes since 0.99-19
 199. src/test/test_expand.sl: Drop trailing slashes from the value of
      $HOME before comparing to the expansion of ~.  This addresses an
      issue with the test reported by Rafael Laboissière.
+200. src/screen.c: When updating the window, try to avoid scrolling
+     the window even if doing so is less efficient.  This addresses the
+     issue reported on
+     <https://lists.jedsoft.org/lists/jed-users/2026/0000000.html>
 
 {{{ Previous Versions
 
