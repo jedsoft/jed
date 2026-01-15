@@ -1304,6 +1304,8 @@ static Menu_Bar_Type *get_active_menubar (void)
      {
 	Buffer *buf = CBuf;
 
+	if (JWindow == NULL) return NULL;
+
 	if (IN_MINI_WINDOW)
 	  {
 	     if (NULL == (buf = jed_get_mini_action_buffer ()))

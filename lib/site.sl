@@ -2496,7 +2496,7 @@ define jed_startup_hook()
 {
    variable n, hlp, ok = 0;
    variable scratch = "*scratch*";
-
+   variable init_scratch = 0;
    % turn on Abort character processing
    IGNORE_USER_ABORT = 0;
 
@@ -2508,6 +2508,7 @@ define jed_startup_hook()
 	  {
 	     () = insert_file (expand_jedlib_file("cpright.hlp"));
 	     set_buffer_modified_flag (0);
+	     init_scratch = 1;
 	     bob();
 	     message ("");
 	     if (Startup_With_File > 0)
@@ -2533,10 +2534,13 @@ define jed_startup_hook()
      }
    finally
      {
-	setbuf (scratch);
-	erase_buffer ();
-	no_mode ();
-	set_buffer_modified_flag (0);
+	if (init_scratch)
+	  {
+	     setbuf (scratch);
+	     erase_buffer ();
+	     %no_mode ();
+	     set_buffer_modified_flag (0);
+	  }
 	eval (". ()jed_startup_hook");
      }
 }

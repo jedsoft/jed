@@ -434,6 +434,10 @@ Changes since 0.99-19
      the window even if doing so is less efficient.  This addresses the
      issue reported on
      <https://lists.jedsoft.org/lists/jed-users/2026/0000000.html>
+201. The switch_to_buffer function was not calling the
+     jed_notify_menu_buffer_changed hook.  This addresses the issue
+     reported on
+     <https://lists.jedsoft.org/lists/jed-users/2026/0000003.html>
 
 {{{ Previous Versions
 

@@ -870,10 +870,6 @@ static void create_minibuffer(void) /*{{{*/
    MiniBuffer_Active = 1;
    erase_buffer ();
 
-#if JED_HAS_MENUS
-   jed_notify_menu_buffer_changed ();
-#endif
-
    /* allow kill region to kill to beginning of minibuffer.
     * Suggested by stefen@uni-paderborn.de */
    jed_push_mark ();
@@ -1176,6 +1172,9 @@ void switch_to_buffer_cmd (char *name) /*{{{*/
    set_buffer(name);
    window_buffer(CBuf);
    if ((CBuf != tthis) && (*CBuf->name != ' ')) Last_Buffer = tthis;
+#if JED_HAS_MENUS
+   jed_notify_menu_buffer_changed ();
+#endif
 }
 
 /*}}}*/

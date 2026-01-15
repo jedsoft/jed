@@ -1281,6 +1281,11 @@ int switch_to_buffer(Buffer *buf) /*{{{*/
    CBuf->line = CLine;
    CBuf->point = Point;
    jed_set_umask (CBuf->umask);
+
+#if JED_HAS_MENUS
+   jed_notify_menu_buffer_changed ();
+#endif
+
    return(1);
 }
 
