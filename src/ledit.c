@@ -1173,7 +1173,8 @@ void switch_to_buffer_cmd (char *name) /*{{{*/
    window_buffer(CBuf);
    if ((CBuf != tthis) && (*CBuf->name != ' ')) Last_Buffer = tthis;
 #if JED_HAS_MENUS
-   jed_notify_menu_buffer_changed ();
+   if (SLang_get_error () == 0)
+     jed_notify_menu_buffer_changed ();
 #endif
 }
 

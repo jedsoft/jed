@@ -438,6 +438,9 @@ Changes since 0.99-19
      jed_notify_menu_buffer_changed hook.  This addresses the issue
      reported on
      <https://lists.jedsoft.org/lists/jed-users/2026/0000003.html>
+202. Avoid calling jed_notify_menu_buffer_changed in the
+     presence of an error (Thanks go to Morten Bo Johansen for helping
+     diagnose this)
 
 {{{ Previous Versions
 

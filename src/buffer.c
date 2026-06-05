@@ -1283,7 +1283,8 @@ int switch_to_buffer(Buffer *buf) /*{{{*/
    jed_set_umask (CBuf->umask);
 
 #if JED_HAS_MENUS
-   jed_notify_menu_buffer_changed ();
+   if (SLang_get_error () == 0)
+     jed_notify_menu_buffer_changed ();
 #endif
 
    return(1);
